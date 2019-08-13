@@ -1,10 +1,26 @@
 
 import 'package:flutter/material.dart';
+import 'package:todo_app/domain/model/DrawerItemModels.dart';
+
+import 'MainBloc.dart';
 
 class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: bloc.drawerItems,
+      builder: (context, AsyncSnapshot<List<BaseDrawerItemModel>> snapshot) {
+        if (snapshot.hasData) {
+          return _buildDrawer(snapshot.data);
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
+
+  Widget _buildDrawer(List<BaseDrawerItemModel> itemModels) {
     return Drawer(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -16,30 +32,22 @@ class AppDrawer extends StatelessWidget {
               ),
               child: IntrinsicHeight(
                 child: Column(
-                  children: <Widget>[
-                    DrawerHeader(
-                      child: Text('ToDo App'),
-                    ),
-                    _DrawerItem(
-                      child: Text('기록'),
-                    ),
-                    _DrawerItem(
-                      child: Text('달력'),
-                    ),
-                    _DrawerItem(
-                      child: Text('통계'),
-                    ),
-                    _DrawerItem(
-                      child: Text('설정'),
-                    ),
-                    Spacer(),
-                    _DrawerItem(
-                      child: Text('About'),
-                    ),
-                    _DrawerItem(
-                      child: Text('버그 리포트'),
-                    ),
-                  ],
+                  children: List.generate(itemModels.length, (index) {
+                    BaseDrawerItemModel model = itemModels[index];
+                    if (model is DrawerHeaderModel) {
+                      return DrawerHeader(
+                        child: Text(model.title),
+                      );
+                    } else if (model is DrawerItemModel) {
+                      return _DrawerItem(
+                        child: Text(model.title),
+                        selected: model.isSelected,
+                        enabled: model.isEnabled,
+                      );
+                    } else {
+                      return Spacer();
+                    }
+                  }),
                 ),
               ),
             ),
