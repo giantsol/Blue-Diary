@@ -18,9 +18,7 @@ class MainBloc {
     _drawerItems.sink.add(await _repository.getDrawerItems());
   }
 
-  close() {
+  dispose() {
     _drawerItems.close();
   }
 }
-
-final bloc = MainBloc();

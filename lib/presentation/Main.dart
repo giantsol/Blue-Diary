@@ -1,9 +1,29 @@
 import 'package:flutter/material.dart';
-
 import 'package:todo_app/presentation/AppDrawer.dart';
 
-class Main extends StatelessWidget {
+import 'MainBloc.dart';
+import 'MainBlocProvider.dart';
+
+class Main extends StatefulWidget {
+
+  @override
+  State createState() {
+    return _MainState();
+  }
+
+}
+
+class _MainState extends State<Main> {
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+
+  MainBloc bloc;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    bloc = MainBlocProvider.of(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,16 +35,21 @@ class Main extends StatelessWidget {
             Container(
               alignment: Alignment.topRight,
               child: IconButton(
-                  icon: Image.asset('assets/menu.png'),
-                  onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
-                ),
+                icon: Image.asset('assets/menu.png'),
+                onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
+              ),
             ),
           ],
         ),
-        endDrawer: AppDrawer(),
+        endDrawer: AppDrawer(bloc),
       ),
     );
   }
 
-}
+  @override
+  void dispose() {
+    super.dispose();
+    bloc.dispose();
+  }
 
+}

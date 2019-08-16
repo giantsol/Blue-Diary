@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:todo_app/presentation/Main.dart';
+import 'package:todo_app/presentation/MainBlocProvider.dart';
 
 void main() => runApp(App());
 
@@ -22,7 +23,7 @@ class App extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: Main(),
+      home: MainBlocProvider(child: Main()),
       debugShowCheckedModeBanner: false,
     );
   }

@@ -6,6 +6,10 @@ import 'MainBloc.dart';
 
 class AppDrawer extends StatelessWidget {
 
+  final MainBloc bloc;
+
+  AppDrawer(this.bloc);
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
