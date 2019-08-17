@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/presentation/AppDrawer.dart';
 
 import 'MainBloc.dart';
 import 'MainBlocProvider.dart';
+import 'record/RecordPage.dart';
+import 'calendar/CalendarPage.dart';
+import 'AppDrawer.dart';
 
 class Main extends StatefulWidget {
 
@@ -32,6 +34,23 @@ class _MainState extends State<Main> {
         key: _scaffoldKey,
         body: Stack(
           children: <Widget>[
+            Navigator(
+              initialRoute: MainBloc.RECORD_PAGE_ROUTE,
+              onGenerateRoute: (RouteSettings settings) {
+                WidgetBuilder builder;
+                switch (settings.name) {
+                  case MainBloc.RECORD_PAGE_ROUTE:
+                    builder = (BuildContext _) => RecordPage();
+                    break;
+                  case MainBloc.CALENDAR_PAGE_ROUTE:
+                    builder = (BuildContext _) => CalendarPage();
+                    break;
+                  default:
+                    throw Exception('Invalid route: ${settings.name}');
+                }
+                return MaterialPageRoute(builder: builder, settings: settings);
+              },
+            ),
             Container(
               alignment: Alignment.topRight,
               child: IconButton(
