@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'MainBloc.dart';
 
 class MainBlocProvider extends InheritedWidget {
-
   final MainBloc bloc;
 
+  // todo: bloc = MainBloc() 요 문법이 뭘까...
   MainBlocProvider({Key key, Widget child}): bloc = MainBloc(), super(key: key, child: child);
 
   @override
@@ -16,5 +16,4 @@ class MainBlocProvider extends InheritedWidget {
   static MainBloc of(BuildContext context) {
     return (context.inheritFromWidgetOfExactType(MainBlocProvider) as MainBlocProvider).bloc;
   }
-
 }

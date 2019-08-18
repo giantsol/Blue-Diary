@@ -1,8 +1,10 @@
 
-import 'model/DrawerItemModels.dart';
+import 'DrawerItemModels.dart';
+import 'PageModel.dart';
 
 abstract class MainRepository {
+  List<BaseDrawerItemModel> getDrawerItems();
 
-  Future<List<BaseDrawerItemModel>> getDrawerItems();
-
+  PageModel getCurrentPage();
+  setCurrentPage(PageModel pageModel);
 }
