@@ -18,20 +18,13 @@ class Main extends StatefulWidget {
 
 class _MainState extends State<Main> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  final GlobalKey<NavigatorState> _pageNavigatorKey = GlobalKey();
 
   MainBloc _bloc;
-  StreamSubscription _currentPageSubscription;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _bloc = MainBlocProvider.of(context);
-
-    // todo: 요 코드 _PageContainer 쪽으로 들어가야 할듯
-    _currentPageSubscription = _bloc.getCurrentPage().listen((pageModel) {
-      _pageNavigatorKey.currentState.pushReplacementNamed(pageModel.route);
-    });
   }
 
   @override
@@ -41,10 +34,7 @@ class _MainState extends State<Main> {
         key: _scaffoldKey,
         body: Stack(
           children: <Widget>[
-            _PageContainer(
-              bloc: _bloc,
-              navigatorKey: _pageNavigatorKey,
-            ),
+            _PageContainer(bloc: _bloc),
             Container(
               alignment: Alignment.topRight,
               child: IconButton(
@@ -63,37 +53,59 @@ class _MainState extends State<Main> {
   void dispose() {
     super.dispose();
     _bloc.dispose();
-
-    _currentPageSubscription.cancel();
   }
 }
 
-class _PageContainer extends StatelessWidget {
+class _PageContainer extends StatefulWidget {
   final MainBloc bloc;
-  final GlobalKey navigatorKey;
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
-  _PageContainer({Key key, this.bloc, this.navigatorKey}): super(key: key);
+  _PageContainer({Key key, this.bloc}): super(key: key);
+
+  @override
+  State createState() {
+    return _PageContainerState();
+  }
+}
+
+class _PageContainerState extends State<_PageContainer> {
+  StreamSubscription _currentPageSubscription;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _currentPageSubscription = widget.bloc.getCurrentPage().listen((pageModel) {
+      widget.navigatorKey.currentState.pushReplacementNamed(pageModel.route);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Navigator(
-        key: this.navigatorKey,
-        initialRoute: this.bloc.getCurrentPageRoute(),
-        onGenerateRoute: (RouteSettings settings) {
-          WidgetBuilder builder;
-          switch (settings.name) {
-            case PageModel.ROUTE_RECORD:
-              builder = (BuildContext _) => RecordPage();
-              break;
-            case PageModel.ROUTE_CALENDAR:
-              builder = (BuildContext _) => CalendarPage();
-              break;
-            default:
-              throw Exception('Not implemented route: ${settings.name}');
-          }
-          return MaterialPageRoute(builder: builder, settings: settings);
-        },
-      );
+      key: widget.navigatorKey,
+      initialRoute: widget.bloc.getCurrentPageRoute(),
+      onGenerateRoute: (RouteSettings settings) {
+        WidgetBuilder builder;
+        switch (settings.name) {
+          case PageModel.ROUTE_RECORD:
+            builder = (BuildContext _) => RecordPage();
+            break;
+          case PageModel.ROUTE_CALENDAR:
+            builder = (BuildContext _) => CalendarPage();
+            break;
+          default:
+            throw Exception('Not implemented route: ${settings.name}');
+        }
+        return MaterialPageRoute(builder: builder, settings: settings);
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _currentPageSubscription.cancel();
   }
 }
 
