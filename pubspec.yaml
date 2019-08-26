@@ -25,6 +25,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   rxdart: ^0.22.1+1
   tuple: ^1.0.2
+  infinity_page_view: ^1.0.0
 
 dev_dependencies:
   flutter_test:
