@@ -153,7 +153,7 @@ class _RecordScreenState extends State<RecordScreen> {
                 SizedBox(
                   height: 228,
                   child: Padding(
-                    padding: EdgeInsets.all(12),
+                    padding: EdgeInsets.symmetric(vertical: 6,),
                     child: ListView.builder(
                       itemCount: record.todos.length + 1,
                       itemBuilder: (context, index) {
@@ -167,10 +167,8 @@ class _RecordScreenState extends State<RecordScreen> {
                             ),
                           );
                         } else {
-                          final double topPadding = index > 0 ? 4 : 0;
                           return ToDoTextField(
                             text: record.todos[index],
-                            topPadding: topPadding,
                           );
                         }
                       },

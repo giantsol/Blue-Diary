@@ -7,7 +7,7 @@ import 'package:todo_app/domain/home/record/WeekMemoSet.dart';
 class RecordRepositoryImpl implements RecordRepository {
   final _weekMemoSet = BehaviorSubject<WeekMemoSet>.seeded(WeekMemoSet());
   final _days = BehaviorSubject<List<DayRecord>>.seeded([
-    DayRecord(1, todos: ['hello', 'there']),
+    DayRecord(1, todos: ['hello', 'there', 'a', 'b', 'c', 'd', 'e', 'f']),
     DayRecord(2),
     DayRecord(0),
   ]);

@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 
 class ToDoTextField extends StatefulWidget {
   final String text;
-  final double topPadding;
   final bool isDone;
   final ValueChanged<String> onChanged;
 
   ToDoTextField({
     Key key,
     this.text,
-    this.topPadding = 0,
     this.isDone = false,
     this.onChanged,
   }): super(key: key);
@@ -36,11 +34,12 @@ class _ToDoTextFieldState extends State<ToDoTextField> {
       widget.onChanged(_value.text);
     });
 
-    return Padding(
-      padding: EdgeInsets.only(top: widget.topPadding),
-      child: Dismissible(
-        key: Key(widget.text), // todo: text가 동일할 수 있기 때문에 다른 값으로 key 만들어야함
-        background: Container(color: Colors.red,),
+    return Dismissible(
+      key: Key(widget.text), // todo: text가 동일할 수 있기 때문에 다른 값으로 key 만들어야함
+      direction: DismissDirection.startToEnd,
+      background: Container(color: Colors.red,),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12,),
         child: Row(
           children: <Widget>[
             widget.isDone ? Icon(
