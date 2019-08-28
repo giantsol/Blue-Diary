@@ -139,56 +139,58 @@ class _RecordScreenState extends State<RecordScreen> {
       child: ClipRect(
         child: Container(
           width: 240,
-          height: 365,
           decoration: BoxDecoration(
             border: Border.all(color: Colors.black),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(height: 8,),
-              Center(
-                child: Text(record.toString()),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(12),
-                  child: ListView.builder(
-                    itemCount: record.todos.length + 1,
-                    itemBuilder: (context, index) {
-                      if (index == record.todos.length) {
-                        return Center(
-                          child: IconButton(
-                            icon: Icon(Icons.add_circle_outline),
-                            onPressed: () {
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(height: 8,),
+                Center(
+                  child: Text(record.toString()),
+                ),
+                SizedBox(
+                  height: 228,
+                  child: Padding(
+                    padding: EdgeInsets.all(12),
+                    child: ListView.builder(
+                      itemCount: record.todos.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == record.todos.length) {
+                          return Center(
+                            child: IconButton(
+                              icon: Icon(Icons.add_circle_outline),
+                              onPressed: () {
 
-                            },
-                          ),
-                        );
-                      } else {
-                        final double topPadding = index > 0 ? 4 : 0;
-                        return ToDoTextField(
-                          text: record.todos[index],
-                          topPadding: topPadding,
-                        );
-                      }
-                    },
+                              },
+                            ),
+                          );
+                        } else {
+                          final double topPadding = index > 0 ? 4 : 0;
+                          return ToDoTextField(
+                            text: record.todos[index],
+                            topPadding: topPadding,
+                          );
+                        }
+                      },
+                    ),
                   ),
                 ),
-              ),
-              Divider(height: 1, color: Colors.black,),
-              Padding(
-                padding: EdgeInsets.only(left: 4, top: 4,),
-                child: Text(
-                  'MEMO',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                Divider(height: 1, color: Colors.black,),
+                Padding(
+                  padding: EdgeInsets.only(left: 4, top: 4,),
+                  child: Text(
+                    'MEMO',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              DayMemoTextField(text: record.memo,)
-            ],
+                DayMemoTextField(text: record.memo,)
+              ],
+            ),
           ),
         ),
       ),
