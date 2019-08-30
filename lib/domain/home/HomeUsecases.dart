@@ -31,6 +31,6 @@ class HomeUsecases {
   }
 
   void selectDrawerChildScreenItem(DrawerChildScreenItem item) {
-    _homeRepository.selectDrawerChildScreenItem(item);
+    _homeRepository.selectDrawerChildScreenItem(item.key);
   }
 }

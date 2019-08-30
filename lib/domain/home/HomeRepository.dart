@@ -6,5 +6,5 @@ abstract class HomeRepository {
   Stream<List<DrawerChildScreenItem>> get drawerChildScreenItems;
   Stream<List<DrawerScreenItem>> get drawerScreenItems;
 
-  void selectDrawerChildScreenItem(DrawerChildScreenItem item);
+  void selectDrawerChildScreenItem(String key);
 }

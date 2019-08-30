@@ -56,29 +56,36 @@ class _RecordScreenState extends State<RecordScreen> {
   }
 
   Widget _buildYearAndMonthNthWeek(RecordState state) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 12, top: 12, right: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            state.yearText,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
+    return InkWell(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 12, top: 12, right: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              state.yearText,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
             ),
-          ),
-          SizedBox(height: 4,),
-          Text(
-            state.monthAndNthWeekText,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 24,
+            SizedBox(height: 4,),
+            Text(
+              state.monthAndNthWeekText,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+      onTap: _onYearAndMonthNthWeekClicked,
     );
+  }
+
+  _onYearAndMonthNthWeekClicked() {
+    _bloc.actions.add(NavigateToCalendarPage());
   }
 
   Widget _buildWeekMemos(RecordState state) {

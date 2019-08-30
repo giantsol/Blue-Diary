@@ -13,3 +13,5 @@ class UpdateDayRecordPageIndex implements RecordAction {
 
   const UpdateDayRecordPageIndex(this.updatedIndex);
 }
+
+class NavigateToCalendarPage implements RecordAction { }

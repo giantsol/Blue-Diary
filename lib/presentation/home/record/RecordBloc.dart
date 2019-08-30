@@ -35,6 +35,9 @@ class RecordBloc {
         case UpdateDayRecordPageIndex:
           _updateDayRecordPageIndex(action);
           break;
+        case NavigateToCalendarPage:
+          _navigateToCalendarPage(action);
+          break;
         default:
           throw Exception('HomeBloc action not implemented: $action');
       }
@@ -63,6 +66,10 @@ class RecordBloc {
 
   _updateDayRecordPageIndex(UpdateDayRecordPageIndex action) {
     _usecases.updateDayRecordPageIndex(action.updatedIndex);
+  }
+
+  _navigateToCalendarPage(NavigateToCalendarPage action) {
+    _usecases.navigateToCalendarPage();
   }
 
   dispose() {

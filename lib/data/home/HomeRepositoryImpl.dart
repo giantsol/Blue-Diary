@@ -47,10 +47,11 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  void selectDrawerChildScreenItem(DrawerChildScreenItem item) {
-    int index = _defaultDrawerChildScreenItems.indexWhere((i) => i.key == item.key);
+  void selectDrawerChildScreenItem(String key) {
+    int index = _defaultDrawerChildScreenItems.indexWhere((i) => i.key == key);
     if (index >= 0) {
       _drawerChildScreenItems.add(_createDrawerChildScreenItemsWithSelected(index));
     }
   }
+
 }

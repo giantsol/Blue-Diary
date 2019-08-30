@@ -1,10 +1,13 @@
 
+import 'package:todo_app/domain/home/DrawerItem.dart';
+import 'package:todo_app/domain/home/HomeRepository.dart';
 import 'package:todo_app/domain/home/record/DayRecord.dart';
 import 'package:todo_app/domain/home/record/RecordRepository.dart';
 import 'package:todo_app/domain/home/record/WeekMemoSet.dart';
 
 class RecordUsecases {
   final RecordRepository _recordRepository;
+  final HomeRepository _homeRepository;
 
   Stream<WeekMemoSet> get weekMemoSet => _recordRepository.weekMemoSet;
 
@@ -27,7 +30,7 @@ class RecordUsecases {
     }
   });
 
-  const RecordUsecases(this._recordRepository);
+  const RecordUsecases(this._recordRepository, this._homeRepository);
 
   void updateSingleWeekMemo(String updatedText, int index) {
     _recordRepository.updateSingleWeekMemo(updatedText, index);
@@ -35,5 +38,9 @@ class RecordUsecases {
 
   void updateDayRecordPageIndex(int updatedIndex) {
     _recordRepository.updateDayRecordPageIndex(updatedIndex);
+  }
+
+  void navigateToCalendarPage() {
+    _homeRepository.selectDrawerChildScreenItem(DrawerChildScreenItem.KEY_CALENDAR);
   }
 }
