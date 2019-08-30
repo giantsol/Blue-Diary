@@ -11,6 +11,7 @@ class RecordRepositoryImpl implements RecordRepository {
     DayRecord(2),
     DayRecord(0),
   ]);
+  final _currentDateTime = BehaviorSubject<DateTime>.seeded(DateTime.now());
 
   @override
   Stream<WeekMemoSet> get weekMemoSet => _weekMemoSet.distinct();
@@ -18,9 +19,13 @@ class RecordRepositoryImpl implements RecordRepository {
   @override
   Stream<List<DayRecord>> get days => _days.distinct();
 
+  @override
+  Stream<DateTime> get currentDateTime => _currentDateTime.distinct();
+
   RecordRepositoryImpl() {
     _weekMemoSet.onCancel = () => _weekMemoSet.close();
     _days.onCancel = () => _days.close();
+    _currentDateTime.onCancel = () => _currentDateTime.close();
   }
 
   @override

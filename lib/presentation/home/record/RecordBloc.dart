@@ -1,6 +1,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/home/record/DayRecord.dart';
 import 'package:todo_app/domain/home/record/RecordUsecases.dart';
@@ -21,6 +22,9 @@ class RecordBloc {
 
   StreamSubscription<WeekMemoSet> _weekMemoSetSubscription;
   StreamSubscription<List<DayRecord>> _dayRecordsSubscription;
+  StreamSubscription<int> _currentYearSubscription;
+  StreamSubscription<int> _currentMonthSubscription;
+  StreamSubscription<int> _currentNthWeekSubscription;
 
   RecordBloc() {
     _actions.stream.listen((action) {
@@ -41,6 +45,15 @@ class RecordBloc {
     });
     _dayRecordsSubscription = _usecases.days.listen((days) {
       _state.add(_state.value.getModified(days: days));
+    });
+    _currentYearSubscription = _usecases.currentYear.listen((year) {
+      _state.add(_state.value.getModified(year: year));
+    });
+    _currentMonthSubscription = _usecases.currentMonth.listen((month) {
+      _state.add(_state.value.getModified(month: month));
+    });
+    _currentNthWeekSubscription = _usecases.currentNthWeek.listen((nthWeek) {
+      _state.add(_state.value.getModified(nthWeek: nthWeek));
     });
   }
 
