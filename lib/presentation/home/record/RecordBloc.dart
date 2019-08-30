@@ -32,8 +32,8 @@ class RecordBloc {
         case UpdateSingleWeekMemo:
           _updateSingleWeekMemo(action);
           break;
-        case UpdateDayRecords:
-          _updateDayRecords(action);
+        case UpdateDayRecordPageIndex:
+          _updateDayRecordPageIndex(action);
           break;
         default:
           throw Exception('HomeBloc action not implemented: $action');
@@ -61,8 +61,8 @@ class RecordBloc {
     _usecases.updateSingleWeekMemo(action.updatedText, action.index);
   }
 
-  _updateDayRecords(UpdateDayRecords action) {
-    _usecases.updateDayRecords(action.focusedIndex);
+  _updateDayRecordPageIndex(UpdateDayRecordPageIndex action) {
+    _usecases.updateDayRecordPageIndex(action.updatedIndex);
   }
 
   dispose() {

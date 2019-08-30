@@ -9,8 +9,7 @@ class DayRecord {
     this.memo = '',
   });
 
-  @override
-  String toString() {
+  String get title {
     final day = dateTime.day;
     switch (dateTime.weekday) {
       case DateTime.monday:
@@ -29,4 +28,5 @@ class DayRecord {
         return '$day일 일';
     }
   }
+
 }

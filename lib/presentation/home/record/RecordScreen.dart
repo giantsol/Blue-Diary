@@ -131,7 +131,7 @@ class _RecordScreenState extends State<RecordScreen> {
   }
 
   _onDayRecordsPageChanged(int index) {
-    _bloc.actions.add(UpdateDayRecords(index));
+    _bloc.actions.add(UpdateDayRecordPageIndex(index));
   }
 
   Widget _buildDayRecord(DayRecord record) {
@@ -148,7 +148,7 @@ class _RecordScreenState extends State<RecordScreen> {
               children: <Widget>[
                 SizedBox(height: 8,),
                 Center(
-                  child: Text(record.toString()),
+                  child: Text(record.title),
                 ),
                 SizedBox(
                   height: 228,

@@ -8,5 +8,5 @@ abstract class RecordRepository {
   Stream<DateTime> get currentDateTime;
 
   void updateSingleWeekMemo(String updatedText, int index);
-  void updateDayRecords(int focusedIndex);
+  void updateDayRecordPageIndex(int updatedIndex);
 }

@@ -5,15 +5,15 @@ import 'package:todo_app/domain/home/HomeRepository.dart';
 import 'package:tuple/tuple.dart';
 
 class HomeUsecases {
-  final HomeRepository homeRepository;
+  final HomeRepository _homeRepository;
 
-  const HomeUsecases(this.homeRepository);
+  const HomeUsecases(this._homeRepository);
 
   Stream<List<DrawerItem>> get allDrawerItems {
     return Observable.combineLatest3(
-      homeRepository.drawerHeaderItem,
-      homeRepository.drawerChildScreenItems,
-      homeRepository.drawerScreenItems,
+      _homeRepository.drawerHeaderItem,
+      _homeRepository.drawerChildScreenItems,
+      _homeRepository.drawerScreenItems,
       (a, b, c) => Tuple3<DrawerHeaderItem, List<DrawerChildScreenItem>, List<DrawerScreenItem>>(a, b, c),
     ).map((tuple) {
       final headerItem = tuple.item1;
@@ -31,6 +31,6 @@ class HomeUsecases {
   }
 
   void selectDrawerChildScreenItem(DrawerChildScreenItem item) {
-    homeRepository.selectDrawerChildScreenItem(item);
+    _homeRepository.selectDrawerChildScreenItem(item);
   }
 }

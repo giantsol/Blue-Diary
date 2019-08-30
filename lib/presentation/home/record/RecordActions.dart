@@ -8,8 +8,8 @@ class UpdateSingleWeekMemo implements RecordAction {
   const UpdateSingleWeekMemo(this.updatedText, this.index);
 }
 
-class UpdateDayRecords implements RecordAction {
-  final int focusedIndex;
+class UpdateDayRecordPageIndex implements RecordAction {
+  final int updatedIndex;
 
-  const UpdateDayRecords(this.focusedIndex);
+  const UpdateDayRecordPageIndex(this.updatedIndex);
 }

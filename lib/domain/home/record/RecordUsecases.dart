@@ -4,17 +4,17 @@ import 'package:todo_app/domain/home/record/RecordRepository.dart';
 import 'package:todo_app/domain/home/record/WeekMemoSet.dart';
 
 class RecordUsecases {
-  final RecordRepository recordRepository;
+  final RecordRepository _recordRepository;
 
-  Stream<WeekMemoSet> get weekMemoSet => recordRepository.weekMemoSet;
+  Stream<WeekMemoSet> get weekMemoSet => _recordRepository.weekMemoSet;
 
-  Stream<List<DayRecord>> get dayRecords => recordRepository.dayRecords;
+  Stream<List<DayRecord>> get dayRecords => _recordRepository.dayRecords;
 
-  Stream<int> get currentYear => recordRepository.currentDateTime.map((dateTime) => dateTime.year);
+  Stream<int> get currentYear => _recordRepository.currentDateTime.map((dateTime) => dateTime.year);
 
-  Stream<int> get currentMonth => recordRepository.currentDateTime.map((dateTime) => dateTime.month);
+  Stream<int> get currentMonth => _recordRepository.currentDateTime.map((dateTime) => dateTime.month);
 
-  Stream<int> get currentNthWeek => recordRepository.currentDateTime.map((dateTime) {
+  Stream<int> get currentNthWeek => _recordRepository.currentDateTime.map((dateTime) {
     final day = dateTime.day;
     final currentMonthFirstDate = DateTime.utc(dateTime.year, dateTime.month);
     int currentMonthFirstDateWeekDay = currentMonthFirstDate.weekday;
@@ -27,13 +27,13 @@ class RecordUsecases {
     }
   });
 
-  const RecordUsecases(this.recordRepository);
+  const RecordUsecases(this._recordRepository);
 
   void updateSingleWeekMemo(String updatedText, int index) {
-    recordRepository.updateSingleWeekMemo(updatedText, index);
+    _recordRepository.updateSingleWeekMemo(updatedText, index);
   }
 
-  void updateDayRecords(int focusedIndex) {
-    recordRepository.updateDayRecords(focusedIndex);
+  void updateDayRecordPageIndex(int updatedIndex) {
+    _recordRepository.updateDayRecordPageIndex(updatedIndex);
   }
 }
