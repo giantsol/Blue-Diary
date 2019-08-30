@@ -8,7 +8,7 @@ class RecordUsecases {
 
   Stream<WeekMemoSet> get weekMemoSet => recordRepository.weekMemoSet;
 
-  Stream<List<DayRecord>> get days => recordRepository.days;
+  Stream<List<DayRecord>> get dayRecords => recordRepository.dayRecords;
 
   Stream<int> get currentYear => recordRepository.currentDateTime.map((dateTime) => dateTime.year);
 
@@ -20,7 +20,7 @@ class RecordUsecases {
     int currentMonthFirstDateWeekDay = currentMonthFirstDate.weekday;
 
     if (day <= DateTime.sunday - currentMonthFirstDateWeekDay + 1) {
-      return 1;
+      return 0;
     } else {
       final adaptedDay = day - (DateTime.sunday - currentMonthFirstDateWeekDay + 2);
       return adaptedDay ~/ 7 + 1;

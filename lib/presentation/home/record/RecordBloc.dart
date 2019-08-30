@@ -43,7 +43,7 @@ class RecordBloc {
     _weekMemoSetSubscription = _usecases.weekMemoSet.listen((set) {
       _state.add(_state.value.getModified(weekMemoSet: set));
     });
-    _dayRecordsSubscription = _usecases.days.listen((days) {
+    _dayRecordsSubscription = _usecases.dayRecords.listen((days) {
       _state.add(_state.value.getModified(days: days));
     });
     _currentYearSubscription = _usecases.currentYear.listen((year) {
@@ -71,5 +71,8 @@ class RecordBloc {
 
     _weekMemoSetSubscription?.cancel();
     _dayRecordsSubscription?.cancel();
+    _currentYearSubscription?.cancel();
+    _currentMonthSubscription?.cancel();
+    _currentNthWeekSubscription?.cancel();
   }
 }
