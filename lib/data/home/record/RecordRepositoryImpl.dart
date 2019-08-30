@@ -47,11 +47,6 @@ class RecordRepositoryImpl implements RecordRepository {
   @override
   Stream<DateTime> get currentDateTime => _currentDateTime.distinct();
 
-  RecordRepositoryImpl() {
-    _weekMemoSet.onCancel = () => _weekMemoSet.close();
-    _currentDateTime.onCancel = () => _currentDateTime.close();
-  }
-
   @override
   void updateSingleWeekMemo(String updatedText, int index) {
     _weekMemoSet.add(_weekMemoSet.value.getModified(index, updatedText));

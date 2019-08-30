@@ -30,10 +30,6 @@ class HomeRepositoryImpl implements HomeRepository {
   Stream<List<DrawerScreenItem>> get drawerScreenItems => _drawerScreenItems.distinct();
 
   HomeRepositoryImpl() {
-    _drawerHeaderItem.onCancel = () => _drawerHeaderItem.close();
-    _drawerChildScreenItems.onCancel = () => _drawerChildScreenItems.close();
-    _drawerScreenItems.onCancel = () => _drawerScreenItems.close();
-
     // 시작 시에는 첫번째 아이템이 선택된 상태
     _drawerChildScreenItems.add(_createDrawerChildScreenItemsWithSelected(0));
   }

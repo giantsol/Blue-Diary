@@ -129,6 +129,10 @@ class _RecordScreenState extends State<RecordScreen> {
           controller: _daysPageController,
           itemCount: dayRecords.length,
           itemBuilder: (context, index) {
+            // 에에~? 왜 dayRecords.length가 0인데도 itemBuilder가 한번 불리징 훔..
+            if (dayRecords.isEmpty) {
+              return null;
+            }
             return _buildDayRecord(dayRecords[index]);
           },
           onPageChanged: _onDayRecordsPageChanged,
