@@ -4,6 +4,7 @@ import 'package:todo_app/domain/home/HomeRepository.dart';
 import 'package:todo_app/domain/home/record/DayRecord.dart';
 import 'package:todo_app/domain/home/record/RecordRepository.dart';
 import 'package:todo_app/domain/home/record/WeekMemoSet.dart';
+import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
 
 class RecordUsecases {
   final RecordRepository _recordRepository;
@@ -42,5 +43,9 @@ class RecordUsecases {
 
   void navigateToCalendarPage() {
     _homeRepository.selectDrawerChildScreenItem(DrawerChildScreenItem.KEY_CALENDAR);
+  }
+
+  void updateDayMemo(DayMemo dayMemo, String updated) {
+    _recordRepository.updateDayMemo(dayMemo, updated);
   }
 }

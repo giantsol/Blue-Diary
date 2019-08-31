@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:infinity_page_view/infinity_page_view.dart';
 import 'package:todo_app/domain/home/record/DayRecord.dart';
+import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
 import 'package:todo_app/presentation/home/record/RecordActions.dart';
 import 'package:todo_app/presentation/home/record/RecordBloc.dart';
 import 'package:todo_app/presentation/home/record/RecordState.dart';
@@ -179,7 +180,7 @@ class _RecordScreenState extends State<RecordScreen> {
                           );
                         } else {
                           return ToDoTextField(
-                            text: record.todos[index],
+                            text: record.todos[index].content,
                           );
                         }
                       },
@@ -197,12 +198,19 @@ class _RecordScreenState extends State<RecordScreen> {
                     ),
                   ),
                 ),
-                DayMemoTextField(text: record.memo,)
+                DayMemoTextField(
+                  text: record.memo.content,
+                  onChanged: (s) => _onDayMemoTextChanged(record.memo, s),
+                )
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  _onDayMemoTextChanged(DayMemo dayMemo, String changed) {
+    _bloc.actions.add(UpdateDayMemo(dayMemo, changed));
   }
 }

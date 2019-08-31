@@ -38,6 +38,9 @@ class RecordBloc {
         case NavigateToCalendarPage:
           _navigateToCalendarPage(action);
           break;
+        case UpdateDayMemo:
+          _updateDayMemo(action);
+          break;
         default:
           throw Exception('HomeBloc action not implemented: $action');
       }
@@ -70,6 +73,10 @@ class RecordBloc {
 
   _navigateToCalendarPage(NavigateToCalendarPage action) {
     _usecases.navigateToCalendarPage();
+  }
+
+  _updateDayMemo(UpdateDayMemo action) {
+    _usecases.updateDayMemo(action.dayMemo, action.updated);
   }
 
   dispose() {

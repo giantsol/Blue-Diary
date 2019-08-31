@@ -1,13 +1,25 @@
 
+import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
+import 'package:todo_app/domain/home/record/entity/ToDo.dart';
+
 class DayRecord {
   final DateTime dateTime;
-  final List<String> todos;
-  final String memo;
+  final List<ToDo> todos;
+  final DayMemo memo;
 
-  const DayRecord(this.dateTime, {
-    this.todos = const [],
-    this.memo = '',
-  });
+  const DayRecord(this.dateTime, this.todos, this.memo);
+
+  DayRecord getModified({
+    DateTime dateTime,
+    List<ToDo> todos,
+    DayMemo memo,
+  }) {
+    return DayRecord(
+      dateTime ?? this.dateTime,
+      todos ?? this.todos,
+      memo ?? this.memo,
+    );
+  }
 
   String get title {
     final day = dateTime.day;
