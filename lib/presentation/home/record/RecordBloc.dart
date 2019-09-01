@@ -3,9 +3,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/domain/home/record/DayRecord.dart';
+import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
 import 'package:todo_app/domain/home/record/RecordUsecases.dart';
-import 'package:todo_app/domain/home/record/WeekMemoSet.dart';
+import 'package:todo_app/domain/home/record/entity/WeekMemoSet.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/home/record/RecordActions.dart';
 import 'package:todo_app/presentation/home/record/RecordState.dart';

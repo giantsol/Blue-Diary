@@ -1,70 +1,70 @@
 
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/data/AppDatabase.dart';
-import 'package:todo_app/domain/home/record/DayRecord.dart';
 import 'package:todo_app/domain/home/record/RecordRepository.dart';
-import 'package:todo_app/domain/home/record/WeekMemoSet.dart';
 import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
+import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
+import 'package:todo_app/domain/home/record/entity/WeekMemoSet.dart';
 
 class RecordRepositoryImpl implements RecordRepository {
   final AppDatabase _database;
 
-  // 현재 주(week)에 해당하는 메모들 (3개로 고정된)
-  final _weekMemoSet = BehaviorSubject<WeekMemoSet>.seeded(WeekMemoSet());
-
   // 현재 선택된 시간. 디폴트는 오늘.
   final _currentDateTime = BehaviorSubject<DateTime>.seeded(DateTime.now());
+  @override
+  Stream<DateTime> get currentDateTime => _currentDateTime.distinct();
+
+  // 현재 주(week)에 해당하는 메모들 (3개로 고정된)
+  final _weekMemoSet = BehaviorSubject<WeekMemoSet>.seeded(WeekMemoSet());
+  @override
+  Stream<WeekMemoSet> get weekMemoSet => _weekMemoSet.distinct();
 
   final _dayRecords = BehaviorSubject<List<DayRecord>>.seeded([]);
+  @override
+  Stream<List<DayRecord>> get dayRecords => _dayRecords.distinct();
 
   // 페이징은 0, 1, 2 값 사이에서 infinite paging이 된다.
   var _currentDayRecordPageIndex = 0;
 
-  @override
-  Stream<WeekMemoSet> get weekMemoSet => _weekMemoSet.distinct();
-
-  @override
-  Stream<List<DayRecord>> get dayRecords => _dayRecords.distinct();
-
-  @override
-  Stream<DateTime> get currentDateTime => _currentDateTime.distinct();
-
   RecordRepositoryImpl(this._database) {
-    _currentDateTime.distinct().listen((currentDateTime) async {
-      // dayRecords의 크기는 항상 3으로 고정
-      final dayRecords = List<DayRecord>(3);
-      final oneDay = Duration(days: 1);
-      final currentDayRecord = await _database.loadDayRecord(currentDateTime);
-      final prevDayRecord = await _database.loadDayRecord(currentDateTime.subtract(oneDay));
-      final nextDayRecord = await _database.loadDayRecord(currentDateTime.add(oneDay));
-      final currentPageIndex = _currentDayRecordPageIndex;
+    _currentDateTime.distinct().listen((d) => _updateDayRecords());
+  }
 
-      dayRecords[currentPageIndex] = currentDayRecord;
+  _updateDayRecords() async {
+    // dayRecords의 크기는 항상 3으로 고정
+    final dayRecords = List<DayRecord>(3);
+    final currentDateTime = _currentDateTime.value;
+    final oneDay = Duration(days: 1);
+    final currentDayRecord = await _database.loadDayRecord(currentDateTime);
+    final prevDayRecord = await _database.loadDayRecord(currentDateTime.subtract(oneDay));
+    final nextDayRecord = await _database.loadDayRecord(currentDateTime.add(oneDay));
+    final currentPageIndex = _currentDayRecordPageIndex;
 
-      if (currentPageIndex == 0) {
-        dayRecords[2] = prevDayRecord;
-      } else {
-        dayRecords[currentPageIndex - 1] = prevDayRecord;
-      }
+    dayRecords[currentPageIndex] = currentDayRecord;
 
-      if (currentPageIndex == 2) {
-        dayRecords[0] = nextDayRecord;
-      } else {
-        dayRecords[currentPageIndex + 1] = nextDayRecord;
-      }
+    if (currentPageIndex == 0) {
+      dayRecords[2] = prevDayRecord;
+    } else {
+      dayRecords[currentPageIndex - 1] = prevDayRecord;
+    }
 
-      _dayRecords.add(dayRecords);
-    });
+    if (currentPageIndex == 2) {
+      dayRecords[0] = nextDayRecord;
+    } else {
+      dayRecords[currentPageIndex + 1] = nextDayRecord;
+    }
+
+    _dayRecords.add(dayRecords);
   }
 
   @override
-  void updateSingleWeekMemo(String updatedText, int index) {
+  updateSingleWeekMemo(String updatedText, int index) {
     _weekMemoSet.add(_weekMemoSet.value.getModified(index, updatedText));
   }
 
   // DayRecord의 pageIndex가 변할 때 마다 현재 선택된 date (i.e. _currentDateTime)의 값을 업데이트한다.
   @override
-  void updateDayRecordPageIndex(int updatedIndex) {
+  updateDayRecordPageIndex(int updatedIndex) {
     final currentPageIndex = _currentDayRecordPageIndex;
     if (currentPageIndex == updatedIndex) {
       return;
@@ -84,7 +84,7 @@ class RecordRepositoryImpl implements RecordRepository {
   updateDayMemo(DayMemo dayMemo, String updated) {
     final List<DayRecord> dayRecords = _dayRecords.value;
     final updatedDayMemo = dayMemo.getModified(content: updated);
-    final changedIndex = dayRecords.indexWhere((item) => item.memo.dateString == dayMemo.dateString);
+    final changedIndex = dayRecords.indexWhere((item) => item.memo.key == dayMemo.key);
     if (changedIndex >= 0) {
       // 캐싱된 DayRecord 값을 업데이트해주면서 백그라운드에서 DB도 업데이트한다.
       // 완전히 data transparent하게 하려면 DB를 업데이트하고 다시 쿼리날려서 받아와야겠지만

@@ -1,7 +1,7 @@
 
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/domain/home/DrawerItem.dart';
 import 'package:todo_app/domain/home/HomeRepository.dart';
+import 'package:todo_app/domain/home/entity/DrawerItem.dart';
 
 const List<DrawerChildScreenItem> _defaultDrawerChildScreenItems = [
   DrawerChildScreenItem(DrawerChildScreenItem.KEY_RECORD, '기록'),
@@ -17,15 +17,14 @@ const List<DrawerScreenItem> _defaultDrawerScreenItems = [
 
 class HomeRepositoryImpl implements HomeRepository {
   final _drawerHeaderItem = BehaviorSubject<DrawerHeaderItem>.seeded(DrawerHeaderItem('Todo App'));
-  final _drawerChildScreenItems = BehaviorSubject<List<DrawerChildScreenItem>>.seeded(_defaultDrawerChildScreenItems);
-  final _drawerScreenItems = BehaviorSubject<List<DrawerScreenItem>>.seeded(_defaultDrawerScreenItems);
-
   @override
   Stream<DrawerHeaderItem> get drawerHeaderItem => _drawerHeaderItem.distinct();
 
+  final _drawerChildScreenItems = BehaviorSubject<List<DrawerChildScreenItem>>.seeded(_defaultDrawerChildScreenItems);
   @override
   Stream<List<DrawerChildScreenItem>> get drawerChildScreenItems => _drawerChildScreenItems.distinct();
 
+  final _drawerScreenItems = BehaviorSubject<List<DrawerScreenItem>>.seeded(_defaultDrawerScreenItems);
   @override
   Stream<List<DrawerScreenItem>> get drawerScreenItems => _drawerScreenItems.distinct();
 
@@ -43,7 +42,7 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  void selectDrawerChildScreenItem(String key) {
+  selectDrawerChildScreenItem(String key) {
     int index = _defaultDrawerChildScreenItems.indexWhere((i) => i.key == key);
     if (index >= 0) {
       _drawerChildScreenItems.add(_createDrawerChildScreenItemsWithSelected(index));

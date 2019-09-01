@@ -1,6 +1,6 @@
 
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/domain/home/DrawerItem.dart';
+import 'package:todo_app/domain/home/entity/DrawerItem.dart';
 import 'package:todo_app/domain/home/HomeRepository.dart';
 import 'package:tuple/tuple.dart';
 
@@ -30,7 +30,7 @@ class HomeUsecases {
     });
   }
 
-  void selectDrawerChildScreenItem(DrawerChildScreenItem item) {
+  selectDrawerChildScreenItem(DrawerChildScreenItem item) {
     _homeRepository.selectDrawerChildScreenItem(item.key);
   }
 }

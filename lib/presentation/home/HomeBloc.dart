@@ -2,7 +2,7 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/domain/home/DrawerItem.dart';
+import 'package:todo_app/domain/home/entity/DrawerItem.dart';
 import 'package:todo_app/domain/home/HomeUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/home/HomeActions.dart';

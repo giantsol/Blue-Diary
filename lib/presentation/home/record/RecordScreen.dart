@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:infinity_page_view/infinity_page_view.dart';
-import 'package:todo_app/domain/home/record/DayRecord.dart';
 import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
+import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
 import 'package:todo_app/presentation/home/record/RecordActions.dart';
 import 'package:todo_app/presentation/home/record/RecordBloc.dart';
 import 'package:todo_app/presentation/home/record/RecordState.dart';
@@ -23,13 +23,13 @@ class _RecordScreenState extends State<RecordScreen> {
   final _daysPageController = InfinityPageController(initialPage: 0, viewportFraction: 0.75);
 
   @override
-  void initState() {
+  initState() {
     super.initState();
     _bloc = RecordBloc();
   }
 
   @override
-  void dispose() {
+  dispose() {
     super.dispose();
     _bloc.dispose();
   }
@@ -180,7 +180,7 @@ class _RecordScreenState extends State<RecordScreen> {
                           );
                         } else {
                           return ToDoTextField(
-                            text: record.todos[index].content,
+                            toDo: record.todos[index],
                           );
                         }
                       },

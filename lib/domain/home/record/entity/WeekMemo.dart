@@ -1,17 +1,35 @@
 
+import 'package:todo_app/Utils.dart';
+
 class WeekMemo {
 
-  final String dateString;
+  static String dateTimeToDateString(DateTime dateTime) => '${dateTime.year}-${dateTime.month}-${Utils.getNthWeek(dateTime)}';
+
+  final DateTime dateTime;
   final int index;
   final String content;
 
-  const WeekMemo(this.dateString, this.index, {
+  String get key => '${dateTimeToDateString(dateTime)}-$index';
+
+  const WeekMemo(this.dateTime, this.index, {
     this.content = '',
   });
 
+  WeekMemo getModified({
+    DateTime dateTime,
+    int index,
+    String content,
+  }) {
+    return WeekMemo(
+      dateTime ?? this.dateTime,
+      index ?? this.index,
+      content: content ?? this.content,
+    );
+  }
+
   Map<String, dynamic> toDatabaseFormat() {
     return {
-      'date_string': dateString,
+      'date_string': dateTimeToDateString(dateTime),
       'which': index,
       'content': content,
     };

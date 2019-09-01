@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:todo_app/domain/home/DrawerItem.dart';
+import 'package:todo_app/domain/home/entity/DrawerItem.dart';
 import 'package:todo_app/presentation/home/HomeActions.dart';
 import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
@@ -20,13 +20,13 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   @override
-  void initState() {
+  initState() {
     super.initState();
     _bloc = HomeBloc();
   }
 
   @override
-  void dispose() {
+  dispose() {
     super.dispose();
     _bloc.dispose();
   }

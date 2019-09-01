@@ -1,15 +1,14 @@
 
 import 'package:flutter/material.dart';
+import 'package:todo_app/domain/home/record/entity/ToDo.dart';
 
 class ToDoTextField extends StatefulWidget {
-  final String text;
-  final bool isDone;
+  final ToDo toDo;
   final ValueChanged<String> onChanged;
 
   ToDoTextField({
     Key key,
-    this.text,
-    this.isDone = false,
+    this.toDo,
     this.onChanged,
   }): super(key: key);
 
@@ -25,8 +24,9 @@ class _ToDoTextFieldState extends State<ToDoTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final toDo = widget.toDo;
     final controller = TextEditingController.fromValue(
-      _value?.copyWith(text: widget.text) ?? TextEditingValue(text: widget.text),
+      _value?.copyWith(text: toDo.content) ?? TextEditingValue(text: toDo.content),
     );
 
     controller.addListener(() {
@@ -35,14 +35,14 @@ class _ToDoTextFieldState extends State<ToDoTextField> {
     });
 
     return Dismissible(
-      key: Key(widget.text), // todo: text가 동일할 수 있기 때문에 다른 값으로 key 만들어야함
+      key: Key(toDo.key),
       direction: DismissDirection.startToEnd,
       background: Container(color: Colors.red,),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12,),
         child: Row(
           children: <Widget>[
-            widget.isDone ? Icon(
+            toDo.isDone ? Icon(
               Icons.check,
               size: 24,
               color: Colors.green,
@@ -60,7 +60,7 @@ class _ToDoTextFieldState extends State<ToDoTextField> {
             Expanded(
               child: TextField(
                 controller: controller,
-                style: widget.isDone ? TextStyle(
+                style: toDo.isDone ? TextStyle(
                   fontSize: 14,
                   color: Colors.grey,
                   decorationStyle: TextDecorationStyle.dashed,

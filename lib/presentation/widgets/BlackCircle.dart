@@ -31,7 +31,7 @@ class _BlackCirclePainter extends CustomPainter {
   }
 
   @override
-  void paint(Canvas canvas, Size size) {
+  paint(Canvas canvas, Size size) {
     canvas.drawCircle(Offset(0, 0), this.size / 2, _paint);
   }
 

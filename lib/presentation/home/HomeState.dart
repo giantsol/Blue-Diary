@@ -1,5 +1,5 @@
 
-import 'package:todo_app/domain/home/DrawerItem.dart';
+import 'package:todo_app/domain/home/entity/DrawerItem.dart';
 
 class HomeState {
   final List<DrawerItem> allDrawerItems;

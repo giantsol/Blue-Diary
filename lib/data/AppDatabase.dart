@@ -2,7 +2,7 @@
 import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:todo_app/domain/home/record/DayRecord.dart';
+import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
 import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
 import 'package:todo_app/domain/home/record/entity/ToDo.dart';
 
@@ -53,7 +53,10 @@ class AppDatabase {
 
   Future<DayRecord> loadDayRecord(DateTime dateTime) async {
     final Database db = await _database.first;
-    final dateString = '${dateTime.year}-${dateTime.month}-${dateTime.day}';
+    // 하나의 DayRecord를 만들기 위해서는 ToDo들과 DayMemo가 필요함
+
+    // get ToDos
+    var dateString = ToDo.dateTimeToDateString(dateTime);
     final List<Map<String, dynamic>> maps = await db.query(
       'todos',
       where: 'date_string = ?',
@@ -62,27 +65,29 @@ class AppDatabase {
     final List<ToDo> todos = List.generate(maps.length, (i) {
       final map = maps[i];
       return ToDo(
-        map['date_string'],
+        dateTime,
         map['which'],
         content: map['content'],
         isDone: map['done'] == 1 ? true : false,
       );
     });
 
+    // get DayMemo
+    dateString = DayMemo.dateTimeToDateString(dateTime);
     final Map<String, dynamic> map = await db.query(
       'day_memos',
       where: 'date_string = ?',
       whereArgs: [dateString],
     ).then((l) => l.isEmpty ? null : l[0]);
-    final DayMemo dayMemo = map == null ? DayMemo(dateString, '') : DayMemo(
-      map['date_string'],
+    final DayMemo dayMemo = map == null ? DayMemo(dateTime, '') : DayMemo(
+      dateTime,
       map['content'],
     );
 
     return DayRecord(dateTime, todos, dayMemo);
   }
 
-  Future<void> saveDayMemo(DayMemo dayMemo) async {
+  saveDayMemo(DayMemo dayMemo) async {
     final Database db = await _database.first;
     await db.insert(
       'day_memos',

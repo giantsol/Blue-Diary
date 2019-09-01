@@ -1,6 +1,6 @@
 
-import 'package:todo_app/domain/home/record/DayRecord.dart';
-import 'package:todo_app/domain/home/record/WeekMemoSet.dart';
+import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
+import 'package:todo_app/domain/home/record/entity/WeekMemoSet.dart';
 
 class RecordState {
   final int year;
