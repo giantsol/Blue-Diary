@@ -1,18 +1,17 @@
 
 import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
 import 'package:todo_app/domain/home/record/entity/WeekMemoSet.dart';
+import 'package:tuple/tuple.dart';
 
 class RecordState {
   final int year;
-  final int month;
-  final int nthWeek;
+  final Tuple2<int, int> weeklySeparatedMonthAndNthWeek;
   final WeekMemoSet weekMemoSet;
   final List<DayRecord> dayRecords;
 
   const RecordState({
     this.year = 0,
-    this.month = 0,
-    this.nthWeek = 0,
+    this.weeklySeparatedMonthAndNthWeek = const Tuple2(0, 0),
     this.weekMemoSet = const WeekMemoSet(),
     this.dayRecords = const [],
   });
@@ -20,6 +19,8 @@ class RecordState {
   String get yearText => '$year년';
 
   String get monthAndNthWeekText {
+    final month = weeklySeparatedMonthAndNthWeek.item1;
+    final nthWeek = weeklySeparatedMonthAndNthWeek.item2;
     switch (nthWeek) {
       case 0:
         return '$month월 첫째주';
@@ -38,15 +39,13 @@ class RecordState {
 
   RecordState getModified({
     int year,
-    int month,
-    int nthWeek,
+    Tuple2<int, int> weeklySeparatedMonthAndNthWeek,
     WeekMemoSet weekMemoSet,
     List<DayRecord> days,
   }) {
     return RecordState(
       year: year ?? this.year,
-      month: month ?? this.month,
-      nthWeek: nthWeek ?? this.nthWeek,
+      weeklySeparatedMonthAndNthWeek: weeklySeparatedMonthAndNthWeek ?? this.weeklySeparatedMonthAndNthWeek,
       weekMemoSet: weekMemoSet ?? this.weekMemoSet,
       dayRecords: days ?? this.dayRecords,
     );

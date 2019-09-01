@@ -1,17 +1,16 @@
 
+import 'package:tuple/tuple.dart';
+
 class Utils {
 
-  static int getNthWeek(DateTime dateTime) {
+  static Tuple2<int, int> getWeeklySeparatedMonthAndNthWeek(DateTime dateTime) {
     final day = dateTime.day;
-    final currentMonthFirstDate = DateTime.utc(dateTime.year, dateTime.month);
-    int currentMonthFirstDateWeekDay = currentMonthFirstDate.weekday;
-
-    if (day <= DateTime.sunday - currentMonthFirstDateWeekDay + 1) {
-      return 0;
+    final weekday = dateTime.weekday;
+    if (day - (weekday - DateTime.monday) <= 0) {
+      return getWeeklySeparatedMonthAndNthWeek(dateTime.subtract(Duration(days: weekday - DateTime.monday)));
     } else {
-      final adaptedDay = day -
-        (DateTime.sunday - currentMonthFirstDateWeekDay + 2);
-      return adaptedDay ~/ 7 + 1;
+      final temp = day - (weekday - DateTime.monday + 1);
+      return Tuple2(dateTime.month, temp ~/ 7);
     }
   }
 

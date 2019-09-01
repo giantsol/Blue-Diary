@@ -22,23 +22,33 @@ class DayRecord {
   }
 
   String get title {
+    final month = dateTime.month;
     final day = dateTime.day;
+    var weekday;
     switch (dateTime.weekday) {
       case DateTime.monday:
-        return '$day일 월';
+        weekday = '월';
+        break;
       case DateTime.tuesday:
-        return '$day일 화';
+        weekday = '화';
+        break;
       case DateTime.wednesday:
-        return '$day일 수';
+        weekday = '수';
+        break;
       case DateTime.thursday:
-        return '$day일 목';
+        weekday = '목';
+        break;
       case DateTime.friday:
-        return '$day일 금';
+        weekday = '금';
+        break;
       case DateTime.saturday:
-        return '$day일 토';
+        weekday = '토';
+        break;
       default:
-        return '$day일 일';
+        weekday = '일';
     }
+
+    return '$month월 $day일 $weekday';
   }
 
 }

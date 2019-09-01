@@ -1,14 +1,14 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
 import 'package:todo_app/domain/home/record/RecordUsecases.dart';
+import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
 import 'package:todo_app/domain/home/record/entity/WeekMemoSet.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/home/record/RecordActions.dart';
 import 'package:todo_app/presentation/home/record/RecordState.dart';
+import 'package:tuple/tuple.dart';
 
 class RecordBloc {
   final _actions = StreamController<RecordAction>();
@@ -23,8 +23,7 @@ class RecordBloc {
   StreamSubscription<WeekMemoSet> _weekMemoSetSubscription;
   StreamSubscription<List<DayRecord>> _dayRecordsSubscription;
   StreamSubscription<int> _currentYearSubscription;
-  StreamSubscription<int> _currentMonthSubscription;
-  StreamSubscription<int> _currentNthWeekSubscription;
+  StreamSubscription<Tuple2<int, int>> _currentWeeklySeparatedMonthAndNthWeekSubscription;
 
   RecordBloc() {
     _actions.stream.listen((action) {
@@ -55,11 +54,8 @@ class RecordBloc {
     _currentYearSubscription = _usecases.currentYear.listen((year) {
       _state.add(_state.value.getModified(year: year));
     });
-    _currentMonthSubscription = _usecases.currentMonth.listen((month) {
-      _state.add(_state.value.getModified(month: month));
-    });
-    _currentNthWeekSubscription = _usecases.currentNthWeek.listen((nthWeek) {
-      _state.add(_state.value.getModified(nthWeek: nthWeek));
+    _currentWeeklySeparatedMonthAndNthWeekSubscription = _usecases.currentWeeklySeparatedMonthAndNthWeek.listen((tuple) {
+      _state.add(_state.value.getModified(weeklySeparatedMonthAndNthWeek: tuple));
     });
   }
 
@@ -86,7 +82,6 @@ class RecordBloc {
     _weekMemoSetSubscription?.cancel();
     _dayRecordsSubscription?.cancel();
     _currentYearSubscription?.cancel();
-    _currentMonthSubscription?.cancel();
-    _currentNthWeekSubscription?.cancel();
+    _currentWeeklySeparatedMonthAndNthWeekSubscription?.cancel();
   }
 }

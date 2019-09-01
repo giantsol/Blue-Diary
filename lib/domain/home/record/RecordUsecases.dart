@@ -6,6 +6,7 @@ import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
 import 'package:todo_app/domain/home/record/RecordRepository.dart';
 import 'package:todo_app/domain/home/record/entity/WeekMemoSet.dart';
 import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
+import 'package:tuple/tuple.dart';
 
 class RecordUsecases {
   final RecordRepository _recordRepository;
@@ -17,9 +18,8 @@ class RecordUsecases {
 
   Stream<int> get currentYear => _recordRepository.currentDateTime.map((dateTime) => dateTime.year);
 
-  Stream<int> get currentMonth => _recordRepository.currentDateTime.map((dateTime) => dateTime.month);
-
-  Stream<int> get currentNthWeek => _recordRepository.currentDateTime.map(Utils.getNthWeek);
+  Stream<Tuple2<int, int>> get currentWeeklySeparatedMonthAndNthWeek =>
+  _recordRepository.currentDateTime.map(Utils.getWeeklySeparatedMonthAndNthWeek);
 
   const RecordUsecases(this._recordRepository, this._homeRepository);
 
