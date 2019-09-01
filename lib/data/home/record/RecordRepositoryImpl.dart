@@ -4,7 +4,7 @@ import 'package:todo_app/data/AppDatabase.dart';
 import 'package:todo_app/domain/home/record/RecordRepository.dart';
 import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
 import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
-import 'package:todo_app/domain/home/record/entity/WeekMemoSet.dart';
+import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
 
 class RecordRepositoryImpl implements RecordRepository {
   final AppDatabase _database;
@@ -15,9 +15,9 @@ class RecordRepositoryImpl implements RecordRepository {
   Stream<DateTime> get currentDateTime => _currentDateTime.distinct();
 
   // 현재 주(week)에 해당하는 메모들 (3개로 고정된)
-  final _weekMemoSet = BehaviorSubject<WeekMemoSet>.seeded(WeekMemoSet());
+  final _weekMemos = BehaviorSubject<List<WeekMemo>>.seeded([]);
   @override
-  Stream<WeekMemoSet> get weekMemoSet => _weekMemoSet.distinct();
+  Stream<List<WeekMemo>> get weekMemos => _weekMemos.distinct();
 
   final _dayRecords = BehaviorSubject<List<DayRecord>>.seeded([]);
   @override
@@ -27,7 +27,10 @@ class RecordRepositoryImpl implements RecordRepository {
   var _currentDayRecordPageIndex = 0;
 
   RecordRepositoryImpl(this._database) {
-    _currentDateTime.distinct().listen((d) => _updateDayRecords());
+    _currentDateTime.distinct().listen((d) {
+      _updateDayRecords();
+      _updateWeekMemos();
+    });
   }
 
   _updateDayRecords() async {
@@ -57,9 +60,21 @@ class RecordRepositoryImpl implements RecordRepository {
     _dayRecords.add(dayRecords);
   }
 
+  _updateWeekMemos() async {
+    // todo: week이 바뀔때만 로드하도록. 지금은 페이징 넘길 때 마다 새로 로드하니까
+    _weekMemos.add(await _database.loadWeekMemos(_currentDateTime.value));
+  }
+
   @override
-  updateSingleWeekMemo(String updatedText, int index) {
-    _weekMemoSet.add(_weekMemoSet.value.getModified(index, updatedText));
+  updateSingleWeekMemo(WeekMemo weekMemo, String updated) {
+    final List<WeekMemo> weekMemos = _weekMemos.value;
+    final updatedWeekMemo = weekMemo.getModified(content: updated);
+    final changedIndex = weekMemos.indexWhere((item) => item.key == updatedWeekMemo.key);
+    if (changedIndex >= 0) {
+      weekMemos[changedIndex] = updatedWeekMemo;
+      _weekMemos.add(weekMemos);
+      _database.saveWeekMemo(updatedWeekMemo);
+    }
   }
 
   // DayRecord의 pageIndex가 변할 때 마다 현재 선택된 date (i.e. _currentDateTime)의 값을 업데이트한다.

@@ -2,9 +2,10 @@
 import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
 import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
+import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
 import 'package:todo_app/domain/home/record/entity/ToDo.dart';
+import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
 
 class AppDatabase {
   final _database = BehaviorSubject<Database>();
@@ -92,6 +93,37 @@ class AppDatabase {
     await db.insert(
       'day_memos',
       dayMemo.toDatabaseFormat(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<WeekMemo>> loadWeekMemos(DateTime dateTime) async {
+    final db = await _database.first;
+    // weekMemo는 항상 3개로 고정
+    final List<WeekMemo> weekMemos = [
+      WeekMemo(dateTime, 0),
+      WeekMemo(dateTime, 1),
+      WeekMemo(dateTime, 2),
+    ];
+    final dateString = WeekMemo.dateTimeToDateString(dateTime);
+    final List<Map<String, dynamic>> maps = await db.query(
+      'week_memos',
+      where: 'date_string = ?',
+      whereArgs: [dateString],
+    );
+    maps.forEach((map) {
+      final index = map['which'];
+      weekMemos[index] = weekMemos[index].getModified(content: map['content']);
+    });
+
+    return weekMemos;
+  }
+
+  saveWeekMemo(WeekMemo weekMemo) async {
+    final db = await _database.first;
+    await db.insert(
+      'week_memos',
+      weekMemo.toDatabaseFormat(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }

@@ -1,13 +1,14 @@
 
 import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
+import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
 
 abstract class RecordAction { }
 
 class UpdateSingleWeekMemo implements RecordAction {
-  final String updatedText;
-  final int index;
+  final WeekMemo weekMemo;
+  final String updated;
 
-  const UpdateSingleWeekMemo(this.updatedText, this.index);
+  const UpdateSingleWeekMemo(this.weekMemo, this.updated);
 }
 
 class UpdateDayRecordPageIndex implements RecordAction {

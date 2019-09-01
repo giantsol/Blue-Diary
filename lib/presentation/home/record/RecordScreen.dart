@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:infinity_page_view/infinity_page_view.dart';
 import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
 import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
+import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
 import 'package:todo_app/presentation/home/record/RecordActions.dart';
 import 'package:todo_app/presentation/home/record/RecordBloc.dart';
 import 'package:todo_app/presentation/home/record/RecordState.dart';
@@ -90,16 +91,17 @@ class _RecordScreenState extends State<RecordScreen> {
   }
 
   Widget _buildWeekMemos(RecordState state) {
-    final weekMemos = state.weekMemoSet.memos;
+    final weekMemos = state.weekMemos;
     return Padding(
       padding: EdgeInsets.only(left: 12, top: 12, right: 12),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Column(
             children: List.generate(weekMemos.length, (index) {
+              final weekMemo = weekMemos[index];
               final textField = WeekMemoTextField(
-                text: weekMemos[index],
-                onChanged: (changed) => _onWeekMemoTextChanged(changed, index),
+                text: weekMemo.content,
+                onChanged: (changed) => _onWeekMemoTextChanged(weekMemo, changed),
               );
 
               if (index == 0) {
@@ -117,8 +119,8 @@ class _RecordScreenState extends State<RecordScreen> {
     );
   }
 
-  _onWeekMemoTextChanged(String changed, int which) {
-    _bloc.actions.add(UpdateSingleWeekMemo(changed, which));
+  _onWeekMemoTextChanged(WeekMemo weekMemo, String changed) {
+    _bloc.actions.add(UpdateSingleWeekMemo(weekMemo, changed));
   }
 
   Widget _buildDayRecordsPager(RecordState state) {

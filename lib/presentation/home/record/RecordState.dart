@@ -1,18 +1,18 @@
 
 import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
-import 'package:todo_app/domain/home/record/entity/WeekMemoSet.dart';
+import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
 import 'package:tuple/tuple.dart';
 
 class RecordState {
   final int year;
   final Tuple2<int, int> weeklySeparatedMonthAndNthWeek;
-  final WeekMemoSet weekMemoSet;
+  final List<WeekMemo> weekMemos;
   final List<DayRecord> dayRecords;
 
   const RecordState({
     this.year = 0,
     this.weeklySeparatedMonthAndNthWeek = const Tuple2(0, 0),
-    this.weekMemoSet = const WeekMemoSet(),
+    this.weekMemos = const [],
     this.dayRecords = const [],
   });
 
@@ -40,13 +40,13 @@ class RecordState {
   RecordState getModified({
     int year,
     Tuple2<int, int> weeklySeparatedMonthAndNthWeek,
-    WeekMemoSet weekMemoSet,
+    List<WeekMemo> weekMemos,
     List<DayRecord> days,
   }) {
     return RecordState(
       year: year ?? this.year,
       weeklySeparatedMonthAndNthWeek: weeklySeparatedMonthAndNthWeek ?? this.weeklySeparatedMonthAndNthWeek,
-      weekMemoSet: weekMemoSet ?? this.weekMemoSet,
+      weekMemos: weekMemos ?? this.weekMemos,
       dayRecords: days ?? this.dayRecords,
     );
   }

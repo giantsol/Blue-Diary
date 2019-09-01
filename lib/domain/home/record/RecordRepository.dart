@@ -1,14 +1,14 @@
 
-import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
-import 'package:todo_app/domain/home/record/entity/WeekMemoSet.dart';
 import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
+import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
+import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
 
 abstract class RecordRepository {
   Stream<DateTime> get currentDateTime;
-  Stream<WeekMemoSet> get weekMemoSet;
+  Stream<List<WeekMemo>> get weekMemos;
   Stream<List<DayRecord>> get dayRecords;
 
-  updateSingleWeekMemo(String updatedText, int index);
+  updateSingleWeekMemo(WeekMemo weekMemo, String updated);
   updateDayRecordPageIndex(int updatedIndex);
   updateDayMemo(DayMemo dayMemo, String updated);
 }

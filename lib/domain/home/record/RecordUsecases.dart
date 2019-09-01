@@ -1,18 +1,18 @@
 
 import 'package:todo_app/Utils.dart';
-import 'package:todo_app/domain/home/entity/DrawerItem.dart';
 import 'package:todo_app/domain/home/HomeRepository.dart';
-import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
+import 'package:todo_app/domain/home/entity/DrawerItem.dart';
 import 'package:todo_app/domain/home/record/RecordRepository.dart';
-import 'package:todo_app/domain/home/record/entity/WeekMemoSet.dart';
 import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
+import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
+import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
 import 'package:tuple/tuple.dart';
 
 class RecordUsecases {
   final RecordRepository _recordRepository;
   final HomeRepository _homeRepository;
 
-  Stream<WeekMemoSet> get weekMemoSet => _recordRepository.weekMemoSet;
+  Stream<List<WeekMemo>> get weekMemos => _recordRepository.weekMemos;
 
   Stream<List<DayRecord>> get dayRecords => _recordRepository.dayRecords;
 
@@ -23,8 +23,8 @@ class RecordUsecases {
 
   const RecordUsecases(this._recordRepository, this._homeRepository);
 
-  updateSingleWeekMemo(String updatedText, int index) {
-    _recordRepository.updateSingleWeekMemo(updatedText, index);
+  updateSingleWeekMemo(WeekMemo weekMemo, String updated) {
+    _recordRepository.updateSingleWeekMemo(weekMemo, updated);
   }
 
   updateDayRecordPageIndex(int updatedIndex) {

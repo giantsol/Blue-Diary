@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/home/record/RecordUsecases.dart';
 import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
-import 'package:todo_app/domain/home/record/entity/WeekMemoSet.dart';
+import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/home/record/RecordActions.dart';
 import 'package:todo_app/presentation/home/record/RecordState.dart';
@@ -20,7 +20,7 @@ class RecordBloc {
 
   final RecordUsecases _usecases = dependencies.recordUsecases;
 
-  StreamSubscription<WeekMemoSet> _weekMemoSetSubscription;
+  StreamSubscription<List<WeekMemo>> _weekMemosSubscription;
   StreamSubscription<List<DayRecord>> _dayRecordsSubscription;
   StreamSubscription<int> _currentYearSubscription;
   StreamSubscription<Tuple2<int, int>> _currentWeeklySeparatedMonthAndNthWeekSubscription;
@@ -45,8 +45,8 @@ class RecordBloc {
       }
     });
 
-    _weekMemoSetSubscription = _usecases.weekMemoSet.listen((set) {
-      _state.add(_state.value.getModified(weekMemoSet: set));
+    _weekMemosSubscription = _usecases.weekMemos.listen((memos) {
+      _state.add(_state.value.getModified(weekMemos: memos));
     });
     _dayRecordsSubscription = _usecases.dayRecords.listen((days) {
       _state.add(_state.value.getModified(days: days));
@@ -60,7 +60,7 @@ class RecordBloc {
   }
 
   _updateSingleWeekMemo(UpdateSingleWeekMemo action) {
-    _usecases.updateSingleWeekMemo(action.updatedText, action.index);
+    _usecases.updateSingleWeekMemo(action.weekMemo, action.updated);
   }
 
   _updateDayRecordPageIndex(UpdateDayRecordPageIndex action) {
@@ -79,7 +79,7 @@ class RecordBloc {
     _actions.close();
     _state.close();
 
-    _weekMemoSetSubscription?.cancel();
+    _weekMemosSubscription?.cancel();
     _dayRecordsSubscription?.cancel();
     _currentYearSubscription?.cancel();
     _currentWeeklySeparatedMonthAndNthWeekSubscription?.cancel();
