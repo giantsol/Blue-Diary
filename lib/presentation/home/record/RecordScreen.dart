@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:infinity_page_view/infinity_page_view.dart';
 import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
 import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
+import 'package:todo_app/domain/home/record/entity/ToDo.dart';
 import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
 import 'package:todo_app/presentation/home/record/RecordActions.dart';
 import 'package:todo_app/presentation/home/record/RecordBloc.dart';
@@ -175,14 +176,13 @@ class _RecordScreenState extends State<RecordScreen> {
                           return Center(
                             child: IconButton(
                               icon: Icon(Icons.add_circle_outline),
-                              onPressed: () {
-
-                              },
+                              onPressed: () => _onAddToDoClicked(record),
                             ),
                           );
                         } else {
                           return ToDoTextField(
                             toDo: record.todos[index],
+                            onChanged: (s) => _onToDoTextChanged(record, record.todos[index], s),
                           );
                         }
                       },
@@ -210,6 +210,14 @@ class _RecordScreenState extends State<RecordScreen> {
         ),
       ),
     );
+  }
+
+  _onAddToDoClicked(DayRecord dayRecord) {
+    _bloc.actions.add(AddToDo(dayRecord));
+  }
+
+  _onToDoTextChanged(DayRecord dayRecord, ToDo toDo, String changed) {
+    _bloc.actions.add(UpdateToDoContent(dayRecord, toDo, changed));
   }
 
   _onDayMemoTextChanged(DayMemo dayMemo, String changed) {

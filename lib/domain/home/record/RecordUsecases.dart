@@ -5,6 +5,7 @@ import 'package:todo_app/domain/home/entity/DrawerItem.dart';
 import 'package:todo_app/domain/home/record/RecordRepository.dart';
 import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
 import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
+import 'package:todo_app/domain/home/record/entity/ToDo.dart';
 import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
 import 'package:tuple/tuple.dart';
 
@@ -37,5 +38,13 @@ class RecordUsecases {
 
   updateDayMemo(DayMemo dayMemo, String updated) {
     _recordRepository.updateDayMemo(dayMemo, updated);
+  }
+
+  addToDo(DayRecord dayRecord) {
+    _recordRepository.addToDo(dayRecord);
+  }
+
+  updateToDoContent(DayRecord dayRecord, ToDo toDo, String updated) {
+    _recordRepository.updateToDoContent(dayRecord, toDo, updated);
   }
 }

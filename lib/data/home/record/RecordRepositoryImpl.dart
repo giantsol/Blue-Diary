@@ -4,6 +4,7 @@ import 'package:todo_app/data/AppDatabase.dart';
 import 'package:todo_app/domain/home/record/RecordRepository.dart';
 import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
 import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
+import 'package:todo_app/domain/home/record/entity/ToDo.dart';
 import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
 
 class RecordRepositoryImpl implements RecordRepository {
@@ -28,12 +29,12 @@ class RecordRepositoryImpl implements RecordRepository {
 
   RecordRepositoryImpl(this._database) {
     _currentDateTime.distinct().listen((d) {
-      _updateDayRecords();
-      _updateWeekMemos();
+      _loadDayRecords();
+      _loadWeekMemos();
     });
   }
 
-  _updateDayRecords() async {
+  _loadDayRecords() async {
     // dayRecords의 크기는 항상 3으로 고정
     final dayRecords = List<DayRecord>(3);
     final currentDateTime = _currentDateTime.value;
@@ -60,14 +61,14 @@ class RecordRepositoryImpl implements RecordRepository {
     _dayRecords.add(dayRecords);
   }
 
-  _updateWeekMemos() async {
+  _loadWeekMemos() async {
     // todo: week이 바뀔때만 로드하도록. 지금은 페이징 넘길 때 마다 새로 로드하니까
     _weekMemos.add(await _database.loadWeekMemos(_currentDateTime.value));
   }
 
   @override
   updateSingleWeekMemo(WeekMemo weekMemo, String updated) {
-    final List<WeekMemo> weekMemos = _weekMemos.value;
+    final List<WeekMemo> weekMemos = List.of(_weekMemos.value);
     final updatedWeekMemo = weekMemo.getModified(content: updated);
     final changedIndex = weekMemos.indexWhere((item) => item.key == updatedWeekMemo.key);
     if (changedIndex >= 0) {
@@ -97,7 +98,7 @@ class RecordRepositoryImpl implements RecordRepository {
 
   @override
   updateDayMemo(DayMemo dayMemo, String updated) {
-    final List<DayRecord> dayRecords = _dayRecords.value;
+    final List<DayRecord> dayRecords = List.of(_dayRecords.value);
     final updatedDayMemo = dayMemo.getModified(content: updated);
     final changedIndex = dayRecords.indexWhere((item) => item.memo.key == dayMemo.key);
     if (changedIndex >= 0) {
@@ -112,4 +113,35 @@ class RecordRepositoryImpl implements RecordRepository {
     }
   }
 
+  @override
+  addToDo(DayRecord dayRecord) {
+    final List<DayRecord> dayRecords = List.of(_dayRecords.value);
+    final changedIndex = dayRecords.indexWhere((item) => item.title == dayRecord.title);
+    if (changedIndex >= 0) {
+      final List<ToDo> toDos = List.of(dayRecord.todos);
+      toDos.add(ToDo(dayRecord.dateTime, toDos.length));
+      dayRecords[changedIndex] = dayRecords[changedIndex].getModified(todos: toDos);
+      _dayRecords.add(dayRecords);
+      // 단순히 add만 했을 때는 DB에 넣지 않는다.
+      // 실제 content를 작성하기 시작하면 DB에 넣는다.
+    }
+  }
+
+  @override
+  updateToDoContent(DayRecord dayRecord, ToDo toDo, String updated) {
+    final List<DayRecord> dayRecords = List.of(_dayRecords.value);
+    final changedIndex = dayRecords.indexWhere((item) => item.title == dayRecord.title);
+    if (changedIndex >= 0) {
+      final List<ToDo> toDos = List.of(dayRecord.todos);
+      final changedToDoIndex = toDos.indexWhere((item) => item.key == toDo.key);
+      if (changedToDoIndex >= 0) {
+        final updatedToDo = toDo.getModified(content: updated);
+        toDos[changedToDoIndex] = updatedToDo;
+        dayRecords[changedIndex] = dayRecord.getModified(todos: toDos);
+        _dayRecords.add(dayRecords);
+        // todo: 썼다가 다 지워도 DB에 남는 문제
+        _database.saveToDo(updatedToDo);
+      }
+    }
+  }
 }

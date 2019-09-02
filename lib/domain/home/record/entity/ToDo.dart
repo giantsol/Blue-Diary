@@ -34,7 +34,7 @@ class ToDo {
       'date_string': dateTimeToDateString(dateTime),
       'which': index,
       'content': content,
-      'isDone': isDone ? 1 : 0,
+      'done': isDone ? 1 : 0,
     };
   }
 

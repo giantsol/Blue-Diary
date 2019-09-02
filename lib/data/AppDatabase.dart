@@ -128,4 +128,13 @@ class AppDatabase {
     );
   }
 
+  saveToDo(ToDo toDo) async {
+    final db = await _database.first;
+    await db.insert(
+      'todos',
+      toDo.toDatabaseFormat(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
 }
