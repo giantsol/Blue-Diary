@@ -170,9 +170,9 @@ class _RecordScreenState extends State<RecordScreen> {
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 6,),
                     child: ListView.builder(
-                      itemCount: record.todos.length + 1,
+                      itemCount: record.toDos.length + 1,
                       itemBuilder: (context, index) {
-                        if (index == record.todos.length) {
+                        if (index == record.toDos.length) {
                           return Center(
                             child: IconButton(
                               icon: Icon(Icons.add_circle_outline),
@@ -181,8 +181,8 @@ class _RecordScreenState extends State<RecordScreen> {
                           );
                         } else {
                           return ToDoTextField(
-                            toDo: record.todos[index],
-                            onChanged: (s) => _onToDoTextChanged(record, record.todos[index], s),
+                            toDo: record.toDos[index],
+                            onChanged: (s) => _onToDoTextChanged(record, record.toDos[index], s),
                           );
                         }
                       },

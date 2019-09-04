@@ -13,22 +13,22 @@ class RecordRepositoryImpl implements RecordRepository {
   // 현재 선택된 시간. 디폴트는 오늘.
   final _currentDateTime = BehaviorSubject<DateTime>.seeded(DateTime.now());
   @override
-  Stream<DateTime> get currentDateTime => _currentDateTime.distinct();
+  Stream<DateTime> get currentDateTime => _currentDateTime;
 
   // 현재 주(week)에 해당하는 메모들 (3개로 고정된)
   final _weekMemos = BehaviorSubject<List<WeekMemo>>.seeded([]);
   @override
-  Stream<List<WeekMemo>> get weekMemos => _weekMemos.distinct();
+  Stream<List<WeekMemo>> get weekMemos => _weekMemos;
 
   final _dayRecords = BehaviorSubject<List<DayRecord>>.seeded([]);
   @override
-  Stream<List<DayRecord>> get dayRecords => _dayRecords.distinct();
+  Stream<List<DayRecord>> get dayRecords => _dayRecords;
 
   // 페이징은 0, 1, 2 값 사이에서 infinite paging이 된다.
   var _currentDayRecordPageIndex = 0;
 
   RecordRepositoryImpl(this._database) {
-    _currentDateTime.distinct().listen((d) {
+    _currentDateTime.listen((d) {
       _loadDayRecords();
       _loadWeekMemos();
     });
@@ -68,11 +68,12 @@ class RecordRepositoryImpl implements RecordRepository {
 
   @override
   updateSingleWeekMemo(WeekMemo weekMemo, String updated) {
-    final List<WeekMemo> weekMemos = List.of(_weekMemos.value);
     final updatedWeekMemo = weekMemo.getModified(content: updated);
+    final List<WeekMemo> weekMemos = _weekMemos.value;
     final changedIndex = weekMemos.indexWhere((item) => item.key == updatedWeekMemo.key);
     if (changedIndex >= 0) {
       weekMemos[changedIndex] = updatedWeekMemo;
+
       _weekMemos.add(weekMemos);
       _database.saveWeekMemo(updatedWeekMemo);
     }
@@ -98,16 +99,17 @@ class RecordRepositoryImpl implements RecordRepository {
 
   @override
   updateDayMemo(DayMemo dayMemo, String updated) {
-    final List<DayRecord> dayRecords = List.of(_dayRecords.value);
     final updatedDayMemo = dayMemo.getModified(content: updated);
+    final List<DayRecord> dayRecords = _dayRecords.value;
     final changedIndex = dayRecords.indexWhere((item) => item.memo.key == dayMemo.key);
     if (changedIndex >= 0) {
+      dayRecords[changedIndex] = dayRecords[changedIndex].getModified(memo: updatedDayMemo);
+
       // 캐싱된 DayRecord 값을 업데이트해주면서 백그라운드에서 DB도 업데이트한다.
       // 완전히 data transparent하게 하려면 DB를 업데이트하고 다시 쿼리날려서 받아와야겠지만
       // 매번 타이핑 할때마다 그러면 속도가 우려되기 때문에..
       // 혹여 어떠한 이유로 DB 업데이트는 안되고 캐시만 업데이트 되었으면
       // 페이지를 나갔다 들어왔을 때 DB에 남아있는 값으로 업데이트 될 것이다.
-      dayRecords[changedIndex] = dayRecords[changedIndex].getModified(memo: updatedDayMemo);
       _dayRecords.add(dayRecords);
       _database.saveDayMemo(updatedDayMemo);
     }
@@ -115,31 +117,33 @@ class RecordRepositoryImpl implements RecordRepository {
 
   @override
   addToDo(DayRecord dayRecord) {
-    final List<DayRecord> dayRecords = List.of(_dayRecords.value);
-    final changedIndex = dayRecords.indexWhere((item) => item.title == dayRecord.title);
+    final List<DayRecord> dayRecords = _dayRecords.value;
+    final changedIndex = dayRecords.indexWhere((item) => item.key == dayRecord.key);
     if (changedIndex >= 0) {
-      final List<ToDo> toDos = List.of(dayRecord.todos);
+      final List<ToDo> toDos = dayRecord.toDos;
       toDos.add(ToDo(dayRecord.dateTime, toDos.length));
       dayRecords[changedIndex] = dayRecords[changedIndex].getModified(todos: toDos);
-      _dayRecords.add(dayRecords);
+
       // 단순히 add만 했을 때는 DB에 넣지 않는다.
       // 실제 content를 작성하기 시작하면 DB에 넣는다.
+      _dayRecords.add(dayRecords);
     }
   }
 
   @override
   updateToDoContent(DayRecord dayRecord, ToDo toDo, String updated) {
-    final List<DayRecord> dayRecords = List.of(_dayRecords.value);
-    final changedIndex = dayRecords.indexWhere((item) => item.title == dayRecord.title);
+    final updatedToDo = toDo.getModified(content: updated);
+    final List<DayRecord> dayRecords = _dayRecords.value;
+    final changedIndex = dayRecords.indexWhere((item) => item.key == dayRecord.key);
     if (changedIndex >= 0) {
-      final List<ToDo> toDos = List.of(dayRecord.todos);
+      final List<ToDo> toDos = dayRecord.toDos;
       final changedToDoIndex = toDos.indexWhere((item) => item.key == toDo.key);
       if (changedToDoIndex >= 0) {
-        final updatedToDo = toDo.getModified(content: updated);
         toDos[changedToDoIndex] = updatedToDo;
         dayRecords[changedIndex] = dayRecord.getModified(todos: toDos);
-        _dayRecords.add(dayRecords);
+
         // todo: 썼다가 다 지워도 DB에 남는 문제
+        _dayRecords.add(dayRecords);
         _database.saveToDo(updatedToDo);
       }
     }

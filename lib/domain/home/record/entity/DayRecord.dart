@@ -4,10 +4,10 @@ import 'package:todo_app/domain/home/record/entity/ToDo.dart';
 
 class DayRecord {
   final DateTime dateTime;
-  final List<ToDo> todos;
+  final List<ToDo> toDos;
   final DayMemo memo;
 
-  const DayRecord(this.dateTime, this.todos, this.memo);
+  const DayRecord(this.dateTime, this.toDos, this.memo);
 
   DayRecord getModified({
     DateTime dateTime,
@@ -16,7 +16,7 @@ class DayRecord {
   }) {
     return DayRecord(
       dateTime ?? this.dateTime,
-      todos ?? this.todos,
+      todos ?? this.toDos,
       memo ?? this.memo,
     );
   }
@@ -50,5 +50,7 @@ class DayRecord {
 
     return '$month월 $day일 $weekday';
   }
+
+  String get key => title;
 
 }

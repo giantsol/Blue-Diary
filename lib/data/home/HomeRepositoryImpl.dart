@@ -18,15 +18,15 @@ const List<DrawerScreenItem> _defaultDrawerScreenItems = [
 class HomeRepositoryImpl implements HomeRepository {
   final _drawerHeaderItem = BehaviorSubject<DrawerHeaderItem>.seeded(DrawerHeaderItem('Todo App'));
   @override
-  Stream<DrawerHeaderItem> get drawerHeaderItem => _drawerHeaderItem.distinct();
+  Stream<DrawerHeaderItem> get drawerHeaderItem => _drawerHeaderItem;
 
   final _drawerChildScreenItems = BehaviorSubject<List<DrawerChildScreenItem>>.seeded(_defaultDrawerChildScreenItems);
   @override
-  Stream<List<DrawerChildScreenItem>> get drawerChildScreenItems => _drawerChildScreenItems.distinct();
+  Stream<List<DrawerChildScreenItem>> get drawerChildScreenItems => _drawerChildScreenItems;
 
   final _drawerScreenItems = BehaviorSubject<List<DrawerScreenItem>>.seeded(_defaultDrawerScreenItems);
   @override
-  Stream<List<DrawerScreenItem>> get drawerScreenItems => _drawerScreenItems.distinct();
+  Stream<List<DrawerScreenItem>> get drawerScreenItems => _drawerScreenItems;
 
   HomeRepositoryImpl() {
     // 시작 시에는 첫번째 아이템이 선택된 상태
