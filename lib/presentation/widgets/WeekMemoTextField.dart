@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/presentation/widgets/BlackCircle.dart';
 
 class WeekMemoTextField extends StatefulWidget {
+  final FocusNode focusNode;
   final String text;
   final ValueChanged<String> onChanged;
 
   WeekMemoTextField({
     Key key,
+    this.focusNode,
     this.text,
     this.onChanged,
   }): super(key: key);
@@ -42,6 +44,7 @@ class _WeekMemoTextFieldState extends State<WeekMemoTextField> {
           SizedBox(width: 4),
           Expanded(
             child: TextField(
+              focusNode: widget.focusNode,
               controller: controller,
               style: TextStyle(fontSize: 14),
               minLines: 1,

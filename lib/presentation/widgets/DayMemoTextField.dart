@@ -2,11 +2,13 @@
 import 'package:flutter/material.dart';
 
 class DayMemoTextField extends StatefulWidget {
+  final FocusNode focusNode;
   final String text;
   final ValueChanged<String> onChanged;
 
   DayMemoTextField({
     Key key,
+    this.focusNode,
     this.text,
     this.onChanged,
   }): super(key: key);
@@ -37,6 +39,7 @@ class _DayMemoTextFieldState extends State<DayMemoTextField> {
       child: Padding(
         padding: const EdgeInsets.all(4),
         child: TextField(
+          focusNode: widget.focusNode,
           controller: controller,
           style: TextStyle(fontSize: 14),
           maxLines: null,

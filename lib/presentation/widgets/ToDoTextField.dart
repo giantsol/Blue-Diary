@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/domain/home/record/entity/ToDo.dart';
 
 class ToDoTextField extends StatefulWidget {
+  final FocusNode focusNode;
   final ToDo toDo;
   final ValueChanged<String> onChanged;
 
   ToDoTextField({
     Key key,
+    this.focusNode,
     this.toDo,
     this.onChanged,
   }): super(key: key);
@@ -59,6 +61,7 @@ class _ToDoTextFieldState extends State<ToDoTextField> {
             SizedBox(width: 5),
             Expanded(
               child: TextField(
+                focusNode: widget.focusNode,
                 controller: controller,
                 style: toDo.isDone ? TextStyle(
                   fontSize: 14,

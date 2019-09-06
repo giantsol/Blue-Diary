@@ -23,6 +23,7 @@ class RecordScreen extends StatefulWidget {
 class _RecordScreenState extends State<RecordScreen> {
   RecordBloc _bloc;
   final _daysPageController = InfinityPageController(initialPage: 0, viewportFraction: 0.75);
+  final Map<String, FocusNode> _focusNodes = {};
 
   @override
   initState() {
@@ -34,6 +35,9 @@ class _RecordScreenState extends State<RecordScreen> {
   dispose() {
     super.dispose();
     _bloc.dispose();
+
+    _focusNodes.forEach((key, focusNode) => focusNode.dispose());
+    _focusNodes.clear();
   }
 
   @override
@@ -48,14 +52,33 @@ class _RecordScreenState extends State<RecordScreen> {
   }
 
   Widget _buildUI(RecordState state) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _buildYearAndMonthNthWeek(state),
-        _buildWeekMemos(state),
-        _buildDayRecordsPager(state),
-      ],
+    return WillPopScope(
+      onWillPop: () async {
+        return !_unfocusTextFieldIfAny();
+      },
+      child: GestureDetector(
+        onTapDown: (_) => _unfocusTextFieldIfAny(),
+        behavior: HitTestBehavior.translucent,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            _buildYearAndMonthNthWeek(state),
+            _buildWeekMemos(state),
+            _buildDayRecordsPager(state),
+          ],
+        ),
+      ),
     );
+  }
+
+  bool _unfocusTextFieldIfAny() {
+    for (FocusNode focusNode in _focusNodes.values) {
+      if (focusNode.hasPrimaryFocus) {
+        focusNode.unfocus();
+        return true;
+      }
+    }
+    return false;
   }
 
   Widget _buildYearAndMonthNthWeek(RecordState state) {
@@ -101,6 +124,7 @@ class _RecordScreenState extends State<RecordScreen> {
             children: List.generate(weekMemos.length, (index) {
               final weekMemo = weekMemos[index];
               final textField = WeekMemoTextField(
+                focusNode: _getOrCreateFocusNode(weekMemo.key),
                 text: weekMemo.content,
                 onChanged: (changed) => _onWeekMemoTextChanged(weekMemo, changed),
               );
@@ -180,9 +204,11 @@ class _RecordScreenState extends State<RecordScreen> {
                             ),
                           );
                         } else {
+                          final toDo = record.toDos[index];
                           return ToDoTextField(
-                            toDo: record.toDos[index],
-                            onChanged: (s) => _onToDoTextChanged(record, record.toDos[index], s),
+                            focusNode: _getOrCreateFocusNode(toDo.key),
+                            toDo: toDo,
+                            onChanged: (s) => _onToDoTextChanged(record, toDo, s),
                           );
                         }
                       },
@@ -201,6 +227,7 @@ class _RecordScreenState extends State<RecordScreen> {
                   ),
                 ),
                 DayMemoTextField(
+                  focusNode: _getOrCreateFocusNode(record.memo.key),
                   text: record.memo.content,
                   onChanged: (s) => _onDayMemoTextChanged(record.memo, s),
                 )
@@ -210,6 +237,16 @@ class _RecordScreenState extends State<RecordScreen> {
         ),
       ),
     );
+  }
+
+  FocusNode _getOrCreateFocusNode(String key) {
+    if (_focusNodes.containsKey(key)) {
+      return _focusNodes[key];
+    } else {
+      final newFocusNode = FocusNode();
+      _focusNodes[key] = newFocusNode;
+      return newFocusNode;
+    }
   }
 
   _onAddToDoClicked(DayRecord dayRecord) {
