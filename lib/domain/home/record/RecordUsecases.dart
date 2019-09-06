@@ -13,6 +13,8 @@ class RecordUsecases {
   final RecordRepository _recordRepository;
   final HomeRepository _homeRepository;
 
+  DateTime get today => _recordRepository.today;
+
   Stream<List<WeekMemo>> get weekMemos => _recordRepository.weekMemos;
 
   Stream<List<DayRecord>> get dayRecords => _recordRepository.dayRecords;
@@ -54,5 +56,9 @@ class RecordUsecases {
 
   removeToDo(DayRecord dayRecord, ToDo toDo) {
     _recordRepository.removeToDo(dayRecord, toDo);
+  }
+
+  goToToday() {
+    _recordRepository.goToToday();
   }
 }

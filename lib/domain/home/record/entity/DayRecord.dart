@@ -6,18 +6,24 @@ class DayRecord {
   final DateTime dateTime;
   final List<ToDo> toDos;
   final DayMemo memo;
+  final bool isToday;
+  final bool isSelected;
 
-  const DayRecord(this.dateTime, this.toDos, this.memo);
+  const DayRecord(this.dateTime, this.toDos, this.memo, this.isToday, this.isSelected);
 
   DayRecord getModified({
     DateTime dateTime,
     List<ToDo> todos,
     DayMemo memo,
+    bool isToday,
+    bool isSelected,
   }) {
     return DayRecord(
       dateTime ?? this.dateTime,
       todos ?? this.toDos,
       memo ?? this.memo,
+      isToday ?? this.isToday,
+      isSelected ?? this.isSelected,
     );
   }
 
@@ -48,7 +54,11 @@ class DayRecord {
         weekday = '일';
     }
 
-    return '$month월 $day일 $weekday';
+    if (isToday) {
+      return '$month월 $day일 $weekday (오늘)';
+    } else {
+      return '$month월 $day일 $weekday';
+    }
   }
 
   String get key => title;

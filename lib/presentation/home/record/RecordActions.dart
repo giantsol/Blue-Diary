@@ -55,3 +55,5 @@ class RemoveToDo implements RecordAction {
 
   const RemoveToDo(this.dayRecord, this.toDo);
 }
+
+class GoToToday implements RecordAction { }

@@ -52,7 +52,7 @@ class AppDatabase {
     );
   }
 
-  Future<DayRecord> loadDayRecord(DateTime dateTime) async {
+  Future<DayRecord> loadDayRecord(DateTime dateTime, DateTime today, { isSelected = false }) async {
     final Database db = await _database.first;
     // 하나의 DayRecord를 만들기 위해서는 ToDo들과 DayMemo가 필요함
 
@@ -85,7 +85,9 @@ class AppDatabase {
       map['content'],
     );
 
-    return DayRecord(dateTime, todos, dayMemo);
+    return DayRecord(dateTime, todos, dayMemo,
+      dateTime.year == today.year && dateTime.month == today.month && dateTime.day == today.day,
+      isSelected);
   }
 
   saveDayMemo(DayMemo dayMemo) async {

@@ -52,6 +52,9 @@ class RecordBloc {
         case RemoveToDo:
           _removeToDo(action);
           break;
+        case GoToToday:
+          _goToToday(action);
+          break;
         default:
           throw Exception('HomeBloc action not implemented: $action');
       }
@@ -61,7 +64,19 @@ class RecordBloc {
       _state.add(_state.value.getModified(weekMemos: memos));
     });
     _dayRecordsSubscription = _usecases.dayRecords.listen((days) {
-      _state.add(_state.value.getModified(days: days));
+      final today = _usecases.today;
+      final selectedDay = days.firstWhere((record) => record.isSelected, orElse: () => null)?.dateTime;
+      if (selectedDay == null) {
+        _state.add(_state.value.getModified(days: days));
+      } else {
+        final dayDifference = today.difference(selectedDay).inDays;
+        bool isGoToTodayButtonShown = dayDifference.abs() >= 2;
+        bool isGoToTodayButtonShownLeft = dayDifference < 0;
+        _state.add(_state.value.getModified(days: days,
+          isGoToTodayButtonShown: isGoToTodayButtonShown,
+          isGoToTodayButtonShownLeft: isGoToTodayButtonShownLeft,
+        ));
+      }
     });
     _currentYearSubscription = _usecases.currentYear.listen((year) {
       _state.add(_state.value.getModified(year: year));
@@ -101,6 +116,10 @@ class RecordBloc {
 
   _removeToDo(RemoveToDo action) {
     _usecases.removeToDo(action.dayRecord, action.toDo);
+  }
+
+  _goToToday(GoToToday action) {
+    _usecases.goToToday();
   }
 
   dispose() {

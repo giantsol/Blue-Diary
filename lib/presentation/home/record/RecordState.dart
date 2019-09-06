@@ -8,12 +8,16 @@ class RecordState {
   final Tuple2<int, int> weeklySeparatedMonthAndNthWeek;
   final List<WeekMemo> weekMemos;
   final List<DayRecord> dayRecords;
+  final bool isGoToTodayButtonShown;
+  final bool isGoToTodayButtonShownLeft;
 
   const RecordState({
     this.year = 0,
     this.weeklySeparatedMonthAndNthWeek = const Tuple2(0, 0),
     this.weekMemos = const [],
     this.dayRecords = const [],
+    this.isGoToTodayButtonShown = false,
+    this.isGoToTodayButtonShownLeft = false,
   });
 
   String get yearText => '$year년';
@@ -42,12 +46,16 @@ class RecordState {
     Tuple2<int, int> weeklySeparatedMonthAndNthWeek,
     List<WeekMemo> weekMemos,
     List<DayRecord> days,
+    bool isGoToTodayButtonShown,
+    bool isGoToTodayButtonShownLeft,
   }) {
     return RecordState(
       year: year ?? this.year,
       weeklySeparatedMonthAndNthWeek: weeklySeparatedMonthAndNthWeek ?? this.weeklySeparatedMonthAndNthWeek,
       weekMemos: weekMemos ?? this.weekMemos,
       dayRecords: days ?? this.dayRecords,
+      isGoToTodayButtonShown: isGoToTodayButtonShown ?? this.isGoToTodayButtonShown,
+      isGoToTodayButtonShownLeft: isGoToTodayButtonShownLeft ?? this.isGoToTodayButtonShownLeft,
     );
   }
 

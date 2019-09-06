@@ -5,6 +5,7 @@ import 'package:todo_app/domain/home/record/entity/ToDo.dart';
 import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
 
 abstract class RecordRepository {
+  DateTime get today;
   Stream<DateTime> get currentDateTime;
   Stream<List<WeekMemo>> get weekMemos;
   Stream<List<DayRecord>> get dayRecords;
@@ -16,4 +17,5 @@ abstract class RecordRepository {
   updateToDoContent(DayRecord dayRecord, ToDo toDo, String updated);
   updateToDoDone(DayRecord dayRecord, ToDo toDo);
   removeToDo(DayRecord dayRecord, ToDo toDo);
+  goToToday();
 }

@@ -7,11 +7,17 @@ import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
 import 'package:todo_app/domain/home/record/entity/ToDo.dart';
 import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
 
+
 class RecordRepositoryImpl implements RecordRepository {
+  static final _today = DateTime.now();
+
+  @override
+  DateTime get today => _today;
+
   final AppDatabase _database;
 
   // 현재 선택된 시간. 디폴트는 오늘.
-  final _currentDateTime = BehaviorSubject<DateTime>.seeded(DateTime.now());
+  final _currentDateTime = BehaviorSubject<DateTime>.seeded(_today);
   @override
   Stream<DateTime> get currentDateTime => _currentDateTime;
 
@@ -39,9 +45,9 @@ class RecordRepositoryImpl implements RecordRepository {
     final dayRecords = List<DayRecord>(3);
     final currentDateTime = _currentDateTime.value;
     final oneDay = Duration(days: 1);
-    final currentDayRecord = await _database.loadDayRecord(currentDateTime);
-    final prevDayRecord = await _database.loadDayRecord(currentDateTime.subtract(oneDay));
-    final nextDayRecord = await _database.loadDayRecord(currentDateTime.add(oneDay));
+    final currentDayRecord = await _database.loadDayRecord(currentDateTime, _today, isSelected: true);
+    final prevDayRecord = await _database.loadDayRecord(currentDateTime.subtract(oneDay), _today);
+    final nextDayRecord = await _database.loadDayRecord(currentDateTime.add(oneDay), _today);
     final currentPageIndex = _currentDayRecordPageIndex;
 
     dayRecords[currentPageIndex] = currentDayRecord;
@@ -180,5 +186,10 @@ class RecordRepositoryImpl implements RecordRepository {
         _database.removeToDo(toDo);
       }
     }
+  }
+
+  @override
+  goToToday() {
+    _currentDateTime.add(_today);
   }
 }

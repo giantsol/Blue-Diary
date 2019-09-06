@@ -59,13 +59,18 @@ class _RecordScreenState extends State<RecordScreen> {
       child: GestureDetector(
         onTapDown: (_) => _unfocusTextFieldIfAny(),
         behavior: HitTestBehavior.translucent,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _buildYearAndMonthNthWeek(state),
-            _buildWeekMemos(state),
-            _buildDayRecordsPager(state),
-          ],
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                _buildYearAndMonthNthWeek(state),
+                _buildWeekMemos(state),
+                _buildDayRecordsPager(state),
+              ],
+            ),
+            _buildGoToTodayButton(state),
+          ]
         ),
       ),
     );
@@ -271,5 +276,35 @@ class _RecordScreenState extends State<RecordScreen> {
 
   _onDayMemoTextChanged(DayMemo dayMemo, String changed) {
     _bloc.actions.add(UpdateDayMemo(dayMemo, changed));
+  }
+
+  Widget _buildGoToTodayButton(RecordState state) {
+    if (!state.isGoToTodayButtonShown) {
+      return Container();
+    } else {
+      return Center(
+        child: Row(
+          mainAxisAlignment: state.isGoToTodayButtonShownLeft ? MainAxisAlignment.start : MainAxisAlignment.end,
+          children: [
+            GestureDetector(
+              onTap: _onGoToTodayButtonClicked,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.blue[300],
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                ),
+                margin: EdgeInsets.only(top: 12),
+                padding: EdgeInsets.all(8),
+                child: Text('오늘로 이동')
+              ),
+            ),
+          ]
+        ),
+      );
+    }
+  }
+
+  _onGoToTodayButtonClicked() {
+    _bloc.actions.add(GoToToday());
   }
 }
