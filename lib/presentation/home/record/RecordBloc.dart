@@ -49,6 +49,9 @@ class RecordBloc {
         case UpdateToDoDone:
           _updateToDoDone(action);
           break;
+        case RemoveToDo:
+          _removeToDo(action);
+          break;
         default:
           throw Exception('HomeBloc action not implemented: $action');
       }
@@ -94,6 +97,10 @@ class RecordBloc {
 
   _updateToDoDone(UpdateToDoDone action) {
     _usecases.updateToDoDone(action.dayRecord, action.toDo);
+  }
+
+  _removeToDo(RemoveToDo action) {
+    _usecases.removeToDo(action.dayRecord, action.toDo);
   }
 
   dispose() {

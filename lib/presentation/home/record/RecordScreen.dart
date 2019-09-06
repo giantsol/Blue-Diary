@@ -210,6 +210,7 @@ class _RecordScreenState extends State<RecordScreen> {
                             toDo: toDo,
                             onChanged: (s) => _onToDoTextChanged(record, toDo, s),
                             onCheckBoxClicked: () => _onToDoCheckBoxClicked(record, toDo),
+                            onDismissed: () => _onToDoDismissed(record, toDo),
                           );
                         }
                       },
@@ -262,6 +263,10 @@ class _RecordScreenState extends State<RecordScreen> {
     if (!toDo.isDone) {
       _bloc.actions.add(UpdateToDoDone(dayRecord, toDo));
     }
+  }
+
+  _onToDoDismissed(DayRecord dayRecord, ToDo toDo) {
+    _bloc.actions.add(RemoveToDo(dayRecord, toDo));
   }
 
   _onDayMemoTextChanged(DayMemo dayMemo, String changed) {

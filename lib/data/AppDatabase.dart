@@ -137,4 +137,13 @@ class AppDatabase {
     );
   }
 
+  removeToDo(ToDo toDo) async {
+    final db = await _database.first;
+    await db.delete(
+      'todos',
+      where: 'date_string = ? AND which = ?',
+      whereArgs: [ToDo.dateTimeToDateString(toDo.dateTime), toDo.index],
+    );
+  }
+
 }

@@ -51,4 +51,8 @@ class RecordUsecases {
   updateToDoDone(DayRecord dayRecord, ToDo toDo) {
     _recordRepository.updateToDoDone(dayRecord, toDo);
   }
+
+  removeToDo(DayRecord dayRecord, ToDo toDo) {
+    _recordRepository.removeToDo(dayRecord, toDo);
+  }
 }

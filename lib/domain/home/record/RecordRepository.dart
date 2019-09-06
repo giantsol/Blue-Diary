@@ -15,4 +15,5 @@ abstract class RecordRepository {
   addToDo(DayRecord dayRecord);
   updateToDoContent(DayRecord dayRecord, ToDo toDo, String updated);
   updateToDoDone(DayRecord dayRecord, ToDo toDo);
+  removeToDo(DayRecord dayRecord, ToDo toDo);
 }

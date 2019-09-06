@@ -7,6 +7,7 @@ class ToDoTextField extends StatefulWidget {
   final ToDo toDo;
   final ValueChanged<String> onChanged;
   final Function onCheckBoxClicked;
+  final Function onDismissed;
 
   ToDoTextField({
     Key key,
@@ -14,6 +15,7 @@ class ToDoTextField extends StatefulWidget {
     this.toDo,
     this.onChanged,
     this.onCheckBoxClicked,
+    this.onDismissed,
   }): super(key: key);
 
   @override
@@ -42,6 +44,7 @@ class _ToDoTextFieldState extends State<ToDoTextField> {
       key: Key(toDo.key),
       direction: DismissDirection.startToEnd,
       background: Container(color: Colors.red,),
+      onDismissed: (_) => widget.onDismissed(),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12,),
         child: Row(

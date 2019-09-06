@@ -166,4 +166,19 @@ class RecordRepositoryImpl implements RecordRepository {
       }
     }
   }
+
+  @override
+  removeToDo(DayRecord dayRecord, ToDo toDo) {
+    final List<DayRecord> dayRecords = _dayRecords.value;
+    final changedIndex = dayRecords.indexWhere((item) => item.key == dayRecord.key);
+    if (changedIndex >= 0) {
+      final List<ToDo> toDos = dayRecord.toDos;
+      if (toDos.remove(toDo)) {
+        dayRecords[changedIndex] = dayRecord.getModified(todos: toDos);
+
+        _dayRecords.add(dayRecords);
+        _database.removeToDo(toDo);
+      }
+    }
+  }
 }
