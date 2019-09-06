@@ -148,4 +148,22 @@ class RecordRepositoryImpl implements RecordRepository {
       }
     }
   }
+
+  @override
+  updateToDoDone(DayRecord dayRecord, ToDo toDo) {
+    final updatedToDo = toDo.getModified(isDone: true);
+    final List<DayRecord> dayRecords = _dayRecords.value;
+    final changedIndex = dayRecords.indexWhere((item) => item.key == dayRecord.key);
+    if (changedIndex >= 0) {
+      final List<ToDo> toDos = dayRecord.toDos;
+      final changedToDoIndex = toDos.indexWhere((item) => item.key == toDo.key);
+      if (changedToDoIndex >= 0) {
+        toDos[changedToDoIndex] = updatedToDo;
+        dayRecords[changedIndex] = dayRecord.getModified(todos: toDos);
+
+        _dayRecords.add(dayRecords);
+        _database.saveToDo(updatedToDo);
+      }
+    }
+  }
 }

@@ -47,4 +47,8 @@ class RecordUsecases {
   updateToDoContent(DayRecord dayRecord, ToDo toDo, String updated) {
     _recordRepository.updateToDoContent(dayRecord, toDo, updated);
   }
+
+  updateToDoDone(DayRecord dayRecord, ToDo toDo) {
+    _recordRepository.updateToDoDone(dayRecord, toDo);
+  }
 }

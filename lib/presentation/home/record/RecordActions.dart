@@ -41,3 +41,10 @@ class UpdateToDoContent implements RecordAction {
 
   const UpdateToDoContent(this.dayRecord, this.toDo, this.updated);
 }
+
+class UpdateToDoDone implements RecordAction {
+  final DayRecord dayRecord;
+  final ToDo toDo;
+
+  const UpdateToDoDone(this.dayRecord, this.toDo);
+}

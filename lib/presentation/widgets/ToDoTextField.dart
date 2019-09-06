@@ -6,12 +6,14 @@ class ToDoTextField extends StatefulWidget {
   final FocusNode focusNode;
   final ToDo toDo;
   final ValueChanged<String> onChanged;
+  final Function onCheckBoxClicked;
 
   ToDoTextField({
     Key key,
     this.focusNode,
     this.toDo,
     this.onChanged,
+    this.onCheckBoxClicked,
   }): super(key: key);
 
   @override
@@ -44,19 +46,22 @@ class _ToDoTextFieldState extends State<ToDoTextField> {
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12,),
         child: Row(
           children: <Widget>[
-            toDo.isDone ? Icon(
-              Icons.check,
-              size: 24,
-              color: Colors.green,
-            ) : DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(2)),
-                border: Border.all(
-                  color: Colors.grey,
-                  width: 2,
+            GestureDetector(
+              onTap: widget.onCheckBoxClicked,
+              child: toDo.isDone ? Icon(
+                Icons.check,
+                size: 24,
+                color: Colors.green,
+              ) : DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(2)),
+                  border: Border.all(
+                    color: Colors.grey,
+                    width: 2,
+                  ),
                 ),
+                child: SizedBox(width: 20, height: 20,),
               ),
-              child: SizedBox(width: 20, height: 20,),
             ),
             SizedBox(width: 5),
             Expanded(

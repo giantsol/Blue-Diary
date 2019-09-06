@@ -209,6 +209,7 @@ class _RecordScreenState extends State<RecordScreen> {
                             focusNode: _getOrCreateFocusNode(toDo.key),
                             toDo: toDo,
                             onChanged: (s) => _onToDoTextChanged(record, toDo, s),
+                            onCheckBoxClicked: () => _onToDoCheckBoxClicked(record, toDo),
                           );
                         }
                       },
@@ -255,6 +256,12 @@ class _RecordScreenState extends State<RecordScreen> {
 
   _onToDoTextChanged(DayRecord dayRecord, ToDo toDo, String changed) {
     _bloc.actions.add(UpdateToDoContent(dayRecord, toDo, changed));
+  }
+
+  _onToDoCheckBoxClicked(DayRecord dayRecord, ToDo toDo) {
+    if (!toDo.isDone) {
+      _bloc.actions.add(UpdateToDoDone(dayRecord, toDo));
+    }
   }
 
   _onDayMemoTextChanged(DayMemo dayMemo, String changed) {
