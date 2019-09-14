@@ -2,18 +2,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:infinity_page_view/infinity_page_view.dart';
-import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
-import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
-import 'package:todo_app/domain/home/record/entity/ToDo.dart';
-import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
-import 'package:todo_app/presentation/home/record/RecordActions.dart';
+import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/presentation/home/record/RecordBloc.dart';
+import 'package:todo_app/presentation/home/record/RecordBlocDelegator.dart';
 import 'package:todo_app/presentation/home/record/RecordState.dart';
 import 'package:todo_app/presentation/widgets/DayMemoTextField.dart';
 import 'package:todo_app/presentation/widgets/ToDoTextField.dart';
 import 'package:todo_app/presentation/widgets/WeekMemoTextField.dart';
 
 class RecordScreen extends StatefulWidget {
+  final RecordBlocDelegator recordBlocDelegator;
+
+  RecordScreen({
+    Key key,
+    this.recordBlocDelegator,
+  }): super(key: key);
+
   @override
   State createState() {
     return _RecordScreenState();
@@ -22,13 +26,20 @@ class RecordScreen extends StatefulWidget {
 
 class _RecordScreenState extends State<RecordScreen> {
   RecordBloc _bloc;
-  final _daysPageController = InfinityPageController(initialPage: 0, viewportFraction: 0.75);
+  InfinityPageController _daysPageController;
   final Map<String, FocusNode> _focusNodes = {};
 
   @override
   initState() {
     super.initState();
-    _bloc = RecordBloc();
+    _bloc = RecordBloc(delegator: widget.recordBlocDelegator);
+    _daysPageController = InfinityPageController(initialPage: _bloc.getInitialState().dayRecordPageIndex, viewportFraction: 0.75);
+  }
+
+  @override
+  void didUpdateWidget(RecordScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _bloc.delegator = widget.recordBlocDelegator;
   }
 
   @override
@@ -43,8 +54,8 @@ class _RecordScreenState extends State<RecordScreen> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      initialData: _bloc.initialState,
-      stream: _bloc.state,
+      initialData: _bloc.getInitialState(),
+      stream: _bloc.observeState(),
       builder: (context, snapshot) {
         return _buildUI(snapshot.data);
       }
@@ -111,12 +122,8 @@ class _RecordScreenState extends State<RecordScreen> {
           ],
         ),
       ),
-      onTap: _onYearAndMonthNthWeekClicked,
+      onTap: () => _bloc.onYearAndMonthNthWeekClicked(),
     );
-  }
-
-  _onYearAndMonthNthWeekClicked() {
-    _bloc.actions.add(NavigateToCalendarPage());
   }
 
   Widget _buildWeekMemos(RecordState state) {
@@ -131,7 +138,7 @@ class _RecordScreenState extends State<RecordScreen> {
               final textField = WeekMemoTextField(
                 focusNode: _getOrCreateFocusNode(weekMemo.key),
                 text: weekMemo.content,
-                onChanged: (changed) => _onWeekMemoTextChanged(weekMemo, changed),
+                onChanged: (changed) => _bloc.onWeekMemoTextChanged(weekMemo, changed),
               );
 
               if (index == 0) {
@@ -149,12 +156,16 @@ class _RecordScreenState extends State<RecordScreen> {
     );
   }
 
-  _onWeekMemoTextChanged(WeekMemo weekMemo, String changed) {
-    _bloc.actions.add(UpdateSingleWeekMemo(weekMemo, changed));
-  }
-
   Widget _buildDayRecordsPager(RecordState state) {
-    final dayRecords = state.dayRecords;
+    final currentPageIndex = state.dayRecordPageIndex;
+    List<DayRecord> dayRecords;
+    if (currentPageIndex == 0) {
+      dayRecords = [state.currentDayRecord, state.nextDayRecord, state.prevDayRecord];
+    } else if (currentPageIndex == 1) {
+      dayRecords = [state.prevDayRecord, state.currentDayRecord, state.nextDayRecord];
+    } else {
+      dayRecords = [state.nextDayRecord, state.prevDayRecord, state.currentDayRecord];
+    }
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -163,19 +174,15 @@ class _RecordScreenState extends State<RecordScreen> {
           itemCount: dayRecords.length,
           itemBuilder: (context, index) {
             // 에에~? 왜 dayRecords.length가 0인데도 itemBuilder가 한번 불리징 훔..
-            if (dayRecords.isEmpty) {
+            if (dayRecords.isEmpty || dayRecords[index] == null) {
               return null;
             }
             return _buildDayRecord(dayRecords[index]);
           },
-          onPageChanged: _onDayRecordsPageChanged,
+          onPageChanged: (changedIndex) => _bloc.onDayRecordsPageChanged(changedIndex),
         ),
       ),
     );
-  }
-
-  _onDayRecordsPageChanged(int index) {
-    _bloc.actions.add(UpdateDayRecordPageIndex(index));
   }
 
   Widget _buildDayRecord(DayRecord record) {
@@ -205,7 +212,7 @@ class _RecordScreenState extends State<RecordScreen> {
                           return Center(
                             child: IconButton(
                               icon: Icon(Icons.add_circle_outline),
-                              onPressed: () => _onAddToDoClicked(record),
+                              onPressed: () => _bloc.onAddToDoClicked(record),
                             ),
                           );
                         } else {
@@ -213,9 +220,9 @@ class _RecordScreenState extends State<RecordScreen> {
                           return ToDoTextField(
                             focusNode: _getOrCreateFocusNode(toDo.key),
                             toDo: toDo,
-                            onChanged: (s) => _onToDoTextChanged(record, toDo, s),
-                            onCheckBoxClicked: () => _onToDoCheckBoxClicked(record, toDo),
-                            onDismissed: () => _onToDoDismissed(record, toDo),
+                            onChanged: (s) => _bloc.onToDoTextChanged(record, toDo, s),
+                            onCheckBoxClicked: () => _bloc.onToDoCheckBoxClicked(record, toDo),
+                            onDismissed: () => _bloc.onToDoDismissed(record, toDo),
                           );
                         }
                       },
@@ -236,7 +243,7 @@ class _RecordScreenState extends State<RecordScreen> {
                 DayMemoTextField(
                   focusNode: _getOrCreateFocusNode(record.memo.key),
                   text: record.memo.content,
-                  onChanged: (s) => _onDayMemoTextChanged(record.memo, s),
+                  onChanged: (s) => _bloc.onDayMemoTextChanged(record, s),
                 )
               ],
             ),
@@ -256,38 +263,17 @@ class _RecordScreenState extends State<RecordScreen> {
     }
   }
 
-  _onAddToDoClicked(DayRecord dayRecord) {
-    _bloc.actions.add(AddToDo(dayRecord));
-  }
-
-  _onToDoTextChanged(DayRecord dayRecord, ToDo toDo, String changed) {
-    _bloc.actions.add(UpdateToDoContent(dayRecord, toDo, changed));
-  }
-
-  _onToDoCheckBoxClicked(DayRecord dayRecord, ToDo toDo) {
-    if (!toDo.isDone) {
-      _bloc.actions.add(UpdateToDoDone(dayRecord, toDo));
-    }
-  }
-
-  _onToDoDismissed(DayRecord dayRecord, ToDo toDo) {
-    _bloc.actions.add(RemoveToDo(dayRecord, toDo));
-  }
-
-  _onDayMemoTextChanged(DayMemo dayMemo, String changed) {
-    _bloc.actions.add(UpdateDayMemo(dayMemo, changed));
-  }
-
   Widget _buildGoToTodayButton(RecordState state) {
-    if (!state.isGoToTodayButtonShown) {
+    final goToTodayVisibility = state.goToTodayButtonVisibility;
+    if (goToTodayVisibility == GoToTodayButtonVisibility.GONE) {
       return Container();
     } else {
       return Center(
         child: Row(
-          mainAxisAlignment: state.isGoToTodayButtonShownLeft ? MainAxisAlignment.start : MainAxisAlignment.end,
+          mainAxisAlignment: goToTodayVisibility == GoToTodayButtonVisibility.LEFT ? MainAxisAlignment.start : MainAxisAlignment.end,
           children: [
             GestureDetector(
-              onTap: _onGoToTodayButtonClicked,
+              onTap: () => _bloc.onGoToTodayButtonClicked(),
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.blue[300],
@@ -304,7 +290,4 @@ class _RecordScreenState extends State<RecordScreen> {
     }
   }
 
-  _onGoToTodayButtonClicked() {
-    _bloc.actions.add(GoToToday());
-  }
 }

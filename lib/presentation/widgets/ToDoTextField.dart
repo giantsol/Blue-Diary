@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:todo_app/domain/home/record/entity/ToDo.dart';
+import 'package:todo_app/domain/entity/ToDo.dart';
 
 class ToDoTextField extends StatefulWidget {
   final FocusNode focusNode;

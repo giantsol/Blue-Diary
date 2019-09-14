@@ -1,30 +1,32 @@
 
-import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
-import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
-import 'package:tuple/tuple.dart';
+import 'package:todo_app/domain/entity/DateInNthWeek.dart';
+import 'package:todo_app/domain/entity/DayRecord.dart';
+import 'package:todo_app/domain/entity/WeekMemo.dart';
 
 class RecordState {
-  final int year;
-  final Tuple2<int, int> weeklySeparatedMonthAndNthWeek;
+  final int dayRecordPageIndex;
+  final DateInNthWeek dateInNthWeek;
   final List<WeekMemo> weekMemos;
-  final List<DayRecord> dayRecords;
-  final bool isGoToTodayButtonShown;
-  final bool isGoToTodayButtonShownLeft;
+  final DayRecord currentDayRecord;
+  final DayRecord prevDayRecord;
+  final DayRecord nextDayRecord;
+  final GoToTodayButtonVisibility goToTodayButtonVisibility;
 
   const RecordState({
-    this.year = 0,
-    this.weeklySeparatedMonthAndNthWeek = const Tuple2(0, 0),
+    this.dayRecordPageIndex = 0,
+    this.dateInNthWeek = const DateInNthWeek(),
     this.weekMemos = const [],
-    this.dayRecords = const [],
-    this.isGoToTodayButtonShown = false,
-    this.isGoToTodayButtonShownLeft = false,
+    this.currentDayRecord,
+    this.prevDayRecord,
+    this.nextDayRecord,
+    this.goToTodayButtonVisibility = GoToTodayButtonVisibility.GONE,
   });
 
-  String get yearText => '$year년';
+  String get yearText => '${dateInNthWeek.year}';
 
   String get monthAndNthWeekText {
-    final month = weeklySeparatedMonthAndNthWeek.item1;
-    final nthWeek = weeklySeparatedMonthAndNthWeek.item2;
+    final month = dateInNthWeek.month;
+    final nthWeek = dateInNthWeek.nthWeek;
     switch (nthWeek) {
       case 0:
         return '$month월 첫째주';
@@ -42,21 +44,41 @@ class RecordState {
   }
 
   RecordState getModified({
-    int year,
-    Tuple2<int, int> weeklySeparatedMonthAndNthWeek,
+    int dayRecordPageIndex,
+    DateInNthWeek dateInNthWeek,
     List<WeekMemo> weekMemos,
-    List<DayRecord> days,
-    bool isGoToTodayButtonShown,
-    bool isGoToTodayButtonShownLeft,
+    DayRecord currentDayRecord,
+    DayRecord prevDayRecord,
+    DayRecord nextDayRecord,
+    GoToTodayButtonVisibility goToTodayButtonVisibility,
   }) {
     return RecordState(
-      year: year ?? this.year,
-      weeklySeparatedMonthAndNthWeek: weeklySeparatedMonthAndNthWeek ?? this.weeklySeparatedMonthAndNthWeek,
+      dayRecordPageIndex: dayRecordPageIndex ?? this.dayRecordPageIndex,
+      dateInNthWeek: dateInNthWeek ?? this.dateInNthWeek,
       weekMemos: weekMemos ?? this.weekMemos,
-      dayRecords: days ?? this.dayRecords,
-      isGoToTodayButtonShown: isGoToTodayButtonShown ?? this.isGoToTodayButtonShown,
-      isGoToTodayButtonShownLeft: isGoToTodayButtonShownLeft ?? this.isGoToTodayButtonShownLeft,
+      currentDayRecord: currentDayRecord ?? this.currentDayRecord,
+      prevDayRecord: prevDayRecord ?? this.prevDayRecord,
+      nextDayRecord: nextDayRecord ?? this.nextDayRecord,
+      goToTodayButtonVisibility: goToTodayButtonVisibility ?? this.goToTodayButtonVisibility,
     );
   }
 
+  RecordState getDayRecordModified(DayRecord dayRecord) {
+    if (currentDayRecord?.key == dayRecord.key) {
+      return getModified(currentDayRecord: dayRecord);
+    } else if (prevDayRecord?.key == dayRecord.key) {
+      return getModified(prevDayRecord: dayRecord);
+    } else if (nextDayRecord?.key == dayRecord.key) {
+      return getModified(nextDayRecord: dayRecord);
+    }
+
+    return this;
+  }
+
+}
+
+enum GoToTodayButtonVisibility {
+  GONE,
+  LEFT,
+  RIGHT,
 }

@@ -2,133 +2,123 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/domain/home/record/RecordUsecases.dart';
-import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
-import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
+import 'package:todo_app/domain/entity/DayRecord.dart';
+import 'package:todo_app/domain/entity/DrawerItem.dart';
+import 'package:todo_app/domain/entity/ToDo.dart';
+import 'package:todo_app/domain/entity/WeekMemo.dart';
+import 'package:todo_app/domain/usecase/RecordUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
-import 'package:todo_app/presentation/home/record/RecordActions.dart';
+import 'package:todo_app/presentation/home/record/RecordBlocDelegator.dart';
 import 'package:todo_app/presentation/home/record/RecordState.dart';
-import 'package:tuple/tuple.dart';
 
 class RecordBloc {
-  final _actions = StreamController<RecordAction>();
-  Sink get actions => _actions;
+  RecordBlocDelegator delegator;
 
   final _state = BehaviorSubject<RecordState>.seeded(RecordState());
-  RecordState get initialState => _state.value;
-  Stream<RecordState> get state => _state.stream.distinct();
+  RecordState getInitialState() => _state.value;
+  Stream<RecordState> observeState() => _state.distinct();
 
   final RecordUsecases _usecases = dependencies.recordUsecases;
 
-  StreamSubscription<List<WeekMemo>> _weekMemosSubscription;
-  StreamSubscription<List<DayRecord>> _dayRecordsSubscription;
-  StreamSubscription<int> _currentYearSubscription;
-  StreamSubscription<Tuple2<int, int>> _currentWeeklySeparatedMonthAndNthWeekSubscription;
-
-  RecordBloc() {
-    _actions.stream.listen((action) {
-      switch (action.runtimeType) {
-        case UpdateSingleWeekMemo:
-          _updateSingleWeekMemo(action);
-          break;
-        case UpdateDayRecordPageIndex:
-          _updateDayRecordPageIndex(action);
-          break;
-        case NavigateToCalendarPage:
-          _navigateToCalendarPage(action);
-          break;
-        case UpdateDayMemo:
-          _updateDayMemo(action);
-          break;
-        case AddToDo:
-          _addToDo(action);
-          break;
-        case UpdateToDoContent:
-          _updateToDoContent(action);
-          break;
-        case UpdateToDoDone:
-          _updateToDoDone(action);
-          break;
-        case RemoveToDo:
-          _removeToDo(action);
-          break;
-        case GoToToday:
-          _goToToday(action);
-          break;
-        default:
-          throw Exception('HomeBloc action not implemented: $action');
-      }
-    });
-
-    _weekMemosSubscription = _usecases.weekMemos.listen((memos) {
-      _state.add(_state.value.getModified(weekMemos: memos));
-    });
-    _dayRecordsSubscription = _usecases.dayRecords.listen((days) {
-      final today = _usecases.today;
-      final selectedDay = days.firstWhere((record) => record.isSelected, orElse: () => null)?.dateTime;
-      if (selectedDay == null) {
-        _state.add(_state.value.getModified(days: days));
-      } else {
-        final dayDifference = today.difference(selectedDay).inDays;
-        bool isGoToTodayButtonShown = dayDifference.abs() >= 2;
-        bool isGoToTodayButtonShownLeft = dayDifference < 0;
-        _state.add(_state.value.getModified(days: days,
-          isGoToTodayButtonShown: isGoToTodayButtonShown,
-          isGoToTodayButtonShownLeft: isGoToTodayButtonShownLeft,
-        ));
-      }
-    });
-    _currentYearSubscription = _usecases.currentYear.listen((year) {
-      _state.add(_state.value.getModified(year: year));
-    });
-    _currentWeeklySeparatedMonthAndNthWeekSubscription = _usecases.currentWeeklySeparatedMonthAndNthWeek.listen((tuple) {
-      _state.add(_state.value.getModified(weeklySeparatedMonthAndNthWeek: tuple));
-    });
+  RecordBloc({this.delegator}) {
+    _initState();
   }
 
-  _updateSingleWeekMemo(UpdateSingleWeekMemo action) {
-    _usecases.updateSingleWeekMemo(action.weekMemo, action.updated);
+  _initState({int dayRecordPageIndex}) async {
+    final dateInNthWeek = _usecases.getCurrentDateInNthWeek();
+    final weekMemos = await _usecases.getCurrentWeekMemos();
+    final currentDayRecord = await _usecases.getCurrentDayRecord();
+    final prevDayRecord = await _usecases.getPrevDayRecord();
+    final nextDayRecord = await _usecases.getNextDayRecord();
+    final today = _usecases.getToday();
+
+    var goToTodayButtonVisibility;
+    if (prevDayRecord.isToday || today.difference(currentDayRecord.dateTime).inDays < 0) {
+      goToTodayButtonVisibility = GoToTodayButtonVisibility.LEFT;
+    } else if (nextDayRecord.isToday || today.difference(currentDayRecord.dateTime).inDays > 0) {
+      goToTodayButtonVisibility = GoToTodayButtonVisibility.RIGHT;
+    } else {
+      goToTodayButtonVisibility = GoToTodayButtonVisibility.GONE;
+    }
+    _state.add(_state.value.getModified(
+      dayRecordPageIndex: dayRecordPageIndex ?? _state.value.dayRecordPageIndex,
+      dateInNthWeek: dateInNthWeek,
+      weekMemos: weekMemos,
+      currentDayRecord: currentDayRecord,
+      prevDayRecord: prevDayRecord,
+      nextDayRecord: nextDayRecord,
+      goToTodayButtonVisibility: goToTodayButtonVisibility,
+    ));
   }
 
-  _updateDayRecordPageIndex(UpdateDayRecordPageIndex action) {
-    _usecases.updateDayRecordPageIndex(action.updatedIndex);
+  onYearAndMonthNthWeekClicked() {
+    delegator?.updateCurrentDrawerChildScreenItem(DrawerChildScreenItem.KEY_CALENDAR);
   }
 
-  _navigateToCalendarPage(NavigateToCalendarPage action) {
-    _usecases.navigateToCalendarPage();
+  onWeekMemoTextChanged(WeekMemo weekMemo, String changed) {
+    final updatedWeekMemo = weekMemo.getModified(content: changed);
+    final currentWeekMemos = _state.value.weekMemos;
+    final index = currentWeekMemos.indexWhere((it) => it.key == updatedWeekMemo.key);
+    if (index >= 0) {
+      currentWeekMemos[index] = updatedWeekMemo;
+      _state.add(_state.value.getModified(weekMemos: currentWeekMemos));
+      _usecases.saveWeekMemo(updatedWeekMemo);
+    }
   }
 
-  _updateDayMemo(UpdateDayMemo action) {
-    _usecases.updateDayMemo(action.dayMemo, action.updated);
+  onDayRecordsPageChanged(int newIndex) {
+    final curIndex = _state.value.dayRecordPageIndex;
+    if ((curIndex == 0 && newIndex == 1)
+      || (curIndex == 1 && newIndex == 2)
+      || (curIndex == 2 && newIndex == 0)) {
+      _usecases.changeCurrentDateByDay(1);
+    } else {
+      _usecases.changeCurrentDateByDay(-1);
+    }
+    _initState(dayRecordPageIndex: newIndex);
   }
 
-  _addToDo(AddToDo action) {
-    _usecases.addToDo(action.dayRecord);
+  onAddToDoClicked(DayRecord dayRecord) {
+    final updatedDayRecord = dayRecord.getToDoAdded();
+    _state.add(_state.value.getDayRecordModified(updatedDayRecord));
   }
 
-  _updateToDoContent(UpdateToDoContent action) {
-    _usecases.updateToDoContent(action.dayRecord, action.toDo, action.updated);
+  onToDoTextChanged(DayRecord dayRecord, ToDo toDo, String changed) {
+    final updatedToDo = toDo.getModified(content: changed);
+    final updatedDayRecord = dayRecord.getToDoUpdated(toDo);
+    _state.add(_state.value.getDayRecordModified(updatedDayRecord));
+    _usecases.saveToDo(updatedToDo);
   }
 
-  _updateToDoDone(UpdateToDoDone action) {
-    _usecases.updateToDoDone(action.dayRecord, action.toDo);
+  onToDoCheckBoxClicked(DayRecord dayRecord, ToDo toDo) {
+    if (!toDo.isDone) {
+      final updatedToDo = toDo.getModified(isDone: true);
+      final updatedDayRecord = dayRecord.getToDoUpdated(updatedToDo);
+      _state.add(_state.value.getDayRecordModified(updatedDayRecord));
+      _usecases.saveToDo(updatedToDo);
+    }
   }
 
-  _removeToDo(RemoveToDo action) {
-    _usecases.removeToDo(action.dayRecord, action.toDo);
+  onToDoDismissed(DayRecord dayRecord, ToDo toDo) {
+    final updatedDayRecord = dayRecord.getToDoRemoved(toDo);
+    if (updatedDayRecord != null) {
+      _state.add(_state.value.getDayRecordModified(updatedDayRecord));
+      _usecases.removeToDo(toDo);
+    }
   }
 
-  _goToToday(GoToToday action) {
-    _usecases.goToToday();
+  onDayMemoTextChanged(DayRecord dayRecord, String changed) {
+    final updatedDayRecord = dayRecord.getModified(memo: dayRecord.memo.getModified(content: changed));
+    _state.add(_state.value.getDayRecordModified(updatedDayRecord));
+    _usecases.saveDayMemo(updatedDayRecord.memo);
+  }
+
+  onGoToTodayButtonClicked() {
+    _usecases.setCurrentDateToToday();
+    _initState();
   }
 
   dispose() {
-    _actions.close();
     _state.close();
-
-    _weekMemosSubscription?.cancel();
-    _dayRecordsSubscription?.cancel();
-    _currentYearSubscription?.cancel();
-    _currentWeeklySeparatedMonthAndNthWeekSubscription?.cancel();
   }
 }

@@ -1,50 +1,44 @@
 
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/domain/home/entity/DrawerItem.dart';
-import 'package:todo_app/domain/home/HomeUsecases.dart';
+import 'package:todo_app/domain/entity/DrawerItem.dart';
 import 'package:todo_app/presentation/App.dart';
-import 'package:todo_app/presentation/home/HomeActions.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
+import 'package:todo_app/presentation/home/record/RecordBlocDelegator.dart';
 
-class HomeBloc {
-  final _actions = StreamController<HomeAction>();
-  Sink get actions => _actions;
-
+class HomeBloc implements RecordBlocDelegator {
   final _state = BehaviorSubject<HomeState>.seeded(HomeState());
-  HomeState get initialState => _state.value;
-  Stream<HomeState> get state => _state.stream.distinct();
+  HomeState getInitialState() => _state.value;
+  Stream<HomeState> observeState() => _state.distinct();
 
-  final HomeUsecases _usecases = dependencies.homeUsecases;
-
-  StreamSubscription<List<DrawerItem>> _drawerItemsSubscription;
+  final _usecases = dependencies.homeUsecases;
 
   HomeBloc() {
-    _actions.stream.listen((action) {
-      switch (action.runtimeType) {
-        case SelectDrawerChildScreenItem:
-          _selectDrawerChildScreenItem(action);
-          break;
-        default:
-          throw Exception('HomeBloc action not implemented: $action');
-      }
-    });
-
-    // 레포지토리의 drawerItems가 바뀔 때 마다 state도 자동 업데이트
-    _drawerItemsSubscription = _usecases.allDrawerItems.listen((items) {
-      _state.add(_state.value.getModified(drawerItems: items));
-    });
+    _state.add(_state.value.getModified(
+      drawerItems: _usecases.getAllDrawerItems(),
+    ));
   }
 
-  _selectDrawerChildScreenItem(SelectDrawerChildScreenItem action) {
-    _usecases.selectDrawerChildScreenItem(action.selectedItem);
+  onDrawerChildScreenItemClicked(BuildContext context, DrawerChildScreenItem item) {
+    Navigator.of(context).pop();
+    updateCurrentDrawerChildScreenItem(item.key);
+  }
+
+  onMenuIconClicked(ScaffoldState scaffoldState) {
+    scaffoldState?.openEndDrawer();
+  }
+
+  @override
+  updateCurrentDrawerChildScreenItem(String key) {
+    _usecases.setCurrentDrawerChildScreenItem(key);
+    _state.add(_state.value.getModified(drawerItems: _usecases.getAllDrawerItems()));
   }
 
   dispose() {
-    _actions.close();
     _state.close();
-
-    _drawerItemsSubscription?.cancel();
   }
+
 }

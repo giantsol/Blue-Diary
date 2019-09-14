@@ -1,8 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:todo_app/domain/home/entity/DrawerItem.dart';
-import 'package:todo_app/presentation/home/HomeActions.dart';
+import 'package:todo_app/domain/entity/DrawerItem.dart';
 import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
 import 'package:todo_app/presentation/home/calendar/CalendarScreen.dart';
@@ -34,8 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      initialData: _bloc.initialState,
-      stream: _bloc.state,
+      initialData: _bloc.getInitialState(),
+      stream: _bloc.observeState(),
       builder: (context, snapshot) {
         return _buildUI(snapshot.data);
       }
@@ -53,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
               alignment: Alignment.topRight,
               child: IconButton(
                 icon: Image.asset('assets/menu.png'),
-                onPressed: _onMenuIconClicked,
+                onPressed: () => _bloc.onMenuIconClicked(_scaffoldKey.currentState),
               ),
             ),
           ],
@@ -64,10 +63,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildChildScreen(HomeState state) {
-    final childScreenKey = state.currentChildScreenKey;
+    final childScreenKey = state.getCurrentChildScreenKey();
     switch (childScreenKey) {
       case DrawerChildScreenItem.KEY_RECORD:
-        return RecordScreen();
+        return RecordScreen(recordBlocDelegator: _bloc);
       case DrawerChildScreenItem.KEY_CALENDAR:
         return CalendarScreen();
       default:
@@ -99,13 +98,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         title: Text(item.title),
                         enabled: item.isEnabled,
                         selected: item.isSelected,
-                        onTap: () => _onDrawerChildScreenItemClicked(item),
+                        onTap: () => _bloc.onDrawerChildScreenItemClicked(context, item),
                       );
                     } else if (item is DrawerScreenItem) {
                       return ListTile(
                         title: Text(item.title),
                         enabled: item.isEnabled,
-                        onTap: () => _onDrawerScreenItemClicked(item),
+                        onTap: () => {},
                       );
                     } else {
                       return Spacer();
@@ -118,18 +117,5 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
-  }
-
-  _onMenuIconClicked() {
-    _scaffoldKey.currentState?.openEndDrawer();
-  }
-
-  _onDrawerChildScreenItemClicked(DrawerChildScreenItem item) {
-    Navigator.of(context).pop();
-    _bloc.actions.add(SelectDrawerChildScreenItem(item));
-  }
-
-  _onDrawerScreenItemClicked(DrawerScreenItem item) {
-
   }
 }

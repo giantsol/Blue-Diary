@@ -2,10 +2,10 @@
 import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:todo_app/domain/home/record/entity/DayMemo.dart';
-import 'package:todo_app/domain/home/record/entity/DayRecord.dart';
-import 'package:todo_app/domain/home/record/entity/ToDo.dart';
-import 'package:todo_app/domain/home/record/entity/WeekMemo.dart';
+import 'package:todo_app/domain/entity/DayMemo.dart';
+import 'package:todo_app/domain/entity/DayRecord.dart';
+import 'package:todo_app/domain/entity/ToDo.dart';
+import 'package:todo_app/domain/entity/WeekMemo.dart';
 
 class AppDatabase {
   final _database = BehaviorSubject<Database>();
@@ -90,12 +90,43 @@ class AppDatabase {
       isSelected);
   }
 
+  Future<List<ToDo>> loadToDos(DateTime date) async {
+    final Database db = await _database.first;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'todos',
+      where: 'date_string = ?',
+      whereArgs: [ToDo.dateTimeToDateString(date)],
+    );
+    return List.generate(maps.length, (i) {
+      final map = maps[i];
+      return ToDo(
+        date,
+        map['which'],
+        content: map['content'],
+        isDone: map['done'] == 1 ? true : false,
+      );
+    });
+  }
+
   saveDayMemo(DayMemo dayMemo) async {
     final Database db = await _database.first;
     await db.insert(
       'day_memos',
       dayMemo.toDatabaseFormat(),
       conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<DayMemo> loadDayMemo(DateTime date) async {
+    final db = await _database.first;
+    final Map<String, dynamic> map = await db.query(
+      'day_memos',
+      where: 'date_string = ?',
+      whereArgs: [DayMemo.dateTimeToDateString(date)],
+    ).then((l) => l.isEmpty ? null : l[0]);
+    return map == null ? DayMemo(date, '') : DayMemo(
+      date,
+      map['content'],
     );
   }
 

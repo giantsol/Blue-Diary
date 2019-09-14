@@ -1,11 +1,11 @@
 
-import 'package:todo_app/Utils.dart';
+import 'package:todo_app/domain/entity/DateInNthWeek.dart';
 
 class WeekMemo {
 
   static String dateTimeToDateString(DateTime dateTime) {
-    final weeklySeparatedMonthAndNthWeek = Utils.getWeeklySeparatedMonthAndNthWeek(dateTime);
-    return '${dateTime.year}-${weeklySeparatedMonthAndNthWeek.item1}-${weeklySeparatedMonthAndNthWeek.item2}';
+    final dateInNthWeek = DateInNthWeek.fromDateTime(dateTime);
+    return '${dateInNthWeek.year}-${dateInNthWeek.month}-${dateInNthWeek.nthWeek}';
   }
 
   final DateTime dateTime;
