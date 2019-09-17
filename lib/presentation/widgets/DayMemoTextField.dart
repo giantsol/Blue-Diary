@@ -34,20 +34,23 @@ class _DayMemoTextFieldState extends State<DayMemoTextField> {
       widget.onChanged(_value.text);
     });
 
-    return SizedBox(
-      height: 91,
-      child: Padding(
-        padding: const EdgeInsets.all(4),
-        child: TextField(
-          focusNode: widget.focusNode,
-          controller: controller,
-          style: TextStyle(fontSize: 14),
-          maxLines: null,
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.all(0),
-            border: InputBorder.none,
+    return Theme(
+      data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+      child: SizedBox(
+        height: 91,
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: TextField(
+            focusNode: widget.focusNode,
+            controller: controller,
+            style: TextStyle(fontSize: 14),
+            maxLines: null,
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.all(0),
+              border: InputBorder.none,
+            ),
+            textAlign: TextAlign.left,
           ),
-          textAlign: TextAlign.left,
         ),
       ),
     );
