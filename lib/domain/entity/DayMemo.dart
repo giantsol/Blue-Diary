@@ -9,7 +9,7 @@ class DayMemo {
 
   const DayMemo(this.dateTime, this.content);
 
-  DayMemo getModified({
+  DayMemo buildNew({
     DateTime dateTime,
     String content,
   }) {

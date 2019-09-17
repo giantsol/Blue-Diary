@@ -52,46 +52,8 @@ class AppDatabase {
     );
   }
 
-  Future<DayRecord> loadDayRecord(DateTime dateTime, DateTime today, { isSelected = false }) async {
-    final Database db = await _database.first;
-    // 하나의 DayRecord를 만들기 위해서는 ToDo들과 DayMemo가 필요함
-
-    // get ToDos
-    var dateString = ToDo.dateTimeToDateString(dateTime);
-    final List<Map<String, dynamic>> maps = await db.query(
-      'todos',
-      where: 'date_string = ?',
-      whereArgs: [dateString],
-    );
-    final List<ToDo> todos = List.generate(maps.length, (i) {
-      final map = maps[i];
-      return ToDo(
-        dateTime,
-        map['which'],
-        content: map['content'],
-        isDone: map['done'] == 1 ? true : false,
-      );
-    });
-
-    // get DayMemo
-    dateString = DayMemo.dateTimeToDateString(dateTime);
-    final Map<String, dynamic> map = await db.query(
-      'day_memos',
-      where: 'date_string = ?',
-      whereArgs: [dateString],
-    ).then((l) => l.isEmpty ? null : l[0]);
-    final DayMemo dayMemo = map == null ? DayMemo(dateTime, '') : DayMemo(
-      dateTime,
-      map['content'],
-    );
-
-    return DayRecord(dateTime, todos, dayMemo,
-      dateTime.year == today.year && dateTime.month == today.month && dateTime.day == today.day,
-      isSelected);
-  }
-
   Future<List<ToDo>> loadToDos(DateTime date) async {
-    final Database db = await _database.first;
+    final db = await _database.first;
     final List<Map<String, dynamic>> maps = await db.query(
       'todos',
       where: 'date_string = ?',
@@ -109,7 +71,7 @@ class AppDatabase {
   }
 
   saveDayMemo(DayMemo dayMemo) async {
-    final Database db = await _database.first;
+    final db = await _database.first;
     await db.insert(
       'day_memos',
       dayMemo.toDatabaseFormat(),
@@ -124,10 +86,8 @@ class AppDatabase {
       where: 'date_string = ?',
       whereArgs: [DayMemo.dateTimeToDateString(date)],
     ).then((l) => l.isEmpty ? null : l[0]);
-    return map == null ? DayMemo(date, '') : DayMemo(
-      date,
-      map['content'],
-    );
+    final content = map != null ? map['content'] : '';
+    return DayMemo(date, content);
   }
 
   Future<List<WeekMemo>> loadWeekMemos(DateTime dateTime) async {
@@ -146,7 +106,7 @@ class AppDatabase {
     );
     maps.forEach((map) {
       final index = map['which'];
-      weekMemos[index] = weekMemos[index].getModified(content: map['content']);
+      weekMemos[index] = weekMemos[index].buildNew(content: map['content']);
     });
 
     return weekMemos;

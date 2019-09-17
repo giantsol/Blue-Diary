@@ -47,7 +47,7 @@ class DayRecord {
 
   String get key => title;
 
-  DayRecord getModified({
+  DayRecord buildNew({
     DateTime dateTime,
     List<ToDo> todos,
     DayMemo memo,
@@ -63,25 +63,28 @@ class DayRecord {
     );
   }
 
-  DayRecord getToDoAdded() {
-    return getModified(todos: toDos..add(ToDo(dateTime, toDos.length)));
+  DayRecord buildNewToDoAdded() {
+    return buildNew(todos: List.from(toDos)..add(ToDo(dateTime, toDos.length)));
   }
 
-  DayRecord getToDoUpdated(ToDo toDo) {
+  DayRecord buildNewToDoUpdated(ToDo toDo) {
     final updatedIndex = toDos.indexWhere((it) => it.key == toDo.key);
     if (updatedIndex >= 0) {
-      return getModified(todos: toDos..[updatedIndex] = toDo);
-    } else {
-      return this;
+      final newToDos = List.from(toDos);
+      newToDos[updatedIndex] = toDo;
+      return buildNew(todos: newToDos);
     }
+    return this;
   }
 
-  DayRecord getToDoRemoved(ToDo toDo) {
+  DayRecord buildNewToDoRemoved(ToDo toDo) {
     final removeIndex = toDos.indexWhere((it) => it.key == toDo.key);
     if (removeIndex >= 0) {
-      return getModified(todos: toDos..removeAt(removeIndex));
+      final newToDos = List.from(toDos);
+      newToDos.removeAt(removeIndex);
+      return buildNew(todos: newToDos);
     }
-    return null;
+    return this;
   }
 
 }

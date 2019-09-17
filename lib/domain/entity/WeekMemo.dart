@@ -18,7 +18,7 @@ class WeekMemo {
     this.content = '',
   });
 
-  WeekMemo getModified({
+  WeekMemo buildNew({
     DateTime dateTime,
     int index,
     String content,

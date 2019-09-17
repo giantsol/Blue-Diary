@@ -23,7 +23,7 @@ class DrawerChildScreenItem implements DrawerItem {
     this.isEnabled = true,
   });
 
-  DrawerChildScreenItem getModified({
+  DrawerChildScreenItem buildNew({
     String title,
     bool isSelected,
     bool isEnabled
@@ -49,7 +49,7 @@ class DrawerScreenItem implements DrawerItem {
     this.isEnabled = true,
   });
 
-  DrawerScreenItem getModified({
+  DrawerScreenItem buildNew({
     String title,
     bool isEnabled,
   }) {

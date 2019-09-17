@@ -15,7 +15,7 @@ class ToDo {
     this.isDone = false,
   });
 
-  ToDo getModified({
+  ToDo buildNew({
     DateTime dateTime,
     int index,
     String content,

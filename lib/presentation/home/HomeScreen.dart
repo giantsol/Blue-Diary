@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildChildScreen(HomeState state) {
-    final childScreenKey = state.getCurrentChildScreenKey();
+    final childScreenKey = state.currentChildScreenKey;
     switch (childScreenKey) {
       case DrawerChildScreenItem.KEY_RECORD:
         return RecordScreen(recordBlocDelegator: _bloc);

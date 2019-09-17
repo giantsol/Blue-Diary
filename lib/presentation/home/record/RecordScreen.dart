@@ -157,15 +157,7 @@ class _RecordScreenState extends State<RecordScreen> {
   }
 
   Widget _buildDayRecordsPager(RecordState state) {
-    final currentPageIndex = state.dayRecordPageIndex;
-    List<DayRecord> dayRecords;
-    if (currentPageIndex == 0) {
-      dayRecords = [state.currentDayRecord, state.nextDayRecord, state.prevDayRecord];
-    } else if (currentPageIndex == 1) {
-      dayRecords = [state.prevDayRecord, state.currentDayRecord, state.nextDayRecord];
-    } else {
-      dayRecords = [state.nextDayRecord, state.prevDayRecord, state.currentDayRecord];
-    }
+    final dayRecords = state.dayRecords;
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12),

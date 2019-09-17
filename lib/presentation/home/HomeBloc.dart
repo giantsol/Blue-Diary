@@ -17,8 +17,13 @@ class HomeBloc implements RecordBlocDelegator {
   final _usecases = dependencies.homeUsecases;
 
   HomeBloc() {
-    _state.add(_state.value.getModified(
-      drawerItems: _usecases.getAllDrawerItems(),
+    _initState();
+  }
+
+  _initState() {
+    final allDrawerItems = _usecases.getAllDrawerItems();
+    _state.add(_state.value.buildNew(
+      allDrawerItems: allDrawerItems,
     ));
   }
 
@@ -34,7 +39,7 @@ class HomeBloc implements RecordBlocDelegator {
   @override
   updateCurrentDrawerChildScreenItem(String key) {
     _usecases.setCurrentDrawerChildScreenItem(key);
-    _state.add(_state.value.getModified(drawerItems: _usecases.getAllDrawerItems()));
+    _initState();
   }
 
   dispose() {
