@@ -64,13 +64,13 @@ class DayRecord {
   }
 
   DayRecord buildNewToDoAdded() {
-    return buildNew(todos: List.from(toDos)..add(ToDo(dateTime, toDos.length)));
+    return buildNew(todos: List.of(toDos)..add(ToDo(dateTime, toDos.length)));
   }
 
   DayRecord buildNewToDoUpdated(ToDo toDo) {
     final updatedIndex = toDos.indexWhere((it) => it.key == toDo.key);
     if (updatedIndex >= 0) {
-      final newToDos = List.from(toDos);
+      final newToDos = List.of(toDos);
       newToDos[updatedIndex] = toDo;
       return buildNew(todos: newToDos);
     }
@@ -80,7 +80,7 @@ class DayRecord {
   DayRecord buildNewToDoRemoved(ToDo toDo) {
     final removeIndex = toDos.indexWhere((it) => it.key == toDo.key);
     if (removeIndex >= 0) {
-      final newToDos = List.from(toDos);
+      final newToDos = List.of(toDos);
       newToDos.removeAt(removeIndex);
       return buildNew(todos: newToDos);
     }

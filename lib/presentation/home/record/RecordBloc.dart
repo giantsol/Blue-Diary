@@ -78,7 +78,7 @@ class RecordBloc {
   }
 
   onToDoCheckBoxClicked(DayRecord dayRecord, ToDo toDo) {
-    if (!toDo.isDone) {
+    if (toDo.content.isNotEmpty && !toDo.isDone) {
       final updatedToDo = toDo.buildNew(isDone: true);
       final updatedDayRecord = dayRecord.buildNewToDoUpdated(updatedToDo);
       _state.add(_state.value.buildNewDayRecordUpdated(updatedDayRecord));

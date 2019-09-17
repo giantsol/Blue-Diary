@@ -102,7 +102,7 @@ class RecordState {
   RecordState buildNewWeekMemoUpdated(WeekMemo weekMemo) {
     final index = weekMemos.indexWhere((it) => it.key == weekMemo.key);
     if (index >= 0) {
-      final newWeekMemos = List.from(weekMemos);
+      final newWeekMemos = List.of(weekMemos);
       newWeekMemos[index] = weekMemo;
       return buildNew(weekMemos: newWeekMemos);
     }
