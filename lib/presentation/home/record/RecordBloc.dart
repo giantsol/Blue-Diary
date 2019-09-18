@@ -74,7 +74,12 @@ class RecordBloc {
     final updatedToDo = toDo.buildNew(content: changed);
     final updatedDayRecord = dayRecord.buildNewToDoUpdated(updatedToDo);
     _state.add(_state.value.buildNewDayRecordUpdated(updatedDayRecord));
-    _usecases.saveToDo(updatedToDo);
+
+    if (changed.isEmpty) {
+      _usecases.removeToDo(updatedToDo);
+    } else {
+      _usecases.saveToDo(updatedToDo);
+    }
   }
 
   onToDoCheckBoxClicked(DayRecord dayRecord, ToDo toDo) {
