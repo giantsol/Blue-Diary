@@ -27,6 +27,7 @@ class ToDoTextField extends StatefulWidget {
 
 class _ToDoTextFieldState extends State<ToDoTextField> {
   TextEditingValue _value;
+  bool _isCreated = true;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +40,12 @@ class _ToDoTextFieldState extends State<ToDoTextField> {
       _value = controller.value;
       widget.onChanged(_value.text);
     });
+
+    if (_isCreated && _value?.text?.isEmpty != false) {
+      widget.focusNode.requestFocus();
+    }
+
+    _isCreated = false;
 
     return Dismissible(
       key: Key(toDo.key),
