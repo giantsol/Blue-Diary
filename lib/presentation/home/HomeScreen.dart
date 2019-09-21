@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/domain/entity/DrawerItem.dart';
 import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
@@ -76,7 +75,6 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 4),
         child: InkWell(
           customBorder: CircleBorder(),
-          splashColor: AppColors.backgroundGreyDark,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
             child: Image.asset('assets/ic_side_menu.png'),

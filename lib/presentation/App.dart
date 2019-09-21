@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Dependencies.dart';
 import 'package:todo_app/presentation/home/HomeScreen.dart';
 
@@ -20,6 +21,9 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'ToDo App',
+      theme: ThemeData(
+        splashColor: AppColors.ripple,
+      ),
       home: HomeScreen(),
       debugShowCheckedModeBanner: false,
     );

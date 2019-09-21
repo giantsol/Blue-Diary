@@ -2,10 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:infinity_page_view/infinity_page_view.dart';
+import 'package:todo_app/AppColors.dart';
+import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/presentation/home/record/RecordBloc.dart';
 import 'package:todo_app/presentation/home/record/RecordBlocDelegator.dart';
 import 'package:todo_app/presentation/home/record/RecordState.dart';
+import 'package:todo_app/presentation/home/record/RecordStateV2.dart';
+import 'package:todo_app/presentation/widgets/CheckPointTextField.dart';
 import 'package:todo_app/presentation/widgets/DayMemoTextField.dart';
 import 'package:todo_app/presentation/widgets/ToDoTextField.dart';
 import 'package:todo_app/presentation/widgets/WeekMemoTextField.dart';
@@ -53,12 +57,214 @@ class _RecordScreenState extends State<RecordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      initialData: _bloc.getInitialState(),
-      stream: _bloc.observeState(),
-      builder: (context, snapshot) {
-        return _buildUI(snapshot.data);
-      }
+    return _buildUIV2(RecordStateV2.createTestState());
+//    return StreamBuilder(
+//      initialData: _bloc.getInitialState(),
+//      stream: _bloc.observeState(),
+//      builder: (context, snapshot) {
+//      }
+//    );
+  }
+
+  Widget _buildUIV2(RecordStateV2 state) {
+    return WillPopScope(
+      onWillPop: () async {
+        return !_unfocusTextFieldIfAny();
+      },
+      child: GestureDetector(
+        onTapDown: (_) => _unfocusTextFieldIfAny(),
+        behavior: HitTestBehavior.translucent,
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildHeader(state),
+                  _buildCheckPoints(state),
+                ],
+              ),
+            ),
+          ]
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(RecordStateV2 state) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 55),
+      child: InkWell(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 8, bottom: 8, left: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                state.year,
+                style: TextStyle(
+                  color: AppColors.textBlack,
+                  fontSize: 12,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  state.monthAndNthWeek,
+                  style: TextStyle(
+                    color: AppColors.textBlack,
+                    fontSize: 24,
+                  )
+                ),
+              ),
+            ],
+          ),
+        ),
+        onTap: () {},
+      ),
+    );
+  }
+
+  Widget _buildCheckPoints(RecordStateV2 state) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 6, top: 6, right: 6),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.all(Radius.circular(6)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 7, top: 3, right: 3, bottom: 12),
+          child: Column(
+            children: [
+              _buildCheckPointsHeader(state),
+              _buildCheckPointsList(state),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCheckPointsHeader(RecordStateV2 state) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 5),
+      child: Row(
+        children: <Widget>[
+          Text(
+            'CHECK POINTS',
+            style: TextStyle(
+              color: AppColors.textWhite,
+              fontSize: 18,
+            ),
+          ),
+          Spacer(),
+          state.isCheckPointsLocked ? _buildLockedIcon() : _buildUnlockedIcon(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCheckPointsList(RecordStateV2 state) {
+    return Column(
+      children: List.generate(state.checkPoints.length, (index) {
+        return _buildCheckPointItem(state.checkPoints[index]);
+      }),
+    );
+  }
+
+  Widget _buildCheckPointItem(CheckPoint checkPoint) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4, right: 7),
+      child: Row(
+        children: <Widget>[
+          ConstrainedBox(
+            constraints: BoxConstraints(minWidth: 20,),
+            child: Center(
+              child: Text(
+                checkPoint.bulletPointNumber.toString(),
+                style: TextStyle(
+                  color: AppColors.textWhiteDark,
+                  fontSize: 16,
+                ),
+              ),
+            )
+          ),
+          SizedBox(width: 5,),
+          Expanded(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: 30,),
+              child: Container(
+                alignment: Alignment.center,
+                child: CheckPointTextField(
+                  text: checkPoint.text,
+                  hintText: checkPoint.hintText,
+                  onChanged: (s) {},
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLockedIcon() {
+    return SizedBox(
+      width: 38,
+      height: 38,
+      child: Stack(
+        children: [
+          Center(
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.secondary,
+                shape: BoxShape.circle,
+              ),
+              width: 28,
+              height: 28,
+              alignment: Alignment.center,
+              child: Image.asset('assets/ic_lock_on.png'),
+            ),
+          ),
+          Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              customBorder: CircleBorder(),
+              onTap: () {},
+            ),
+          )
+        ]
+      ),
+    );
+  }
+
+  Widget _buildUnlockedIcon() {
+    return SizedBox(
+      width: 38,
+      height: 38,
+      child: Stack(
+        children: [
+          Center(
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.backgroundGrey,
+                shape: BoxShape.circle,
+              ),
+              width: 28,
+              height: 28,
+              alignment: Alignment.center,
+              child: Image.asset('assets/ic_lock_off.png'),
+            ),
+          ),
+          Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              customBorder: CircleBorder(),
+              onTap: () {},
+            ),
+          )
+        ]
+      ),
     );
   }
 

@@ -23,4 +23,6 @@ class AppColors {
   static const backgroundGreyDark = Color(0xFFABABAB);
 
   static const divider = Color(0xFFEEEEEE);
+
+  static const ripple = Color(0x44000000);
 }
