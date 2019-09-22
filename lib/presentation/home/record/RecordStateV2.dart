@@ -21,7 +21,7 @@ class RecordStateV2 {
     return RecordStateV2(
       year: '2019',
       monthAndNthWeek: '9월 셋째주',
-      isCheckPointsLocked: true,
+      isCheckPointsLocked: false,
       checkPoints: [
         CheckPoint(bulletPointNumber: 1, text: '', hintText: '이건 힌트 텍스트 입니다.'),
         CheckPoint(bulletPointNumber: 2, text: 'ㄷㄹㄷㄹ'),

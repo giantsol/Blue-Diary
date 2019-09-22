@@ -75,15 +75,17 @@ class _RecordScreenState extends State<RecordScreen> {
       child: GestureDetector(
         onTapDown: (_) => _unfocusTextFieldIfAny(),
         behavior: HitTestBehavior.translucent,
-        child: Stack(
+        child: Column(
           children: [
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildHeader(state),
-                  _buildCheckPoints(state),
-                  _buildDayPreviews(state),
-                ],
+            _buildHeader(state),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _buildCheckPoints(state),
+                    _buildDayPreviews(state),
+                  ],
+                ),
               ),
             ),
           ]
