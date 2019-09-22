@@ -133,11 +133,11 @@ class _RecordScreenState extends State<RecordScreen> {
           borderRadius: BorderRadius.all(Radius.circular(6)),
         ),
         child: Padding(
-          padding: const EdgeInsets.only(left: 7, top: 3, right: 3, bottom: 12),
+          padding: const EdgeInsets.only(left: 7, top: 3, right: 3, bottom: 3),
           child: Column(
             children: [
               _buildCheckPointsHeader(state),
-              _buildCheckPointsList(state),
+              state.isCheckPointsLocked ? Container() : _buildCheckPointsList(state),
             ],
           ),
         ),
@@ -159,50 +159,6 @@ class _RecordScreenState extends State<RecordScreen> {
           ),
           Spacer(),
           state.isCheckPointsLocked ? _buildLockedIcon() : _buildUnlockedIcon(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCheckPointsList(RecordStateV2 state) {
-    return Column(
-      children: List.generate(state.checkPoints.length, (index) {
-        return _buildCheckPointItem(state.checkPoints[index]);
-      }),
-    );
-  }
-
-  Widget _buildCheckPointItem(CheckPoint checkPoint) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 4, right: 7),
-      child: Row(
-        children: <Widget>[
-          ConstrainedBox(
-            constraints: BoxConstraints(minWidth: 20,),
-            child: Center(
-              child: Text(
-                checkPoint.bulletPointNumber.toString(),
-                style: TextStyle(
-                  color: AppColors.textWhiteDark,
-                  fontSize: 16,
-                ),
-              ),
-            )
-          ),
-          SizedBox(width: 5,),
-          Expanded(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: 30,),
-              child: Container(
-                alignment: Alignment.center,
-                child: CheckPointTextField(
-                  text: checkPoint.text,
-                  hintText: checkPoint.hintText,
-                  onChanged: (s) {},
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -264,6 +220,53 @@ class _RecordScreenState extends State<RecordScreen> {
             ),
           )
         ]
+      ),
+    );
+  }
+
+  Widget _buildCheckPointsList(RecordStateV2 state) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 9),
+      child: Column(
+        children: List.generate(state.checkPoints.length, (index) {
+          return _buildCheckPointItem(state.checkPoints[index]);
+        }),
+      ),
+    );
+  }
+
+  Widget _buildCheckPointItem(CheckPoint checkPoint) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4, right: 7),
+      child: Row(
+        children: <Widget>[
+          ConstrainedBox(
+            constraints: BoxConstraints(minWidth: 20,),
+            child: Center(
+              child: Text(
+                checkPoint.bulletPointNumber.toString(),
+                style: TextStyle(
+                  color: AppColors.textWhiteDark,
+                  fontSize: 16,
+                ),
+              ),
+            )
+          ),
+          SizedBox(width: 5,),
+          Expanded(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: 30,),
+              child: Container(
+                alignment: Alignment.center,
+                child: CheckPointTextField(
+                  text: checkPoint.text,
+                  hintText: checkPoint.hintText,
+                  onChanged: (s) {},
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
