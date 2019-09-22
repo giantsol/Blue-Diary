@@ -6,6 +6,7 @@ import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/DayRecord.dart';
+import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/presentation/home/record/RecordBloc.dart';
 import 'package:todo_app/presentation/home/record/RecordBlocDelegator.dart';
 import 'package:todo_app/presentation/home/record/RecordState.dart';
@@ -34,11 +35,14 @@ class _RecordScreenState extends State<RecordScreen> {
   InfinityPageController _daysPageController;
   final Map<String, FocusNode> _focusNodes = {};
 
+  InfinityPageController _weekRecordsPageController;
+
   @override
   initState() {
     super.initState();
     _bloc = RecordBloc(delegator: widget.recordBlocDelegator);
     _daysPageController = InfinityPageController(initialPage: _bloc.getInitialState().dayRecordPageIndex, viewportFraction: 0.75);
+    _weekRecordsPageController = InfinityPageController(initialPage: 0);
   }
 
   @override
@@ -79,13 +83,16 @@ class _RecordScreenState extends State<RecordScreen> {
           children: [
             _buildHeader(state),
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    _buildCheckPoints(state),
-                    _buildDayPreviews(state),
-                  ],
-                ),
+              child: InfinityPageView(
+                controller: _weekRecordsPageController,
+                itemCount: state.weekRecords.length,
+                itemBuilder: (context, index) {
+                  final weekRecords = state.weekRecords;
+                  if (weekRecords.isEmpty || weekRecords[index] == null) {
+                    return null;
+                  }
+                  return _buildWeekRecord(weekRecords[index]);
+                },
               ),
             ),
           ]
@@ -128,7 +135,18 @@ class _RecordScreenState extends State<RecordScreen> {
     );
   }
 
-  Widget _buildCheckPoints(RecordStateV2 state) {
+  Widget _buildWeekRecord(WeekRecord weekRecord) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          _buildCheckPoints(weekRecord),
+          _buildDayPreviews(weekRecord),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCheckPoints(WeekRecord weekRecord) {
     return Padding(
       padding: const EdgeInsets.only(left: 6, top: 6, right: 6),
       child: Container(
@@ -140,8 +158,8 @@ class _RecordScreenState extends State<RecordScreen> {
           padding: const EdgeInsets.only(left: 7, top: 3, right: 3, bottom: 3),
           child: Column(
             children: [
-              _buildCheckPointsHeader(state),
-              state.isCheckPointsLocked ? Container() : _buildCheckPointsList(state),
+              _buildCheckPointsHeader(weekRecord),
+              weekRecord.isCheckPointsLocked ? Container() : _buildCheckPointsList(weekRecord),
             ],
           ),
         ),
@@ -149,7 +167,7 @@ class _RecordScreenState extends State<RecordScreen> {
     );
   }
 
-  Widget _buildCheckPointsHeader(RecordStateV2 state) {
+  Widget _buildCheckPointsHeader(WeekRecord weekRecord) {
     return Padding(
       padding: const EdgeInsets.only(left: 5),
       child: Row(
@@ -162,7 +180,7 @@ class _RecordScreenState extends State<RecordScreen> {
             ),
           ),
           Spacer(),
-          state.isCheckPointsLocked ? _buildLockedIcon() : _buildUnlockedIcon(),
+          weekRecord.isCheckPointsLocked ? _buildLockedIcon() : _buildUnlockedIcon(),
         ],
       ),
     );
@@ -228,12 +246,12 @@ class _RecordScreenState extends State<RecordScreen> {
     );
   }
 
-  Widget _buildCheckPointsList(RecordStateV2 state) {
+  Widget _buildCheckPointsList(WeekRecord weekRecord) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 9),
       child: Column(
-        children: List.generate(state.checkPoints.length, (index) {
-          return _buildCheckPointItem(state.checkPoints[index]);
+        children: List.generate(weekRecord.checkPoints.length, (index) {
+          return _buildCheckPointItem(weekRecord.checkPoints[index]);
         }),
       ),
     );
@@ -275,12 +293,12 @@ class _RecordScreenState extends State<RecordScreen> {
     );
   }
 
-  Widget _buildDayPreviews(RecordStateV2 state) {
+  Widget _buildDayPreviews(WeekRecord weekRecord) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
-        children: List.generate(state.dayPreviews.length, (index) {
-          return _buildDayPreviewItem(state.dayPreviews[index]);
+        children: List.generate(weekRecord.dayPreviews.length, (index) {
+          return _buildDayPreviewItem(weekRecord.dayPreviews[index]);
         })
       ),
     );
@@ -298,7 +316,6 @@ class _RecordScreenState extends State<RecordScreen> {
 
   // all day preview content from Mon ~ lock icon
   Widget _buildDayPreviewItemContent(DayPreview dayPreview) {
-    debugPrint('${dayPreview.filledRatio}');
     return Row(
       children: <Widget>[
         Expanded(
@@ -374,7 +391,7 @@ class _RecordScreenState extends State<RecordScreen> {
                                   ),
                                   SizedBox(width: 12),
                                   dayPreview.filledRatio == 1.0
-                                  ? Text(
+                                    ? Text(
                                     'COMPLETE',
                                     style: TextStyle(
                                       fontSize: 18,
