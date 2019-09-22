@@ -24,5 +24,5 @@ class AppColors {
 
   static const divider = Color(0xFFEEEEEE);
 
-  static const ripple = Color(0x44000000);
+  static const ripple = Color(0x1C000000);
 }
