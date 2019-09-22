@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:infinity_page_view/infinity_page_view.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
+import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/presentation/home/record/RecordBloc.dart';
 import 'package:todo_app/presentation/home/record/RecordBlocDelegator.dart';
@@ -81,6 +82,7 @@ class _RecordScreenState extends State<RecordScreen> {
                 children: [
                   _buildHeader(state),
                   _buildCheckPoints(state),
+                  _buildDayPreviews(state),
                 ],
               ),
             ),
@@ -267,6 +269,206 @@ class _RecordScreenState extends State<RecordScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDayPreviews(RecordStateV2 state) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Column(
+        children: List.generate(state.dayPreviews.length, (index) {
+          return _buildDayPreviewItem(state.dayPreviews[index]);
+        })
+      ),
+    );
+  }
+
+  Widget _buildDayPreviewItem(DayPreview dayPreview) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        _buildDayPreviewItemContent(dayPreview),
+        dayPreview.hasTrailingDots ? _buildDayPreviewItemTrailingDots(dayPreview.filledRatio) : Container(),
+      ],
+    );
+  }
+
+  // all day preview content from Mon ~ lock icon
+  Widget _buildDayPreviewItemContent(DayPreview dayPreview) {
+    debugPrint('${dayPreview.filledRatio}');
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: IntrinsicHeight(
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 15),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 48,
+                        height: 48,
+                        child: Stack(
+                          children: <Widget>[
+                            Positioned.fill(
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: AppColors.backgroundGrey,
+                                  shape: BoxShape.circle,
+                                  border: dayPreview.hasBorder
+                                    ? Border.all(
+                                    color: AppColors.primary,
+                                    width: 2,
+                                  )
+                                    : null,
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: ClipRect(
+                                child: Align(
+                                  alignment: Alignment.bottomCenter,
+                                  heightFactor: dayPreview.filledRatio,
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Container(),
+                                  ),
+                                )
+                              ),
+                            ),
+                            Center(
+                              child: Text(
+                                dayPreview.thumbnailString,
+                                style: TextStyle(
+                                  color: AppColors.textWhite,
+                                  fontSize: 18,
+                                ),
+                                textScaleFactor: 1.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 18, top: 4, bottom: 4,),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                children: [
+                                  Text(
+                                    dayPreview.title,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: AppColors.textBlack,
+                                    ),
+                                  ),
+                                  SizedBox(width: 12),
+                                  dayPreview.filledRatio == 1.0
+                                  ? Text(
+                                    'COMPLETE',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: AppColors.tertiary,
+                                    )
+                                  )
+                                    : Container(),
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 2,),
+                                child: Text(
+                                  dayPreview.subtitle,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: dayPreview.subtitleColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Material(
+                  type: MaterialType.transparency,
+                  child: InkWell(
+                    onTap: () {},
+                  ),
+                ),
+              ]
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 9),
+          child: dayPreview.isLocked ? _buildLockedIcon() : _buildUnlockedIcon(),
+        ),
+      ],
+    );
+  }
+
+  // trailing dots below DayPreviewItemContent
+  Widget _buildDayPreviewItemTrailingDots(double filledRatio) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 37),
+      child: SizedBox(
+        width: 4,
+        height: 16,
+        child: Stack(
+          children: [
+            _buildTrailingDots(AppColors.backgroundGrey, 1.0),
+            _buildTrailingDots(AppColors.primary, filledRatio),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTrailingDots(Color color, double filledRatio) {
+    return ClipRect(
+      child: Align(
+        alignment: Alignment.topCenter,
+        heightFactor: filledRatio,
+        child: Column(
+          children: <Widget>[
+            Container(
+              width: 4,
+              height: 4,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+              ),
+            ),
+            SizedBox(height: 2,),
+            Container(
+              width: 4,
+              height: 4,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+              ),
+            ),
+            SizedBox(height: 2,),
+            Container(
+              width: 4,
+              height: 4,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

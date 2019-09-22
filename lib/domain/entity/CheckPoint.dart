@@ -5,9 +5,9 @@ class CheckPoint {
   final String hintText;
 
   const CheckPoint({
-    this.bulletPointNumber = 0,
-    this.text = '',
-    this.hintText = '',
+    this.bulletPointNumber,
+    this.text,
+    this.hintText,
   });
 
 }
