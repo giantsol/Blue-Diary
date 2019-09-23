@@ -9,6 +9,7 @@ class DayPreview {
   final int doneToDosCount;
   final bool isLocked;
   final bool hasTrailingDots;
+  final bool isToday;
 
   bool get hasBorder => totalToDosCount > 0;
   double get filledRatio => totalToDosCount == 0 ? 0 : doneToDosCount / totalToDosCount.toDouble();
@@ -22,5 +23,6 @@ class DayPreview {
     this.doneToDosCount,
     this.isLocked,
     this.hasTrailingDots,
+    this.isToday,
   });
 }

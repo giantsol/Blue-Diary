@@ -27,7 +27,7 @@ class RecordStateV2 {
             CheckPoint(bulletPointNumber: 3, text: '나나나나ㅏ나나나나나나나나나나ㅏ나나나나나나나'),
           ],
           dayPreviews: [
-            DayPreview(thumbnailString: 'Mon', title: '9월 1일', totalToDosCount: 0, doneToDosCount: 0, isLocked: false, hasTrailingDots: true),
+            DayPreview(thumbnailString: 'Mon', title: '9월 1일', totalToDosCount: 0, doneToDosCount: 0, isLocked: false, hasTrailingDots: true, isToday: true),
             DayPreview(thumbnailString: 'Tue', title: '9월 2일', totalToDosCount: 4, doneToDosCount: 0, isLocked: false, hasTrailingDots: true),
             DayPreview(thumbnailString: 'Wed', title: '9월 3일', totalToDosCount: 4, doneToDosCount: 1, isLocked: false, hasTrailingDots: true),
             DayPreview(thumbnailString: 'Thu', title: '9월 4일', totalToDosCount: 4, doneToDosCount: 4, isLocked: false, hasTrailingDots: true),

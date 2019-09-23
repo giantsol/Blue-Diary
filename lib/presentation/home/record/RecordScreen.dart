@@ -382,6 +382,25 @@ class _RecordScreenState extends State<RecordScreen> {
                             children: <Widget>[
                               Row(
                                 children: [
+                                  dayPreview.isToday == true
+                                    ? Padding(
+                                    padding: EdgeInsets.only(right: 4,),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: AppColors.secondary,
+                                        borderRadius: BorderRadius.all(Radius.circular(6)),
+                                      ),
+                                      padding: EdgeInsets.symmetric(vertical: 1, horizontal: 3,),
+                                      child: Text(
+                                        'TODAY',
+                                        style: TextStyle(
+                                          color: AppColors.textWhite,
+                                          fontSize: 8,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                    : Container(),
                                   Text(
                                     dayPreview.title,
                                     style: TextStyle(
