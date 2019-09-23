@@ -410,11 +410,14 @@ class _RecordScreenState extends State<RecordScreen> {
                                   ),
                                   SizedBox(width: 12),
                                   dayPreview.filledRatio == 1.0
-                                    ? Text(
-                                    'COMPLETE',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: AppColors.tertiary,
+                                    ? Expanded(
+                                    child: Text(
+                                      'COMPLETE',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: AppColors.tertiary,
+                                      )
                                     )
                                   )
                                     : Container(),
