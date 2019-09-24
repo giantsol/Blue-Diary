@@ -9,6 +9,7 @@ import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/presentation/home/record/RecordBloc.dart';
 import 'package:todo_app/presentation/home/record/RecordBlocDelegator.dart';
+import 'package:todo_app/presentation/home/record/RecordBlocV2.dart';
 import 'package:todo_app/presentation/home/record/RecordState.dart';
 import 'package:todo_app/presentation/home/record/RecordStateV2.dart';
 import 'package:todo_app/presentation/widgets/CheckPointTextField.dart';
@@ -35,6 +36,7 @@ class _RecordScreenState extends State<RecordScreen> {
   InfinityPageController _daysPageController;
   final Map<String, FocusNode> _focusNodes = {};
 
+  RecordBlocV2 _blocV2;
   InfinityPageController _weekRecordsPageController;
 
   @override
@@ -42,19 +44,24 @@ class _RecordScreenState extends State<RecordScreen> {
     super.initState();
     _bloc = RecordBloc(delegator: widget.recordBlocDelegator);
     _daysPageController = InfinityPageController(initialPage: _bloc.getInitialState().dayRecordPageIndex, viewportFraction: 0.75);
-    _weekRecordsPageController = InfinityPageController(initialPage: 0);
+
+    _blocV2 = RecordBlocV2(delegator: widget.recordBlocDelegator);
+    _weekRecordsPageController = InfinityPageController(initialPage: _blocV2.getInitialState().weekRecordPageIndex);
   }
 
   @override
   void didUpdateWidget(RecordScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     _bloc.delegator = widget.recordBlocDelegator;
+
+    _blocV2.delegator = widget.recordBlocDelegator;
   }
 
   @override
   dispose() {
     super.dispose();
     _bloc.dispose();
+    _blocV2.dispose();
 
     _focusNodes.forEach((key, focusNode) => focusNode.dispose());
     _focusNodes.clear();
@@ -62,13 +69,13 @@ class _RecordScreenState extends State<RecordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return _buildUIV2(RecordStateV2.createTestState());
-//    return StreamBuilder(
-//      initialData: _bloc.getInitialState(),
-//      stream: _bloc.observeState(),
-//      builder: (context, snapshot) {
-//      }
-//    );
+    return StreamBuilder(
+      initialData: _blocV2.getInitialState(),
+      stream: _blocV2.observeState(),
+      builder: (context, snapshot) {
+        return _buildUIV2(snapshot.data);
+      }
+    );
   }
 
   Widget _buildUIV2(RecordStateV2 state) {
@@ -120,7 +127,7 @@ class _RecordScreenState extends State<RecordScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  state.monthAndNthWeek,
+                  state.monthAndWeek,
                   style: TextStyle(
                     color: AppColors.textBlack,
                     fontSize: 24,
@@ -266,7 +273,7 @@ class _RecordScreenState extends State<RecordScreen> {
             constraints: BoxConstraints(minWidth: 20,),
             child: Center(
               child: Text(
-                checkPoint.bulletPointNumber.toString(),
+                (checkPoint.index + 1).toString(),
                 style: TextStyle(
                   color: AppColors.textWhiteDark,
                   fontSize: 16,

@@ -26,7 +26,7 @@ class RecordBloc {
 
   _initState({int dayRecordPageIndex}) async {
     final today = _usecases.getToday();
-    final dateInNthWeek = _usecases.getCurrentDateInNthWeek();
+    final dateInWeek = _usecases.getCurrentDateInWeek();
     final weekMemos = await _usecases.getCurrentWeekMemos();
     final currentDayRecord = await _usecases.getCurrentDayRecord();
     final prevDayRecord = await _usecases.getPrevDayRecord();
@@ -35,7 +35,7 @@ class RecordBloc {
     _state.add(_state.value.buildNew(
       today: today,
       dayRecordPageIndex: dayRecordPageIndex ?? _state.value.dayRecordPageIndex,
-      dateInNthWeek: dateInNthWeek,
+      dateInWeek: dateInWeek,
       weekMemos: weekMemos,
       currentDayRecord: currentDayRecord,
       prevDayRecord: prevDayRecord,

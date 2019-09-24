@@ -1,12 +1,12 @@
 
-import 'package:todo_app/domain/entity/DateInNthWeek.dart';
+import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/WeekMemo.dart';
 
 class RecordState {
   final DateTime today;
   final int dayRecordPageIndex;
-  final DateInNthWeek dateInNthWeek;
+  final DateInWeek dateInWeek;
   final List<WeekMemo> weekMemos;
   final DayRecord currentDayRecord;
   final DayRecord prevDayRecord;
@@ -15,18 +15,18 @@ class RecordState {
   const RecordState({
     this.today,
     this.dayRecordPageIndex = 0,
-    this.dateInNthWeek = const DateInNthWeek(),
+    this.dateInWeek = const DateInWeek(),
     this.weekMemos = const [],
     this.currentDayRecord,
     this.prevDayRecord,
     this.nextDayRecord,
   });
 
-  String get yearText => '${dateInNthWeek.year}';
+  String get yearText => '${dateInWeek.year}';
 
   String get monthAndNthWeekText {
-    final month = dateInNthWeek.month;
-    final nthWeek = dateInNthWeek.nthWeek;
+    final month = dateInWeek.month;
+    final nthWeek = dateInWeek.nthWeek;
     switch (nthWeek) {
       case 0:
         return '$month월 첫째주';
@@ -70,7 +70,7 @@ class RecordState {
   RecordState buildNew({
     DateTime today,
     int dayRecordPageIndex,
-    DateInNthWeek dateInNthWeek,
+    DateInWeek dateInWeek,
     List<WeekMemo> weekMemos,
     DayRecord currentDayRecord,
     DayRecord prevDayRecord,
@@ -79,7 +79,7 @@ class RecordState {
     return RecordState(
       today: today ?? this.today,
       dayRecordPageIndex: dayRecordPageIndex ?? this.dayRecordPageIndex,
-      dateInNthWeek: dateInNthWeek ?? this.dateInNthWeek,
+      dateInWeek: dateInWeek ?? this.dateInWeek,
       weekMemos: weekMemos ?? this.weekMemos,
       currentDayRecord: currentDayRecord ?? this.currentDayRecord,
       prevDayRecord: prevDayRecord ?? this.prevDayRecord,

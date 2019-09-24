@@ -7,9 +7,5 @@ class WeekRecord {
   final List<CheckPoint> checkPoints;
   final List<DayPreview> dayPreviews;
 
-  const WeekRecord({
-    this.isCheckPointsLocked,
-    this.checkPoints,
-    this.dayPreviews,
-  });
+  const WeekRecord(this.isCheckPointsLocked, this.checkPoints, this.dayPreviews);
 }

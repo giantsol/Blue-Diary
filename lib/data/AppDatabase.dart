@@ -2,6 +2,8 @@
 import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:todo_app/domain/entity/CheckPoint.dart';
+import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
@@ -15,8 +17,9 @@ class AppDatabase {
   }
 
   _initDatabase() async {
+    final dbPath = join(await getDatabasesPath(), 'todo1.db');
     _database.value = await openDatabase(
-      join(await getDatabasesPath(), 'todo.db'),
+      dbPath,
       onCreate: (db, version) async {
         await db.execute(
           """
@@ -30,12 +33,31 @@ class AppDatabase {
         );
         await db.execute(
           """
+          CREATE TABLE check_points(
+            date_string TEXT NOT NULL,
+            which INTEGER NOT NULL,
+            content TEXT,
+            content_hint TEXT,
+            PRIMARY KEY (date_string, which)
+          );
+          """
+        );
+        await db.execute(
+          """
           CREATE TABLE todos(
             date_string TEXT NOT NULL,
             which INTEGER NOT NULL,
             content TEXT,
             done INTEGER,
             PRIMARY KEY (date_string, which)
+          );
+          """
+        );
+        await db.execute(
+          """
+          CREATE TABLE locks(
+            date_string TEXT NOT NULL PRIMARY KEY,
+            is_locked INTEGER NOT NULL
           );
           """
         );
@@ -110,6 +132,64 @@ class AppDatabase {
     });
 
     return weekMemos;
+  }
+
+  Future<List<CheckPoint>> loadCheckPoints(DateTime date) async {
+    final db = await _database.first;
+    final List<CheckPoint> checkPoints = [
+      CheckPoint(index: 0, text: '', hintText: ''),
+      CheckPoint(index: 1, text: '', hintText: ''),
+      CheckPoint(index: 2, text: '', hintText: ''),
+    ];
+    final dateString = CheckPoint.dateToDateString(date);
+    final List<Map<String, dynamic>> maps = await db.query(
+      'check_points',
+      where: 'date_string = ?',
+      whereArgs: [dateString],
+    );
+    maps.forEach((map) {
+      final index = map['which'];
+      checkPoints[index] = checkPoints[index].buildNew(text: map['content']);
+    });
+
+    return checkPoints;
+  }
+
+  Future<bool> loadIsCheckPointsLocked(DateTime date) async {
+    final db = await _database.first;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'locks',
+      where: 'date_string = ?',
+      whereArgs: [_createCheckPointsLockKey(date)],
+    );
+    if (maps.isEmpty) {
+      return false;
+    } else {
+      return maps[0]['is_locked'] == 1;
+    }
+  }
+
+  String _createCheckPointsLockKey(DateTime date) {
+    final dateInWeek = DateInWeek.fromDate(date);
+    return '${dateInWeek.year}-${dateInWeek.monthAndNthWeekText}';
+  }
+
+  Future<bool> loadIsDayRecordLocked(DateTime date) async {
+    final db = await _database.first;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'locks',
+      where: 'date_string = ?',
+      whereArgs: [_createDayRecordLockKey(date)],
+    );
+    if (maps.isEmpty) {
+      return false;
+    } else {
+      return maps[0]['is_locked'] == 1;
+    }
+  }
+
+  String _createDayRecordLockKey(DateTime date) {
+    return '${date.year}-${date.month}-${date.day}';
   }
 
   saveWeekMemo(WeekMemo weekMemo) async {
