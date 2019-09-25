@@ -5,11 +5,27 @@ import 'package:sqflite/sqflite.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
-import 'package:todo_app/domain/entity/DayRecord.dart';
+import 'package:todo_app/domain/entity/Lock.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/WeekMemo.dart';
 
 class AppDatabase {
+  static const String TABLE_CHECK_POINTS = 'check_points';
+  static const String TABLE_TODOS = 'todos';
+  static const String TABLE_LOCKS = 'locks';
+  static const String TABLE_DAY_MEMOS = 'day_memos';
+
+  static const String COLUMN_YEAR = 'year';
+  static const String COLUMN_MONTH = 'month';
+  static const String COLUMN_DAY = 'day';
+  static const String COLUMN_NTH_WEEK = 'nth_week';
+  static const String COLUMN_INDEX = '_index';
+  static const String COLUMN_TEXT = 'text';
+  static const String COLUMN_HINT = 'hint';
+  static const String COLUMN_DONE = 'done';
+  static const String COLUMN_KEY = 'key';
+  static const String COLUMN_LOCKED = 'locked';
+
   final _database = BehaviorSubject<Database>();
 
   AppDatabase() {
@@ -23,49 +39,46 @@ class AppDatabase {
       onCreate: (db, version) async {
         await db.execute(
           """
-          CREATE TABLE week_memos(
-            date_string TEXT NOT NULL,
-            which INTEGER NOT NULL,
-            content TEXT,
-            PRIMARY KEY (date_string, which)
+          CREATE TABLE $TABLE_CHECK_POINTS(
+            $COLUMN_YEAR INTEGER NOT NULL,
+            $COLUMN_MONTH INTEGER NOT NULL,
+            $COLUMN_NTH_WEEK INTEGER NOT NULL,
+            $COLUMN_INDEX INTEGER NOT NULL,
+            $COLUMN_TEXT TEXT,
+            $COLUMN_HINT TEXT,
+            PRIMARY KEY ($COLUMN_YEAR, $COLUMN_MONTH, $COLUMN_NTH_WEEK, $COLUMN_INDEX)
           );
           """
         );
         await db.execute(
           """
-          CREATE TABLE check_points(
-            date_string TEXT NOT NULL,
-            which INTEGER NOT NULL,
-            content TEXT,
-            content_hint TEXT,
-            PRIMARY KEY (date_string, which)
+          CREATE TABLE $TABLE_TODOS(
+            $COLUMN_YEAR INTEGER NOT NULL,
+            $COLUMN_MONTH INTEGER NOT NULL,
+            $COLUMN_DAY INTEGER NOT NULL,
+            $COLUMN_INDEX INTEGER NOT NULL,
+            $COLUMN_TEXT TEXT,
+            $COLUMN_DONE INTEGER,
+            PRIMARY KEY ($COLUMN_YEAR, $COLUMN_MONTH, $COLUMN_DAY, $COLUMN_INDEX)
           );
           """
         );
         await db.execute(
           """
-          CREATE TABLE todos(
-            date_string TEXT NOT NULL,
-            which INTEGER NOT NULL,
-            content TEXT,
-            done INTEGER,
-            PRIMARY KEY (date_string, which)
-          );
-          """
-        );
-        await db.execute(
-          """
-          CREATE TABLE locks(
-            date_string TEXT NOT NULL PRIMARY KEY,
-            is_locked INTEGER NOT NULL
+          CREATE TABLE $TABLE_LOCKS(
+            $COLUMN_KEY TEXT NOT NULL PRIMARY KEY,
+            $COLUMN_LOCKED INTEGER NOT NULL
           );
           """
         );
         return db.execute(
           """
-          CREATE TABLE day_memos(
-            date_string TEXT NOT NULL PRIMARY KEY,
-            content TEXT
+          CREATE TABLE $TABLE_DAY_MEMOS(
+            $COLUMN_YEAR INTEGER NOT NULL,
+            $COLUMN_MONTH INTEGER NOT NULL,
+            $COLUMN_DAY INTEGER NOT NULL,
+            $COLUMN_TEXT TEXT,
+            PRIMARY KEY ($COLUMN_YEAR, $COLUMN_MONTH, $COLUMN_DAY)
           );
           """
         );
@@ -74,44 +87,141 @@ class AppDatabase {
     );
   }
 
-  Future<List<ToDo>> loadToDos(DateTime date) async {
+  Future<List<ToDo>> getToDos(DateTime date) async {
     final db = await _database.first;
     final List<Map<String, dynamic>> maps = await db.query(
-      'todos',
-      where: 'date_string = ?',
-      whereArgs: [ToDo.dateTimeToDateString(date)],
+      TABLE_TODOS,
+      where: ToDo.createWhereQueryForToDos(),
+      whereArgs: ToDo.createWhereArgsForToDos(date),
     );
     return List.generate(maps.length, (i) {
-      final map = maps[i];
-      return ToDo(
-        date,
-        map['which'],
-        content: map['content'],
-        isDone: map['done'] == 1 ? true : false,
-      );
+      return ToDo.fromDatabase(maps[i]);
     });
   }
 
-  saveDayMemo(DayMemo dayMemo) async {
+  Future<void> setDayMemo(DayMemo dayMemo) async {
     final db = await _database.first;
     await db.insert(
-      'day_memos',
-      dayMemo.toDatabaseFormat(),
+      TABLE_DAY_MEMOS,
+      dayMemo.toDatabase(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  Future<DayMemo> loadDayMemo(DateTime date) async {
+  Future<DayMemo> getDayMemo(DateTime date) async {
     final db = await _database.first;
     final Map<String, dynamic> map = await db.query(
-      'day_memos',
-      where: 'date_string = ?',
-      whereArgs: [DayMemo.dateTimeToDateString(date)],
+      TABLE_DAY_MEMOS,
+      where: DayMemo.createWhereQuery(),
+      whereArgs: DayMemo.createWhereArgs(date),
     ).then((l) => l.isEmpty ? null : l[0]);
-    final content = map != null ? map['content'] : '';
-    return DayMemo(date, content);
+    return map != null ? DayMemo.fromDatabase(map) : null;
   }
 
+  Future<List<CheckPoint>> getCheckPoints(DateTime date) async {
+    final db = await _database.first;
+    final dateInWeek = DateInWeek.fromDate(date);
+    final List<CheckPoint> checkPoints = [
+      CheckPoint(year: dateInWeek.year, month: dateInWeek.month, nthWeek: dateInWeek.nthWeek, index: 0),
+      CheckPoint(year: dateInWeek.year, month: dateInWeek.month, nthWeek: dateInWeek.nthWeek, index: 1),
+      CheckPoint(year: dateInWeek.year, month: dateInWeek.month, nthWeek: dateInWeek.nthWeek, index: 2),
+    ];
+    final List<Map<String, dynamic>> maps = await db.query(
+      TABLE_CHECK_POINTS,
+      where: CheckPoint.createWhereQueryForCheckPoints(),
+      whereArgs: CheckPoint.createWhereArgsForCheckPoints(dateInWeek),
+    );
+    maps.forEach((map) {
+      final index = map[COLUMN_INDEX];
+      checkPoints[index] = checkPoints[index].buildNew(text: map[COLUMN_TEXT], hint: map[COLUMN_HINT]);
+    });
+
+    return checkPoints;
+  }
+
+  Future<bool> getIsCheckPointsLocked(DateTime date) async {
+    final db = await _database.first;
+    final Map<String, dynamic> map = await db.query(
+      TABLE_LOCKS,
+      where: Lock.createWhereQuery(),
+      whereArgs: Lock.createWhereArgsForCheckPoints(DateInWeek.fromDate(date)),
+    ).then((l) => l.isEmpty ? null : l[0]);
+    return map != null ? Lock.fromDatabase(map).isLocked : false;
+  }
+
+  Future<void> setIsCheckPointsLocked(DateInWeek dateInWeek, bool value) async {
+    final db = await _database.first;
+    final map = {
+      COLUMN_KEY: Lock.createKeyForCheckPoints(dateInWeek),
+      COLUMN_LOCKED: value ? 1 : 0,
+    };
+    await db.insert(
+      TABLE_LOCKS,
+      map,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<void> setIsDayRecordLocked(DateTime date, bool value) async {
+    final db = await _database.first;
+    final map = {
+      COLUMN_KEY: Lock.createKeyForDayRecord(date),
+      COLUMN_LOCKED: value ? 1 : 0,
+    };
+    await db.insert(
+      TABLE_LOCKS,
+      map,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<void> setCheckPoint(CheckPoint checkPoint) async {
+    final db = await _database.first;
+    await db.insert(
+      TABLE_CHECK_POINTS,
+      checkPoint.toDatabase(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<bool> getIsDayRecordLocked(DateTime date) async {
+    final db = await _database.first;
+    final Map<String, dynamic> map = await db.query(
+      TABLE_LOCKS,
+      where: Lock.createWhereQuery(),
+      whereArgs: Lock.createWhereArgsForDayRecord(date),
+    ).then((l) => l.isEmpty ? null : l[0]);
+    return map != null ? Lock.fromDatabase(map).isLocked : false;
+  }
+
+  Future<void> setWeekMemo(WeekMemo weekMemo) async {
+    final db = await _database.first;
+    await db.insert(
+      'week_memos',
+      weekMemo.toDatabaseFormat(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<void> setToDo(ToDo toDo) async {
+    final db = await _database.first;
+    await db.insert(
+      TABLE_TODOS,
+      toDo.toDatabase(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<void> removeToDo(ToDo toDo) async {
+    final db = await _database.first;
+    await db.delete(
+      TABLE_TODOS,
+      where: ToDo.createWhereQueryForToDo(),
+      whereArgs: ToDo.createWhereArgsForToDo(toDo),
+    );
+  }
+
+  @deprecated
   Future<List<WeekMemo>> loadWeekMemos(DateTime dateTime) async {
     final db = await _database.first;
     // weekMemo는 항상 3개로 고정
@@ -132,91 +242,6 @@ class AppDatabase {
     });
 
     return weekMemos;
-  }
-
-  Future<List<CheckPoint>> loadCheckPoints(DateTime date) async {
-    final db = await _database.first;
-    final List<CheckPoint> checkPoints = [
-      CheckPoint(index: 0, text: '', hintText: ''),
-      CheckPoint(index: 1, text: '', hintText: ''),
-      CheckPoint(index: 2, text: '', hintText: ''),
-    ];
-    final dateString = CheckPoint.dateToDateString(date);
-    final List<Map<String, dynamic>> maps = await db.query(
-      'check_points',
-      where: 'date_string = ?',
-      whereArgs: [dateString],
-    );
-    maps.forEach((map) {
-      final index = map['which'];
-      checkPoints[index] = checkPoints[index].buildNew(text: map['content']);
-    });
-
-    return checkPoints;
-  }
-
-  Future<bool> loadIsCheckPointsLocked(DateTime date) async {
-    final db = await _database.first;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'locks',
-      where: 'date_string = ?',
-      whereArgs: [_createCheckPointsLockKey(date)],
-    );
-    if (maps.isEmpty) {
-      return false;
-    } else {
-      return maps[0]['is_locked'] == 1;
-    }
-  }
-
-  String _createCheckPointsLockKey(DateTime date) {
-    final dateInWeek = DateInWeek.fromDate(date);
-    return '${dateInWeek.year}-${dateInWeek.monthAndNthWeekText}';
-  }
-
-  Future<bool> loadIsDayRecordLocked(DateTime date) async {
-    final db = await _database.first;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'locks',
-      where: 'date_string = ?',
-      whereArgs: [_createDayRecordLockKey(date)],
-    );
-    if (maps.isEmpty) {
-      return false;
-    } else {
-      return maps[0]['is_locked'] == 1;
-    }
-  }
-
-  String _createDayRecordLockKey(DateTime date) {
-    return '${date.year}-${date.month}-${date.day}';
-  }
-
-  saveWeekMemo(WeekMemo weekMemo) async {
-    final db = await _database.first;
-    await db.insert(
-      'week_memos',
-      weekMemo.toDatabaseFormat(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  saveToDo(ToDo toDo) async {
-    final db = await _database.first;
-    await db.insert(
-      'todos',
-      toDo.toDatabaseFormat(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  removeToDo(ToDo toDo) async {
-    final db = await _database.first;
-    await db.delete(
-      'todos',
-      where: 'date_string = ? AND which = ?',
-      whereArgs: [ToDo.dateTimeToDateString(toDo.dateTime), toDo.index],
-    );
   }
 
 }

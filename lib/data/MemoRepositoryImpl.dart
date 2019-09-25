@@ -11,8 +11,8 @@ class MemoRepositoryImpl implements MemoRepository {
   const MemoRepositoryImpl(this._db);
 
   @override
-  saveWeekMemo(WeekMemo weekMemo) {
-    _db.saveWeekMemo(weekMemo);
+  void setWeekMemo(WeekMemo weekMemo) {
+    _db.setWeekMemo(weekMemo);
   }
 
   @override
@@ -22,17 +22,22 @@ class MemoRepositoryImpl implements MemoRepository {
 
   @override
   Future<List<CheckPoint>> getCheckPoints(DateTime date) async {
-    return await _db.loadCheckPoints(date);
+    return await _db.getCheckPoints(date);
   }
 
   @override
   Future<DayMemo> getDayMemo(DateTime date) async {
-    return await _db.loadDayMemo(date);
+    return await _db.getDayMemo(date);
   }
 
   @override
-  saveDayMemo(DayMemo dayMemo) {
-    _db.saveDayMemo(dayMemo);
+  void setDayMemo(DayMemo dayMemo) {
+    _db.setDayMemo(dayMemo);
+  }
+
+  @override
+  void setCheckPoint(CheckPoint checkPoint) {
+    _db.setCheckPoint(checkPoint);
   }
 
 }

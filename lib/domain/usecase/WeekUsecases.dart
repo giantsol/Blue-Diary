@@ -1,5 +1,6 @@
 
 import 'package:todo_app/Utils.dart';
+import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
@@ -16,9 +17,8 @@ class WeekUsecases {
 
   const WeekUsecases(this._memoRepository, this._dateRepository, this._toDoRepository, this._lockRepository);
 
-  DateInWeek getCurrentDateInWeek() {
-    final currentDate = _dateRepository.getCurrentDate();
-    return DateInWeek.fromDate(currentDate);
+  DateTime getCurrentDate() {
+    return _dateRepository.getCurrentDate();
   }
 
   Future<WeekRecord> getCurrentWeekRecord() async {
@@ -35,18 +35,50 @@ class WeekUsecases {
 
   Future<WeekRecord> _getWeekRecord(DateTime date) async {
     final today = _dateRepository.getToday();
+    final dateInWeek = DateInWeek.fromDate(date);
     final isCheckPointsLocked = await _lockRepository.getIsCheckPointsLocked(date);
     final checkPoints = await _memoRepository.getCheckPoints(date);
 
-    final datesInWeek = DateInWeek.fromDate(date).datesInWeek;
+    final datesInWeek = Utils.getDatesInWeek(date);
     List<DayPreview> dayPreviews = [];
     for (int i = 0; i < datesInWeek.length; i++) {
       final date = datesInWeek[i];
       final toDos = await _toDoRepository.getToDos(date);
       final isLocked = await _lockRepository.getIsDayRecordLocked(date);
-      dayPreviews.add(DayPreview(date, toDos, isLocked, i < datesInWeek.length - 1, Utils.isSameDay(date, today)));
+      final dayPreview = DayPreview(
+        date: date,
+        toDos: toDos,
+        isLocked: isLocked,
+        hasTrailingDots: i < datesInWeek.length - 1,
+        isToday: Utils.isSameDay(date, today)
+      );
+      dayPreviews.add(dayPreview);
     }
 
-    return WeekRecord(isCheckPointsLocked, checkPoints, dayPreviews);
+    return WeekRecord(dateInWeek: dateInWeek, isCheckPointsLocked: isCheckPointsLocked, checkPoints: checkPoints, dayPreviews: dayPreviews);
+  }
+
+  void setCheckPoint(CheckPoint checkPoint) {
+    _memoRepository.setCheckPoint(checkPoint);
+  }
+
+  void setCurrentDateToToday() {
+    _dateRepository.setCurrentDate(_dateRepository.getToday());
+  }
+
+  void setCheckPointsLocked(DateInWeek dateInWeek, bool value) {
+    _lockRepository.setIsCheckPointsLocked(dateInWeek, value);
+  }
+
+  void setDayRecordLocked(DateTime date, bool value) {
+    _lockRepository.setIsDayRecordLocked(date, value);
+  }
+
+  void setCurrentDateToNextWeek() {
+    _dateRepository.setCurrentDate(_dateRepository.getCurrentDate().add(Duration(days: 7)));
+  }
+
+  void setCurrentDateToPrevWeek() {
+    _dateRepository.setCurrentDate(_dateRepository.getCurrentDate().subtract(Duration(days: 7)));
   }
 }

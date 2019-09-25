@@ -10,16 +10,16 @@ class TodoRepositoryImpl implements ToDoRepository {
 
   @override
   Future<List<ToDo>> getToDos(DateTime date) async {
-    return await _db.loadToDos(date);
+    return await _db.getToDos(date);
   }
 
   @override
-  saveToDo(ToDo toDo) {
-    _db.saveToDo(toDo);
+  void saveToDo(ToDo toDo) {
+    _db.setToDo(toDo);
   }
 
   @override
-  removeToDo(ToDo toDo) {
+  void removeToDo(ToDo toDo) {
     _db.removeToDo(toDo);
   }
 

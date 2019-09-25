@@ -1,29 +1,57 @@
+import 'package:todo_app/data/AppDatabase.dart';
+
 class DayMemo {
+  static String createWhereQuery() => '${AppDatabase.COLUMN_YEAR} = ?'
+    ' AND ${AppDatabase.COLUMN_MONTH} = ?'
+    ' AND ${AppDatabase.COLUMN_DAY} = ?';
 
-  static String dateTimeToDateString(DateTime dateTime) => '${dateTime.year}-${dateTime.month}-${dateTime.day}';
+  static List<dynamic> createWhereArgs(DateTime date) => [
+    date.year,
+    date.month,
+    date.day,
+  ];
 
-  final DateTime dateTime;
-  final String content;
-
-  String get key => dateTimeToDateString(dateTime);
-
-  const DayMemo(this.dateTime, this.content);
-
-  DayMemo buildNew({
-    DateTime dateTime,
-    String content,
-  }) {
+  static DayMemo fromDatabase(Map<String, dynamic> map) {
     return DayMemo(
-      dateTime ?? this.dateTime,
-      content ?? this.content,
+      year: map[AppDatabase.COLUMN_YEAR] ?? 0,
+      month: map[AppDatabase.COLUMN_MONTH] ?? 0,
+      day: map[AppDatabase.COLUMN_DAY] ?? 0,
+      text: map[AppDatabase.COLUMN_TEXT] ?? '',
     );
   }
 
-  Map<String, dynamic> toDatabaseFormat() {
-    return {
-      'date_string': dateTimeToDateString(dateTime),
-      'content': content,
-    };
+  final int year;
+  final int month;
+  final int day;
+  final String text;
+
+  const DayMemo({
+    this.year = 0,
+    this.month = 0,
+    this.day = 0,
+    this.text = '',
+  });
+
+  DayMemo buildNew({
+    int year,
+    int month,
+    int day,
+    String text,
+  }) {
+    return DayMemo(
+      year: year ?? this.year,
+      month: month ?? this.month,
+      day: day ?? this.day,
+      text: text ?? this.text,
+    );
   }
 
+  Map<String, dynamic> toDatabase() {
+    return {
+      AppDatabase.COLUMN_YEAR: year,
+      AppDatabase.COLUMN_MONTH: month,
+      AppDatabase.COLUMN_DAY: day,
+      AppDatabase.COLUMN_TEXT: text,
+    };
+  }
 }

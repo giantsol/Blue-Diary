@@ -24,14 +24,14 @@ class WeekScreen extends StatefulWidget {
 
 class _WeekScreenState extends State<WeekScreen> {
   WeekBloc _bloc;
-  InfinityPageController _weeksPageController;
+  InfinityPageController _weekRecordPageController;
   final Map<String, FocusNode> _focusNodes = {};
 
   @override
   initState() {
     super.initState();
     _bloc = WeekBloc(delegator: widget.weekBlocDelegator);
-    _weeksPageController = InfinityPageController(initialPage: _bloc.getInitialState().weeksPageIndex);
+    _weekRecordPageController = InfinityPageController(initialPage: _bloc.getInitialState().weekRecordPageIndex);
   }
 
   @override
@@ -73,7 +73,7 @@ class _WeekScreenState extends State<WeekScreen> {
             _buildHeader(state),
             Expanded(
               child: InfinityPageView(
-                controller: _weeksPageController,
+                controller: _weekRecordPageController,
                 itemCount: state.weekRecords.length,
                 itemBuilder: (context, index) {
                   final weekRecords = state.weekRecords;
@@ -82,6 +82,7 @@ class _WeekScreenState extends State<WeekScreen> {
                   }
                   return _buildWeekRecord(weekRecords[index]);
                 },
+                onPageChanged: (changedIndex) => _bloc.onWeekRecordPageChanged(changedIndex),
               ),
             ),
           ]
@@ -119,7 +120,7 @@ class _WeekScreenState extends State<WeekScreen> {
             ],
           ),
         ),
-        onTap: () {},
+        onTap: () => _bloc.onHeaderClicked(),
       ),
     );
   }
@@ -169,13 +170,17 @@ class _WeekScreenState extends State<WeekScreen> {
             ),
           ),
           Spacer(),
-          weekRecord.isCheckPointsLocked ? _buildLockedIcon() : _buildUnlockedIcon(),
+          weekRecord.isCheckPointsLocked ? _buildLockedIcon(
+            onTap: () => _bloc.onCheckPointsLockedIconClicked(weekRecord),
+          ) : _buildUnlockedIcon(
+            onTap: () => _bloc.onCheckPointsUnlockedIconClicked(weekRecord),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildLockedIcon() {
+  Widget _buildLockedIcon({Function onTap}) {
     return SizedBox(
       width: 38,
       height: 38,
@@ -197,7 +202,7 @@ class _WeekScreenState extends State<WeekScreen> {
             type: MaterialType.transparency,
             child: InkWell(
               customBorder: CircleBorder(),
-              onTap: () {},
+              onTap: onTap,
             ),
           )
         ]
@@ -205,7 +210,7 @@ class _WeekScreenState extends State<WeekScreen> {
     );
   }
 
-  Widget _buildUnlockedIcon() {
+  Widget _buildUnlockedIcon({Function onTap}) {
     return SizedBox(
       width: 38,
       height: 38,
@@ -227,7 +232,7 @@ class _WeekScreenState extends State<WeekScreen> {
             type: MaterialType.transparency,
             child: InkWell(
               customBorder: CircleBorder(),
-              onTap: () {},
+              onTap: onTap,
             ),
           )
         ]
@@ -240,13 +245,13 @@ class _WeekScreenState extends State<WeekScreen> {
       padding: const EdgeInsets.only(bottom: 9),
       child: Column(
         children: List.generate(weekRecord.checkPoints.length, (index) {
-          return _buildCheckPointItem(weekRecord.checkPoints[index]);
+          return _buildCheckPointItem(weekRecord, weekRecord.checkPoints[index]);
         }),
       ),
     );
   }
 
-  Widget _buildCheckPointItem(CheckPoint checkPoint) {
+  Widget _buildCheckPointItem(WeekRecord weekRecord, CheckPoint checkPoint) {
     return Padding(
       padding: const EdgeInsets.only(top: 4, right: 7),
       child: Row(
@@ -270,9 +275,10 @@ class _WeekScreenState extends State<WeekScreen> {
               child: Container(
                 alignment: Alignment.center,
                 child: CheckPointTextField(
+                  focusNode: _getOrCreateFocusNode(checkPoint.key),
                   text: checkPoint.text,
-                  hintText: checkPoint.hintText,
-                  onChanged: (s) {},
+                  hintText: checkPoint.hint,
+                  onChanged: (s) => _bloc.onCheckPointTextChanged(weekRecord, checkPoint, s),
                 ),
               ),
             ),
@@ -287,24 +293,24 @@ class _WeekScreenState extends State<WeekScreen> {
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
         children: List.generate(weekRecord.dayPreviews.length, (index) {
-          return _buildDayPreviewItem(weekRecord.dayPreviews[index]);
+          return _buildDayPreviewItem(weekRecord, weekRecord.dayPreviews[index]);
         })
       ),
     );
   }
 
-  Widget _buildDayPreviewItem(DayPreview dayPreview) {
+  Widget _buildDayPreviewItem(WeekRecord weekRecord, DayPreview dayPreview) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        _buildDayPreviewItemContent(dayPreview),
+        _buildDayPreviewItemContent(weekRecord, dayPreview),
         dayPreview.hasTrailingDots ? _buildDayPreviewItemTrailingDots(dayPreview.filledRatio) : Container(),
       ],
     );
   }
 
   // all day preview content from Mon ~ lock icon
-  Widget _buildDayPreviewItemContent(DayPreview dayPreview) {
+  Widget _buildDayPreviewItemContent(WeekRecord weekRecord, DayPreview dayPreview) {
     return Row(
       children: <Widget>[
         Expanded(
@@ -432,7 +438,7 @@ class _WeekScreenState extends State<WeekScreen> {
                 Material(
                   type: MaterialType.transparency,
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () => _bloc.onDayPreviewClicked(dayPreview),
                   ),
                 ),
               ]
@@ -441,7 +447,11 @@ class _WeekScreenState extends State<WeekScreen> {
         ),
         Padding(
           padding: const EdgeInsets.only(right: 9),
-          child: dayPreview.isLocked ? _buildLockedIcon() : _buildUnlockedIcon(),
+          child: dayPreview.isLocked ? _buildLockedIcon(
+            onTap: () => _bloc.onDayPreviewLockedIconClicked(weekRecord, dayPreview),
+          ) : _buildUnlockedIcon(
+            onTap: () => _bloc.onDayPreviewUnlockedIconClicked(weekRecord, dayPreview),
+          ),
         ),
       ],
     );
@@ -501,6 +511,16 @@ class _WeekScreenState extends State<WeekScreen> {
         ),
       ),
     );
+  }
+
+  FocusNode _getOrCreateFocusNode(String key) {
+    if (_focusNodes.containsKey(key)) {
+      return _focusNodes[key];
+    } else {
+      final newFocusNode = FocusNode();
+      _focusNodes[key] = newFocusNode;
+      return newFocusNode;
+    }
   }
 
   bool _unfocusTextFieldIfAny() {

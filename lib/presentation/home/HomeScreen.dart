@@ -5,7 +5,6 @@ import 'package:todo_app/domain/entity/DrawerItem.dart';
 import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
 import 'package:todo_app/presentation/home/calendar/CalendarScreen.dart';
-import 'package:todo_app/presentation/home/record/RecordScreen.dart';
 import 'package:todo_app/presentation/week/WeekScreen.dart';
 
 class HomeScreen extends StatefulWidget {

@@ -12,14 +12,14 @@ class WeekState {
   final String year;
   final String monthAndWeek;
   final List<WeekRecord> weekRecords;
-  final int weeksPageIndex;
+  final int weekRecordPageIndex;
 
   const WeekState({
     this.viewState = ViewState.WHOLE_LOADING,
     this.year = '',
     this.monthAndWeek = '',
     this.weekRecords = const [],
-    this.weeksPageIndex = 0,
+    this.weekRecordPageIndex = 0,
   });
 
   WeekState buildNew({
@@ -27,14 +27,23 @@ class WeekState {
     String year,
     String monthAndWeek,
     List<WeekRecord> weekRecords,
-    int weeksPageIndex,
+    int weekRecordPageIndex,
   }) {
     return WeekState(
       viewState: viewState ?? this.viewState,
       year: year ?? this.year,
       monthAndWeek: monthAndWeek ?? this.monthAndWeek,
       weekRecords: weekRecords ?? this.weekRecords,
-      weeksPageIndex: weeksPageIndex ?? this.weeksPageIndex,
+      weekRecordPageIndex: weekRecordPageIndex ?? this.weekRecordPageIndex,
     );
+  }
+
+  WeekState buildNewWeekRecordUpdated(WeekRecord updated) {
+    final newRecords = List.of(weekRecords);
+    final updatedIndex = newRecords.indexWhere((it) => it.key == updated.key);
+    if (updatedIndex >= 0) {
+      newRecords[updatedIndex] = updated;
+    }
+    return buildNew(weekRecords: newRecords);
   }
 }

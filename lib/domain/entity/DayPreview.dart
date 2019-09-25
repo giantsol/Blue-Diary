@@ -9,6 +9,14 @@ class DayPreview {
   final bool isLocked;
   final bool hasTrailingDots;
   final bool isToday;
+  String get key => '${date.year}-${date.month}-${date.day}';
+  String get title => '${date.month}월 ${date.day}일';
+  int get totalToDosCount => toDos.length;
+  int get doneToDosCount => toDos.where((toDo) => toDo.isDone).length;
+  bool get hasBorder => totalToDosCount > 0;
+  double get filledRatio => totalToDosCount == 0 ? 0 : doneToDosCount / totalToDosCount.toDouble();
+  String get subtitle => totalToDosCount == 0 ? 'No Todos' : '$doneToDosCount/$totalToDosCount achieved';
+  Color get subtitleColor => totalToDosCount == 0 ? AppColors.textBlackLight : AppColors.primary;
 
   String get thumbnailString {
     final weekday = date.weekday;
@@ -28,13 +36,24 @@ class DayPreview {
       return 'Sun';
     }
   }
-  String get title => '${date.month}월 ${date.day}일';
-  int get totalToDosCount => toDos.length;
-  int get doneToDosCount => toDos.where((toDo) => toDo.isDone).length;
-  bool get hasBorder => totalToDosCount > 0;
-  double get filledRatio => totalToDosCount == 0 ? 0 : doneToDosCount / totalToDosCount.toDouble();
-  String get subtitle => totalToDosCount == 0 ? 'No Todos' : '$doneToDosCount/$totalToDosCount achieved';
-  Color get subtitleColor => totalToDosCount == 0 ? AppColors.textBlackLight : AppColors.primary;
 
-  const DayPreview(this.date, this.toDos, this.isLocked, this.hasTrailingDots, this.isToday);
+  const DayPreview({
+    this.date,
+    this.toDos,
+    this.isLocked,
+    this.hasTrailingDots,
+    this.isToday
+  });
+
+  DayPreview buildNew({
+    bool isLocked,
+  }) {
+    return DayPreview(
+      date: this.date,
+      toDos: this.toDos,
+      isLocked: isLocked ?? this.isLocked,
+      hasTrailingDots: this.hasTrailingDots,
+      isToday: this.isToday,
+    );
+  }
 }
