@@ -12,6 +12,7 @@ import 'package:todo_app/domain/repository/MemoRepository.dart';
 import 'package:todo_app/domain/repository/ToDoRepository.dart';
 import 'package:todo_app/domain/usecase/HomeUsecases.dart';
 import 'package:todo_app/domain/usecase/RecordUsecases.dart';
+import 'package:todo_app/domain/usecase/WeekUsecases.dart';
 
 final AppDatabase _database = AppDatabase();
 final DrawerRepository _drawerRepository = DrawerRepositoryImpl();
@@ -22,5 +23,6 @@ final LockRepository _lockRepository = LockRepositoryImpl(_database);
 
 class Dependencies {
   final HomeUsecases homeUsecases = HomeUsecases(_drawerRepository);
-  final RecordUsecases recordUsecases = RecordUsecases(_memoRepository, _dateRepository, _toDoRepository, _lockRepository);
+  final RecordUsecases recordUsecases = RecordUsecases(_memoRepository, _dateRepository, _toDoRepository);
+  final WeekUsecases weekUsecases = WeekUsecases(_memoRepository, _dateRepository, _toDoRepository, _lockRepository);
 }

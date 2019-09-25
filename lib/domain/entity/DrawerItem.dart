@@ -9,6 +9,7 @@ class DrawerHeaderItem implements DrawerItem {
 
 // 기록, 달력 등 같이 HomeScreen에 들어가는 child screen들
 class DrawerChildScreenItem implements DrawerItem {
+  static const KEY_WEEK = 'week';
   static const KEY_RECORD = 'record';
   static const KEY_CALENDAR = 'calendar';
   static const KEY_STATISTICS = 'statistics';

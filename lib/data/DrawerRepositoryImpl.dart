@@ -5,7 +5,7 @@ import 'package:todo_app/domain/repository/DrawerRepository.dart';
 class DrawerRepositoryImpl implements DrawerRepository {
   final DrawerHeaderItem _drawerHeaderItem = DrawerHeaderItem('ToDo App');
   final List<DrawerChildScreenItem> _drawerChildScreenItems = [
-    DrawerChildScreenItem(DrawerChildScreenItem.KEY_RECORD, '기록', isSelected: true),
+    DrawerChildScreenItem(DrawerChildScreenItem.KEY_WEEK, '기록', isSelected: true),
     DrawerChildScreenItem(DrawerChildScreenItem.KEY_CALENDAR, '달력'),
     DrawerChildScreenItem(DrawerChildScreenItem.KEY_STATISTICS, '통계'),
   ];

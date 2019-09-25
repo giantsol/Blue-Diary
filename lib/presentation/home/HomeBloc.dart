@@ -7,9 +7,9 @@ import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/entity/DrawerItem.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
-import 'package:todo_app/presentation/home/record/RecordBlocDelegator.dart';
+import 'package:todo_app/presentation/week/WeekBlocDelegator.dart';
 
-class HomeBloc implements RecordBlocDelegator {
+class HomeBloc implements WeekBlocDelegator {
   final _state = BehaviorSubject<HomeState>.seeded(HomeState());
   HomeState getInitialState() => _state.value;
   Stream<HomeState> observeState() => _state.distinct();

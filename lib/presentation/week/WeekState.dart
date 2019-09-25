@@ -6,35 +6,35 @@ enum ViewState {
   NORMAL,
 }
 
-class RecordStateV2 {
+class WeekState {
   // todo: declared viewState, but not using it anywhere yet
   final ViewState viewState;
   final String year;
   final String monthAndWeek;
   final List<WeekRecord> weekRecords;
-  final int weekRecordPageIndex;
+  final int weeksPageIndex;
 
-  const RecordStateV2({
+  const WeekState({
     this.viewState = ViewState.WHOLE_LOADING,
     this.year = '',
     this.monthAndWeek = '',
     this.weekRecords = const [],
-    this.weekRecordPageIndex = 0,
+    this.weeksPageIndex = 0,
   });
 
-  RecordStateV2 buildNew({
+  WeekState buildNew({
     ViewState viewState,
     String year,
     String monthAndWeek,
     List<WeekRecord> weekRecords,
-    int weekRecordPageIndex,
+    int weeksPageIndex,
   }) {
-    return RecordStateV2(
+    return WeekState(
       viewState: viewState ?? this.viewState,
       year: year ?? this.year,
       monthAndWeek: monthAndWeek ?? this.monthAndWeek,
       weekRecords: weekRecords ?? this.weekRecords,
-      weekRecordPageIndex: weekRecordPageIndex ?? this.weekRecordPageIndex,
+      weeksPageIndex: weeksPageIndex ?? this.weeksPageIndex,
     );
   }
 }

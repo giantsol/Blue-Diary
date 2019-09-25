@@ -1,26 +1,26 @@
 
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/domain/usecase/RecordUsecases.dart';
+import 'package:todo_app/domain/usecase/WeekUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
-import 'package:todo_app/presentation/home/record/RecordBlocDelegator.dart';
-import 'package:todo_app/presentation/home/record/RecordStateV2.dart';
+import 'package:todo_app/presentation/week/WeekBlocDelegator.dart';
+import 'package:todo_app/presentation/week/WeekState.dart';
 
-class RecordBlocV2 {
-  RecordBlocDelegator delegator;
+class WeekBloc {
+  WeekBlocDelegator delegator;
 
-  final _state = BehaviorSubject<RecordStateV2>.seeded(RecordStateV2());
-  RecordStateV2 getInitialState() => _state.value;
-  Stream<RecordStateV2> observeState() => _state.distinct();
+  final _state = BehaviorSubject<WeekState>.seeded(WeekState());
+  WeekState getInitialState() => _state.value;
+  Stream<WeekState> observeState() => _state.distinct();
 
-  final RecordUsecases _usecases = dependencies.recordUsecases;
+  final WeekUsecases _usecases = dependencies.weekUsecases;
 
-  RecordBlocV2({this.delegator}) {
+  WeekBloc({this.delegator}) {
     _initState();
   }
 
-  _initState({int weekRecordPageIndex}) async {
+  _initState({int weeksPageIndex}) async {
     final dateInWeek = _usecases.getCurrentDateInWeek();
-    final currentWeekRecordPageIndex = weekRecordPageIndex ?? _state.value.weekRecordPageIndex;
+    final currentWeekRecordPageIndex = weeksPageIndex ?? _state.value.weeksPageIndex;
     final currentWeekRecord = await _usecases.getCurrentWeekRecord();
     final prevWeekRecord = await _usecases.getPrevWeekRecord();
     final nextWeekRecord = await _usecases.getNextWeekRecord();
@@ -38,7 +38,7 @@ class RecordBlocV2 {
       year: dateInWeek.year.toString(),
       monthAndWeek: dateInWeek.monthAndNthWeekText,
       weekRecords: weekRecords,
-      weekRecordPageIndex: currentWeekRecordPageIndex,
+      weeksPageIndex: currentWeekRecordPageIndex,
     ));
   }
 

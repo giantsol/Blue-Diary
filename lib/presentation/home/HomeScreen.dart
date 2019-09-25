@@ -6,6 +6,7 @@ import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
 import 'package:todo_app/presentation/home/calendar/CalendarScreen.dart';
 import 'package:todo_app/presentation/home/record/RecordScreen.dart';
+import 'package:todo_app/presentation/week/WeekScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -59,8 +60,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildChildScreen(HomeState state) {
     final childScreenKey = state.currentChildScreenKey;
     switch (childScreenKey) {
-      case DrawerChildScreenItem.KEY_RECORD:
-        return RecordScreen(recordBlocDelegator: _bloc);
+      case DrawerChildScreenItem.KEY_WEEK:
+        return WeekScreen(weekBlocDelegator: _bloc);
       case DrawerChildScreenItem.KEY_CALENDAR:
         return CalendarScreen();
       default:
