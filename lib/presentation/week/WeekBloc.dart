@@ -1,11 +1,14 @@
 
+import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/domain/usecase/WeekUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
+import 'package:todo_app/presentation/createpassword/CreatePasswordScreen.dart';
 import 'package:todo_app/presentation/week/WeekBlocDelegator.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
 
@@ -38,7 +41,7 @@ class WeekBloc {
     }
 
     _state.add(_state.value.buildNew(
-      viewState: ViewState.NORMAL,
+      viewState: WeekViewState.NORMAL,
       year: dateInWeek.year.toString(),
       monthAndWeek: dateInWeek.monthAndNthWeekText,
       weekRecords: weekRecords,
@@ -70,12 +73,65 @@ class WeekBloc {
     _usecases.setCheckPointsLocked(weekRecord.dateInWeek, false);
   }
 
-  void onCheckPointsUnlockedIconClicked(WeekRecord weekRecord) {
-    final updatedWeekRecord = weekRecord.buildNew(isCheckPointsLocked: true);
-    _state.add(_state.value.buildNewWeekRecordUpdated(updatedWeekRecord));
+  Future<void> onCheckPointsUnlockedIconClicked(WeekRecord weekRecord, BuildContext context) async {
+    final password = await _usecases.getUserPassword();
+    if (password.isEmpty) {
+      _showCreatePasswordDialog(context);
+    } else {
+      final updatedWeekRecord = weekRecord.buildNew(isCheckPointsLocked: true);
+      _state.add(_state.value.buildNewWeekRecordUpdated(updatedWeekRecord));
 
-    _usecases.setCheckPointsLocked(weekRecord.dateInWeek, true);
+      _usecases.setCheckPointsLocked(weekRecord.dateInWeek, true);
+    }
   }
+
+  Future<void> _showCreatePasswordDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            '비밀번호 설정',
+            style: TextStyle(
+              color: AppColors.textBlack,
+              fontSize: 20,
+            ),
+          ),
+          content: Text(
+            '아직 설정된 비밀번호가 없네요!\n비밀번호를 새로 만드시겠어요?',
+            style: TextStyle(
+              color: AppColors.textBlackLight,
+              fontSize: 16,
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                '취소',
+                style: TextStyle(
+                  color: AppColors.textBlack,
+                  fontSize: 14,
+                ),
+              ),
+              onPressed: () => _onCreatePasswordCancelClicked(context),
+            ),
+            FlatButton(
+              child: Text(
+                '확인',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 14,
+                ),
+              ),
+              onPressed: () => _onCreatePasswordOkClicked(context),
+            )
+          ],
+        );
+      },
+    );
+  }
+
 
   void onCheckPointTextChanged(WeekRecord weekRecord, CheckPoint checkPoint, String changed) {
     final updatedCheckPoint = checkPoint.buildNew(text: changed);
@@ -97,12 +153,29 @@ class WeekBloc {
     _usecases.setDayRecordLocked(dayPreview.date, false);
   }
 
-  void onDayPreviewUnlockedIconClicked(WeekRecord weekRecord, DayPreview dayPreview) {
-    final updatedDayPreview = dayPreview.buildNew(isLocked: true);
-    final updatedWeekRecord = weekRecord.buildNewDayPreviewUpdated(updatedDayPreview);
-    _state.add(_state.value.buildNewWeekRecordUpdated(updatedWeekRecord));
+  Future<void> onDayPreviewUnlockedIconClicked(WeekRecord weekRecord, DayPreview dayPreview, BuildContext context) async {
+    final password = await _usecases.getUserPassword();
+    if (password.isEmpty) {
+      _showCreatePasswordDialog(context);
+    } else {
+      final updatedDayPreview = dayPreview.buildNew(isLocked: true);
+      final updatedWeekRecord = weekRecord.buildNewDayPreviewUpdated(updatedDayPreview);
+      _state.add(_state.value.buildNewWeekRecordUpdated(updatedWeekRecord));
 
-    _usecases.setDayRecordLocked(dayPreview.date, true);
+      _usecases.setDayRecordLocked(dayPreview.date, true);
+    }
+  }
+
+  void _onCreatePasswordCancelClicked(BuildContext context) {
+    Navigator.of(context).pop();
+  }
+
+  void _onCreatePasswordOkClicked(BuildContext context) {
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CreatePasswordScreen()),
+    );
   }
 
   void dispose() {

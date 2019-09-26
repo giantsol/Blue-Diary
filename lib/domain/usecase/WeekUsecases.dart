@@ -7,6 +7,7 @@ import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/repository/LockRepository.dart';
 import 'package:todo_app/domain/repository/MemoRepository.dart';
+import 'package:todo_app/domain/repository/PrefRepository.dart';
 import 'package:todo_app/domain/repository/ToDoRepository.dart';
 
 class WeekUsecases {
@@ -14,8 +15,9 @@ class WeekUsecases {
   final DateRepository _dateRepository;
   final ToDoRepository _toDoRepository;
   final LockRepository _lockRepository;
+  final PrefRepository _prefsRepository;
 
-  const WeekUsecases(this._memoRepository, this._dateRepository, this._toDoRepository, this._lockRepository);
+  const WeekUsecases(this._memoRepository, this._dateRepository, this._toDoRepository, this._lockRepository, this._prefsRepository);
 
   DateTime getCurrentDate() {
     return _dateRepository.getCurrentDate();
@@ -80,5 +82,9 @@ class WeekUsecases {
 
   void setCurrentDateToPrevWeek() {
     _dateRepository.setCurrentDate(_dateRepository.getCurrentDate().subtract(Duration(days: 7)));
+  }
+
+  Future<String> getUserPassword() async {
+    return _prefsRepository.getUserPassword();
   }
 }

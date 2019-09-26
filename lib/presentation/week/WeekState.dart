@@ -1,21 +1,21 @@
 
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 
-enum ViewState {
+enum WeekViewState {
   WHOLE_LOADING,
   NORMAL,
 }
 
 class WeekState {
   // todo: declared viewState, but not using it anywhere yet
-  final ViewState viewState;
+  final WeekViewState viewState;
   final String year;
   final String monthAndWeek;
   final List<WeekRecord> weekRecords;
   final int weekRecordPageIndex;
 
   const WeekState({
-    this.viewState = ViewState.WHOLE_LOADING,
+    this.viewState = WeekViewState.WHOLE_LOADING,
     this.year = '',
     this.monthAndWeek = '',
     this.weekRecords = const [],
@@ -23,7 +23,7 @@ class WeekState {
   });
 
   WeekState buildNew({
-    ViewState viewState,
+    WeekViewState viewState,
     String year,
     String monthAndWeek,
     List<WeekRecord> weekRecords,

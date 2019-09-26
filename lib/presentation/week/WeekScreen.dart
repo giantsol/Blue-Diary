@@ -173,7 +173,7 @@ class _WeekScreenState extends State<WeekScreen> {
           weekRecord.isCheckPointsLocked ? _buildLockedIcon(
             onTap: () => _bloc.onCheckPointsLockedIconClicked(weekRecord),
           ) : _buildUnlockedIcon(
-            onTap: () => _bloc.onCheckPointsUnlockedIconClicked(weekRecord),
+            onTap: () => _bloc.onCheckPointsUnlockedIconClicked(weekRecord, context),
           ),
         ],
       ),
@@ -450,7 +450,7 @@ class _WeekScreenState extends State<WeekScreen> {
           child: dayPreview.isLocked ? _buildLockedIcon(
             onTap: () => _bloc.onDayPreviewLockedIconClicked(weekRecord, dayPreview),
           ) : _buildUnlockedIcon(
-            onTap: () => _bloc.onDayPreviewUnlockedIconClicked(weekRecord, dayPreview),
+            onTap: () => _bloc.onDayPreviewUnlockedIconClicked(weekRecord, dayPreview, context),
           ),
         ),
       ],
