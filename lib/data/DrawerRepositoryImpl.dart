@@ -25,7 +25,7 @@ class DrawerRepositoryImpl implements DrawerRepository {
   List<DrawerScreenItem> getDrawerScreenItems() => _drawerScreenItems;
 
   @override
-  setCurrentDrawerChildScreenItem(String key) {
+  void setCurrentDrawerChildScreenItem(String key) {
     final index = _drawerChildScreenItems.indexWhere((i) => i.key == key);
     if (index >= 0) {
       for (int i = 0; i < _drawerChildScreenItems.length; i++) {

@@ -19,13 +19,13 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     _bloc = HomeBloc();
   }
 
   @override
-  dispose() {
+  void dispose() {
     super.dispose();
     _bloc.dispose();
   }

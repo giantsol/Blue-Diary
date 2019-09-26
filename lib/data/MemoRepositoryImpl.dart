@@ -2,23 +2,12 @@
 import 'package:todo_app/data/AppDatabase.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
-import 'package:todo_app/domain/entity/WeekMemo.dart';
 import 'package:todo_app/domain/repository/MemoRepository.dart';
 
 class MemoRepositoryImpl implements MemoRepository {
   final AppDatabase _db;
 
   const MemoRepositoryImpl(this._db);
-
-  @override
-  void setWeekMemo(WeekMemo weekMemo) {
-    _db.setWeekMemo(weekMemo);
-  }
-
-  @override
-  Future<List<WeekMemo>> getWeekMemos(DateTime dateTime) async {
-    return await _db.loadWeekMemos(dateTime);
-  }
 
   @override
   Future<List<CheckPoint>> getCheckPoints(DateTime date) async {

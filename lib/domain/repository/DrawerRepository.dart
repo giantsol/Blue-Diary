@@ -5,5 +5,5 @@ abstract class DrawerRepository {
   DrawerHeaderItem getDrawerHeaderItem();
   List<DrawerChildScreenItem> getDrawerChildScreenItems();
   List<DrawerScreenItem> getDrawerScreenItems();
-  setCurrentDrawerChildScreenItem(String key);
+  void setCurrentDrawerChildScreenItem(String key);
 }

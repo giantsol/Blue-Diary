@@ -28,20 +28,20 @@ class _WeekScreenState extends State<WeekScreen> {
   final Map<String, FocusNode> _focusNodes = {};
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     _bloc = WeekBloc(delegator: widget.weekBlocDelegator);
     _weekRecordPageController = InfinityPageController(initialPage: _bloc.getInitialState().weekRecordPageIndex);
   }
 
   @override
-  didUpdateWidget(WeekScreen oldWidget) {
+  void didUpdateWidget(WeekScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     _bloc.delegator = widget.weekBlocDelegator;
   }
 
   @override
-  dispose() {
+  void dispose() {
     super.dispose();
     _bloc.dispose();
 

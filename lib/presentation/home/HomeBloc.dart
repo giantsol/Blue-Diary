@@ -20,29 +20,29 @@ class HomeBloc implements WeekBlocDelegator {
     _initState();
   }
 
-  _initState() {
+  void _initState() {
     final allDrawerItems = _usecases.getAllDrawerItems();
     _state.add(_state.value.buildNew(
       allDrawerItems: allDrawerItems,
     ));
   }
 
-  onDrawerChildScreenItemClicked(BuildContext context, DrawerChildScreenItem item) {
+  void onDrawerChildScreenItemClicked(BuildContext context, DrawerChildScreenItem item) {
     Navigator.of(context).pop();
     updateCurrentDrawerChildScreenItem(item.key);
   }
 
-  onMenuIconClicked(ScaffoldState scaffoldState) {
+  void onMenuIconClicked(ScaffoldState scaffoldState) {
     scaffoldState?.openEndDrawer();
   }
 
   @override
-  updateCurrentDrawerChildScreenItem(String key) {
+  void updateCurrentDrawerChildScreenItem(String key) {
     _usecases.setCurrentDrawerChildScreenItem(key);
     _initState();
   }
 
-  dispose() {
+  void dispose() {
     _state.close();
   }
 

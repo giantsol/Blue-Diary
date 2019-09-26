@@ -21,7 +21,7 @@ class HomeUsecases {
     return allDrawerItems;
   }
 
-  setCurrentDrawerChildScreenItem(String key) {
+  void setCurrentDrawerChildScreenItem(String key) {
     _drawerRepository.setCurrentDrawerChildScreenItem(key);
   }
 }

@@ -17,7 +17,7 @@ class DateRepositoryImpl implements DateRepository {
   }
 
   @override
-  setCurrentDate(DateTime date) {
+  void setCurrentDate(DateTime date) {
     _currentDate = date;
   }
 }

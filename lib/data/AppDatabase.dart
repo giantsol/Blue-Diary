@@ -7,7 +7,6 @@ import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/Lock.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
-import 'package:todo_app/domain/entity/WeekMemo.dart';
 
 class AppDatabase {
   static const String TABLE_CHECK_POINTS = 'check_points';
@@ -32,7 +31,7 @@ class AppDatabase {
     _initDatabase();
   }
 
-  _initDatabase() async {
+  Future<void> _initDatabase() async {
     final dbPath = join(await getDatabasesPath(), 'todo1.db');
     _database.value = await openDatabase(
       dbPath,
@@ -194,15 +193,6 @@ class AppDatabase {
     return map != null ? Lock.fromDatabase(map).isLocked : false;
   }
 
-  Future<void> setWeekMemo(WeekMemo weekMemo) async {
-    final db = await _database.first;
-    await db.insert(
-      'week_memos',
-      weekMemo.toDatabaseFormat(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
   Future<void> setToDo(ToDo toDo) async {
     final db = await _database.first;
     await db.insert(
@@ -219,29 +209,6 @@ class AppDatabase {
       where: ToDo.createWhereQueryForToDo(),
       whereArgs: ToDo.createWhereArgsForToDo(toDo),
     );
-  }
-
-  @deprecated
-  Future<List<WeekMemo>> loadWeekMemos(DateTime dateTime) async {
-    final db = await _database.first;
-    // weekMemo는 항상 3개로 고정
-    final List<WeekMemo> weekMemos = [
-      WeekMemo(dateTime, 0),
-      WeekMemo(dateTime, 1),
-      WeekMemo(dateTime, 2),
-    ];
-    final dateString = WeekMemo.dateTimeToDateString(dateTime);
-    final List<Map<String, dynamic>> maps = await db.query(
-      'week_memos',
-      where: 'date_string = ?',
-      whereArgs: [dateString],
-    );
-    maps.forEach((map) {
-      final index = map['which'];
-      weekMemos[index] = weekMemos[index].buildNew(content: map['content']);
-    });
-
-    return weekMemos;
   }
 
 }
