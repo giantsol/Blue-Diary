@@ -2,11 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:infinity_page_view/infinity_page_view.dart';
 import 'package:todo_app/AppColors.dart';
+import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/presentation/week/WeekBloc.dart';
-import 'package:todo_app/presentation/week/WeekBlocDelegator.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
 import 'package:todo_app/presentation/widgets/CheckPointTextField.dart';
 

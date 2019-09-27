@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/AppColors.dart';
+import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
@@ -9,7 +10,6 @@ import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/domain/usecase/WeekUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordScreen.dart';
-import 'package:todo_app/presentation/week/WeekBlocDelegator.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
 
 class WeekBloc {

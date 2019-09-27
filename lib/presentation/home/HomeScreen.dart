@@ -1,11 +1,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/domain/entity/DrawerItem.dart';
 import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
 import 'package:todo_app/presentation/home/calendar/CalendarScreen.dart';
-import 'package:todo_app/presentation/week/WeekBlocDelegator.dart';
 import 'package:todo_app/presentation/week/WeekScreen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
   }
 
   @override
-  void updateCurrentDrawerChildScreenItem(String key) {
-    _bloc.updateCurrentDrawerChildScreenItem(key);
+  void setCurrentDrawerChildScreenItem(String key) {
+    _bloc.setCurrentDrawerChildScreenItem(key);
   }
 }

@@ -28,14 +28,14 @@ class HomeBloc {
 
   void onDrawerChildScreenItemClicked(BuildContext context, DrawerChildScreenItem item) {
     Navigator.of(context).pop();
-    updateCurrentDrawerChildScreenItem(item.key);
+    setCurrentDrawerChildScreenItem(item.key);
   }
 
   void onMenuIconClicked(ScaffoldState scaffoldState) {
     scaffoldState?.openEndDrawer();
   }
 
-  void updateCurrentDrawerChildScreenItem(String key) {
+  void setCurrentDrawerChildScreenItem(String key) {
     _usecases.setCurrentDrawerChildScreenItem(key);
     _initState();
   }
