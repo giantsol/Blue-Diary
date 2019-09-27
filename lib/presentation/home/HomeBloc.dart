@@ -7,9 +7,8 @@ import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/entity/DrawerItem.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
-import 'package:todo_app/presentation/week/WeekBlocDelegator.dart';
 
-class HomeBloc implements WeekBlocDelegator {
+class HomeBloc {
   final _state = BehaviorSubject<HomeState>.seeded(HomeState());
   HomeState getInitialState() => _state.value;
   Stream<HomeState> observeState() => _state.distinct();
@@ -36,10 +35,13 @@ class HomeBloc implements WeekBlocDelegator {
     scaffoldState?.openEndDrawer();
   }
 
-  @override
   void updateCurrentDrawerChildScreenItem(String key) {
     _usecases.setCurrentDrawerChildScreenItem(key);
     _initState();
+  }
+
+  Future<void> showBottomSheet(ScaffoldState scaffoldState, Function(BuildContext context) builder, Function(dynamic) onClosed) async {
+    onClosed(await scaffoldState.showBottomSheet(builder).closed);
   }
 
   void dispose() {

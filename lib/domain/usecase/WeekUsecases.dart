@@ -15,7 +15,7 @@ class WeekUsecases {
   final DateRepository _dateRepository;
   final ToDoRepository _toDoRepository;
   final LockRepository _lockRepository;
-  final PrefRepository _prefsRepository;
+  final PrefsRepository _prefsRepository;
 
   const WeekUsecases(this._memoRepository, this._dateRepository, this._toDoRepository, this._lockRepository, this._prefsRepository);
 

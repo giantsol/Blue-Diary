@@ -18,4 +18,8 @@ class AppPreferences {
   Future<String> getUserPassword() async {
     return _prefs.value.getString(KEY_USER_PASSWORD, defaultValue: '').getValue();
   }
+
+  Future<bool> setUserPassword(String password) async {
+    return _prefs.value.setString(KEY_USER_PASSWORD, password);
+  }
 }

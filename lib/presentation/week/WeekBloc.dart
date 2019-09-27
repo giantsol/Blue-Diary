@@ -88,7 +88,7 @@ class WeekBloc {
   Future<void> _showCreatePasswordDialog(BuildContext context) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: true,
       builder: (context) {
         return AlertDialog(
           title: Text(
@@ -172,10 +172,11 @@ class WeekBloc {
 
   void _onCreatePasswordOkClicked(BuildContext context) {
     Navigator.pop(context);
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => CreatePasswordScreen()),
-    );
+    delegator.showBottomSheet(
+        (context) => CreatePasswordScreen(),
+        (any) {
+        debugPrint('CreatePassword closed');
+      });
   }
 
   void dispose() {

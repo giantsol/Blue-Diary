@@ -5,6 +5,7 @@ import 'package:todo_app/domain/entity/DrawerItem.dart';
 import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
 import 'package:todo_app/presentation/home/calendar/CalendarScreen.dart';
+import 'package:todo_app/presentation/week/WeekBlocDelegator.dart';
 import 'package:todo_app/presentation/week/WeekScreen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class HomeScreen extends StatefulWidget {
   }
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
   HomeBloc _bloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
@@ -60,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final childScreenKey = state.currentChildScreenKey;
     switch (childScreenKey) {
       case DrawerChildScreenItem.KEY_WEEK:
-        return WeekScreen(weekBlocDelegator: _bloc);
+        return WeekScreen(weekBlocDelegator: this);
       case DrawerChildScreenItem.KEY_CALENDAR:
         return CalendarScreen();
       default:
@@ -128,5 +129,15 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
+  }
+
+  @override
+  void showBottomSheet(Function(BuildContext) builder, Function(dynamic) onClosed) {
+    _bloc.showBottomSheet(_scaffoldKey.currentState, builder, onClosed);
+  }
+
+  @override
+  void updateCurrentDrawerChildScreenItem(String key) {
+    _bloc.updateCurrentDrawerChildScreenItem(key);
   }
 }
