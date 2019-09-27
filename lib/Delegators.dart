@@ -9,8 +9,15 @@ abstract class SetCurrentDrawerChildScreenItemDelegator {
   void setCurrentDrawerChildScreenItem(String key);
 }
 
+abstract class ShowSnackBarDelegator {
+  void showSnackBar(Widget widget, {
+    Duration duration,
+  });
+}
+
 abstract class WeekBlocDelegator implements
   ShowBottomSheetDelegator,
-  SetCurrentDrawerChildScreenItemDelegator {
+  SetCurrentDrawerChildScreenItemDelegator,
+  ShowSnackBarDelegator {
 
 }

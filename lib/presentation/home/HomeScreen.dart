@@ -140,4 +140,11 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
   void setCurrentDrawerChildScreenItem(String key) {
     _bloc.setCurrentDrawerChildScreenItem(key);
   }
+
+  @override
+  void showSnackBar(Widget widget, {
+    Duration duration,
+  }) {
+    _bloc.showSnackBar(_scaffoldKey.currentState, widget, duration);
+  }
 }

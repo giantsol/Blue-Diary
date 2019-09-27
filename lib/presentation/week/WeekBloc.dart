@@ -174,9 +174,21 @@ class WeekBloc {
     Navigator.pop(context);
     delegator.showBottomSheet(
         (context) => CreatePasswordScreen(),
-        (any) {
-        debugPrint('CreatePassword closed');
-      });
+        (any) async {
+          final isPasswordSaved = await _usecases.getUserPassword().then((s) => s.length == 4);
+          if (isPasswordSaved) {
+            delegator.showSnackBar(
+              Text('비밀번호가 설정되었습니다!'),
+              duration: Duration(seconds: 2),
+            );
+          } else {
+            delegator.showSnackBar(
+              Text('비밀번호가 설정되지 않았습니다!'),
+              duration: Duration(seconds: 2),
+            );
+          }
+      }
+    );
   }
 
   void dispose() {

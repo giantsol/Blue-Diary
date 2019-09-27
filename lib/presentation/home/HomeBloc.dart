@@ -44,6 +44,13 @@ class HomeBloc {
     onClosed(await scaffoldState.showBottomSheet(builder).closed);
   }
 
+  void showSnackBar(ScaffoldState scaffoldState, Widget widget, Duration duration) {
+    scaffoldState.showSnackBar(SnackBar(
+      content: widget,
+      duration: duration ?? Duration(seconds: 4),
+    ));
+  }
+
   void dispose() {
     _state.close();
   }
