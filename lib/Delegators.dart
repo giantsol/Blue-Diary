@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 
 abstract class ShowBottomSheetDelegator {
-  void showBottomSheet(Function(BuildContext) builder, Function(dynamic) onClosed);
+  void showBottomSheet(Function(BuildContext) builder, {
+    Function(dynamic) onClosed
+  });
 }
 
 abstract class SetCurrentDrawerChildScreenItemDelegator {

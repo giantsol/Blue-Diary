@@ -41,7 +41,10 @@ class HomeBloc {
   }
 
   Future<void> showBottomSheet(ScaffoldState scaffoldState, Function(BuildContext context) builder, Function(dynamic) onClosed) async {
-    onClosed(await scaffoldState.showBottomSheet(builder).closed);
+    final controller = scaffoldState.showBottomSheet(builder);
+    if (onClosed != null) {
+      onClosed(await controller.closed);
+    }
   }
 
   void showSnackBar(ScaffoldState scaffoldState, Widget widget, Duration duration) {

@@ -132,7 +132,9 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
   }
 
   @override
-  void showBottomSheet(Function(BuildContext) builder, Function(dynamic) onClosed) {
+  void showBottomSheet(Function(BuildContext) builder, {
+    Function(dynamic) onClosed
+  }) {
     _bloc.showBottomSheet(_scaffoldKey.currentState, builder, onClosed);
   }
 

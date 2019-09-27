@@ -16,6 +16,7 @@ import 'package:todo_app/domain/repository/PrefRepository.dart';
 import 'package:todo_app/domain/repository/ToDoRepository.dart';
 import 'package:todo_app/domain/usecase/CreatePasswordUsecases.dart';
 import 'package:todo_app/domain/usecase/HomeUsecases.dart';
+import 'package:todo_app/domain/usecase/InputPasswordUsecases.dart';
 import 'package:todo_app/domain/usecase/WeekUsecases.dart';
 
 final AppDatabase _database = AppDatabase();
@@ -31,4 +32,5 @@ class Dependencies {
   final HomeUsecases homeUsecases = HomeUsecases(_drawerRepository);
   final WeekUsecases weekUsecases = WeekUsecases(_memoRepository, _dateRepository, _toDoRepository, _lockRepository, _prefsRepository);
   final CreatePasswordUsecases createPasswordUsecases = CreatePasswordUsecases(_prefsRepository);
+  final InputPasswordUsecases inputPasswordUsecases = InputPasswordUsecases(_prefsRepository);
 }

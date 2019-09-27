@@ -10,6 +10,7 @@ import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/domain/usecase/WeekUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordScreen.dart';
+import 'package:todo_app/presentation/inputpassword/InputPasswordScreen.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
 
 class WeekBloc {
@@ -67,10 +68,16 @@ class WeekBloc {
   }
 
   void onCheckPointsLockedIconClicked(WeekRecord weekRecord) {
-    final updatedWeekRecord = weekRecord.buildNew(isCheckPointsLocked: false);
-    _state.add(_state.value.buildNewWeekRecordUpdated(updatedWeekRecord));
+    delegator.showBottomSheet((context) =>
+      InputPasswordScreen(onSuccess: () {
+        final updatedWeekRecord = weekRecord.buildNew(isCheckPointsLocked: false);
+        _state.add(_state.value.buildNewWeekRecordUpdated(updatedWeekRecord));
 
-    _usecases.setCheckPointsLocked(weekRecord.dateInWeek, false);
+        _usecases.setCheckPointsLocked(weekRecord.dateInWeek, false);
+      }, onFail: () {
+        delegator.showSnackBar(Text('잠금 해제에 실패하셨습니다'), duration: Duration(seconds: 2));
+      }),
+    );
   }
 
   Future<void> onCheckPointsUnlockedIconClicked(WeekRecord weekRecord, BuildContext context) async {
@@ -146,11 +153,17 @@ class WeekBloc {
   }
 
   void onDayPreviewLockedIconClicked(WeekRecord weekRecord, DayPreview dayPreview) {
-    final updatedDayPreview = dayPreview.buildNew(isLocked: false);
-    final updatedWeekRecord = weekRecord.buildNewDayPreviewUpdated(updatedDayPreview);
-    _state.add(_state.value.buildNewWeekRecordUpdated(updatedWeekRecord));
+    delegator.showBottomSheet((context) =>
+      InputPasswordScreen(onSuccess: () {
+        final updatedDayPreview = dayPreview.buildNew(isLocked: false);
+        final updatedWeekRecord = weekRecord.buildNewDayPreviewUpdated(updatedDayPreview);
+        _state.add(_state.value.buildNewWeekRecordUpdated(updatedWeekRecord));
 
-    _usecases.setDayRecordLocked(dayPreview.date, false);
+        _usecases.setDayRecordLocked(dayPreview.date, false);
+      }, onFail: () {
+        delegator.showSnackBar(Text('잠금 해제에 실패하셨습니다'), duration: Duration(seconds: 2));
+      }),
+    );
   }
 
   Future<void> onDayPreviewUnlockedIconClicked(WeekRecord weekRecord, DayPreview dayPreview, BuildContext context) async {
@@ -174,7 +187,7 @@ class WeekBloc {
     Navigator.pop(context);
     delegator.showBottomSheet(
         (context) => CreatePasswordScreen(),
-        (any) async {
+        onClosed: (any) async {
           final isPasswordSaved = await _usecases.getUserPassword().then((s) => s.length == 4);
           if (isPasswordSaved) {
             delegator.showSnackBar(
