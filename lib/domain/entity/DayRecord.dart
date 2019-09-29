@@ -1,14 +1,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
+import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 
-class DayPreview {
+class DayRecord {
   final DateTime date;
   final List<ToDo> toDos;
   final bool isLocked;
-  final bool hasTrailingDots;
   final bool isToday;
+  final DayMemo dayMemo;
+
+  bool get hasTrailingDots => date.weekday != DateTime.sunday;
   String get key => '${date.year}-${date.month}-${date.day}';
   String get title => '${date.month}월 ${date.day}일';
   int get totalToDosCount => toDos.length;
@@ -37,23 +40,24 @@ class DayPreview {
     }
   }
 
-  const DayPreview({
+  const DayRecord({
     this.date,
     this.toDos,
     this.isLocked,
-    this.hasTrailingDots,
-    this.isToday
+    this.isToday,
+    this.dayMemo,
   });
 
-  DayPreview buildNew({
+  DayRecord buildNew({
     bool isLocked,
+    DayMemo dayMemo,
   }) {
-    return DayPreview(
+    return DayRecord(
       date: this.date,
       toDos: this.toDos,
       isLocked: isLocked ?? this.isLocked,
-      hasTrailingDots: this.hasTrailingDots,
       isToday: this.isToday,
+      dayMemo: dayMemo ?? this.dayMemo,
     );
   }
 }

@@ -5,11 +5,12 @@ import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
-import 'package:todo_app/domain/entity/DayPreview.dart';
+import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/domain/usecase/WeekUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordScreen.dart';
+import 'package:todo_app/presentation/day/DayScreen.dart';
 import 'package:todo_app/presentation/inputpassword/InputPasswordScreen.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
 
@@ -148,34 +149,39 @@ class WeekBloc {
     _usecases.setCheckPoint(checkPoint);
   }
 
-  void onDayPreviewClicked(DayPreview dayPreview) {
-
+  void onDayPreviewClicked(BuildContext context, DayRecord dayRecord) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DayScreen(dayRecord: dayRecord,),
+      ),
+    );
   }
 
-  void onDayPreviewLockedIconClicked(WeekRecord weekRecord, DayPreview dayPreview) {
+  void onDayPreviewLockedIconClicked(WeekRecord weekRecord, DayRecord dayRecord) {
     delegator.showBottomSheet((context) =>
       InputPasswordScreen(onSuccess: () {
-        final updatedDayPreview = dayPreview.buildNew(isLocked: false);
-        final updatedWeekRecord = weekRecord.buildNewDayPreviewUpdated(updatedDayPreview);
+        final updatedDayRecord = dayRecord.buildNew(isLocked: false);
+        final updatedWeekRecord = weekRecord.buildNewDayRecordUpdated(updatedDayRecord);
         _state.add(_state.value.buildNewWeekRecordUpdated(updatedWeekRecord));
 
-        _usecases.setDayRecordLocked(dayPreview.date, false);
+        _usecases.setDayRecordLocked(dayRecord.date, false);
       }, onFail: () {
         delegator.showSnackBar(Text('잠금 해제에 실패하셨습니다'), duration: Duration(seconds: 2));
       }),
     );
   }
 
-  Future<void> onDayPreviewUnlockedIconClicked(WeekRecord weekRecord, DayPreview dayPreview, BuildContext context) async {
+  Future<void> onDayPreviewUnlockedIconClicked(WeekRecord weekRecord, DayRecord dayRecord, BuildContext context) async {
     final password = await _usecases.getUserPassword();
     if (password.isEmpty) {
       _showCreatePasswordDialog(context);
     } else {
-      final updatedDayPreview = dayPreview.buildNew(isLocked: true);
-      final updatedWeekRecord = weekRecord.buildNewDayPreviewUpdated(updatedDayPreview);
+      final updatedDayRecord = dayRecord.buildNew(isLocked: true);
+      final updatedWeekRecord = weekRecord.buildNewDayRecordUpdated(updatedDayRecord);
       _state.add(_state.value.buildNewWeekRecordUpdated(updatedWeekRecord));
 
-      _usecases.setDayRecordLocked(dayPreview.date, true);
+      _usecases.setDayRecordLocked(dayRecord.date, true);
     }
   }
 
@@ -187,19 +193,19 @@ class WeekBloc {
     Navigator.pop(context);
     delegator.showBottomSheet(
         (context) => CreatePasswordScreen(),
-        onClosed: (any) async {
-          final isPasswordSaved = await _usecases.getUserPassword().then((s) => s.length == 4);
-          if (isPasswordSaved) {
-            delegator.showSnackBar(
-              Text('비밀번호가 설정되었습니다!'),
-              duration: Duration(seconds: 2),
-            );
-          } else {
-            delegator.showSnackBar(
-              Text('비밀번호가 설정되지 않았습니다!'),
-              duration: Duration(seconds: 2),
-            );
-          }
+      onClosed: (any) async {
+        final isPasswordSaved = await _usecases.getUserPassword().then((s) => s.length == 4);
+        if (isPasswordSaved) {
+          delegator.showSnackBar(
+            Text('비밀번호가 설정되었습니다!'),
+            duration: Duration(seconds: 2),
+          );
+        } else {
+          delegator.showSnackBar(
+            Text('비밀번호가 설정되지 않았습니다!'),
+            duration: Duration(seconds: 2),
+          );
+        }
       }
     );
   }

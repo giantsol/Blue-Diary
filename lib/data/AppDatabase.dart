@@ -24,6 +24,7 @@ class AppDatabase {
   static const String COLUMN_DONE = 'done';
   static const String COLUMN_KEY = 'key';
   static const String COLUMN_LOCKED = 'locked';
+  static const String COLUMN_EXPANDED = 'expanded';
 
   final _database = BehaviorSubject<Database>();
 
@@ -77,6 +78,8 @@ class AppDatabase {
             $COLUMN_MONTH INTEGER NOT NULL,
             $COLUMN_DAY INTEGER NOT NULL,
             $COLUMN_TEXT TEXT,
+            $COLUMN_HINT TEXT,
+            $COLUMN_EXPANDED INTEGER,
             PRIMARY KEY ($COLUMN_YEAR, $COLUMN_MONTH, $COLUMN_DAY)
           );
           """
@@ -114,7 +117,8 @@ class AppDatabase {
       where: DayMemo.createWhereQuery(),
       whereArgs: DayMemo.createWhereArgs(date),
     ).then((l) => l.isEmpty ? null : l[0]);
-    return map != null ? DayMemo.fromDatabase(map) : null;
+    return map != null ? DayMemo.fromDatabase(map)
+      : DayMemo(year: date.year, month: date.month, day: date.day, hint: '오늘의 메모를 작성해보세요!');
   }
 
   Future<List<CheckPoint>> getCheckPoints(DateTime date) async {

@@ -4,7 +4,7 @@ import 'package:infinity_page_view/infinity_page_view.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
-import 'package:todo_app/domain/entity/DayPreview.dart';
+import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/presentation/week/WeekBloc.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
@@ -292,25 +292,25 @@ class _WeekScreenState extends State<WeekScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
-        children: List.generate(weekRecord.dayPreviews.length, (index) {
-          return _buildDayPreviewItem(weekRecord, weekRecord.dayPreviews[index]);
+        children: List.generate(weekRecord.dayRecords.length, (index) {
+          return _buildDayPreviewItem(weekRecord, weekRecord.dayRecords[index]);
         })
       ),
     );
   }
 
-  Widget _buildDayPreviewItem(WeekRecord weekRecord, DayPreview dayPreview) {
+  Widget _buildDayPreviewItem(WeekRecord weekRecord, DayRecord dayRecord) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        _buildDayPreviewItemContent(weekRecord, dayPreview),
-        dayPreview.hasTrailingDots ? _buildDayPreviewItemTrailingDots(dayPreview.filledRatio) : Container(),
+        _buildDayPreviewItemContent(weekRecord, dayRecord),
+        dayRecord.hasTrailingDots ? _buildDayPreviewItemTrailingDots(dayRecord.filledRatio) : Container(),
       ],
     );
   }
 
   // all day preview content from Mon ~ lock icon
-  Widget _buildDayPreviewItemContent(WeekRecord weekRecord, DayPreview dayPreview) {
+  Widget _buildDayPreviewItemContent(WeekRecord weekRecord, DayRecord dayRecord) {
     return Row(
       children: <Widget>[
         Expanded(
@@ -331,7 +331,7 @@ class _WeekScreenState extends State<WeekScreen> {
                                 decoration: BoxDecoration(
                                   color: AppColors.backgroundGrey,
                                   shape: BoxShape.circle,
-                                  border: dayPreview.hasBorder
+                                  border: dayRecord.hasBorder
                                     ? Border.all(
                                     color: AppColors.primary,
                                     width: 2,
@@ -345,7 +345,7 @@ class _WeekScreenState extends State<WeekScreen> {
                               child: ClipRect(
                                 child: Align(
                                   alignment: Alignment.bottomCenter,
-                                  heightFactor: dayPreview.filledRatio,
+                                  heightFactor: dayRecord.filledRatio,
                                   child: DecoratedBox(
                                     decoration: BoxDecoration(
                                       color: AppColors.primary,
@@ -358,7 +358,7 @@ class _WeekScreenState extends State<WeekScreen> {
                             ),
                             Center(
                               child: Text(
-                                dayPreview.thumbnailString,
+                                dayRecord.thumbnailString,
                                 style: TextStyle(
                                   color: AppColors.textWhite,
                                   fontSize: 18,
@@ -377,7 +377,7 @@ class _WeekScreenState extends State<WeekScreen> {
                             children: <Widget>[
                               Row(
                                 children: [
-                                  dayPreview.isToday == true
+                                  dayRecord.isToday == true
                                     ? Padding(
                                     padding: EdgeInsets.only(right: 4,),
                                     child: Container(
@@ -397,14 +397,14 @@ class _WeekScreenState extends State<WeekScreen> {
                                   )
                                     : Container(),
                                   Text(
-                                    dayPreview.title,
+                                    dayRecord.title,
                                     style: TextStyle(
                                       fontSize: 18,
                                       color: AppColors.textBlack,
                                     ),
                                   ),
                                   SizedBox(width: 12),
-                                  dayPreview.filledRatio == 1.0
+                                  dayRecord.filledRatio == 1.0
                                     ? Expanded(
                                     child: Text(
                                       'COMPLETE',
@@ -421,10 +421,10 @@ class _WeekScreenState extends State<WeekScreen> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 2,),
                                 child: Text(
-                                  dayPreview.subtitle,
+                                  dayRecord.subtitle,
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: dayPreview.subtitleColor,
+                                    color: dayRecord.subtitleColor,
                                   ),
                                 ),
                               ),
@@ -438,7 +438,7 @@ class _WeekScreenState extends State<WeekScreen> {
                 Material(
                   type: MaterialType.transparency,
                   child: InkWell(
-                    onTap: () => _bloc.onDayPreviewClicked(dayPreview),
+                    onTap: () => _bloc.onDayPreviewClicked(context, dayRecord),
                   ),
                 ),
               ]
@@ -447,10 +447,10 @@ class _WeekScreenState extends State<WeekScreen> {
         ),
         Padding(
           padding: const EdgeInsets.only(right: 9),
-          child: dayPreview.isLocked ? _buildLockedIcon(
-            onTap: () => _bloc.onDayPreviewLockedIconClicked(weekRecord, dayPreview),
+          child: dayRecord.isLocked ? _buildLockedIcon(
+            onTap: () => _bloc.onDayPreviewLockedIconClicked(weekRecord, dayRecord),
           ) : _buildUnlockedIcon(
-            onTap: () => _bloc.onDayPreviewUnlockedIconClicked(weekRecord, dayPreview, context),
+            onTap: () => _bloc.onDayPreviewUnlockedIconClicked(weekRecord, dayRecord, context),
           ),
         ),
       ],

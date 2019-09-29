@@ -17,6 +17,8 @@ class DayMemo {
       month: map[AppDatabase.COLUMN_MONTH] ?? 0,
       day: map[AppDatabase.COLUMN_DAY] ?? 0,
       text: map[AppDatabase.COLUMN_TEXT] ?? '',
+      hint: map[AppDatabase.COLUMN_HINT] ?? '',
+      isExpanded: map[AppDatabase.COLUMN_EXPANDED] != 0,
     );
   }
 
@@ -24,12 +26,16 @@ class DayMemo {
   final int month;
   final int day;
   final String text;
+  final String hint;
+  final bool isExpanded;
 
   const DayMemo({
     this.year = 0,
     this.month = 0,
     this.day = 0,
     this.text = '',
+    this.hint = '',
+    this.isExpanded = true,
   });
 
   DayMemo buildNew({
@@ -37,12 +43,16 @@ class DayMemo {
     int month,
     int day,
     String text,
+    String hint,
+    bool isExpanded,
   }) {
     return DayMemo(
       year: year ?? this.year,
       month: month ?? this.month,
       day: day ?? this.day,
       text: text ?? this.text,
+      hint: hint ?? this.hint,
+      isExpanded: isExpanded ?? this.isExpanded,
     );
   }
 
@@ -52,6 +62,8 @@ class DayMemo {
       AppDatabase.COLUMN_MONTH: month,
       AppDatabase.COLUMN_DAY: day,
       AppDatabase.COLUMN_TEXT: text,
+      AppDatabase.COLUMN_HINT: hint,
+      AppDatabase.COLUMN_EXPANDED: isExpanded ? 1 : 0,
     };
   }
 }

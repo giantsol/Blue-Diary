@@ -2,7 +2,7 @@
 import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
-import 'package:todo_app/domain/entity/DayPreview.dart';
+import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/repository/LockRepository.dart';
@@ -42,22 +42,23 @@ class WeekUsecases {
     final checkPoints = await _memoRepository.getCheckPoints(date);
 
     final datesInWeek = Utils.getDatesInWeek(date);
-    List<DayPreview> dayPreviews = [];
+    List<DayRecord> dayRecords = [];
     for (int i = 0; i < datesInWeek.length; i++) {
       final date = datesInWeek[i];
       final toDos = await _toDoRepository.getToDos(date);
       final isLocked = await _lockRepository.getIsDayRecordLocked(date);
-      final dayPreview = DayPreview(
+      final dayMemo = await _memoRepository.getDayMemo(date);
+      final dayRecord = DayRecord(
         date: date,
         toDos: toDos,
         isLocked: isLocked,
-        hasTrailingDots: i < datesInWeek.length - 1,
-        isToday: Utils.isSameDay(date, today)
+        isToday: Utils.isSameDay(date, today),
+        dayMemo: dayMemo,
       );
-      dayPreviews.add(dayPreview);
+      dayRecords.add(dayRecord);
     }
 
-    return WeekRecord(dateInWeek: dateInWeek, isCheckPointsLocked: isCheckPointsLocked, checkPoints: checkPoints, dayPreviews: dayPreviews);
+    return WeekRecord(dateInWeek: dateInWeek, isCheckPointsLocked: isCheckPointsLocked, checkPoints: checkPoints, dayRecords: dayRecords);
   }
 
   void setCheckPoint(CheckPoint checkPoint) {

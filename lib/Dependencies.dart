@@ -1,5 +1,4 @@
 
-import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'package:todo_app/data/AppDatabase.dart';
 import 'package:todo_app/data/AppPreferences.dart';
 import 'package:todo_app/data/DateRepositoryImpl.dart';
@@ -15,6 +14,7 @@ import 'package:todo_app/domain/repository/MemoRepository.dart';
 import 'package:todo_app/domain/repository/PrefRepository.dart';
 import 'package:todo_app/domain/repository/ToDoRepository.dart';
 import 'package:todo_app/domain/usecase/CreatePasswordUsecases.dart';
+import 'package:todo_app/domain/usecase/DayUsecases.dart';
 import 'package:todo_app/domain/usecase/HomeUsecases.dart';
 import 'package:todo_app/domain/usecase/InputPasswordUsecases.dart';
 import 'package:todo_app/domain/usecase/WeekUsecases.dart';
@@ -33,4 +33,5 @@ class Dependencies {
   final WeekUsecases weekUsecases = WeekUsecases(_memoRepository, _dateRepository, _toDoRepository, _lockRepository, _prefsRepository);
   final CreatePasswordUsecases createPasswordUsecases = CreatePasswordUsecases(_prefsRepository);
   final InputPasswordUsecases inputPasswordUsecases = InputPasswordUsecases(_prefsRepository);
+  final DayUsecases dayUsecases = DayUsecases();
 }

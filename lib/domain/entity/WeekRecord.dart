@@ -1,13 +1,13 @@
 
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
-import 'package:todo_app/domain/entity/DayPreview.dart';
+import 'package:todo_app/domain/entity/DayRecord.dart';
 
 class WeekRecord {
   final DateInWeek dateInWeek;
   final bool isCheckPointsLocked;
   final List<CheckPoint> checkPoints;
-  final List<DayPreview> dayPreviews;
+  final List<DayRecord> dayRecords;
 
   String get key => '${dateInWeek.year}-${dateInWeek.month}-${dateInWeek.nthWeek}';
 
@@ -15,19 +15,19 @@ class WeekRecord {
     this.dateInWeek = const DateInWeek(),
     this.isCheckPointsLocked = false,
     this.checkPoints = const [],
-    this.dayPreviews = const [],
+    this.dayRecords = const [],
   });
 
   WeekRecord buildNew({
     bool isCheckPointsLocked,
     List<CheckPoint> checkPoints,
-    List<DayPreview> dayPreviews,
+    List<DayRecord> dayRecords,
   }) {
     return WeekRecord(
       dateInWeek: this.dateInWeek,
       isCheckPointsLocked: isCheckPointsLocked ?? this.isCheckPointsLocked,
       checkPoints: checkPoints ?? this.checkPoints,
-      dayPreviews: dayPreviews ?? this.dayPreviews,
+      dayRecords: dayRecords ?? this.dayRecords,
     );
   }
 
@@ -40,12 +40,12 @@ class WeekRecord {
     return buildNew(checkPoints: updatedCheckPoints);
   }
 
-  WeekRecord buildNewDayPreviewUpdated(DayPreview updated) {
-    final updatedDayPreviews = List.of(dayPreviews);
-    final updatedIndex = updatedDayPreviews.indexWhere((it) => it.key == updated.key);
+  WeekRecord buildNewDayRecordUpdated(DayRecord updated) {
+    final updatedDayRecords = List.of(dayRecords);
+    final updatedIndex = updatedDayRecords.indexWhere((it) => it.key == updated.key);
     if (updatedIndex >= 0) {
-      updatedDayPreviews[updatedIndex] = updated;
+      updatedDayRecords[updatedIndex] = updated;
     }
-    return buildNew(dayPreviews: updatedDayPreviews);
+    return buildNew(dayRecords: updatedDayRecords);
   }
 }

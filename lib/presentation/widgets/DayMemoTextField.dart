@@ -1,15 +1,18 @@
 
 import 'package:flutter/material.dart';
+import 'package:todo_app/AppColors.dart';
 
 class DayMemoTextField extends StatefulWidget {
   final FocusNode focusNode;
   final String text;
+  final String hintText;
   final ValueChanged<String> onChanged;
 
   DayMemoTextField({
     Key key,
     this.focusNode,
     this.text,
+    this.hintText,
     this.onChanged,
   }): super(key: key);
 
@@ -36,22 +39,25 @@ class _DayMemoTextFieldState extends State<DayMemoTextField> {
 
     return Theme(
       data: Theme.of(context).copyWith(splashColor: Colors.transparent),
-      child: SizedBox(
-        height: 91,
-        child: Padding(
-          padding: const EdgeInsets.all(4),
-          child: TextField(
-            focusNode: widget.focusNode,
-            controller: controller,
-            style: TextStyle(fontSize: 14),
-            maxLines: null,
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.all(0),
-              border: InputBorder.none,
-            ),
-            textAlign: TextAlign.left,
-          ),
+      child: TextField(
+        focusNode: widget.focusNode,
+        controller: controller,
+        style: TextStyle(
+          fontSize: 12,
+          color: AppColors.textWhite,
         ),
+        minLines: 1,
+        maxLines: null,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.all(0),
+          border: InputBorder.none,
+          hintText: widget.hintText,
+          hintStyle: TextStyle(
+            fontSize: 12,
+            color: AppColors.textWhiteDark,
+          )
+        ),
+        textAlign: TextAlign.left,
       ),
     );
   }
