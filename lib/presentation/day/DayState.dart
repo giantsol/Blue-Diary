@@ -17,7 +17,10 @@ class DayState {
   const DayState({
     this.date,
     this.dayMemo,
-    this.toDos = const [],
+    this.toDos = const [
+      ToDo(index: 0, text: 'hello'),
+      ToDo(index: 1, text: 'hello two'),
+    ],
   });
 
   String _toWeekDayString(int weekDay) {

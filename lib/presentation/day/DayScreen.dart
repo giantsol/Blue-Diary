@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/domain/entity/DayRecord.dart';
+import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/presentation/day/DayBloc.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
 import 'package:todo_app/presentation/widgets/DayMemoTextField.dart';
@@ -60,15 +61,7 @@ class _DayScreenState extends State<DayScreen> {
                 children: <Widget>[
                   _buildHeader(state),
                   Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          _buildDayMemo(state),
-                          _buildToDos(state),
-                        ],
-                      ),
-                    ),
+                    child: state.toDos.length == 0 ? _buildEmptyToDosView(state) : _buildToDosView(state),
                   ),
                 ],
               ),
@@ -101,6 +94,36 @@ class _DayScreenState extends State<DayScreen> {
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyToDosView(DayState state) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        _buildDayMemo(state),
+        Padding(
+          padding: EdgeInsets.only(left: 18, top: 20),
+          child: Text(
+            'TODO',
+            style: TextStyle(
+              fontSize: 18,
+              color: AppColors.textBlack,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Center(
+            child: Text(
+              '기록이 없습니다',
+              style: TextStyle(
+                fontSize: 18,
+                color: AppColors.textBlackLight,
+              ),
+            ),
+          ),
+        )
       ],
     );
   }
@@ -157,21 +180,120 @@ class _DayScreenState extends State<DayScreen> {
     );
   }
 
-  Widget _buildToDos(DayState state) {
+  Widget _buildToDosView(DayState state) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          _buildDayMemo(state),
+          Padding(
+            padding: EdgeInsets.only(left: 18, top: 20),
+            child: Text(
+              'TODO',
+              style: TextStyle(
+                fontSize: 18,
+                color: AppColors.textBlack,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Column(
+              children: List.generate(state.toDos.length, (index) {
+                return _buildToDo(state.toDos[index], index == state.toDos.length - 1);
+              }),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildToDo(ToDo toDo, bool isLast) {
     return Column(
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(left: 18, top: 20),
-          child: Text(
-            'TODO',
-            style: TextStyle(
-              fontSize: 18,
-              color: AppColors.textBlack,
-            ),
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Container(
+            width: double.infinity,
+            height: 1,
+            color: AppColors.divider,
           ),
         ),
-
+        InkWell(
+          child: Dismissible(
+            key: Key(toDo.key),
+            direction: DismissDirection.endToStart,
+            background: Container(
+              color: AppColors.secondary,
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16, right: 21, bottom: 16),
+                  child: Image.asset('assets/ic_trash.png'),
+                ),
+              ),
+            ),
+            child: Row(
+              children: <Widget>[
+                SizedBox(width: 18,),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.backgroundGrey
+                    ),
+                  ),
+                ),
+                SizedBox(width: 36),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Text(
+                    toDo.text,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textBlack,
+                    ),
+                  ),
+                ),
+                Spacer(),
+                InkWell(
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: AppColors.textBlackLight,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(2)),
+                      ),
+                    ),
+                  ),
+                  customBorder: CircleBorder(),
+                  onTap: () => _bloc.onToDoCheckBoxClicked(toDo),
+                ),
+                SizedBox(width: 4,),
+              ],
+            )
+          ),
+          onTap: () {},
+        ),
+        isLast ? Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Container(
+            width: double.infinity,
+            height: 1,
+            color: AppColors.divider,
+          ),
+        ) : Container(),
       ],
     );
   }
+
 }

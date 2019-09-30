@@ -42,6 +42,8 @@ class ToDo {
   final String text;
   final bool isDone;
 
+  String get key => '$year-$month-$day-$index';
+
   const ToDo({
     this.year = 0,
     this.month = 0,
