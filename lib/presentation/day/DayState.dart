@@ -22,12 +22,16 @@ class DayState {
         ToDoRecord(toDo: ToDo(index: 3, text: '운동'), category: Category(id: 3, name: '운동2', fillColor: 0xffcc4198)),
         ToDoRecord(toDo: ToDo(index: 3, text: '운동'), category: Category(id: 3, name: '운동2', fillColor: 0xffcc4198)),
       ],
+      stickyInputState: StickyInputState.SHOWN_TODO,
     );
   }
 
   final DateTime date;
   final DayMemo dayMemo;
   final List<ToDoRecord> toDoRecords;
+  final StickyInputState stickyInputState;
+  final ToDoRecord editingToDoRecord;
+  final String toDoEditorText;
 
   String get title => date == null ? '' : '${date.month}월 ${date.day}일 ${_toWeekDayString(date.weekday)}';
   String get memoText => dayMemo?.text ?? '';
@@ -38,6 +42,9 @@ class DayState {
     this.date,
     this.dayMemo,
     this.toDoRecords = const [],
+    this.stickyInputState = StickyInputState.HIDDEN,
+    this.editingToDoRecord,
+    this.toDoEditorText = '',
   });
 
   String _toWeekDayString(int weekDay) {
@@ -57,4 +64,10 @@ class DayState {
       return '일요일';
     }
   }
+}
+
+enum StickyInputState {
+  HIDDEN,
+  SHOWN_TODO,
+  SHOWN_CATEGORY,
 }

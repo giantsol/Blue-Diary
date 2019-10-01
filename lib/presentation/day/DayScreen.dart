@@ -7,6 +7,7 @@ import 'package:todo_app/domain/entity/ToDoRecord.dart';
 import 'package:todo_app/presentation/day/DayBloc.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
 import 'package:todo_app/presentation/widgets/DayMemoTextField.dart';
+import 'package:todo_app/presentation/widgets/ToDoEditorTextField.dart';
 
 class DayScreen extends StatefulWidget {
   final DayRecord dayRecord;
@@ -50,13 +51,14 @@ class _DayScreenState extends State<DayScreen> {
     return SafeArea(
       child: Material(
         child: Scaffold(
-          floatingActionButton: FloatingActionButton(
+          floatingActionButton: state.stickyInputState == StickyInputState.HIDDEN ? FloatingActionButton(
             child: Image.asset('assets/ic_plus.png'),
             backgroundColor: AppColors.primary,
             splashColor: AppColors.primaryDark,
             onPressed: () => _bloc.onAddToDoClicked(),
-          ),
+          ) : null,
           body: Stack(
+            fit: StackFit.expand,
             children: <Widget>[
               Column(
                 children: <Widget>[
@@ -66,8 +68,10 @@ class _DayScreenState extends State<DayScreen> {
                   ),
                 ],
               ),
-              // 키보드 위 ToDo 입력창
-              Container(),
+              // 키보드 위 Sticky 입력창
+              state.stickyInputState == StickyInputState.HIDDEN ? Container()
+              : state.stickyInputState == StickyInputState.SHOWN_TODO ? _buildStickyEditorForToDo(state)
+              : _buildStickyEditorForCategory(state),
             ],
           ),
         ),
@@ -242,7 +246,7 @@ class _DayScreenState extends State<DayScreen> {
                 SizedBox(width: 18,),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: category.isImageType ? _buildImageCategoryThumbnail(category) : category.isBorderType ? _buildBorderCategoryThumbnail(category) : category.isFillType ? _buildFillCategoryThumbnail(category) : _buildDefaultCategoryThumbnail(),
+                  child: _buildToDoThumbnail(toDoRecord, 36, 36, 18),
                 ),
                 SizedBox(width: 36),
                 category.isDefault ? Padding(
@@ -331,17 +335,26 @@ class _DayScreenState extends State<DayScreen> {
     );
   }
 
-  Widget _buildImageCategoryThumbnail(Category category) {
+  Widget _buildToDoThumbnail(ToDoRecord toDoRecord, double width, double height, double fontSize) {
+    final category = toDoRecord?.category;
+    if (category == null) {
+      return _buildDefaultToDoThumbnail(width, height);
+    } else {
+      return category.isImageType ? _buildImageCategoryThumbnail(category, width, height) : category.isBorderType ? _buildBorderToDoThumbnail(category, width, height, fontSize) : category.isFillType ? _buildFillToDoThumbnail(category, width, height, fontSize) : _buildDefaultToDoThumbnail(width, height);
+    }
+  }
+
+  Widget _buildImageCategoryThumbnail(Category category, double width, double height) {
     return Container(
-      width: 36,
-      height: 36,
+      width: width,
+      height: height,
     );
   }
 
-  Widget _buildBorderCategoryThumbnail(Category category) {
+  Widget _buildBorderToDoThumbnail(Category category, double width, double height, double fontSize) {
     return Container(
-      width: 36,
-      height: 36,
+      width: width,
+      height: height,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
@@ -353,7 +366,7 @@ class _DayScreenState extends State<DayScreen> {
         child: Text(
           category.initial,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: fontSize,
             color: AppColors.textBlack,
           ),
         ),
@@ -361,10 +374,10 @@ class _DayScreenState extends State<DayScreen> {
     );
   }
 
-  Widget _buildFillCategoryThumbnail(Category category) {
+  Widget _buildFillToDoThumbnail(Category category, double width, double height, double fontSize) {
     return Container(
-      width: 36,
-      height: 36,
+      width: width,
+      height: height,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: Color(category.fillColor),
@@ -373,7 +386,7 @@ class _DayScreenState extends State<DayScreen> {
         child: Text(
           category.initial,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: fontSize,
             color: AppColors.textWhite,
           ),
         ),
@@ -381,10 +394,10 @@ class _DayScreenState extends State<DayScreen> {
     );
   }
 
-  Widget _buildDefaultCategoryThumbnail() {
+  Widget _buildDefaultToDoThumbnail(double width, double height) {
     return Container(
-      width: 36,
-      height: 36,
+      width: width,
+      height: height,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: AppColors.backgroundGrey,
@@ -392,4 +405,97 @@ class _DayScreenState extends State<DayScreen> {
     );
   }
 
+  Widget _buildStickyEditorForToDo(DayState state) {
+    final editingToDoRecord = state.editingToDoRecord;
+    return Container(
+      alignment: Alignment.bottomCenter,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            width: double.infinity,
+            height: 6,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [AppColors.divider, AppColors.divider.withAlpha(0)]
+              )
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            height: 1,
+            color: AppColors.divider,
+          ),
+          Container(
+            color: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+                      child: _buildToDoThumbnail(editingToDoRecord, 24, 24, 14),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        child: ToDoEditorTextField(
+                          text: editingToDoRecord?.toDo != null ? editingToDoRecord.toDo.text : '',
+                          hintText: editingToDoRecord == null ? '작업 추가' : '작업 수정',
+                          onChanged: (s) => { },
+                        ),
+                      ),
+                    ),
+                    Material(
+                      type: MaterialType.transparency,
+                      child: InkWell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(14),
+                          child: Text(
+                            editingToDoRecord == null ? '추가' : '수정',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: state.toDoEditorText.length > 0 ? AppColors.primary : AppColors.textBlackLight,
+                            ),
+                          ),
+                        ),
+                        onTap: state.toDoEditorText.length > 0 ? () { } : null,
+                      ),
+                    )
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 14, bottom: 10),
+                  child: GestureDetector(
+                    onTap: () { },
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(6)),
+                        color: AppColors.primary,
+                      ),
+                      child: Text(
+                        '분류: ${editingToDoRecord?.category?.name ?? '없음'}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textWhite,
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStickyEditorForCategory(DayState state) {
+    return Container();
+  }
 }
