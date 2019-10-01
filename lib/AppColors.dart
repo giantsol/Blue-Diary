@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
+  // todo: capitalize them
   static const primary = Color(0xFF317ACD);
   static const primaryLight = Color(0xFF6EA9FF);
   static const primaryDark = Color(0xFF004F9B);
@@ -25,4 +26,9 @@ class AppColors {
   static const divider = Color(0xFFEEEEEE);
 
   static const ripple = Color(0x1C000000);
+
+  static const CATEGORY_COLORS = [
+    // todo: add pastel colors
+    Color(0xFF888844),
+  ];
 }

@@ -13,7 +13,10 @@ class AppDatabase {
   static const String TABLE_TODOS = 'todos';
   static const String TABLE_LOCKS = 'locks';
   static const String TABLE_DAY_MEMOS = 'day_memos';
+  static const String TABLE_CATEGORIES = 'categories';
+  static const String TABLE_TODO_CATEGORY = 'todo_category';
 
+  static const String COLUMN_ID = '_id';
   static const String COLUMN_YEAR = 'year';
   static const String COLUMN_MONTH = 'month';
   static const String COLUMN_DAY = 'day';
@@ -25,6 +28,12 @@ class AppDatabase {
   static const String COLUMN_KEY = 'key';
   static const String COLUMN_LOCKED = 'locked';
   static const String COLUMN_EXPANDED = 'expanded';
+  static const String COLUMN_NAME = 'name';
+  static const String COLUMN_FILL_COLOR = 'fill_color';
+  static const String COLUMN_BORDER_COLOR = 'border_color';
+  static const String COLUMN_IMAGE_PATH = 'image_path';
+  static const String COLUMN_CATEGORY_ID = 'category_id';
+  static const String COLUMN_TODO_KEY = 'todo_key';
 
   final _database = BehaviorSubject<Database>();
 
@@ -44,8 +53,8 @@ class AppDatabase {
             $COLUMN_MONTH INTEGER NOT NULL,
             $COLUMN_NTH_WEEK INTEGER NOT NULL,
             $COLUMN_INDEX INTEGER NOT NULL,
-            $COLUMN_TEXT TEXT,
-            $COLUMN_HINT TEXT,
+            $COLUMN_TEXT TEXT NOT NULL,
+            $COLUMN_HINT TEXT NOT NULL,
             PRIMARY KEY ($COLUMN_YEAR, $COLUMN_MONTH, $COLUMN_NTH_WEEK, $COLUMN_INDEX)
           );
           """
@@ -57,8 +66,9 @@ class AppDatabase {
             $COLUMN_MONTH INTEGER NOT NULL,
             $COLUMN_DAY INTEGER NOT NULL,
             $COLUMN_INDEX INTEGER NOT NULL,
-            $COLUMN_TEXT TEXT,
-            $COLUMN_DONE INTEGER,
+            $COLUMN_TEXT TEXT NOT NULL,
+            $COLUMN_DONE INTEGER NOT NULL,
+            $COLUMN_CATEGORY_ID INTEGER NOT NULL,
             PRIMARY KEY ($COLUMN_YEAR, $COLUMN_MONTH, $COLUMN_DAY, $COLUMN_INDEX)
           );
           """
@@ -71,21 +81,41 @@ class AppDatabase {
           );
           """
         );
+        await db.execute(
+          """
+          CREATE TABLE $TABLE_CATEGORIES(
+            $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+            $COLUMN_NAME TEXT NOT NULL,
+            $COLUMN_FILL_COLOR INTEGER NOT NULL,
+            $COLUMN_BORDER_COLOR INTEGER NOT NULL,
+            $COLUMN_IMAGE_PATH TEXT NOT NULL,
+          );
+          """
+        );
+        await db.execute(
+          """
+          CREATE TABLE $TABLE_TODO_CATEGORY(
+            $COLUMN_TODO_KEY TEXT NOT NULL,
+            $COLUMN_CATEGORY_ID INTEGER NOT NULL,
+            PRIMARY KEY ($COLUMN_TODO_KEY, $COLUMN_CATEGORY_ID)
+          );
+          """
+        );
         return db.execute(
           """
           CREATE TABLE $TABLE_DAY_MEMOS(
             $COLUMN_YEAR INTEGER NOT NULL,
             $COLUMN_MONTH INTEGER NOT NULL,
             $COLUMN_DAY INTEGER NOT NULL,
-            $COLUMN_TEXT TEXT,
-            $COLUMN_HINT TEXT,
-            $COLUMN_EXPANDED INTEGER,
+            $COLUMN_TEXT TEXT NOT NULL,
+            $COLUMN_HINT TEXT NOT NULL,
+            $COLUMN_EXPANDED INTEGER NOT NULL,
             PRIMARY KEY ($COLUMN_YEAR, $COLUMN_MONTH, $COLUMN_DAY)
           );
           """
         );
       },
-      version: 1,
+      version: 2,
     );
   }
 
