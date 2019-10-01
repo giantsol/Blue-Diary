@@ -8,7 +8,7 @@ import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
 
 class DayBloc {
-  final _state = BehaviorSubject<DayState>.seeded(DayState());
+  final _state = BehaviorSubject<DayState>.seeded(DayState.createDummy());
   DayState getInitialState() => _state.value;
   Stream<DayState> observeState() => _state.distinct();
 

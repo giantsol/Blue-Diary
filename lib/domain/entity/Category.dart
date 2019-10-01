@@ -1,11 +1,9 @@
 
-import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/data/AppDatabase.dart';
 
 class Category {
   static const ID_NONE = -1;
   static const INVALID_COLOR = 0;
-  static const DEFAULT_COLOR = AppColors.backgroundGrey;
 
   static String createWhereQuery() => '${AppDatabase.COLUMN_ID} = ?';
 
@@ -28,6 +26,12 @@ class Category {
   final int fillColor;
   final int borderColor;
   final String imagePath;
+
+  String get initial => name[0];
+  bool get isDefault => id == ID_NONE;
+  bool get isImageType => imagePath.length > 0;
+  bool get isBorderType => borderColor != INVALID_COLOR;
+  bool get isFillType => fillColor != INVALID_COLOR;
 
   const Category({
     this.id = ID_NONE,

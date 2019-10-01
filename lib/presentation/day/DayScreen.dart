@@ -1,8 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
+import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/DayRecord.dart';
-import 'package:todo_app/domain/entity/ToDo.dart';
+import 'package:todo_app/domain/entity/ToDoRecord.dart';
 import 'package:todo_app/presentation/day/DayBloc.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
 import 'package:todo_app/presentation/widgets/DayMemoTextField.dart';
@@ -61,7 +62,7 @@ class _DayScreenState extends State<DayScreen> {
                 children: <Widget>[
                   _buildHeader(state),
                   Expanded(
-                    child: state.toDos.length == 0 ? _buildEmptyToDosView(state) : _buildToDosView(state),
+                    child: state.toDoRecords.length == 0 ? _buildEmptyToDosView(state) : _buildToDosView(state),
                   ),
                 ],
               ),
@@ -197,10 +198,10 @@ class _DayScreenState extends State<DayScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 12),
+            padding: const EdgeInsets.only(top: 12, bottom: 76),
             child: Column(
-              children: List.generate(state.toDos.length, (index) {
-                return _buildToDo(state.toDos[index], index == state.toDos.length - 1);
+              children: List.generate(state.toDoRecords.length, (index) {
+                return _buildToDo(state.toDoRecords[index], index == state.toDoRecords.length - 1);
               }),
             ),
           )
@@ -209,7 +210,9 @@ class _DayScreenState extends State<DayScreen> {
     );
   }
 
-  Widget _buildToDo(ToDo toDo, bool isLast) {
+  Widget _buildToDo(ToDoRecord toDoRecord, bool isLast) {
+    final toDo = toDoRecord.toDo;
+    final category = toDoRecord.category;
     return Column(
       children: <Widget>[
         Padding(
@@ -239,46 +242,78 @@ class _DayScreenState extends State<DayScreen> {
                 SizedBox(width: 18,),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.backgroundGrey
-                    ),
-                  ),
+                  child: category.isImageType ? _buildImageCategoryThumbnail(category) : category.isBorderType ? _buildBorderCategoryThumbnail(category) : category.isFillType ? _buildFillCategoryThumbnail(category) : _buildDefaultCategoryThumbnail(),
                 ),
                 SizedBox(width: 36),
-                Padding(
+                category.isDefault ? Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Text(
                     toDo.text,
-                    style: TextStyle(
+                    style: toDo.isDone ? TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textBlackLight,
+                      decoration: TextDecoration.lineThrough,
+                      decorationColor: AppColors.textBlackLight,
+                      decorationThickness: 2,
+                    ) : TextStyle(
                       fontSize: 14,
                       color: AppColors.textBlack,
                     ),
                   ),
+                ) : Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 7),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        toDo.text,
+                        style: toDo.isDone ? TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textBlackLight,
+                          decoration: TextDecoration.lineThrough,
+                          decorationColor: AppColors.textBlackLight,
+                          decorationThickness: 2,
+                        ) : TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textBlack,
+                        ),
+                      ),
+                      SizedBox(height: 2,),
+                      Text(
+                        category.name,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textBlackLight,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
                 Spacer(),
-                InkWell(
-                  child: Padding(
-                    padding: const EdgeInsets.all(14),
-                    child: Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: AppColors.textBlackLight,
-                          width: 2,
+                toDo.isDone ? Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 19),
+                  child: Image.asset('assets/ic_check.png'),
+                ) : Padding(
+                  padding: const EdgeInsets.only(right: 4),
+                  child: InkWell(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 14, top: 14, right: 14, bottom: 14),
+                      child: Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: AppColors.textBlackLight,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(2)),
                         ),
-                        borderRadius: BorderRadius.all(Radius.circular(2)),
                       ),
                     ),
+                    customBorder: CircleBorder(),
+                    onTap: () => _bloc.onToDoCheckBoxClicked(toDo),
                   ),
-                  customBorder: CircleBorder(),
-                  onTap: () => _bloc.onToDoCheckBoxClicked(toDo),
                 ),
-                SizedBox(width: 4,),
               ],
             )
           ),
@@ -293,6 +328,67 @@ class _DayScreenState extends State<DayScreen> {
           ),
         ) : Container(),
       ],
+    );
+  }
+
+  Widget _buildImageCategoryThumbnail(Category category) {
+    return Container(
+      width: 36,
+      height: 36,
+    );
+  }
+
+  Widget _buildBorderCategoryThumbnail(Category category) {
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: Color(category.borderColor),
+          width: 2,
+        ),
+      ),
+      child: Center(
+        child: Text(
+          category.initial,
+          style: TextStyle(
+            fontSize: 18,
+            color: AppColors.textBlack,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFillCategoryThumbnail(Category category) {
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Color(category.fillColor),
+      ),
+      child: Center(
+        child: Text(
+          category.initial,
+          style: TextStyle(
+            fontSize: 18,
+            color: AppColors.textWhite,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDefaultCategoryThumbnail() {
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppColors.backgroundGrey,
+      ),
     );
   }
 
