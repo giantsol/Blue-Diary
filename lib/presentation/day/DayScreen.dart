@@ -223,7 +223,7 @@ class _DayScreenState extends State<DayScreen> {
           padding: EdgeInsets.symmetric(horizontal: 8),
           child: Container(
             width: double.infinity,
-            height: 1,
+            height: 2,
             color: AppColors.divider,
           ),
         ),
@@ -246,7 +246,7 @@ class _DayScreenState extends State<DayScreen> {
                 SizedBox(width: 18,),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: _buildToDoThumbnail(toDoRecord, 36, 36, 18),
+                  child: _buildCategoryThumbnail(category, 36, 36, 18),
                 ),
                 SizedBox(width: 36),
                 category.isDefault ? Padding(
@@ -327,7 +327,7 @@ class _DayScreenState extends State<DayScreen> {
           padding: EdgeInsets.symmetric(horizontal: 8),
           child: Container(
             width: double.infinity,
-            height: 1,
+            height: 2,
             color: AppColors.divider,
           ),
         ) : Container(),
@@ -335,12 +335,14 @@ class _DayScreenState extends State<DayScreen> {
     );
   }
 
-  Widget _buildToDoThumbnail(ToDoRecord toDoRecord, double width, double height, double fontSize) {
-    final category = toDoRecord?.category;
+  Widget _buildCategoryThumbnail(Category category, double width, double height, double fontSize) {
     if (category == null) {
-      return _buildDefaultToDoThumbnail(width, height);
+      return _buildDefaultCategoryThumbnail(width, height);
     } else {
-      return category.isImageType ? _buildImageCategoryThumbnail(category, width, height) : category.isBorderType ? _buildBorderToDoThumbnail(category, width, height, fontSize) : category.isFillType ? _buildFillToDoThumbnail(category, width, height, fontSize) : _buildDefaultToDoThumbnail(width, height);
+      return category.isImageType ? _buildImageCategoryThumbnail(category, width, height)
+        : category.isBorderType ? _buildBorderCategoryThumbnail(category, width, height, fontSize)
+        : category.isFillType ? _buildFillCategoryThumbnail(category, width, height, fontSize)
+        : _buildDefaultCategoryThumbnail(width, height);
     }
   }
 
@@ -351,7 +353,7 @@ class _DayScreenState extends State<DayScreen> {
     );
   }
 
-  Widget _buildBorderToDoThumbnail(Category category, double width, double height, double fontSize) {
+  Widget _buildBorderCategoryThumbnail(Category category, double width, double height, double fontSize) {
     return Container(
       width: width,
       height: height,
@@ -374,7 +376,7 @@ class _DayScreenState extends State<DayScreen> {
     );
   }
 
-  Widget _buildFillToDoThumbnail(Category category, double width, double height, double fontSize) {
+  Widget _buildFillCategoryThumbnail(Category category, double width, double height, double fontSize) {
     return Container(
       width: width,
       height: height,
@@ -394,7 +396,7 @@ class _DayScreenState extends State<DayScreen> {
     );
   }
 
-  Widget _buildDefaultToDoThumbnail(double width, double height) {
+  Widget _buildDefaultCategoryThumbnail(double width, double height) {
     return Container(
       width: width,
       height: height,
@@ -425,7 +427,7 @@ class _DayScreenState extends State<DayScreen> {
           ),
           Container(
             width: double.infinity,
-            height: 1,
+            height: 2,
             color: AppColors.divider,
           ),
           Container(
@@ -437,7 +439,7 @@ class _DayScreenState extends State<DayScreen> {
                   children: <Widget>[
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-                      child: _buildToDoThumbnail(editingToDoRecord, 24, 24, 14),
+                      child: _buildCategoryThumbnail(editingToDoRecord?.category, 24, 24, 14),
                     ),
                     Expanded(
                       child: Padding(
@@ -496,6 +498,70 @@ class _DayScreenState extends State<DayScreen> {
   }
 
   Widget _buildStickyEditorForCategory(DayState state) {
-    return Container();
+    return Stack(
+      children: <Widget>[
+        Container(
+          color: AppColors.SCRIM,
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            color: Colors.white,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(
+                  height: 138,
+                  child: ListView.builder(
+                    itemCount: state.allCategories.length,
+                    itemBuilder: (context, index) {
+                      final category = state.allCategories[index];
+                      return Column(
+                        children: <Widget>[
+                          index == 0 ? SizedBox(height: 4,) : Container(),
+                          Row(
+                            children: <Widget>[
+                              SizedBox(width: 8,),
+                              Padding(
+                                padding: const EdgeInsets.all(6),
+                                child: _buildCategoryThumbnail(category, 24, 24, 14),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                child: Text(
+                                  category.isDefault ? '없음' : category.name,
+                                  style: TextStyle(
+                                    color: AppColors.textBlack,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: Container(
+                              width: double.infinity,
+                              height: 2,
+                              color: AppColors.divider,
+                            ),
+                          ),
+                          index == state.allCategories.length - 1 ? SizedBox(height: 4,) : Container(),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 2,
+                  color: AppColors.DIVIDER_DARK,
+                ),
+              ],
+            ),
+          )
+        ),
+      ],
+    );
   }
 }

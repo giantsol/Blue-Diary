@@ -24,8 +24,11 @@ class AppColors {
   static const backgroundGreyDark = Color(0xFFABABAB);
 
   static const divider = Color(0xFFEEEEEE);
+  static const DIVIDER_DARK = Color(0xFFABABAB);
 
   static const ripple = Color(0x1C000000);
+
+  static const SCRIM = Color(0x7F000000);
 
   static const CATEGORY_COLORS = [
     // todo: add pastel colors
