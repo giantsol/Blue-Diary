@@ -28,10 +28,19 @@ class Category {
   final String imagePath;
 
   String get initial => name[0];
-  bool get isDefault => id == ID_NONE;
-  bool get isImageType => imagePath.length > 0;
-  bool get isBorderType => borderColor != INVALID_COLOR;
-  bool get isFillType => fillColor != INVALID_COLOR;
+  CategoryType get type {
+    if (imagePath.length > 0) {
+      return CategoryType.IMAGE;
+    } else if (borderColor != INVALID_COLOR) {
+      return CategoryType.BORDER;
+    } else if (fillColor != INVALID_COLOR){
+      return CategoryType.FILL;
+    } else {
+      return CategoryType.DEFAULT;
+    }
+  }
+  bool get isNone => id == ID_NONE;
+  String get displayName => isNone ? '없음' : name;
 
   const Category({
     this.id = ID_NONE,
@@ -50,4 +59,11 @@ class Category {
       AppDatabase.COLUMN_IMAGE_PATH: imagePath,
     };
   }
+}
+
+enum CategoryType {
+  DEFAULT,
+  IMAGE,
+  BORDER,
+  FILL
 }

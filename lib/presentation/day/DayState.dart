@@ -54,12 +54,14 @@ class DayState {
   String get memoHint => dayMemo?.hint ?? '';
   bool get isMemoExpanded => dayMemo?.isExpanded != false;
 
+  Category get editingCategory => editingToDoRecord.category;
+
   const DayState({
     this.date,
     this.dayMemo,
     this.toDoRecords = const [],
     this.stickyInputState = StickyInputState.HIDDEN,
-    this.editingToDoRecord,
+    this.editingToDoRecord = const ToDoRecord(),
     this.toDoEditorText = '',
     this.allCategories = const [],
   });

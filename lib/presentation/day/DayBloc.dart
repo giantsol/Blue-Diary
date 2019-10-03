@@ -42,6 +42,10 @@ class DayBloc {
 
   }
 
+  void onEditingCategoryTextChanged(String changed) {
+
+  }
+
   void dispose() {
     _state.close();
   }

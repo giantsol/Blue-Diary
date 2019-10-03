@@ -48,28 +48,79 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
         key: _scaffoldKey,
         body: Stack(
           children: <Widget>[
-            _buildChildScreen(state),
-            _buildSideMenuIcon(),
+            _ChildScreen(
+              childScreenKey: state.currentChildScreenKey,
+              weekBlocDelegator: this,
+            ),
+            _SideMenuIcon(
+              bloc: _bloc,
+              scaffoldState: _scaffoldKey.currentState,
+            ),
           ],
         ),
-        endDrawer: _buildDrawer(state),
+        endDrawer: _Drawer(
+          bloc: _bloc,
+          drawerItems: state.allDrawerItems,
+        ),
       ),
     );
   }
 
-  Widget _buildChildScreen(HomeState state) {
-    final childScreenKey = state.currentChildScreenKey;
+  @override
+  void showBottomSheet(Function(BuildContext) builder, {
+    Function(dynamic) onClosed
+  }) {
+    _bloc.showBottomSheet(_scaffoldKey.currentState, builder, onClosed);
+  }
+
+  @override
+  void setCurrentDrawerChildScreenItem(String key) {
+    _bloc.setCurrentDrawerChildScreenItem(key);
+  }
+
+  @override
+  void showSnackBar(Widget widget, {
+    Duration duration,
+  }) {
+    _bloc.showSnackBar(_scaffoldKey.currentState, widget, duration);
+  }
+}
+
+class _ChildScreen extends StatelessWidget {
+  final String childScreenKey;
+  final WeekBlocDelegator weekBlocDelegator;
+
+  _ChildScreen({
+    @required this.childScreenKey,
+    @required this.weekBlocDelegator,
+});
+
+  @override
+  Widget build(BuildContext context) {
     switch (childScreenKey) {
       case DrawerChildScreenItem.KEY_WEEK:
-        return WeekScreen(weekBlocDelegator: this);
+        return WeekScreen(
+          weekBlocDelegator: weekBlocDelegator
+        );
       case DrawerChildScreenItem.KEY_CALENDAR:
         return CalendarScreen();
       default:
         throw Exception('Not existing child sreen: $childScreenKey');
     }
   }
+}
 
-  Widget _buildSideMenuIcon() {
+class _SideMenuIcon extends StatelessWidget {
+  final HomeBloc bloc;
+  final ScaffoldState scaffoldState;
+
+  _SideMenuIcon({
+    @required this.bloc,
+    @required this.scaffoldState,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.topRight,
       child: Padding(
@@ -80,14 +131,24 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
             child: Image.asset('assets/ic_side_menu.png'),
           ),
-          onTap: () => _bloc.onMenuIconClicked(_scaffoldKey.currentState),
+          onTap: () => bloc.onMenuIconClicked(scaffoldState),
         ),
       ),
     );
   }
+}
 
-  Widget _buildDrawer(HomeState state) {
-    final drawerItems = state.allDrawerItems;
+class _Drawer extends StatelessWidget {
+  final HomeBloc bloc;
+  final List<DrawerItem> drawerItems;
+
+  _Drawer({
+    @required this.bloc,
+    @required this.drawerItems,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Drawer(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -110,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
                         title: Text(item.title),
                         enabled: item.isEnabled,
                         selected: item.isSelected,
-                        onTap: () => _bloc.onDrawerChildScreenItemClicked(context, item),
+                        onTap: () => bloc.onDrawerChildScreenItemClicked(context, item),
                       );
                     } else if (item is DrawerScreenItem) {
                       return ListTile(
@@ -129,24 +190,5 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
         },
       ),
     );
-  }
-
-  @override
-  void showBottomSheet(Function(BuildContext) builder, {
-    Function(dynamic) onClosed
-  }) {
-    _bloc.showBottomSheet(_scaffoldKey.currentState, builder, onClosed);
-  }
-
-  @override
-  void setCurrentDrawerChildScreenItem(String key) {
-    _bloc.setCurrentDrawerChildScreenItem(key);
-  }
-
-  @override
-  void showSnackBar(Widget widget, {
-    Duration duration,
-  }) {
-    _bloc.showSnackBar(_scaffoldKey.currentState, widget, duration);
   }
 }

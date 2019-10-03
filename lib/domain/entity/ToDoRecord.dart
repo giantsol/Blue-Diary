@@ -7,7 +7,7 @@ class ToDoRecord {
   final Category category;
 
   const ToDoRecord({
-    this.toDo,
-    this.category,
+    this.toDo = const ToDo(),
+    this.category = const Category(),
   });
 }

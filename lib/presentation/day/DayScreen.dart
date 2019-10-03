@@ -246,10 +246,15 @@ class _DayScreenState extends State<DayScreen> {
                 SizedBox(width: 18,),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: _buildCategoryThumbnail(category, 36, 36, 18),
+                  child: _CategoryThumbnail(
+                    category: category,
+                    width: 36,
+                    height: 36,
+                    fontSize: 18,
+                  ),
                 ),
                 SizedBox(width: 36),
-                category.isDefault ? Padding(
+                category.isNone ? Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Text(
                     toDo.text,
@@ -335,78 +340,6 @@ class _DayScreenState extends State<DayScreen> {
     );
   }
 
-  Widget _buildCategoryThumbnail(Category category, double width, double height, double fontSize) {
-    if (category == null) {
-      return _buildDefaultCategoryThumbnail(width, height);
-    } else {
-      return category.isImageType ? _buildImageCategoryThumbnail(category, width, height)
-        : category.isBorderType ? _buildBorderCategoryThumbnail(category, width, height, fontSize)
-        : category.isFillType ? _buildFillCategoryThumbnail(category, width, height, fontSize)
-        : _buildDefaultCategoryThumbnail(width, height);
-    }
-  }
-
-  Widget _buildImageCategoryThumbnail(Category category, double width, double height) {
-    return Container(
-      width: width,
-      height: height,
-    );
-  }
-
-  Widget _buildBorderCategoryThumbnail(Category category, double width, double height, double fontSize) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: Color(category.borderColor),
-          width: 2,
-        ),
-      ),
-      child: Center(
-        child: Text(
-          category.initial,
-          style: TextStyle(
-            fontSize: fontSize,
-            color: AppColors.textBlack,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFillCategoryThumbnail(Category category, double width, double height, double fontSize) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Color(category.fillColor),
-      ),
-      child: Center(
-        child: Text(
-          category.initial,
-          style: TextStyle(
-            fontSize: fontSize,
-            color: AppColors.textWhite,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDefaultCategoryThumbnail(double width, double height) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: AppColors.backgroundGrey,
-      ),
-    );
-  }
-
   Widget _buildStickyEditorForToDo(DayState state) {
     final editingToDoRecord = state.editingToDoRecord;
     return Container(
@@ -439,7 +372,12 @@ class _DayScreenState extends State<DayScreen> {
                   children: <Widget>[
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-                      child: _buildCategoryThumbnail(editingToDoRecord?.category, 24, 24, 14),
+                      child: _CategoryThumbnail(
+                        category: editingToDoRecord?.category,
+                        width: 24,
+                        height: 24,
+                        fontSize: 14,
+                      ),
                     ),
                     Expanded(
                       child: Padding(
@@ -524,12 +462,16 @@ class _DayScreenState extends State<DayScreen> {
                               SizedBox(width: 8,),
                               Padding(
                                 padding: const EdgeInsets.all(6),
-                                child: _buildCategoryThumbnail(category, 24, 24, 14),
+                                child: _CategoryThumbnail(
+                                  category: category,
+                                  width: 24,
+                                  height: 24,
+                                  fontSize: 14),
                               ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                 child: Text(
-                                  category.isDefault ? '없음' : category.name,
+                                  category.displayName,
                                   style: TextStyle(
                                     color: AppColors.textBlack,
                                     fontSize: 14,
@@ -557,11 +499,230 @@ class _DayScreenState extends State<DayScreen> {
                   height: 2,
                   color: AppColors.DIVIDER_DARK,
                 ),
+                Column(
+                  children: <Widget>[
+                    _CategoryEditor(
+                      category: state.editingCategory,
+                      bloc: _bloc,
+                    )
+                  ],
+                )
               ],
             ),
           )
         ),
       ],
+    );
+  }
+}
+
+class _CategoryEditor extends StatelessWidget {
+  final Category category;
+  final DayBloc bloc;
+
+  _CategoryEditor({
+    @required this.category,
+    @required this.bloc,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        _CategoryThumbnail(
+          category: category,
+          width: 24,
+          height: 24,
+          fontSize: 14
+        ),
+        Expanded(
+          child: ToDoEditorTextField(
+            text: category.name,
+            onChanged: (s) => bloc.onEditingCategoryTextChanged(s),
+          ),
+        ),
+        Text(
+          '새로 생성',
+          style: TextStyle(
+            fontSize: 14,
+            color: category.name.length > 0 ? AppColors.primary : AppColors.textBlackLight,
+          ),
+        ),
+        Text(
+          '수정',
+          style: TextStyle(
+            fontSize: 14,
+            color: category.isNone ? AppColors.textBlackLight : AppColors.secondary,
+          )
+        ),
+      ],
+    );
+  }
+}
+
+class _CategoryThumbnail extends StatelessWidget {
+  final Category category;
+  final double width;
+  final double height;
+  final double fontSize;
+
+  _CategoryThumbnail({
+    @required this.category,
+    @required this.width,
+    @required this.height,
+    @required this.fontSize,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final type = category.type;
+    switch (type) {
+      case CategoryType.IMAGE:
+        return _ImageCategoryThumbnail(
+          imagePath: category.imagePath,
+          width: width,
+          height: height
+        );
+      case CategoryType.BORDER:
+        return _BorderCategoryThumbnail(
+          color: category.borderColor,
+          initial: category.initial,
+          width: width,
+          height: height,
+          fontSize: fontSize,
+        );
+      case CategoryType.FILL:
+        return _FillCategoryThumbnail(
+          color: category.fillColor,
+          initial: category.initial,
+          width: width,
+          height: height,
+          fontSize: fontSize,
+        );
+      default:
+        return _DefaultCategoryThumbnail(
+          width: width,
+          height: height,
+        );
+     }
+  }
+}
+
+class _ImageCategoryThumbnail extends StatelessWidget {
+  final String imagePath;
+  final double width;
+  final double height;
+
+  _ImageCategoryThumbnail({
+    @required this.imagePath,
+    @required this.width,
+    @required this.height
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height
+    );
+  }
+}
+
+class _BorderCategoryThumbnail extends StatelessWidget {
+  final int color;
+  final String initial;
+  final double width;
+  final double height;
+  final double fontSize;
+
+  _BorderCategoryThumbnail({
+    @required this.color,
+    @required this.initial,
+    @required this.width,
+    @required this.height,
+    @required this.fontSize,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: Color(color),
+          width: 2,
+        ),
+      ),
+      child: Center(
+        child: Text(
+          initial,
+          style: TextStyle(
+            fontSize: fontSize,
+            color: AppColors.textBlack,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FillCategoryThumbnail extends StatelessWidget {
+  final int color;
+  final String initial;
+  final double width;
+  final double height;
+  final double fontSize;
+
+  _FillCategoryThumbnail({
+    @required this.color,
+    @required this.initial,
+    @required this.width,
+    @required this.height,
+    @required this.fontSize,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Color(color),
+      ),
+      child: Center(
+        child: Text(
+          initial,
+          style: TextStyle(
+            fontSize: fontSize,
+            color: AppColors.textWhite,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DefaultCategoryThumbnail extends StatelessWidget {
+  final double width;
+  final double height;
+
+  _DefaultCategoryThumbnail({
+    @required this.width,
+    @required this.height,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppColors.backgroundGrey,
+      ),
     );
   }
 }
