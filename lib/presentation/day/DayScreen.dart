@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/domain/entity/Category.dart';
+import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
 import 'package:todo_app/presentation/day/DayBloc.dart';
@@ -51,35 +52,77 @@ class _DayScreenState extends State<DayScreen> {
     return SafeArea(
       child: Material(
         child: Scaffold(
-          floatingActionButton: state.stickyInputState == StickyInputState.HIDDEN ? FloatingActionButton(
-            child: Image.asset('assets/ic_plus.png'),
-            backgroundColor: AppColors.PRIMARY,
-            splashColor: AppColors.PRIMARY_DARK,
-            onPressed: () => _bloc.onAddToDoClicked(),
+          floatingActionButton: state.isFabVisible ? _FAB(
+            bloc: _bloc,
           ) : null,
           body: Stack(
             fit: StackFit.expand,
             children: <Widget>[
               Column(
                 children: <Widget>[
-                  _buildHeader(state),
+                  _Header(
+                    bloc: _bloc,
+                    title: state.title,
+                  ),
                   Expanded(
-                    child: state.toDoRecords.length == 0 ? _buildEmptyToDosView(state) : _buildToDosView(state),
+                    child: state.toDoRecords.length == 0 ? _EmptyToDoListView(
+                      bloc: _bloc,
+                      dayMemo: state.dayMemo,
+                    ) : _ToDoListView(
+                      bloc: _bloc,
+                      dayMemo: state.dayMemo,
+                      toDoRecords: state.toDoRecords,
+                    ),
                   ),
                 ],
               ),
               // 키보드 위 Sticky 입력창
-              state.stickyInputState == StickyInputState.HIDDEN ? Container()
-              : state.stickyInputState == StickyInputState.SHOWN_TODO ? _buildStickyEditorForToDo(state)
-              : _buildStickyEditorForCategory(state),
+              state.stickyInputState == StickyInputState.HIDDEN ? const SizedBox.shrink()
+                : state.stickyInputState == StickyInputState.SHOWN_TODO ? _ToDoEditorContainer(
+                bloc: _bloc,
+                editingToDoRecord: state.editingToDoRecord,
+              ) : _CategoryEditorContainer(
+                bloc: _bloc,
+                allCategories: state.allCategories,
+                editingCategory: state.editingToDoRecord.category,
+              )
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildHeader(DayState state) {
+class _FAB extends StatelessWidget {
+  final DayBloc bloc;
+
+  _FAB({
+    @required this.bloc,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(
+      child: Image.asset('assets/ic_plus.png'),
+      backgroundColor: AppColors.PRIMARY,
+      splashColor: AppColors.PRIMARY_DARK,
+      onPressed: () => bloc.onAddToDoClicked(),
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  final DayBloc bloc;
+  final String title;
+
+  _Header({
+    @required this.bloc,
+    @required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
         InkWell(
@@ -87,12 +130,12 @@ class _DayScreenState extends State<DayScreen> {
             padding: EdgeInsets.all(20),
             child: Image.asset('assets/ic_back_arrow.png'),
           ),
-          onTap: () => _bloc.onBackArrowClicked(context),
+          onTap: () => bloc.onBackArrowClicked(context),
         ),
         Padding(
           padding: EdgeInsets.symmetric(vertical: 15),
           child: Text(
-            state.title,
+            title,
             style: TextStyle(
               fontSize: 24,
               color: AppColors.TEXT_BLACK,
@@ -102,12 +145,26 @@ class _DayScreenState extends State<DayScreen> {
       ],
     );
   }
+}
 
-  Widget _buildEmptyToDosView(DayState state) {
+class _EmptyToDoListView extends StatelessWidget {
+  final DayBloc bloc;
+  final DayMemo dayMemo;
+
+  _EmptyToDoListView({
+    @required this.bloc,
+    @required this.dayMemo,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        _buildDayMemo(state),
+        _DayMemo(
+          bloc: bloc,
+          dayMemo: dayMemo,
+        ),
         Padding(
           padding: EdgeInsets.only(left: 18, top: 20),
           child: Text(
@@ -132,8 +189,19 @@ class _DayScreenState extends State<DayScreen> {
       ],
     );
   }
+}
 
-  Widget _buildDayMemo(DayState state) {
+class _DayMemo extends StatelessWidget {
+  final DayBloc bloc;
+  final DayMemo dayMemo;
+
+  _DayMemo({
+    @required this.bloc,
+    @required this.dayMemo,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(left: 6, top: 6, right: 6),
       child: DecoratedBox(
@@ -163,7 +231,7 @@ class _DayScreenState extends State<DayScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
                       child: Image.asset('assets/ic_collapse.png'),
                     ),
-                    onTap: () => _bloc.onDayMemoCollapseOrExpandClicked(),
+                    onTap: () => bloc.onDayMemoCollapseOrExpandClicked(),
                   ),
                 )
               ],
@@ -173,9 +241,9 @@ class _DayScreenState extends State<DayScreen> {
               child: SizedBox(
                 height: 93,
                 child: DayMemoTextField(
-                  text: state.memoText,
-                  hintText: state.memoHint,
-                  onChanged: (s) => _bloc.onDayMemoTextChanged(s),
+                  text: dayMemo.text,
+                  hintText: dayMemo.hint,
+                  onChanged: (s) => bloc.onDayMemoTextChanged(s),
                 ),
               ),
             )
@@ -184,13 +252,29 @@ class _DayScreenState extends State<DayScreen> {
       ),
     );
   }
+}
 
-  Widget _buildToDosView(DayState state) {
+class _ToDoListView extends StatelessWidget {
+  final DayBloc bloc;
+  final DayMemo dayMemo;
+  final List<ToDoRecord> toDoRecords;
+
+  _ToDoListView({
+    @required this.bloc,
+    @required this.dayMemo,
+    @required this.toDoRecords,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _buildDayMemo(state),
+          _DayMemo(
+            bloc: bloc,
+            dayMemo: dayMemo,
+          ),
           Padding(
             padding: EdgeInsets.only(left: 18, top: 20),
             child: Text(
@@ -204,8 +288,12 @@ class _DayScreenState extends State<DayScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 12, bottom: 76),
             child: Column(
-              children: List.generate(state.toDoRecords.length, (index) {
-                return _buildToDo(state.toDoRecords[index], index == state.toDoRecords.length - 1);
+              children: List.generate(toDoRecords.length, (index) {
+                return _ToDoItem(
+                  bloc: bloc,
+                  toDoRecord: toDoRecords[index],
+                  isLast: index == toDoRecords.length - 1,
+                );
               }),
             ),
           )
@@ -213,34 +301,31 @@ class _DayScreenState extends State<DayScreen> {
       ),
     );
   }
+}
 
-  Widget _buildToDo(ToDoRecord toDoRecord, bool isLast) {
+class _ToDoItem extends StatelessWidget {
+  final DayBloc bloc;
+  final ToDoRecord toDoRecord;
+  final bool isLast;
+
+  _ToDoItem({
+    @required this.bloc,
+    @required this.toDoRecord,
+    @required this.isLast,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final toDo = toDoRecord.toDo;
     final category = toDoRecord.category;
     return Column(
       children: <Widget>[
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Container(
-            width: double.infinity,
-            height: 2,
-            color: AppColors.DIVIDER,
-          ),
-        ),
+        _ToDoItemDivider(),
         InkWell(
           child: Dismissible(
             key: Key(toDo.key),
             direction: DismissDirection.endToStart,
-            background: Container(
-              color: AppColors.SECONDARY,
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 16, right: 21, bottom: 16),
-                  child: Image.asset('assets/ic_trash.png'),
-                ),
-              ),
-            ),
+            background: _ToDoItemDismissibleBackground(),
             child: Row(
               children: <Widget>[
                 SizedBox(width: 18,),
@@ -320,7 +405,7 @@ class _DayScreenState extends State<DayScreen> {
                       ),
                     ),
                     customBorder: CircleBorder(),
-                    onTap: () => _bloc.onToDoCheckBoxClicked(toDo),
+                    onTap: () => bloc.onToDoCheckBoxClicked(toDo),
                   ),
                 ),
               ],
@@ -328,234 +413,38 @@ class _DayScreenState extends State<DayScreen> {
           ),
           onTap: () {},
         ),
-        isLast ? Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Container(
-            width: double.infinity,
-            height: 2,
-            color: AppColors.DIVIDER,
-          ),
-        ) : Container(),
-      ],
-    );
-  }
-
-  Widget _buildStickyEditorForToDo(DayState state) {
-    final editingToDoRecord = state.editingToDoRecord;
-    return Container(
-      alignment: Alignment.bottomCenter,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Container(
-            width: double.infinity,
-            height: 6,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                colors: [AppColors.DIVIDER, AppColors.DIVIDER.withAlpha(0)]
-              )
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            height: 2,
-            color: AppColors.DIVIDER,
-          ),
-          Container(
-            color: Colors.white,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-                      child: _CategoryThumbnail(
-                        category: editingToDoRecord?.category,
-                        width: 24,
-                        height: 24,
-                        fontSize: 14,
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        child: ToDoEditorTextField(
-                          text: editingToDoRecord?.toDo != null ? editingToDoRecord.toDo.text : '',
-                          hintText: editingToDoRecord == null ? '작업 추가' : '작업 수정',
-                          onChanged: (s) => { },
-                        ),
-                      ),
-                    ),
-                    Material(
-                      type: MaterialType.transparency,
-                      child: InkWell(
-                        child: Padding(
-                          padding: const EdgeInsets.all(14),
-                          child: Text(
-                            editingToDoRecord == null ? '추가' : '수정',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: state.toDoEditorText.length > 0 ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
-                            ),
-                          ),
-                        ),
-                        onTap: state.toDoEditorText.length > 0 ? () { } : null,
-                      ),
-                    )
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 14, bottom: 10),
-                  child: GestureDetector(
-                    onTap: () { },
-                    child: Container(
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(6)),
-                        color: AppColors.PRIMARY,
-                      ),
-                      child: Text(
-                        '분류: ${editingToDoRecord?.category?.name ?? '없음'}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.TEXT_WHITE,
-                        ),
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStickyEditorForCategory(DayState state) {
-    return Stack(
-      children: <Widget>[
-        Container(
-          color: AppColors.SCRIM,
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            color: Colors.white,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                SizedBox(
-                  height: 138,
-                  child: ListView.builder(
-                    itemCount: state.allCategories.length,
-                    itemBuilder: (context, index) {
-                      final category = state.allCategories[index];
-                      return Column(
-                        children: <Widget>[
-                          index == 0 ? SizedBox(height: 4,) : Container(),
-                          Row(
-                            children: <Widget>[
-                              SizedBox(width: 8,),
-                              Padding(
-                                padding: const EdgeInsets.all(6),
-                                child: _CategoryThumbnail(
-                                  category: category,
-                                  width: 24,
-                                  height: 24,
-                                  fontSize: 14),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                                child: Text(
-                                  category.displayName,
-                                  style: TextStyle(
-                                    color: AppColors.TEXT_BLACK,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Container(
-                              width: double.infinity,
-                              height: 2,
-                              color: AppColors.DIVIDER,
-                            ),
-                          ),
-                          index == state.allCategories.length - 1 ? SizedBox(height: 4,) : Container(),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                Container(
-                  width: double.infinity,
-                  height: 2,
-                  color: AppColors.DIVIDER_DARK,
-                ),
-                Column(
-                  children: <Widget>[
-                    _CategoryEditor(
-                      category: state.editingCategory,
-                      bloc: _bloc,
-                    )
-                  ],
-                )
-              ],
-            ),
-          )
-        ),
+        isLast ? _ToDoItemDivider() : const SizedBox.shrink(),
       ],
     );
   }
 }
 
-class _CategoryEditor extends StatelessWidget {
-  final Category category;
-  final DayBloc bloc;
-
-  _CategoryEditor({
-    @required this.category,
-    @required this.bloc,
-  });
-
+class _ToDoItemDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        _CategoryThumbnail(
-          category: category,
-          width: 24,
-          height: 24,
-          fontSize: 14
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      child: Container(
+        width: double.infinity,
+        height: 2,
+        color: AppColors.DIVIDER,
+      ),
+    );
+  }
+}
+
+class _ToDoItemDismissibleBackground extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: AppColors.SECONDARY,
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 16, right: 21, bottom: 16),
+          child: Image.asset('assets/ic_trash.png'),
         ),
-        Expanded(
-          child: ToDoEditorTextField(
-            text: category.name,
-            onChanged: (s) => bloc.onEditingCategoryTextChanged(s),
-          ),
-        ),
-        Text(
-          '새로 생성',
-          style: TextStyle(
-            fontSize: 14,
-            color: category.name.length > 0 ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
-          ),
-        ),
-        Text(
-          '수정',
-          style: TextStyle(
-            fontSize: 14,
-            color: category.isNone ? AppColors.TEXT_BLACK_LIGHT : AppColors.SECONDARY,
-          )
-        ),
-      ],
+      ),
     );
   }
 }
@@ -604,7 +493,7 @@ class _CategoryThumbnail extends StatelessWidget {
           width: width,
           height: height,
         );
-     }
+    }
   }
 }
 
@@ -723,6 +612,304 @@ class _DefaultCategoryThumbnail extends StatelessWidget {
         shape: BoxShape.circle,
         color: AppColors.BACKGROUND_GREY,
       ),
+    );
+  }
+}
+
+class _ToDoEditorContainer extends StatelessWidget {
+  final DayBloc bloc;
+  final ToDoRecord editingToDoRecord;
+
+  _ToDoEditorContainer({
+    @required this.bloc,
+    @required this.editingToDoRecord,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.bottomCenter,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            width: double.infinity,
+            height: 6,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [AppColors.DIVIDER, AppColors.DIVIDER.withAlpha(0)]
+              )
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            height: 2,
+            color: AppColors.DIVIDER,
+          ),
+          Container(
+            color: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                _ToDoEditor(
+                  bloc: bloc,
+                  editingToDoRecord: editingToDoRecord,
+                ),
+                _ToDoEditorCategoryButton(
+                  bloc: bloc,
+                  categoryName: editingToDoRecord.category.name,
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _ToDoEditor extends StatelessWidget {
+  final DayBloc bloc;
+  final ToDoRecord editingToDoRecord;
+
+  _ToDoEditor({
+    @required this.bloc,
+    @required this.editingToDoRecord,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final category = editingToDoRecord.category;
+    final toDo = editingToDoRecord.toDo;
+    return Row(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+          child: _CategoryThumbnail(
+            category: category,
+            width: 24,
+            height: 24,
+            fontSize: 14,
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            child: ToDoEditorTextField(
+              text: toDo.text,
+              hintText: editingToDoRecord.isValid ? '작업 수정' : '작업 추가',
+              onChanged: (s) => { },
+            ),
+          ),
+        ),
+        Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Text(
+                editingToDoRecord.isValid ? '수정' : '추가',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: toDo.text.length > 0 ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
+                ),
+              ),
+            ),
+            onTap: toDo.text.length > 0 ? () { } : null,
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class _ToDoEditorCategoryButton extends StatelessWidget {
+  final DayBloc bloc;
+  final String categoryName;
+
+  _ToDoEditorCategoryButton({
+    @required this.bloc,
+    @required this.categoryName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 14, bottom: 10),
+      child: GestureDetector(
+        onTap: () { },
+        child: Container(
+          padding: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(6)),
+            color: AppColors.PRIMARY,
+          ),
+          child: Text(
+            '분류: $categoryName',
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.TEXT_WHITE,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CategoryEditorContainer extends StatelessWidget {
+  final DayBloc bloc;
+  final List<Category> allCategories;
+  final Category editingCategory;
+
+  _CategoryEditorContainer({
+    @required this.bloc,
+    @required this.allCategories,
+    @required this.editingCategory,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        Container(
+          color: AppColors.SCRIM,
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            color: Colors.white,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                _CategoryEditorCategoryList(
+                  bloc: bloc,
+                  allCategories: allCategories,
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 2,
+                  color: AppColors.DIVIDER_DARK,
+                ),
+                Column(
+                  children: <Widget>[
+                    _CategoryEditor(
+                      bloc: bloc,
+                      category: editingCategory,
+                    )
+                  ],
+                )
+              ],
+            ),
+          )
+        ),
+      ],
+    );
+  }
+}
+
+class _CategoryEditorCategoryList extends StatelessWidget {
+  final DayBloc bloc;
+  final List<Category> allCategories;
+
+  _CategoryEditorCategoryList({
+    @required this.bloc,
+    @required this.allCategories,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 138,
+      child: ListView.builder(
+        itemCount: allCategories.length,
+        itemBuilder: (context, index) {
+          final category = allCategories[index];
+          return Column(
+            children: <Widget>[
+              index == 0 ? SizedBox(height: 4,) : Container(),
+              Row(
+                children: <Widget>[
+                  SizedBox(width: 8,),
+                  Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: _CategoryThumbnail(
+                      category: category,
+                      width: 24,
+                      height: 24,
+                      fontSize: 14),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                    child: Text(
+                      category.displayName,
+                      style: TextStyle(
+                        color: AppColors.TEXT_BLACK,
+                        fontSize: 14,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Container(
+                  width: double.infinity,
+                  height: 2,
+                  color: AppColors.DIVIDER,
+                ),
+              ),
+              index == allCategories.length - 1 ? SizedBox(height: 4,) : const SizedBox.shrink(),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _CategoryEditor extends StatelessWidget {
+  final DayBloc bloc;
+  final Category category;
+
+  _CategoryEditor({
+    @required this.bloc,
+    @required this.category,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        _CategoryThumbnail(
+          category: category,
+          width: 24,
+          height: 24,
+          fontSize: 14
+        ),
+        Expanded(
+          child: ToDoEditorTextField(
+            text: category.name,
+            onChanged: (s) => bloc.onEditingCategoryTextChanged(s),
+          ),
+        ),
+        Text(
+          '새로 생성',
+          style: TextStyle(
+            fontSize: 14,
+            color: category.name.length > 0 ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
+          ),
+        ),
+        Text(
+          '수정',
+          style: TextStyle(
+            fontSize: 14,
+            color: category.isNone ? AppColors.TEXT_BLACK_LIGHT : AppColors.SECONDARY,
+          )
+        ),
+      ],
     );
   }
 }

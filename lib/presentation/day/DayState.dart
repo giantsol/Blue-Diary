@@ -50,11 +50,9 @@ class DayState {
   final List<Category> allCategories;
 
   String get title => date == null ? '' : '${date.month}월 ${date.day}일 ${_toWeekDayString(date.weekday)}';
-  String get memoText => dayMemo?.text ?? '';
-  String get memoHint => dayMemo?.hint ?? '';
   bool get isMemoExpanded => dayMemo?.isExpanded != false;
-
   Category get editingCategory => editingToDoRecord.category;
+  bool get isFabVisible => stickyInputState == StickyInputState.HIDDEN;
 
   const DayState({
     this.date,
