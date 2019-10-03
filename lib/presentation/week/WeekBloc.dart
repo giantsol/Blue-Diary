@@ -165,7 +165,8 @@ class WeekBloc {
         final updatedWeekRecord = weekRecord.buildNewDayRecordUpdated(updatedDayRecord);
         _state.add(_state.value.buildNewWeekRecordUpdated(updatedWeekRecord));
 
-        _usecases.setDayRecordLocked(dayRecord.date, false);
+        final date = DateTime(dayRecord.year, dayRecord.month, dayRecord.day);
+        _usecases.setDayRecordLocked(date, false);
       }, onFail: () {
         delegator.showSnackBar(Text('잠금 해제에 실패하셨습니다'), duration: Duration(seconds: 2));
       }),
@@ -181,7 +182,8 @@ class WeekBloc {
       final updatedWeekRecord = weekRecord.buildNewDayRecordUpdated(updatedDayRecord);
       _state.add(_state.value.buildNewWeekRecordUpdated(updatedWeekRecord));
 
-      _usecases.setDayRecordLocked(dayRecord.date, true);
+      final date = DateTime(dayRecord.year, dayRecord.month, dayRecord.day);
+      _usecases.setDayRecordLocked(date, true);
     }
   }
 

@@ -49,7 +49,10 @@ class WeekUsecases {
       final isLocked = await _lockRepository.getIsDayRecordLocked(date);
       final dayMemo = await _memoRepository.getDayMemo(date);
       final dayRecord = DayRecord(
-        date: date,
+        year: date.year,
+        month: date.month,
+        day: date.day,
+        weekday: date.weekday,
         toDos: toDos,
         isLocked: isLocked,
         isToday: Utils.isSameDay(date, today),

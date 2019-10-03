@@ -5,15 +5,18 @@ import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 
 class DayRecord {
-  final DateTime date;
+  final int year;
+  final int month;
+  final int day;
+  final int weekday;
   final List<ToDo> toDos;
   final bool isLocked;
   final bool isToday;
   final DayMemo dayMemo;
 
-  bool get hasTrailingDots => date.weekday != DateTime.sunday;
-  String get key => '${date.year}-${date.month}-${date.day}';
-  String get title => '${date.month}월 ${date.day}일';
+  bool get hasTrailingDots => weekday != DateTime.sunday;
+  String get key => '$year-$month-$day';
+  String get title => '$month월 $day일';
   int get totalToDosCount => toDos.length;
   int get doneToDosCount => toDos.where((toDo) => toDo.isDone).length;
   bool get hasBorder => totalToDosCount > 0;
@@ -22,7 +25,6 @@ class DayRecord {
   Color get subtitleColor => totalToDosCount == 0 ? AppColors.TEXT_BLACK_LIGHT : AppColors.PRIMARY;
 
   String get thumbnailString {
-    final weekday = date.weekday;
     if (weekday == DateTime.monday) {
       return 'Mon';
     } else if (weekday == DateTime.tuesday) {
@@ -41,11 +43,14 @@ class DayRecord {
   }
 
   const DayRecord({
-    this.date,
-    this.toDos,
-    this.isLocked,
-    this.isToday,
-    this.dayMemo,
+    this.year = 0,
+    this.month = 0,
+    this.day = 0,
+    this.weekday = 0,
+    this.toDos = const [],
+    this.isLocked = false,
+    this.isToday = false,
+    this.dayMemo = const DayMemo(),
   });
 
   DayRecord buildNew({
@@ -53,7 +58,10 @@ class DayRecord {
     DayMemo dayMemo,
   }) {
     return DayRecord(
-      date: this.date,
+      year: this.year,
+      month: this.month,
+      day: this.day,
+      weekday: this.weekday,
       toDos: this.toDos,
       isLocked: isLocked ?? this.isLocked,
       isToday: this.isToday,
