@@ -6,8 +6,8 @@ import 'package:todo_app/presentation/inputpassword/InputPasswordState.dart';
 import 'package:virtual_keyboard/virtual_keyboard.dart';
 
 class InputPasswordScreen extends StatefulWidget {
-  final Function() onSuccess;
-  final Function() onFail;
+  final void Function() onSuccess;
+  final void Function() onFail;
 
   InputPasswordScreen({
     Key key,
@@ -54,16 +54,8 @@ class _InputPasswordScreenState extends State<InputPasswordScreen> {
             Expanded(
               child: Stack(
                 children: <Widget>[
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      child: Padding(
-                        padding: EdgeInsets.all(22),
-                        child: Image.asset('assets/ic_close.png'),
-                      ),
-                      onTap: () => _bloc.onCloseClicked(context),
-                    ),
+                  _CloseButton(
+                    bloc: _bloc,
                   ),
                   Container(
                     alignment: Alignment.center,
@@ -78,14 +70,14 @@ class _InputPasswordScreenState extends State<InputPasswordScreen> {
                             decorationStyle: null,
                           ),
                         ),
-                        state.errorMsg.isEmpty
-                          ? Column(
+                        state.errorMsg.isEmpty ? Column(
                           children: <Widget>[
                             SizedBox(height: 73,),
-                            _buildPasswords(state),
+                            _Passwords(
+                              passwordLength: state.password.length,
+                            ),
                           ],
-                        )
-                          : Column(
+                        ) : Column(
                           children: <Widget>[
                             SizedBox(height: 8,),
                             Text(
@@ -96,13 +88,15 @@ class _InputPasswordScreenState extends State<InputPasswordScreen> {
                               ),
                             ),
                             SizedBox(height: 48,),
-                            _buildPasswords(state),
+                            _Passwords(
+                              passwordLength: state.password.length,
+                            ),
                           ],
                         ),
                       ],
                     ),
                   ),
-                  state.isLoading ? Center(child: CircularProgressIndicator(),) : Container(),
+                  state.isLoading ? Center(child: CircularProgressIndicator(),) : const SizedBox.shrink(),
                 ],
               ),
             ),
@@ -119,9 +113,40 @@ class _InputPasswordScreenState extends State<InputPasswordScreen> {
       ),
     );
   }
+}
 
-  Widget _buildPasswords(InputPasswordState state) {
-    final passwordLength = state.password.length;
+class _CloseButton extends StatelessWidget {
+  final InputPasswordBloc bloc;
+
+  _CloseButton({
+    @required this.bloc,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: EdgeInsets.all(22),
+          child: Image.asset('assets/ic_close.png'),
+        ),
+        onTap: () => bloc.onCloseClicked(context),
+      ),
+    );
+  }
+}
+
+class _Passwords extends StatelessWidget {
+  final int passwordLength;
+
+  _Passwords({
+    @required this.passwordLength,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return SizedBox(
       height: 16,
       child: Row(
@@ -140,5 +165,4 @@ class _InputPasswordScreenState extends State<InputPasswordScreen> {
       ),
     );
   }
-
 }
