@@ -45,7 +45,7 @@ class _ToDoEditorTextFieldState extends State<ToDoEditorTextField> {
         controller: controller,
         style: TextStyle(
           fontSize: 14,
-          color: AppColors.textBlack,
+          color: AppColors.TEXT_BLACK,
         ),
         minLines: 1,
         maxLines: 2,
@@ -55,7 +55,7 @@ class _ToDoEditorTextFieldState extends State<ToDoEditorTextField> {
           hintText: widget.hintText,
           hintStyle: TextStyle(
             fontSize: 14,
-            color: AppColors.textBlackLight,
+            color: AppColors.TEXT_BLACK_LIGHT,
           )
         ),
         textAlign: TextAlign.left,

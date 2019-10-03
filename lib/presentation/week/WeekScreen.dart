@@ -144,7 +144,7 @@ class _Header extends StatelessWidget {
               Text(
                 displayYear,
                 style: TextStyle(
-                  color: AppColors.textBlack,
+                  color: AppColors.TEXT_BLACK,
                   fontSize: 12,
                 ),
               ),
@@ -153,7 +153,7 @@ class _Header extends StatelessWidget {
                 child: Text(
                   displayMonthAndWeek,
                   style: TextStyle(
-                    color: AppColors.textBlack,
+                    color: AppColors.TEXT_BLACK,
                     fontSize: 24,
                   )
                 ),
@@ -223,7 +223,7 @@ class _CheckPointsBox extends StatelessWidget {
       padding: const EdgeInsets.only(left: 6, top: 6, right: 6),
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.primary,
+          color: AppColors.PRIMARY,
           borderRadius: BorderRadius.all(Radius.circular(6)),
         ),
         child: Padding(
@@ -237,7 +237,7 @@ class _CheckPointsBox extends StatelessWidget {
                     Text(
                       'CHECK POINTS',
                       style: TextStyle(
-                        color: AppColors.textWhite,
+                        color: AppColors.TEXT_WHITE,
                         fontSize: 18,
                       ),
                     ),
@@ -288,7 +288,7 @@ class _LockedIcon extends StatelessWidget {
           Center(
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.secondary,
+                color: AppColors.SECONDARY,
                 shape: BoxShape.circle,
               ),
               width: 28,
@@ -327,7 +327,7 @@ class _UnlockedIcon extends StatelessWidget {
           Center(
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.backgroundGrey,
+                color: AppColors.BACKGROUND_GREY,
                 shape: BoxShape.circle,
               ),
               width: 28,
@@ -374,7 +374,7 @@ class _CheckPointItem extends StatelessWidget {
               child: Text(
                 (checkPoint.index + 1).toString(),
                 style: TextStyle(
-                  color: AppColors.textWhiteDark,
+                  color: AppColors.TEXT_WHITE_DARK,
                   fontSize: 16,
                 ),
               ),
@@ -474,7 +474,7 @@ class _DayPreviewItemContent extends StatelessWidget {
                                     dayRecord.title,
                                     style: TextStyle(
                                       fontSize: 18,
-                                      color: AppColors.textBlack,
+                                      color: AppColors.TEXT_BLACK,
                                     ),
                                   ),
                                   SizedBox(width: 12),
@@ -542,10 +542,10 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: AppColors.backgroundGrey,
+                color: AppColors.BACKGROUND_GREY,
                 shape: BoxShape.circle,
                 border: hasBorder ? Border.all(
-                  color: AppColors.primary,
+                  color: AppColors.PRIMARY,
                   width: 2,
                 ) : null,
               ),
@@ -559,7 +559,7 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
                 heightFactor: filledRatio,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: AppColors.primary,
+                    color: AppColors.PRIMARY,
                     shape: BoxShape.circle,
                   ),
                   child: Container(),
@@ -571,7 +571,7 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
             child: Text(
               text,
               style: TextStyle(
-                color: AppColors.textWhite,
+                color: AppColors.TEXT_WHITE,
                 fontSize: 18,
               ),
               textScaleFactor: 1.0,
@@ -590,14 +590,14 @@ class _DayPreviewItemTodayText extends StatelessWidget {
       padding: EdgeInsets.only(right: 4,),
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.secondary,
+          color: AppColors.SECONDARY,
           borderRadius: BorderRadius.all(Radius.circular(6)),
         ),
         padding: EdgeInsets.symmetric(vertical: 1, horizontal: 3,),
         child: Text(
           'TODAY',
           style: TextStyle(
-            color: AppColors.textWhite,
+            color: AppColors.TEXT_WHITE,
             fontSize: 8,
           ),
         ),
@@ -615,7 +615,7 @@ class _DayPreviewItemCompleteText extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontSize: 18,
-          color: AppColors.tertiary,
+          color: AppColors.TERTIARY,
         )
       )
     );
@@ -639,11 +639,11 @@ class _DayPreviewItemTrailingDots extends StatelessWidget {
         child: Stack(
           children: [
             _TrailingDots(
-              color: AppColors.backgroundGrey,
+              color: AppColors.BACKGROUND_GREY,
               filledRatio: 1.0,
             ),
             _TrailingDots(
-              color: AppColors.primary,
+              color: AppColors.PRIMARY,
               filledRatio: filledRatio,
             ),
           ],

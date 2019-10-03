@@ -38,7 +38,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
 
   Widget _buildUI(CreatePasswordState state) {
     return Material(
-      color: AppColors.primary,
+      color: AppColors.PRIMARY,
       child: SafeArea(
         child: Column(
           children: <Widget>[
@@ -65,7 +65,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                           state.title,
                           style: TextStyle(
                             fontSize: 18,
-                            color: AppColors.textWhite,
+                            color: AppColors.TEXT_WHITE,
                             decorationStyle: null,
                           ),
                         ),

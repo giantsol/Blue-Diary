@@ -44,7 +44,7 @@ class _DayMemoTextFieldState extends State<DayMemoTextField> {
         controller: controller,
         style: TextStyle(
           fontSize: 12,
-          color: AppColors.textWhite,
+          color: AppColors.TEXT_WHITE,
         ),
         minLines: 1,
         maxLines: null,
@@ -54,7 +54,7 @@ class _DayMemoTextFieldState extends State<DayMemoTextField> {
           hintText: widget.hintText,
           hintStyle: TextStyle(
             fontSize: 12,
-            color: AppColors.textWhiteDark,
+            color: AppColors.TEXT_WHITE_DARK,
           )
         ),
         textAlign: TextAlign.left,

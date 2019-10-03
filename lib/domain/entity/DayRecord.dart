@@ -19,7 +19,7 @@ class DayRecord {
   bool get hasBorder => totalToDosCount > 0;
   double get filledRatio => totalToDosCount == 0 ? 0 : doneToDosCount / totalToDosCount.toDouble();
   String get subtitle => totalToDosCount == 0 ? 'No Todos' : '$doneToDosCount/$totalToDosCount achieved';
-  Color get subtitleColor => totalToDosCount == 0 ? AppColors.textBlackLight : AppColors.primary;
+  Color get subtitleColor => totalToDosCount == 0 ? AppColors.TEXT_BLACK_LIGHT : AppColors.PRIMARY;
 
   String get thumbnailString {
     final weekday = date.weekday;

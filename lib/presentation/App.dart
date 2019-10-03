@@ -22,11 +22,11 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'ToDo App',
       theme: ThemeData(
-        primaryColor: AppColors.primary,
-        primaryColorLight: AppColors.primaryLight,
-        primaryColorDark: AppColors.primaryDark,
-        accentColor: AppColors.secondary,
-        splashColor: AppColors.ripple,
+        primaryColor: AppColors.PRIMARY,
+        primaryColorLight: AppColors.PRIMARY_LIGHT,
+        primaryColorDark: AppColors.PRIMARY_DARK,
+        accentColor: AppColors.SECONDARY,
+        splashColor: AppColors.RIPPLE,
       ),
       home: HomeScreen(),
       debugShowCheckedModeBanner: false,

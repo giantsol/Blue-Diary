@@ -2,31 +2,30 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // todo: capitalize them
-  static const primary = Color(0xFF317ACD);
-  static const primaryLight = Color(0xFF6EA9FF);
-  static const primaryDark = Color(0xFF004F9B);
+  static const PRIMARY = Color(0xFF317ACD);
+  static const PRIMARY_LIGHT = Color(0xFF6EA9FF);
+  static const PRIMARY_DARK = Color(0xFF004F9B);
 
-  static const secondary = Color(0xFFCD317A);
-  static const secondaryLight = Color(0xFFFF68A9);
-  static const secondaryDark = Color(0xFF97004E);
+  static const SECONDARY = Color(0xFFCD317A);
+  static const SECONDARY_LIGHT = Color(0xFFFF68A9);
+  static const SECONDARY_DARK = Color(0xFF97004E);
 
-  static const tertiary = Color(0xFF7ACD31);
-  static const tertiaryLight = Color(0xFFAEFF65);
-  static const tertiaryDark = Color(0xFF459B00);
+  static const TERTIARY = Color(0xFF7ACD31);
+  static const TERTIARY_LIGHT = Color(0xFFAEFF65);
+  static const TERTIARY_DARK = Color(0xFF459B00);
 
-  static const textBlack = Color(0xFF000000);
-  static const textBlackLight = Color(0xFF888888);
-  static const textWhite = Color(0xFFFFFFFF);
-  static const textWhiteDark = Color(0xFFD4D4D4);
+  static const TEXT_BLACK = Color(0xFF000000);
+  static const TEXT_BLACK_LIGHT = Color(0xFF888888);
+  static const TEXT_WHITE = Color(0xFFFFFFFF);
+  static const TEXT_WHITE_DARK = Color(0xFFD4D4D4);
 
-  static const backgroundGrey = Color(0xFFD8D8D8);
-  static const backgroundGreyDark = Color(0xFFABABAB);
+  static const BACKGROUND_GREY = Color(0xFFD8D8D8);
+  static const BACKGROUND_GREY_DARK = Color(0xFFABABAB);
 
-  static const divider = Color(0xFFEEEEEE);
+  static const DIVIDER = Color(0xFFEEEEEE);
   static const DIVIDER_DARK = Color(0xFFABABAB);
 
-  static const ripple = Color(0x1C000000);
+  static const RIPPLE = Color(0x1C000000);
 
   static const SCRIM = Color(0x7F000000);
 

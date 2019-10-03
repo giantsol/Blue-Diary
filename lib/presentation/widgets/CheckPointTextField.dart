@@ -44,7 +44,7 @@ class _CheckPointTextFieldState extends State<CheckPointTextField> {
         controller: controller,
         style: TextStyle(
           fontSize: 12,
-          color: AppColors.textWhite,
+          color: AppColors.TEXT_WHITE,
         ),
         minLines: 1,
         maxLines: 2,
@@ -54,7 +54,7 @@ class _CheckPointTextFieldState extends State<CheckPointTextField> {
           hintText: widget.hintText,
           hintStyle: TextStyle(
             fontSize: 12,
-            color: AppColors.textWhiteDark,
+            color: AppColors.TEXT_WHITE_DARK,
           )
         ),
         textAlign: TextAlign.left,

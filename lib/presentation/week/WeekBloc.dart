@@ -102,14 +102,14 @@ class WeekBloc {
           title: Text(
             '비밀번호 설정',
             style: TextStyle(
-              color: AppColors.textBlack,
+              color: AppColors.TEXT_BLACK,
               fontSize: 20,
             ),
           ),
           content: Text(
             '아직 설정된 비밀번호가 없네요!\n비밀번호를 새로 만드시겠어요?',
             style: TextStyle(
-              color: AppColors.textBlackLight,
+              color: AppColors.TEXT_BLACK_LIGHT,
               fontSize: 16,
             ),
           ),
@@ -118,7 +118,7 @@ class WeekBloc {
               child: Text(
                 '취소',
                 style: TextStyle(
-                  color: AppColors.textBlack,
+                  color: AppColors.TEXT_BLACK,
                   fontSize: 14,
                 ),
               ),
@@ -128,7 +128,7 @@ class WeekBloc {
               child: Text(
                 '확인',
                 style: TextStyle(
-                  color: AppColors.primary,
+                  color: AppColors.PRIMARY,
                   fontSize: 14,
                 ),
               ),

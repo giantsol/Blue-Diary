@@ -53,8 +53,8 @@ class _DayScreenState extends State<DayScreen> {
         child: Scaffold(
           floatingActionButton: state.stickyInputState == StickyInputState.HIDDEN ? FloatingActionButton(
             child: Image.asset('assets/ic_plus.png'),
-            backgroundColor: AppColors.primary,
-            splashColor: AppColors.primaryDark,
+            backgroundColor: AppColors.PRIMARY,
+            splashColor: AppColors.PRIMARY_DARK,
             onPressed: () => _bloc.onAddToDoClicked(),
           ) : null,
           body: Stack(
@@ -95,7 +95,7 @@ class _DayScreenState extends State<DayScreen> {
             state.title,
             style: TextStyle(
               fontSize: 24,
-              color: AppColors.textBlack,
+              color: AppColors.TEXT_BLACK,
             ),
           ),
         ),
@@ -114,7 +114,7 @@ class _DayScreenState extends State<DayScreen> {
             'TODO',
             style: TextStyle(
               fontSize: 18,
-              color: AppColors.textBlack,
+              color: AppColors.TEXT_BLACK,
             ),
           ),
         ),
@@ -124,7 +124,7 @@ class _DayScreenState extends State<DayScreen> {
               '기록이 없습니다',
               style: TextStyle(
                 fontSize: 18,
-                color: AppColors.textBlackLight,
+                color: AppColors.TEXT_BLACK_LIGHT,
               ),
             ),
           ),
@@ -138,7 +138,7 @@ class _DayScreenState extends State<DayScreen> {
       padding: EdgeInsets.only(left: 6, top: 6, right: 6),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: AppColors.primary,
+          color: AppColors.PRIMARY,
           borderRadius: BorderRadius.all(Radius.circular(6)),
         ),
         child: Column(
@@ -150,7 +150,7 @@ class _DayScreenState extends State<DayScreen> {
                   child: Text(
                     'MEMO',
                     style: TextStyle(
-                      color: AppColors.textWhite,
+                      color: AppColors.TEXT_WHITE,
                       fontSize: 18,
                     ),
                   ),
@@ -197,7 +197,7 @@ class _DayScreenState extends State<DayScreen> {
               'TODO',
               style: TextStyle(
                 fontSize: 18,
-                color: AppColors.textBlack,
+                color: AppColors.TEXT_BLACK,
               ),
             ),
           ),
@@ -224,7 +224,7 @@ class _DayScreenState extends State<DayScreen> {
           child: Container(
             width: double.infinity,
             height: 2,
-            color: AppColors.divider,
+            color: AppColors.DIVIDER,
           ),
         ),
         InkWell(
@@ -232,7 +232,7 @@ class _DayScreenState extends State<DayScreen> {
             key: Key(toDo.key),
             direction: DismissDirection.endToStart,
             background: Container(
-              color: AppColors.secondary,
+              color: AppColors.SECONDARY,
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Padding(
@@ -260,13 +260,13 @@ class _DayScreenState extends State<DayScreen> {
                     toDo.text,
                     style: toDo.isDone ? TextStyle(
                       fontSize: 14,
-                      color: AppColors.textBlackLight,
+                      color: AppColors.TEXT_BLACK_LIGHT,
                       decoration: TextDecoration.lineThrough,
-                      decorationColor: AppColors.textBlackLight,
+                      decorationColor: AppColors.TEXT_BLACK_LIGHT,
                       decorationThickness: 2,
                     ) : TextStyle(
                       fontSize: 14,
-                      color: AppColors.textBlack,
+                      color: AppColors.TEXT_BLACK,
                     ),
                   ),
                 ) : Padding(
@@ -278,13 +278,13 @@ class _DayScreenState extends State<DayScreen> {
                         toDo.text,
                         style: toDo.isDone ? TextStyle(
                           fontSize: 14,
-                          color: AppColors.textBlackLight,
+                          color: AppColors.TEXT_BLACK_LIGHT,
                           decoration: TextDecoration.lineThrough,
-                          decorationColor: AppColors.textBlackLight,
+                          decorationColor: AppColors.TEXT_BLACK_LIGHT,
                           decorationThickness: 2,
                         ) : TextStyle(
                           fontSize: 14,
-                          color: AppColors.textBlack,
+                          color: AppColors.TEXT_BLACK,
                         ),
                       ),
                       SizedBox(height: 2,),
@@ -292,7 +292,7 @@ class _DayScreenState extends State<DayScreen> {
                         category.name,
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.textBlackLight,
+                          color: AppColors.TEXT_BLACK_LIGHT,
                         ),
                       )
                     ],
@@ -312,7 +312,7 @@ class _DayScreenState extends State<DayScreen> {
                         height: 20,
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: AppColors.textBlackLight,
+                            color: AppColors.TEXT_BLACK_LIGHT,
                             width: 2,
                           ),
                           borderRadius: BorderRadius.all(Radius.circular(2)),
@@ -333,7 +333,7 @@ class _DayScreenState extends State<DayScreen> {
           child: Container(
             width: double.infinity,
             height: 2,
-            color: AppColors.divider,
+            color: AppColors.DIVIDER,
           ),
         ) : Container(),
       ],
@@ -354,14 +354,14 @@ class _DayScreenState extends State<DayScreen> {
               gradient: LinearGradient(
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
-                colors: [AppColors.divider, AppColors.divider.withAlpha(0)]
+                colors: [AppColors.DIVIDER, AppColors.DIVIDER.withAlpha(0)]
               )
             ),
           ),
           Container(
             width: double.infinity,
             height: 2,
-            color: AppColors.divider,
+            color: AppColors.DIVIDER,
           ),
           Container(
             color: Colors.white,
@@ -398,7 +398,7 @@ class _DayScreenState extends State<DayScreen> {
                             editingToDoRecord == null ? '추가' : '수정',
                             style: TextStyle(
                               fontSize: 14,
-                              color: state.toDoEditorText.length > 0 ? AppColors.primary : AppColors.textBlackLight,
+                              color: state.toDoEditorText.length > 0 ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
                             ),
                           ),
                         ),
@@ -415,13 +415,13 @@ class _DayScreenState extends State<DayScreen> {
                       padding: const EdgeInsets.all(5),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(6)),
-                        color: AppColors.primary,
+                        color: AppColors.PRIMARY,
                       ),
                       child: Text(
                         '분류: ${editingToDoRecord?.category?.name ?? '없음'}',
                         style: TextStyle(
                           fontSize: 14,
-                          color: AppColors.textWhite,
+                          color: AppColors.TEXT_WHITE,
                         ),
                       ),
                     ),
@@ -473,7 +473,7 @@ class _DayScreenState extends State<DayScreen> {
                                 child: Text(
                                   category.displayName,
                                   style: TextStyle(
-                                    color: AppColors.textBlack,
+                                    color: AppColors.TEXT_BLACK,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -485,7 +485,7 @@ class _DayScreenState extends State<DayScreen> {
                             child: Container(
                               width: double.infinity,
                               height: 2,
-                              color: AppColors.divider,
+                              color: AppColors.DIVIDER,
                             ),
                           ),
                           index == state.allCategories.length - 1 ? SizedBox(height: 4,) : Container(),
@@ -545,14 +545,14 @@ class _CategoryEditor extends StatelessWidget {
           '새로 생성',
           style: TextStyle(
             fontSize: 14,
-            color: category.name.length > 0 ? AppColors.primary : AppColors.textBlackLight,
+            color: category.name.length > 0 ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
           ),
         ),
         Text(
           '수정',
           style: TextStyle(
             fontSize: 14,
-            color: category.isNone ? AppColors.textBlackLight : AppColors.secondary,
+            color: category.isNone ? AppColors.TEXT_BLACK_LIGHT : AppColors.SECONDARY,
           )
         ),
       ],
@@ -660,7 +660,7 @@ class _BorderCategoryThumbnail extends StatelessWidget {
           initial,
           style: TextStyle(
             fontSize: fontSize,
-            color: AppColors.textBlack,
+            color: AppColors.TEXT_BLACK,
           ),
         ),
       ),
@@ -697,7 +697,7 @@ class _FillCategoryThumbnail extends StatelessWidget {
           initial,
           style: TextStyle(
             fontSize: fontSize,
-            color: AppColors.textWhite,
+            color: AppColors.TEXT_WHITE,
           ),
         ),
       ),
@@ -721,7 +721,7 @@ class _DefaultCategoryThumbnail extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: AppColors.backgroundGrey,
+        color: AppColors.BACKGROUND_GREY,
       ),
     );
   }
