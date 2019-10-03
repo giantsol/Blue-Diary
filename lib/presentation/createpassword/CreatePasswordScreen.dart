@@ -45,16 +45,8 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
             Expanded(
               child: Stack(
                 children: <Widget>[
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      child: Padding(
-                        padding: EdgeInsets.all(22),
-                        child: Image.asset('assets/ic_close.png'),
-                      ),
-                      onTap: () => _bloc.onCloseClicked(context),
-                    ),
+                  _CloseButton(
+                    bloc: _bloc,
                   ),
                   Container(
                     alignment: Alignment.center,
@@ -69,14 +61,14 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                             decorationStyle: null,
                           ),
                         ),
-                        state.errorMsg.isEmpty
-                          ? Column(
+                        state.errorMsg.isEmpty ? Column(
                           children: <Widget>[
                             SizedBox(height: 73,),
-                            _buildPasswords(state),
+                            _Passwords(
+                              passwordLength: state.passwordLength,
+                            ),
                           ],
-                        )
-                          : Column(
+                        ) : Column(
                           children: <Widget>[
                             SizedBox(height: 8,),
                             Text(
@@ -87,7 +79,9 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                               ),
                             ),
                             SizedBox(height: 48,),
-                            _buildPasswords(state),
+                            _Passwords(
+                              passwordLength: state.passwordLength,
+                            ),
                           ],
                         ),
                       ],
@@ -109,9 +103,40 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
       ),
     );
   }
+}
 
-  Widget _buildPasswords(CreatePasswordState state) {
-    final passwordLength = state.phase == CreatePasswordPhase.FIRST ? state.password.length : state.passwordConfirm.length;
+class _CloseButton extends StatelessWidget {
+  final CreatePasswordBloc bloc;
+
+  _CloseButton({
+    @required this.bloc,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: EdgeInsets.all(22),
+          child: Image.asset('assets/ic_close.png'),
+        ),
+        onTap: () => bloc.onCloseClicked(context),
+      ),
+    );
+  }
+}
+
+class _Passwords extends StatelessWidget {
+  final int passwordLength;
+
+  _Passwords({
+    @required this.passwordLength,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return SizedBox(
       height: 16,
       child: Row(
@@ -130,5 +155,4 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
       ),
     );
   }
-
-}
+  }
