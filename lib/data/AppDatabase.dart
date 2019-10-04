@@ -69,7 +69,6 @@ class AppDatabase {
             $COLUMN_INDEX INTEGER NOT NULL,
             $COLUMN_TEXT TEXT NOT NULL,
             $COLUMN_DONE INTEGER NOT NULL,
-            $COLUMN_CATEGORY_ID INTEGER NOT NULL,
             PRIMARY KEY ($COLUMN_YEAR, $COLUMN_MONTH, $COLUMN_DAY, $COLUMN_INDEX)
           );
           """
@@ -127,7 +126,7 @@ class AppDatabase {
       where: ToDo.createWhereQueryForToDos(),
       whereArgs: ToDo.createWhereArgsForToDos(date),
     );
-    final result = List.filled(maps.length, null);
+    final List<ToDo> result = List.filled(maps.length, null);
     for (int i = 0; i < maps.length; i++) {
       final toDo = ToDo.fromDatabase(maps[i]);
       result[toDo.index] = toDo;
@@ -253,8 +252,8 @@ class AppDatabase {
     final db = await _database.first;
     Map<String, dynamic> map = await db.query(
       TABLE_TODO_CATEGORY,
-      where: '$COLUMN_TODO_KEY = ?',
-      whereArgs: [toDo.key],
+      where: ToDo.createWhereQueryForCategory(),
+      whereArgs: ToDo.createWhereArgsForCategory(toDo),
     ).then((l) => l.isEmpty ? null : l[0]);
     if (map == null) {
       return Category();
@@ -267,5 +266,22 @@ class AppDatabase {
       ).then((l) => l.isEmpty ? null : l[0]);
       return map != null ? Category.fromDatabase(map) : Category();
     }
+  }
+
+  Future<void> setCategory(ToDo toDo, Category category) async {
+    final db = await _database.first;
+    await db.insert(
+      TABLE_TODO_CATEGORY,
+      {
+        COLUMN_TODO_KEY: toDo.key,
+        COLUMN_CATEGORY_ID: category.id,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    await db.insert(
+      TABLE_CATEGORIES,
+      category.toDatabase(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 }

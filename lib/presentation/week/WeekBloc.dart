@@ -153,7 +153,7 @@ class WeekBloc {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => DayScreen(dayRecord: dayRecord,),
+        builder: (context) => DayScreen(date: dayRecord.date),
       ),
     );
     _initState();

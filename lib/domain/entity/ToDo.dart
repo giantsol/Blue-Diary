@@ -11,6 +11,8 @@ class ToDo {
     ' AND ${AppDatabase.COLUMN_DAY} = ?'
     ' AND ${AppDatabase.COLUMN_INDEX} = ?';
 
+  static String createWhereQueryForCategory() => '${AppDatabase.COLUMN_TODO_KEY} = ?';
+
   static List<dynamic> createWhereArgsForToDos(DateTime date) => [
     date.year,
     date.month,
@@ -22,6 +24,10 @@ class ToDo {
     toDo.month,
     toDo.day,
     toDo.index,
+  ];
+
+  static List<dynamic> createWhereArgsForCategory(ToDo toDo) => [
+    toDo.key,
   ];
 
   static ToDo fromDatabase(Map<String, dynamic> map) {

@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
+import 'package:todo_app/domain/entity/ToDoRecord.dart';
 import 'package:todo_app/domain/usecase/DayUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
@@ -14,20 +14,40 @@ class DayBloc {
 
   final DayUsecases _usecases = dependencies.dayUsecases;
 
-  DayBloc(DayRecord dayRecord) {
-    _initState(dayRecord);
+  DayBloc(DateTime date) {
+    _initState(date);
   }
 
-  Future<void> _initState(DayRecord dayRecord) async {
-    final date = DateTime(dayRecord.year, dayRecord.month, dayRecord.day);
+  Future<void> _initState(DateTime date, {bool scrollToBottom}) async {
     final toDoRecords = await _usecases.getToDoRecords(date);
+    final dayMemo = await _usecases.getDayMemo(date);
+    final draft = ToDoRecord.createDraft(_state.value.date, toDoRecords.length);
     _state.add(_state.value.buildNew(
-      month: dayRecord.month,
-      day: dayRecord.day,
-      weekday: dayRecord.weekday,
-      dayMemo: dayRecord.dayMemo,
+      year: date.year,
+      month: date.month,
+      day: date.day,
+      weekday: date.weekday,
+      dayMemo: dayMemo,
       toDoRecords: toDoRecords,
+      editingToDoRecord: draft,
+      scrollToBottomEvent: scrollToBottom,
     ));
+  }
+
+  bool onWillPopScope() {
+    final editorState = _state.value.editorState;
+    if (editorState == EditorState.SHOWN_CATEGORY) {
+      _state.add(_state.value.buildNew(
+        editorState: EditorState.SHOWN_TODO,
+      ));
+      return false;
+    } else if (editorState == EditorState.SHOWN_TODO) {
+      _state.add(_state.value.buildNew(
+        editorState: EditorState.HIDDEN,
+      ));
+      return false;
+    }
+    return true;
   }
 
   void onBackArrowClicked(BuildContext context) {
@@ -35,7 +55,9 @@ class DayBloc {
   }
 
   void onAddToDoClicked(BuildContext context) {
+    final draft = ToDoRecord.createDraft(_state.value.date, _state.value.toDoRecords.length);
     _state.add(_state.value.buildNew(
+      editingToDoRecord: draft,
       editorState: EditorState.SHOWN_TODO,
     ));
   }
@@ -69,20 +91,32 @@ class DayBloc {
     _state.add(_state.value.buildNew(editingToDoRecord: updated));
   }
 
-  bool onWillPopScope() {
-    final editorState = _state.value.editorState;
-    if (editorState == EditorState.SHOWN_CATEGORY) {
-      _state.add(_state.value.buildNew(
-        editorState: EditorState.SHOWN_TODO,
-      ));
-      return false;
-    } else if (editorState == EditorState.SHOWN_TODO) {
-      _state.add(_state.value.buildNew(
-        editorState: EditorState.HIDDEN,
-      ));
-      return false;
-    }
-    return true;
+  void onEditingToDoTextChanged(String changed) {
+    final currentEditingRecord = _state.value.editingToDoRecord;
+    final updated = currentEditingRecord.buildNew(toDo: currentEditingRecord.toDo.buildNew(text: changed));
+    _state.add(_state.value.buildNew(editingToDoRecord: updated));
+  }
+
+  void onToDoRecordItemClicked(ToDoRecord toDoRecord) {
+    _state.add(_state.value.buildNew(
+      editingToDoRecord: toDoRecord,
+      editorState: EditorState.SHOWN_TODO,
+    ));
+  }
+
+  void onToDoEditingDone() {
+    _usecases.setToDoRecord(_state.value.editingToDoRecord);
+    _initState(_state.value.date, scrollToBottom: true);
+  }
+
+  void onEditorCategoryButtonClicked() {
+    _state.add(_state.value.buildNew(
+      editorState: EditorState.SHOWN_CATEGORY,
+    ));
+  }
+
+  void onToDoRecordDismissed(ToDoRecord toDoRecord) {
+    _usecases.removeToDo(toDoRecord.toDo);
   }
 
   void dispose() {

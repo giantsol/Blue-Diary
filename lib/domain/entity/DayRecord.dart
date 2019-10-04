@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
-import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 
 class DayRecord {
@@ -12,7 +11,6 @@ class DayRecord {
   final List<ToDo> toDos;
   final bool isLocked;
   final bool isToday;
-  final DayMemo dayMemo;
 
   bool get hasTrailingDots => weekday != DateTime.sunday;
   String get key => '$year-$month-$day';
@@ -23,6 +21,7 @@ class DayRecord {
   double get filledRatio => totalToDosCount == 0 ? 0 : doneToDosCount / totalToDosCount.toDouble();
   String get subtitle => totalToDosCount == 0 ? 'No Todos' : '$doneToDosCount/$totalToDosCount achieved';
   Color get subtitleColor => totalToDosCount == 0 ? AppColors.TEXT_BLACK_LIGHT : AppColors.PRIMARY;
+  DateTime get date => DateTime(year, month, day);
 
   String get thumbnailString {
     if (weekday == DateTime.monday) {
@@ -50,12 +49,10 @@ class DayRecord {
     this.toDos = const [],
     this.isLocked = false,
     this.isToday = false,
-    this.dayMemo = const DayMemo(),
   });
 
   DayRecord buildNew({
     bool isLocked,
-    DayMemo dayMemo,
   }) {
     return DayRecord(
       year: this.year,
@@ -65,7 +62,6 @@ class DayRecord {
       toDos: this.toDos,
       isLocked: isLocked ?? this.isLocked,
       isToday: this.isToday,
-      dayMemo: dayMemo ?? this.dayMemo,
     );
   }
 }

@@ -41,22 +41,6 @@ class _WeekScreenState extends State<WeekScreen> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void reassemble() {
-    super.reassemble();
-  }
-
-
-  @override
-  void deactivate() {
-    super.deactivate();
-  }
-
-  @override
   void dispose() {
     super.dispose();
     _bloc.dispose();

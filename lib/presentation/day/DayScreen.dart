@@ -1,9 +1,9 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
-import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
 import 'package:todo_app/presentation/day/DayBloc.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
@@ -11,12 +11,11 @@ import 'package:todo_app/presentation/widgets/DayMemoTextField.dart';
 import 'package:todo_app/presentation/widgets/ToDoEditorTextField.dart';
 
 class DayScreen extends StatefulWidget {
-  final DayRecord dayRecord;
+  final DateTime date;
 
   DayScreen({
-    Key key,
-    this.dayRecord,
-  }): super(key: key);
+    @required this.date,
+  });
 
   @override
   State createState() => _DayScreenState();
@@ -24,17 +23,20 @@ class DayScreen extends StatefulWidget {
 
 class _DayScreenState extends State<DayScreen> {
   DayBloc _bloc;
+  ScrollController _toDoScrollController;
 
   @override
   void initState() {
     super.initState();
-    _bloc = DayBloc(widget.dayRecord);
+    _bloc = DayBloc(widget.date);
+    _toDoScrollController = ScrollController();
   }
 
   @override
   void dispose() {
     super.dispose();
     _bloc.dispose();
+    _toDoScrollController.dispose();
   }
 
   @override
@@ -49,6 +51,16 @@ class _DayScreenState extends State<DayScreen> {
   }
 
   Widget _buildUI(DayState state) {
+    if (state.scrollToBottomEvent) {
+      SchedulerBinding.instance.addPostFrameCallback((duration) {
+        _toDoScrollController.animateTo(
+          _toDoScrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      });
+    }
+
     return WillPopScope(
       onWillPop: () async => _bloc.onWillPopScope(),
       child: SafeArea(
@@ -74,6 +86,7 @@ class _DayScreenState extends State<DayScreen> {
                         bloc: _bloc,
                         dayMemo: state.dayMemo,
                         toDoRecords: state.toDoRecords,
+                        scrollController: _toDoScrollController,
                       ),
                     ),
                   ],
@@ -263,25 +276,29 @@ class _ToDoListView extends StatelessWidget {
   final DayBloc bloc;
   final DayMemo dayMemo;
   final List<ToDoRecord> toDoRecords;
+  final ScrollController scrollController;
 
   _ToDoListView({
     @required this.bloc,
     @required this.dayMemo,
     @required this.toDoRecords,
+    @required this.scrollController,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          _DayMemo(
+    return ListView.builder(
+      controller: scrollController,
+      itemCount: toDoRecords.length + 2,
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return _DayMemo(
             bloc: bloc,
             dayMemo: dayMemo,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 18, top: 20),
+          );
+        } else if (index == 1) {
+          return Padding(
+            padding: EdgeInsets.only(left: 18, top: 20, bottom: 12),
             child: Text(
               'TODO',
               style: TextStyle(
@@ -289,21 +306,16 @@ class _ToDoListView extends StatelessWidget {
                 color: AppColors.TEXT_BLACK,
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 12, bottom: 76),
-            child: Column(
-              children: List.generate(toDoRecords.length, (index) {
-                return _ToDoItem(
-                  bloc: bloc,
-                  toDoRecord: toDoRecords[index],
-                  isLast: index == toDoRecords.length - 1,
-                );
-              }),
-            ),
-          )
-        ],
-      ),
+          );
+        } else {
+          final realIndex = index - 2;
+          return _ToDoItem(
+            bloc: bloc,
+            toDoRecord: toDoRecords[realIndex],
+            isLast: realIndex == toDoRecords.length - 1,
+          );
+        }
+      },
     );
   }
 }
@@ -331,6 +343,7 @@ class _ToDoItem extends StatelessWidget {
             key: Key(toDo.key),
             direction: DismissDirection.endToStart,
             background: _ToDoItemDismissibleBackground(),
+            onDismissed: (direction) => bloc.onToDoRecordDismissed(toDoRecord),
             child: Row(
               children: <Widget>[
                 SizedBox(width: 18,),
@@ -416,9 +429,10 @@ class _ToDoItem extends StatelessWidget {
               ],
             )
           ),
-          onTap: () {},
+          onTap: () => bloc.onToDoRecordItemClicked(toDoRecord),
         ),
         isLast ? _ToDoItemDivider() : const SizedBox.shrink(),
+        isLast ? const SizedBox(height: 96) : const SizedBox.shrink(),
       ],
     );
   }
@@ -431,7 +445,7 @@ class _ToDoItemDivider extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 8),
       child: Container(
         width: double.infinity,
-        height: 2,
+        height: 1,
         color: AppColors.DIVIDER,
       ),
     );
@@ -650,7 +664,7 @@ class _ToDoEditorContainer extends StatelessWidget {
           ),
           Container(
             width: double.infinity,
-            height: 2,
+            height: 1,
             color: AppColors.DIVIDER,
           ),
           Container(
@@ -704,8 +718,8 @@ class _ToDoEditor extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 15),
             child: ToDoEditorTextField(
               text: toDo.text,
-              hintText: editingToDoRecord.isValid ? '작업 수정' : '작업 추가',
-              onChanged: (s) => { },
+              hintText: editingToDoRecord.isDraft ? '작업 추가' : '작업 수정' ,
+              onChanged: (s) => bloc.onEditingToDoTextChanged(s),
             ),
           ),
         ),
@@ -715,14 +729,14 @@ class _ToDoEditor extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(14),
               child: Text(
-                editingToDoRecord.isValid ? '수정' : '추가',
+                editingToDoRecord.isDraft ? '추가' : '수정',
                 style: TextStyle(
                   fontSize: 14,
                   color: toDo.text.length > 0 ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
                 ),
               ),
             ),
-            onTap: toDo.text.length > 0 ? () { } : null,
+            onTap: toDo.text.length > 0 ? () => bloc.onToDoEditingDone() : null,
           ),
         )
       ],
@@ -744,7 +758,8 @@ class _ToDoEditorCategoryButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 14, bottom: 10),
       child: GestureDetector(
-        onTap: () { },
+        behavior: HitTestBehavior.translucent,
+        onTap: () => bloc.onEditorCategoryButtonClicked(),
         child: Container(
           padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
@@ -795,7 +810,7 @@ class _CategoryEditorContainer extends StatelessWidget {
                 ),
                 Container(
                   width: double.infinity,
-                  height: 2,
+                  height: 1,
                   color: AppColors.DIVIDER_DARK,
                 ),
                 Column(
@@ -862,7 +877,7 @@ class _CategoryEditorCategoryList extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Container(
                   width: double.infinity,
-                  height: 2,
+                  height: 1,
                   color: AppColors.DIVIDER,
                 ),
               ),

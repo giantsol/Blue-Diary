@@ -6,6 +6,7 @@ import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
 
 class DayState {
+  final int year;
   final int month;
   final int day;
   final int weekday;
@@ -15,12 +16,16 @@ class DayState {
   final ToDoRecord editingToDoRecord;
   final List<Category> allCategories;
 
+  final bool scrollToBottomEvent;
+
   String get title => '$month월 $day일 ${_toWeekDayString(weekday)}';
   bool get isMemoExpanded => dayMemo?.isExpanded != false;
   Category get editingCategory => editingToDoRecord.category;
   bool get isFabVisible => editorState == EditorState.HIDDEN;
+  DateTime get date => DateTime(year, month, day);
 
   const DayState({
+    this.year = 0,
     this.month = 0,
     this.day = 0,
     this.weekday = 0,
@@ -29,9 +34,11 @@ class DayState {
     this.editorState = EditorState.HIDDEN,
     this.editingToDoRecord = const ToDoRecord(),
     this.allCategories = const [],
+    this.scrollToBottomEvent = false,
   });
 
   DayState buildNew({
+    int year,
     int month,
     int day,
     int weekday,
@@ -40,8 +47,10 @@ class DayState {
     EditorState editorState,
     ToDoRecord editingToDoRecord,
     List<Category> allCategories,
+    bool scrollToBottomEvent,
   }) {
     return DayState(
+      year: year ?? this.year,
       month: month ?? this.month,
       day: day ?? this.day,
       weekday: weekday ?? this.weekday,
@@ -50,6 +59,7 @@ class DayState {
       editorState: editorState ?? this.editorState,
       editingToDoRecord: editingToDoRecord ?? this.editingToDoRecord,
       allCategories: allCategories ?? this.allCategories,
+      scrollToBottomEvent: scrollToBottomEvent ?? false,
     );
   }
 

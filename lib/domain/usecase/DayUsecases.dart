@@ -33,4 +33,17 @@ class DayUsecases {
   void setToDo(ToDo toDo) {
     _toDoRepository.setToDo(toDo);
   }
+
+  Future<DayMemo> getDayMemo(DateTime date) async {
+    return _memoRepository.getDayMemo(date);
+  }
+
+  void setToDoRecord(ToDoRecord toDoRecord) {
+    _toDoRepository.setToDo(toDoRecord.toDo);
+    _categoryRepository.setCategory(toDoRecord.toDo, toDoRecord.category);
+  }
+
+  void removeToDo(ToDo toDo) {
+    _toDoRepository.removeToDo(toDo);
+  }
 }
