@@ -47,8 +47,6 @@ class _ToDoEditorTextFieldState extends State<ToDoEditorTextField> {
           fontSize: 14,
           color: AppColors.TEXT_BLACK,
         ),
-        minLines: 1,
-        maxLines: 2,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.all(0),
           border: InputBorder.none,

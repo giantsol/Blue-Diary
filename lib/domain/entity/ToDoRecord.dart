@@ -3,12 +3,12 @@ import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 
 class ToDoRecord {
-  static ToDoRecord createDraft(DateTime date, int index) {
+  static ToDoRecord createDraft(DateTime date, int order) {
     final toDo = ToDo(
       year: date.year,
       month: date.month,
       day: date.day,
-      index: index,
+      order: order,
     );
     final category = Category();
     return ToDoRecord(
@@ -31,11 +31,12 @@ class ToDoRecord {
   ToDoRecord buildNew({
     ToDo toDo,
     Category category,
+    bool isDraft,
   }) {
     return ToDoRecord(
       toDo: toDo ?? this.toDo,
       category: category ?? this.category,
-      isDraft: this.isDraft,
+      isDraft: isDraft ?? this.isDraft,
     );
   }
 }

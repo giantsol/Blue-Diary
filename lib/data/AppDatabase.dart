@@ -23,6 +23,7 @@ class AppDatabase {
   static const String COLUMN_DAY = 'day';
   static const String COLUMN_NTH_WEEK = 'nth_week';
   static const String COLUMN_INDEX = '_index';
+  static const String COLUMN_ORDER = '_order';
   static const String COLUMN_TEXT = 'text';
   static const String COLUMN_HINT = 'hint';
   static const String COLUMN_DONE = 'done';
@@ -66,10 +67,10 @@ class AppDatabase {
             $COLUMN_YEAR INTEGER NOT NULL,
             $COLUMN_MONTH INTEGER NOT NULL,
             $COLUMN_DAY INTEGER NOT NULL,
-            $COLUMN_INDEX INTEGER NOT NULL,
+            $COLUMN_ORDER INTEGER NOT NULL,
             $COLUMN_TEXT TEXT NOT NULL,
             $COLUMN_DONE INTEGER NOT NULL,
-            PRIMARY KEY ($COLUMN_YEAR, $COLUMN_MONTH, $COLUMN_DAY, $COLUMN_INDEX)
+            PRIMARY KEY ($COLUMN_YEAR, $COLUMN_MONTH, $COLUMN_DAY, $COLUMN_ORDER)
           );
           """
         );
@@ -126,11 +127,12 @@ class AppDatabase {
       where: ToDo.createWhereQueryForToDos(),
       whereArgs: ToDo.createWhereArgsForToDos(date),
     );
-    final List<ToDo> result = List.filled(maps.length, null);
+    final List<ToDo> result = [];
     for (int i = 0; i < maps.length; i++) {
       final toDo = ToDo.fromDatabase(maps[i]);
-      result[toDo.index] = toDo;
+      result.add(toDo);
     }
+    result.sort((a, b) => a.order - b.order);
     return result;
   }
 

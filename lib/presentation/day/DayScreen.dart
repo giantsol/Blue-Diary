@@ -53,10 +53,8 @@ class _DayScreenState extends State<DayScreen> {
   Widget _buildUI(DayState state) {
     if (state.scrollToBottomEvent) {
       SchedulerBinding.instance.addPostFrameCallback((duration) {
-        _toDoScrollController.animateTo(
+        _toDoScrollController.position.jumpTo(
           _toDoScrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
         );
       });
     }

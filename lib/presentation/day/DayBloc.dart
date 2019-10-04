@@ -18,10 +18,11 @@ class DayBloc {
     _initState(date);
   }
 
-  Future<void> _initState(DateTime date, {bool scrollToBottom}) async {
+  Future<void> _initState(DateTime date) async {
     final toDoRecords = await _usecases.getToDoRecords(date);
     final dayMemo = await _usecases.getDayMemo(date);
-    final draft = ToDoRecord.createDraft(_state.value.date, toDoRecords.length);
+    final nextOrder = toDoRecords.isEmpty ? 0 : toDoRecords.last.toDo.order + 1;
+    final draft = ToDoRecord.createDraft(_state.value.date, nextOrder);
     _state.add(_state.value.buildNew(
       year: date.year,
       month: date.month,
@@ -30,7 +31,6 @@ class DayBloc {
       dayMemo: dayMemo,
       toDoRecords: toDoRecords,
       editingToDoRecord: draft,
-      scrollToBottomEvent: scrollToBottom,
     ));
   }
 
@@ -55,7 +55,9 @@ class DayBloc {
   }
 
   void onAddToDoClicked(BuildContext context) {
-    final draft = ToDoRecord.createDraft(_state.value.date, _state.value.toDoRecords.length);
+    final toDoRecords = _state.value.toDoRecords;
+    final nextOrder = toDoRecords.isEmpty ? 0 : toDoRecords.last.toDo.order + 1;
+    final draft = ToDoRecord.createDraft(_state.value.date, nextOrder);
     _state.add(_state.value.buildNew(
       editingToDoRecord: draft,
       editorState: EditorState.SHOWN_TODO,
@@ -105,8 +107,16 @@ class DayBloc {
   }
 
   void onToDoEditingDone() {
-    _usecases.setToDoRecord(_state.value.editingToDoRecord);
-    _initState(_state.value.date, scrollToBottom: true);
+    final newToDoRecord = _state.value.editingToDoRecord.buildNew(isDraft: false);
+    final newRecords = List.of(_state.value.toDoRecords)..add(newToDoRecord);
+    final nextOrder = newRecords.last.toDo.order + 1;
+    final draft = ToDoRecord.createDraft(_state.value.date, nextOrder);
+    _state.add(_state.value.buildNew(
+      toDoRecords: newRecords,
+      editingToDoRecord: draft,
+      scrollToBottomEvent: true,
+    ));
+    _usecases.setToDoRecord(newToDoRecord);
   }
 
   void onEditorCategoryButtonClicked() {
@@ -116,6 +126,15 @@ class DayBloc {
   }
 
   void onToDoRecordDismissed(ToDoRecord toDoRecord) {
+    final toDoRecords = _state.value.toDoRecords;
+    final removedIndex = toDoRecords.indexWhere((it) => it.toDo.key == toDoRecord.toDo.key);
+    if (removedIndex >= 0) {
+      final newRecords = List.of(toDoRecords);
+      newRecords.removeAt(removedIndex);
+      _state.add(_state.value.buildNew(
+        toDoRecords: newRecords,
+      ));
+    }
     _usecases.removeToDo(toDoRecord.toDo);
   }
 
