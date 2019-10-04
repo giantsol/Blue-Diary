@@ -34,7 +34,7 @@ class DayMemo {
     this.month = 0,
     this.day = 0,
     this.text = '',
-    this.hint = '',
+    this.hint = '오늘의 메모를 작성해보세요!',
     this.isExpanded = true,
   });
 

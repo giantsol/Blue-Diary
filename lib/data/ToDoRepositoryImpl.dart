@@ -14,7 +14,7 @@ class TodoRepositoryImpl implements ToDoRepository {
   }
 
   @override
-  void saveToDo(ToDo toDo) {
+  void setToDo(ToDo toDo) {
     _db.setToDo(toDo);
   }
 

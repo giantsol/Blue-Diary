@@ -2,6 +2,7 @@
 import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
@@ -9,10 +10,10 @@ import 'package:todo_app/domain/entity/Lock.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 
 class AppDatabase {
-  static const String TABLE_CHECK_POINTS = 'check_points';
+  static const String TABLE_CHECK_POINTS = 'checkpoints';
   static const String TABLE_TODOS = 'todos';
   static const String TABLE_LOCKS = 'locks';
-  static const String TABLE_DAY_MEMOS = 'day_memos';
+  static const String TABLE_DAY_MEMOS = 'daymemos';
   static const String TABLE_CATEGORIES = 'categories';
   static const String TABLE_TODO_CATEGORY = 'todo_category';
 
@@ -25,7 +26,7 @@ class AppDatabase {
   static const String COLUMN_TEXT = 'text';
   static const String COLUMN_HINT = 'hint';
   static const String COLUMN_DONE = 'done';
-  static const String COLUMN_KEY = 'key';
+  static const String COLUMN_KEY = '_key';
   static const String COLUMN_LOCKED = 'locked';
   static const String COLUMN_EXPANDED = 'expanded';
   static const String COLUMN_NAME = 'name';
@@ -42,7 +43,7 @@ class AppDatabase {
   }
 
   Future<void> _initDatabase() async {
-    final dbPath = join(await getDatabasesPath(), 'todo1.db');
+    final dbPath = join(await getDatabasesPath(), 'todo5.db');
     _database.value = await openDatabase(
       dbPath,
       onCreate: (db, version) async {
@@ -88,7 +89,7 @@ class AppDatabase {
             $COLUMN_NAME TEXT NOT NULL,
             $COLUMN_FILL_COLOR INTEGER NOT NULL,
             $COLUMN_BORDER_COLOR INTEGER NOT NULL,
-            $COLUMN_IMAGE_PATH TEXT NOT NULL,
+            $COLUMN_IMAGE_PATH TEXT NOT NULL
           );
           """
         );
@@ -115,7 +116,7 @@ class AppDatabase {
           """
         );
       },
-      version: 2,
+      version: 1,
     );
   }
 
@@ -126,9 +127,12 @@ class AppDatabase {
       where: ToDo.createWhereQueryForToDos(),
       whereArgs: ToDo.createWhereArgsForToDos(date),
     );
-    return List.generate(maps.length, (i) {
-      return ToDo.fromDatabase(maps[i]);
-    });
+    final result = List.filled(maps.length, null);
+    for (int i = 0; i < maps.length; i++) {
+      final toDo = ToDo.fromDatabase(maps[i]);
+      result[toDo.index] = toDo;
+    }
+    return result;
   }
 
   Future<void> setDayMemo(DayMemo dayMemo) async {
@@ -148,7 +152,7 @@ class AppDatabase {
       whereArgs: DayMemo.createWhereArgs(date),
     ).then((l) => l.isEmpty ? null : l[0]);
     return map != null ? DayMemo.fromDatabase(map)
-      : DayMemo(year: date.year, month: date.month, day: date.day, hint: '오늘의 메모를 작성해보세요!');
+      : DayMemo(year: date.year, month: date.month, day: date.day);
   }
 
   Future<List<CheckPoint>> getCheckPoints(DateTime date) async {
@@ -245,4 +249,23 @@ class AppDatabase {
     );
   }
 
+  Future<Category> getCategory(ToDo toDo) async {
+    final db = await _database.first;
+    Map<String, dynamic> map = await db.query(
+      TABLE_TODO_CATEGORY,
+      where: '$COLUMN_TODO_KEY = ?',
+      whereArgs: [toDo.key],
+    ).then((l) => l.isEmpty ? null : l[0]);
+    if (map == null) {
+      return Category();
+    } else {
+      final categoryId = map[COLUMN_CATEGORY_ID];
+      map = await db.query(
+        TABLE_CATEGORIES,
+        where: Category.createWhereQuery(),
+        whereArgs: Category.createWhereArgs(categoryId),
+      ).then((l) => l.isEmpty ? null : l[0]);
+      return map != null ? Category.fromDatabase(map) : Category();
+    }
+  }
 }

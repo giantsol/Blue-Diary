@@ -149,13 +149,14 @@ class WeekBloc {
     _usecases.setCheckPoint(checkPoint);
   }
 
-  void onDayPreviewClicked(BuildContext context, DayRecord dayRecord) {
-    Navigator.push(
+  Future<void> onDayPreviewClicked(BuildContext context, DayRecord dayRecord) async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => DayScreen(dayRecord: dayRecord,),
       ),
     );
+    _initState();
   }
 
   void onDayPreviewLockedIconClicked(WeekRecord weekRecord, DayRecord dayRecord) {

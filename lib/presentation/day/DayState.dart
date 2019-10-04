@@ -1,6 +1,8 @@
 
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
+import 'package:todo_app/domain/entity/DayRecord.dart';
+import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
 
 class DayState {
@@ -9,15 +11,14 @@ class DayState {
   final int weekday;
   final DayMemo dayMemo;
   final List<ToDoRecord> toDoRecords;
-  final StickyInputState stickyInputState;
+  final EditorState editorState;
   final ToDoRecord editingToDoRecord;
-  final String toDoEditorText;
   final List<Category> allCategories;
 
   String get title => '$month월 $day일 ${_toWeekDayString(weekday)}';
   bool get isMemoExpanded => dayMemo?.isExpanded != false;
   Category get editingCategory => editingToDoRecord.category;
-  bool get isFabVisible => stickyInputState == StickyInputState.HIDDEN;
+  bool get isFabVisible => editorState == EditorState.HIDDEN;
 
   const DayState({
     this.month = 0,
@@ -25,11 +26,41 @@ class DayState {
     this.weekday = 0,
     this.dayMemo = const DayMemo(),
     this.toDoRecords = const [],
-    this.stickyInputState = StickyInputState.HIDDEN,
+    this.editorState = EditorState.HIDDEN,
     this.editingToDoRecord = const ToDoRecord(),
-    this.toDoEditorText = '',
     this.allCategories = const [],
   });
+
+  DayState buildNew({
+    int month,
+    int day,
+    int weekday,
+    DayMemo dayMemo,
+    List<ToDoRecord> toDoRecords,
+    EditorState editorState,
+    ToDoRecord editingToDoRecord,
+    List<Category> allCategories,
+  }) {
+    return DayState(
+      month: month ?? this.month,
+      day: day ?? this.day,
+      weekday: weekday ?? this.weekday,
+      dayMemo: dayMemo ?? this.dayMemo,
+      toDoRecords: toDoRecords ?? this.toDoRecords,
+      editorState: editorState ?? this.editorState,
+      editingToDoRecord: editingToDoRecord ?? this.editingToDoRecord,
+      allCategories: allCategories ?? this.allCategories,
+    );
+  }
+
+  DayState buildNewToDoUpdated(ToDo updated) {
+    final newRecords = List.of(toDoRecords);
+    final updatedIndex = newRecords.indexWhere((it) => it.toDo.key == updated.key);
+    if (updatedIndex >= 0) {
+        newRecords[updatedIndex] = newRecords[updatedIndex].buildNew(toDo: updated);
+    }
+    return buildNew(toDoRecords: newRecords);
+  }
 
   String _toWeekDayString(int weekDay) {
     if (weekDay == DateTime.monday) {
@@ -50,7 +81,7 @@ class DayState {
   }
 }
 
-enum StickyInputState {
+enum EditorState {
   HIDDEN,
   SHOWN_TODO,
   SHOWN_CATEGORY,

@@ -49,44 +49,47 @@ class _DayScreenState extends State<DayScreen> {
   }
 
   Widget _buildUI(DayState state) {
-    return SafeArea(
-      child: Material(
-        child: Scaffold(
-          floatingActionButton: state.isFabVisible ? _FAB(
-            bloc: _bloc,
-          ) : null,
-          body: Stack(
-            fit: StackFit.expand,
-            children: <Widget>[
-              Column(
-                children: <Widget>[
-                  _Header(
-                    bloc: _bloc,
-                    title: state.title,
-                  ),
-                  Expanded(
-                    child: state.toDoRecords.length == 0 ? _EmptyToDoListView(
+    return WillPopScope(
+      onWillPop: () async => _bloc.onWillPopScope(),
+      child: SafeArea(
+        child: Material(
+          child: Scaffold(
+            floatingActionButton: state.isFabVisible ? _FAB(
+              bloc: _bloc,
+            ) : null,
+            body: Stack(
+              fit: StackFit.expand,
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    _Header(
                       bloc: _bloc,
-                      dayMemo: state.dayMemo,
-                    ) : _ToDoListView(
-                      bloc: _bloc,
-                      dayMemo: state.dayMemo,
-                      toDoRecords: state.toDoRecords,
+                      title: state.title,
                     ),
-                  ),
-                ],
-              ),
-              // 키보드 위 Sticky 입력창
-              state.stickyInputState == StickyInputState.HIDDEN ? const SizedBox.shrink()
-                : state.stickyInputState == StickyInputState.SHOWN_TODO ? _ToDoEditorContainer(
-                bloc: _bloc,
-                editingToDoRecord: state.editingToDoRecord,
-              ) : _CategoryEditorContainer(
-                bloc: _bloc,
-                allCategories: state.allCategories,
-                editingCategory: state.editingToDoRecord.category,
-              )
-            ],
+                    Expanded(
+                      child: state.toDoRecords.length == 0 ? _EmptyToDoListView(
+                        bloc: _bloc,
+                        dayMemo: state.dayMemo,
+                      ) : _ToDoListView(
+                        bloc: _bloc,
+                        dayMemo: state.dayMemo,
+                        toDoRecords: state.toDoRecords,
+                      ),
+                    ),
+                  ],
+                ),
+                // 키보드 위 입력창
+                state.editorState == EditorState.HIDDEN ? const SizedBox.shrink()
+                  : state.editorState == EditorState.SHOWN_TODO ? _ToDoEditorContainer(
+                  bloc: _bloc,
+                  editingToDoRecord: state.editingToDoRecord,
+                ) : _CategoryEditorContainer(
+                  bloc: _bloc,
+                  allCategories: state.allCategories,
+                  editingCategory: state.editingToDoRecord.category,
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -107,7 +110,7 @@ class _FAB extends StatelessWidget {
       child: Image.asset('assets/ic_plus.png'),
       backgroundColor: AppColors.PRIMARY,
       splashColor: AppColors.PRIMARY_DARK,
-      onPressed: () => bloc.onAddToDoClicked(),
+      onPressed: () => bloc.onAddToDoClicked(context),
     );
   }
 }
@@ -202,6 +205,7 @@ class _DayMemo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isExpanded = dayMemo.isExpanded;
     return Padding(
       padding: EdgeInsets.only(left: 6, top: 6, right: 6),
       child: DecoratedBox(
@@ -229,14 +233,15 @@ class _DayMemo extends StatelessWidget {
                   child: GestureDetector(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
-                      child: Image.asset('assets/ic_collapse.png'),
+                      child: isExpanded ? Image.asset('assets/ic_collapse.png') : Image.asset('assets/ic_expand.png'),
                     ),
+                    behavior: HitTestBehavior.translucent,
                     onTap: () => bloc.onDayMemoCollapseOrExpandClicked(),
                   ),
                 )
               ],
             ),
-            Padding(
+            isExpanded ? Padding(
               padding: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
               child: SizedBox(
                 height: 93,
@@ -246,7 +251,7 @@ class _DayMemo extends StatelessWidget {
                   onChanged: (s) => bloc.onDayMemoTextChanged(s),
                 ),
               ),
-            )
+            ) : const SizedBox.shrink(),
           ],
         ),
       ),
@@ -659,7 +664,7 @@ class _ToDoEditorContainer extends StatelessWidget {
                 ),
                 _ToDoEditorCategoryButton(
                   bloc: bloc,
-                  categoryName: editingToDoRecord.category.name,
+                  categoryName: editingToDoRecord.category.displayName,
                 )
               ],
             ),

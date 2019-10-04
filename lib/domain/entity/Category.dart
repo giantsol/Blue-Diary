@@ -7,8 +7,8 @@ class Category {
 
   static String createWhereQuery() => '${AppDatabase.COLUMN_ID} = ?';
 
-  static List<dynamic> createWhereArgs(Category category) => [
-    category.id,
+  static List<dynamic> createWhereArgs(int id) => [
+    id,
   ];
 
   static Category fromDatabase(Map<String, dynamic> map) {
@@ -49,6 +49,20 @@ class Category {
     this.borderColor = INVALID_COLOR,
     this.imagePath = '',
   });
+
+  Category buildNew({
+    String name,
+    int fillColor,
+    int borderColor,
+    String imagePath,
+  }) {
+    return Category(
+      name: name ?? this.name,
+      fillColor: fillColor ?? this.fillColor,
+      borderColor: borderColor ?? this.borderColor,
+      imagePath: imagePath ?? this.imagePath,
+    );
+  }
 
   Map<String, dynamic> toDatabase() {
     return {

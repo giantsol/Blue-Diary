@@ -18,32 +18,71 @@ class DayBloc {
     _initState(dayRecord);
   }
 
-  void _initState(DayRecord dayRecord) {
-
+  Future<void> _initState(DayRecord dayRecord) async {
+    final date = DateTime(dayRecord.year, dayRecord.month, dayRecord.day);
+    final toDoRecords = await _usecases.getToDoRecords(date);
+    _state.add(_state.value.buildNew(
+      month: dayRecord.month,
+      day: dayRecord.day,
+      weekday: dayRecord.weekday,
+      dayMemo: dayRecord.dayMemo,
+      toDoRecords: toDoRecords,
+    ));
   }
 
   void onBackArrowClicked(BuildContext context) {
     Navigator.pop(context);
   }
 
-  void onAddToDoClicked() {
-
+  void onAddToDoClicked(BuildContext context) {
+    _state.add(_state.value.buildNew(
+      editorState: EditorState.SHOWN_TODO,
+    ));
   }
 
   void onDayMemoCollapseOrExpandClicked() {
-
+    final current = _state.value.dayMemo;
+    final updated = current.buildNew(isExpanded: !current.isExpanded);
+    _state.add(_state.value.buildNew(
+      dayMemo: updated,
+    ));
+    _usecases.setDayMemo(updated);
   }
 
   void onDayMemoTextChanged(String changed) {
-
+    final updated = _state.value.dayMemo.buildNew(text: changed);
+    _state.add(_state.value.buildNew(
+      dayMemo: updated,
+    ));
+    _usecases.setDayMemo(updated);
   }
 
   void onToDoCheckBoxClicked(ToDo toDo) {
-
+    final updated = toDo.buildNew(isDone: true);
+    _state.add(_state.value.buildNewToDoUpdated(updated));
+    _usecases.setToDo(updated);
   }
 
   void onEditingCategoryTextChanged(String changed) {
+    final currentEditingRecord = _state.value.editingToDoRecord;
+    final updated = currentEditingRecord.buildNew(category: currentEditingRecord.category.buildNew(name: changed));
+    _state.add(_state.value.buildNew(editingToDoRecord: updated));
+  }
 
+  bool onWillPopScope() {
+    final editorState = _state.value.editorState;
+    if (editorState == EditorState.SHOWN_CATEGORY) {
+      _state.add(_state.value.buildNew(
+        editorState: EditorState.SHOWN_TODO,
+      ));
+      return false;
+    } else if (editorState == EditorState.SHOWN_TODO) {
+      _state.add(_state.value.buildNew(
+        editorState: EditorState.HIDDEN,
+      ));
+      return false;
+    }
+    return true;
   }
 
   void dispose() {
