@@ -19,7 +19,7 @@ class DayRecord {
   int get doneToDosCount => toDos.where((toDo) => toDo.isDone).length;
   bool get hasBorder => totalToDosCount > 0;
   double get filledRatio => totalToDosCount == 0 ? 0 : doneToDosCount / totalToDosCount.toDouble();
-  String get subtitle => totalToDosCount == 0 ? 'No Todos' : '$doneToDosCount/$totalToDosCount achieved';
+  String get subtitle => totalToDosCount == 0 ? 'No TODO' : '$doneToDosCount/$totalToDosCount achieved';
   Color get subtitleColor => totalToDosCount == 0 ? AppColors.TEXT_BLACK_LIGHT : AppColors.PRIMARY;
   DateTime get date => DateTime(year, month, day);
 
