@@ -150,13 +150,29 @@ class WeekBloc {
   }
 
   Future<void> onDayPreviewClicked(BuildContext context, DayRecord dayRecord) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DayScreen(date: dayRecord.date),
-      ),
-    );
-    _initState();
+    if (dayRecord.isLocked) {
+      delegator.showBottomSheet((context) =>
+        InputPasswordScreen(onSuccess: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DayScreen(date: dayRecord.date),
+            ),
+          );
+          _initState();
+        }, onFail: () {
+          delegator.showSnackBar(Text('잠금 해제에 실패하셨습니다'), duration: Duration(seconds: 2));
+        }),
+      );
+    } else {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DayScreen(date: dayRecord.date),
+        ),
+      );
+      _initState();
+    }
   }
 
   void onDayPreviewLockedIconClicked(WeekRecord weekRecord, DayRecord dayRecord) {
