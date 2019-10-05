@@ -70,6 +70,7 @@ class DayBloc {
       editingToDoRecord: draft,
       editingCategory: draftCategory,
       editorState: EditorState.SHOWN_TODO,
+      scrollToToDoListEvent: true,
     ));
   }
 
@@ -113,6 +114,7 @@ class DayBloc {
       editingToDoRecord: toDoRecord.buildNew(),
       editingCategory: toDoRecord.category.buildNew(),
       editorState: EditorState.SHOWN_TODO,
+      scrollToToDoListEvent: true,
     ));
   }
 

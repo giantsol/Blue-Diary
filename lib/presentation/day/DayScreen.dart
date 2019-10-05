@@ -60,6 +60,18 @@ class _DayScreenState extends State<DayScreen> {
         );
       });
     }
+    if (state.scrollToToDoListEvent) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        final double targetPixel = state.isMemoExpanded ? 170 : 70;
+        if (_toDoScrollController.position.pixels < targetPixel) {
+          _toDoScrollController.position.animateTo(
+            targetPixel,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
 
     return WillPopScope(
       onWillPop: () async => _bloc.onWillPopScope(),

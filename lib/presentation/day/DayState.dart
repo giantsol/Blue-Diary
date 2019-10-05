@@ -30,6 +30,7 @@ class DayState {
   final int selectedPickerIndex;
 
   final bool scrollToBottomEvent;
+  final bool scrollToToDoListEvent;
 
   String get title => '$month월 $day일 ${_toWeekDayString(weekday)}';
   bool get isMemoExpanded => dayMemo?.isExpanded != false;
@@ -51,6 +52,7 @@ class DayState {
     this.selectedPickerIndex = -1,
 
     this.scrollToBottomEvent = false,
+    this.scrollToToDoListEvent = false,
   });
 
   DayState buildNew({
@@ -67,6 +69,7 @@ class DayState {
     int selectedPickerIndex,
 
     bool scrollToBottomEvent,
+    bool scrollToToDoListEvent,
   }) {
     return DayState(
       year: year ?? this.year,
@@ -82,6 +85,7 @@ class DayState {
       selectedPickerIndex: selectedPickerIndex ?? this.selectedPickerIndex,
 
       scrollToBottomEvent: scrollToBottomEvent ?? false,
+      scrollToToDoListEvent: scrollToToDoListEvent ?? false,
     );
   }
 
