@@ -278,4 +278,13 @@ class AppDatabase {
       );
     }
   }
+
+  Future<void> removeCategory(Category category) async {
+    final db = await _database.first;
+    await db.delete(
+      TABLE_CATEGORIES,
+      where: Category.createWhereQuery(),
+      whereArgs: Category.createWhereArgs(category.id),
+    );
+  }
 }

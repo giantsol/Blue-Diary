@@ -846,6 +846,7 @@ class _CategoryEditorCategoryList extends StatelessWidget {
                 index == 0 ? SizedBox(height: 4,) : Container(),
                 InkWell(
                   onTap: () => bloc.onCategoryEditorCategoryClicked(category),
+                  onLongPress: () => bloc.onCategoryEditorCategoryLongClicked(context, category),
                   child: Row(
                     children: <Widget>[
                       SizedBox(width: 8,),

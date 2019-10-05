@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/CategoryPicker.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
@@ -201,6 +202,72 @@ class DayBloc {
     _state.add(_state.value.buildNew(
       editingToDoRecord: recordWithNewCategory,
       editorState: EditorState.SHOWN_TODO,
+    ));
+  }
+
+  void onCategoryEditorCategoryLongClicked(BuildContext context, Category category) {
+    if (category.id == Category.ID_DEFAULT) {
+      return;
+    }
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            '카테고리 삭제',
+            style: TextStyle(
+              color: AppColors.TEXT_BLACK,
+              fontSize: 20,
+            ),
+          ),
+          content: Text(
+            '${category.name} 카테고리를 삭제하시겠습니까?',
+            style: TextStyle(
+              color: AppColors.TEXT_BLACK_LIGHT,
+              fontSize: 16,
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                '취소',
+                style: TextStyle(
+                  color: AppColors.TEXT_BLACK,
+                  fontSize: 14,
+                ),
+              ),
+              onPressed: () => _onRemoveCategoryCancelClicked(context),
+            ),
+            FlatButton(
+              child: Text(
+                '확인',
+                style: TextStyle(
+                  color: AppColors.PRIMARY,
+                  fontSize: 14,
+                ),
+              ),
+              onPressed: () => _onRemoveCategoryOkClicked(context, category),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  void _onRemoveCategoryCancelClicked(BuildContext context) {
+    Navigator.of(context).pop();
+  }
+
+  Future<void> _onRemoveCategoryOkClicked(BuildContext context, Category category) async {
+    Navigator.of(context).pop();
+    await _usecases.removeCategory(category);
+    final toDoRecords = await _usecases.getToDoRecords(_state.value.date);
+    final allCategories = await _usecases.getAllCategories();
+    _state.add(_state.value.buildNew(
+      toDoRecords: toDoRecords,
+      allCategories: allCategories,
     ));
   }
 

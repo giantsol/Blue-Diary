@@ -22,4 +22,9 @@ class CategoryRepositoryImpl implements CategoryRepository {
   Future<List<Category>> getAllCategories() async {
     return _db.getAllCategories();
   }
+
+  @override
+  Future<void> removeCategory(Category category) async {
+    return _db.removeCategory(category);
+  }
 }
