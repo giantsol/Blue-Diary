@@ -493,17 +493,10 @@ class _CategoryThumbnail extends StatelessWidget {
           width: width,
           height: height
         );
-      case CategoryType.BORDER:
-        return _BorderCategoryThumbnail(
-          color: category.borderColor,
-          initial: category.initial,
-          width: width,
-          height: height,
-          fontSize: fontSize,
-        );
       default:
-        return _FillCategoryThumbnail(
-          color: category.fillColor,
+        return _ColorCategoryThumbnail(
+          fillColor: category.fillColor,
+          borderColor: category.borderColor,
           initial: category.initial,
           width: width,
           height: height,
@@ -533,15 +526,17 @@ class _ImageCategoryThumbnail extends StatelessWidget {
   }
 }
 
-class _BorderCategoryThumbnail extends StatelessWidget {
-  final Color color;
+class _ColorCategoryThumbnail extends StatelessWidget {
+  final Color fillColor;
+  final Color borderColor;
   final String initial;
   final double width;
   final double height;
   final double fontSize;
 
-  _BorderCategoryThumbnail({
-    @required this.color,
+  _ColorCategoryThumbnail({
+    @required this.fillColor,
+    @required this.borderColor,
     @required this.initial,
     @required this.width,
     @required this.height,
@@ -550,13 +545,17 @@ class _BorderCategoryThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isFill = fillColor != Category.COLOR_INVALID;
     return Container(
       width: width,
       height: height,
-      decoration: BoxDecoration(
+      decoration: isFill ? BoxDecoration(
+        shape: BoxShape.circle,
+        color: fillColor,
+      ) : BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: color,
+          color: borderColor,
           width: 2,
         ),
       ),
@@ -565,68 +564,9 @@ class _BorderCategoryThumbnail extends StatelessWidget {
           initial,
           style: TextStyle(
             fontSize: fontSize,
-            color: AppColors.TEXT_BLACK,
+            color: isFill ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _FillCategoryThumbnail extends StatelessWidget {
-  final Color color;
-  final String initial;
-  final double width;
-  final double height;
-  final double fontSize;
-
-  _FillCategoryThumbnail({
-    @required this.color,
-    @required this.initial,
-    @required this.width,
-    @required this.height,
-    @required this.fontSize,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: color,
-      ),
-      child: Center(
-        child: Text(
-          initial,
-          style: TextStyle(
-            fontSize: fontSize,
-            color: AppColors.TEXT_WHITE,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _DefaultCategoryThumbnail extends StatelessWidget {
-  final double width;
-  final double height;
-
-  _DefaultCategoryThumbnail({
-    @required this.width,
-    @required this.height,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: AppColors.BACKGROUND_GREY,
       ),
     );
   }

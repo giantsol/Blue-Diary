@@ -268,7 +268,7 @@ class AppDatabase {
 
   Future<int> setCategory(Category category) async {
     if (category.type == CategoryType.DEFAULT) {
-      return -1;
+      return Category.ID_DEFAULT;
     } else {
       final db = await _database.first;
       return db.insert(
