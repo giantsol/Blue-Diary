@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/CategoryPicker.dart';
@@ -155,8 +156,17 @@ class DayBloc {
     ));
   }
 
-  void onChoosePhotoClicked() {
-
+  Future<void> onChoosePhotoClicked() async {
+    final imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+    final updatedCategory = _state.value.editingCategory.buildNew(
+      fillColor: Category.COLOR_INVALID,
+      borderColor: Category.COLOR_INVALID,
+      imagePath: imageFile.path,
+    );
+    _state.add(_state.value.buildNew(
+      editingCategory: updatedCategory,
+      selectedPickerIndex: -1,
+    ));
   }
 
   void onCategoryPickerSelected(CategoryPicker item) {

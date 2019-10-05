@@ -31,16 +31,20 @@ class Category {
   final Color borderColor;
   final String imagePath;
 
-  String get initial => name.isEmpty || type == CategoryType.DEFAULT ? '' : name[0];
-  CategoryType get type {
-    if (id == ID_DEFAULT) {
-      return CategoryType.DEFAULT;
-    } else if (imagePath.length > 0) {
-      return CategoryType.IMAGE;
-    } else if (borderColor != COLOR_INVALID) {
-      return CategoryType.BORDER;
+  String get initial {
+    if (id == ID_DEFAULT && fillColor == COLOR_DEFAULT) {
+      return '';
     } else {
-      return CategoryType.FILL;
+      return name.isEmpty ? '' : name[0];
+    }
+  }
+  CategoryThumbnailType get thumbnailType {
+    if (imagePath.length > 0) {
+      return CategoryThumbnailType.IMAGE;
+    } else if (borderColor != COLOR_INVALID) {
+      return CategoryThumbnailType.BORDER;
+    } else {
+      return CategoryThumbnailType.FILL;
     }
   }
 
@@ -90,8 +94,7 @@ class Category {
   }
 }
 
-enum CategoryType {
-  DEFAULT,
+enum CategoryThumbnailType {
   IMAGE,
   BORDER,
   FILL

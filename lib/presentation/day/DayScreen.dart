@@ -1,6 +1,9 @@
 
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/domain/entity/Category.dart';
@@ -53,24 +56,26 @@ class _DayScreenState extends State<DayScreen> {
   }
 
   Widget _buildUI(DayState state) {
-    if (state.scrollToBottomEvent) {
-      SchedulerBinding.instance.addPostFrameCallback((duration) {
-        _toDoScrollController.position.jumpTo(
-          _toDoScrollController.position.maxScrollExtent,
-        );
-      });
-    }
-    if (state.scrollToToDoListEvent) {
-      Future.delayed(const Duration(milliseconds: 500), () {
-        final double targetPixel = state.isMemoExpanded ? 170 : 70;
-        if (_toDoScrollController.position.pixels < targetPixel) {
-          _toDoScrollController.position.animateTo(
-            targetPixel,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
+    if (_toDoScrollController.hasClients) {
+      if (state.scrollToBottomEvent) {
+        SchedulerBinding.instance.addPostFrameCallback((duration) {
+          _toDoScrollController.position.jumpTo(
+            _toDoScrollController.position.maxScrollExtent,
           );
-        }
-      });
+        });
+      }
+      if (state.scrollToToDoListEvent) {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          final double targetPixel = state.isMemoExpanded ? 170 : 70;
+          if (_toDoScrollController.position.pixels < targetPixel) {
+            _toDoScrollController.position.animateTo(
+              targetPixel,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          }
+        });
+      }
     }
 
     return WillPopScope(
@@ -371,7 +376,7 @@ class _ToDoItem extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 36),
-                category.type == CategoryType.DEFAULT ? Padding(
+                category.id == Category.ID_DEFAULT ? Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Text(
                     toDo.text,
@@ -497,9 +502,9 @@ class _CategoryThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final type = category.type;
+    final type = category.thumbnailType;
     switch (type) {
-      case CategoryType.IMAGE:
+      case CategoryThumbnailType.IMAGE:
         return _ImageCategoryThumbnail(
           imagePath: category.imagePath,
           width: width,
@@ -533,7 +538,14 @@ class _ImageCategoryThumbnail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: width,
-      height: height
+      height: height,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        image: DecorationImage(
+          fit: BoxFit.cover,
+          image: FileImage(File(imagePath)),
+        )
+      ),
     );
   }
 }
@@ -888,7 +900,7 @@ class _CategoryEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final addButtonEnabled = category.name.length > 0;
-    final modifyButtonEnabled = category.type != CategoryType.DEFAULT && category.name.length > 0;
+    final modifyButtonEnabled = category.id != Category.ID_DEFAULT && category.name.length > 0;
     return Material(
       type: MaterialType.transparency,
       child: Row(
