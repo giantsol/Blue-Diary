@@ -1,5 +1,4 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
@@ -16,7 +15,6 @@ class AppDatabase {
   static const String TABLE_LOCKS = 'locks';
   static const String TABLE_DAY_MEMOS = 'daymemos';
   static const String TABLE_CATEGORIES = 'categories';
-  static const String TABLE_TODO_CATEGORY = 'todo_category';
 
   static const String COLUMN_ID = '_id';
   static const String COLUMN_YEAR = 'year';
@@ -36,7 +34,6 @@ class AppDatabase {
   static const String COLUMN_BORDER_COLOR = 'border_color';
   static const String COLUMN_IMAGE_PATH = 'image_path';
   static const String COLUMN_CATEGORY_ID = 'category_id';
-  static const String COLUMN_TODO_KEY = 'todo_key';
 
   final _database = BehaviorSubject<Database>();
 
@@ -71,6 +68,7 @@ class AppDatabase {
             $COLUMN_ORDER INTEGER NOT NULL,
             $COLUMN_TEXT TEXT NOT NULL,
             $COLUMN_DONE INTEGER NOT NULL,
+            $COLUMN_CATEGORY_ID INTEGER NOT NULL,
             PRIMARY KEY ($COLUMN_YEAR, $COLUMN_MONTH, $COLUMN_DAY, $COLUMN_ORDER)
           );
           """
@@ -91,15 +89,6 @@ class AppDatabase {
             $COLUMN_FILL_COLOR INTEGER NOT NULL,
             $COLUMN_BORDER_COLOR INTEGER NOT NULL,
             $COLUMN_IMAGE_PATH TEXT NOT NULL
-          );
-          """
-        );
-        await db.execute(
-          """
-          CREATE TABLE $TABLE_TODO_CATEGORY(
-            $COLUMN_TODO_KEY TEXT NOT NULL,
-            $COLUMN_CATEGORY_ID INTEGER NOT NULL,
-            PRIMARY KEY ($COLUMN_TODO_KEY, $COLUMN_CATEGORY_ID)
           );
           """
         );
@@ -251,24 +240,14 @@ class AppDatabase {
     );
   }
 
-  Future<Category> getCategory(ToDo toDo) async {
+  Future<Category> getCategory(int id) async {
     final db = await _database.first;
     Map<String, dynamic> map = await db.query(
-      TABLE_TODO_CATEGORY,
-      where: ToDo.createWhereQueryForCategory(),
-      whereArgs: ToDo.createWhereArgsForCategory(toDo),
+      TABLE_CATEGORIES,
+      where: Category.createWhereQuery(),
+      whereArgs: Category.createWhereArgs(id),
     ).then((l) => l.isEmpty ? null : l[0]);
-    if (map == null) {
-      return Category();
-    } else {
-      final categoryId = map[COLUMN_CATEGORY_ID];
-      map = await db.query(
-        TABLE_CATEGORIES,
-        where: Category.createWhereQuery(),
-        whereArgs: Category.createWhereArgs(categoryId),
-      ).then((l) => l.isEmpty ? null : l[0]);
-      return map != null ? Category.fromDatabase(map) : Category();
-    }
+    return map != null ? Category.fromDatabase(map) : Category();
   }
 
   Future<List<Category>> getAllCategories() async {
@@ -277,6 +256,8 @@ class AppDatabase {
       TABLE_CATEGORIES
     );
     final List<Category> result = [];
+    // add one default category cause we don't save it in DB
+    result.add(Category());
     for (int i = 0; i < maps.length; i++) {
       final category = Category.fromDatabase(maps[i]);
       result.add(category);
@@ -285,20 +266,16 @@ class AppDatabase {
     return result;
   }
 
-  Future<void> setCategory(ToDo toDo, Category category) async {
-    final db = await _database.first;
-    final id = await db.insert(
-      TABLE_CATEGORIES,
-      category.toDatabase(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-    await db.insert(
-      TABLE_TODO_CATEGORY,
-      {
-        COLUMN_TODO_KEY: toDo.key,
-        COLUMN_CATEGORY_ID: id,
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+  Future<int> setCategory(Category category) async {
+    if (category.type == CategoryType.DEFAULT) {
+      return -1;
+    } else {
+      final db = await _database.first;
+      return db.insert(
+        TABLE_CATEGORIES,
+        category.toDatabase(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
   }
 }

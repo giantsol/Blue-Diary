@@ -18,7 +18,7 @@ class DayUsecases {
     final List<ToDoRecord> toDoRecords = [];
     final toDos = await _toDoRepository.getToDos(date);
     for (final toDo in toDos) {
-      final category = await _categoryRepository.getCategory(toDo);
+      final category = await _categoryRepository.getCategory(toDo.categoryId);
       toDoRecords.add(ToDoRecord(
         toDo: toDo,
         category: category,
@@ -39,9 +39,9 @@ class DayUsecases {
     return _memoRepository.getDayMemo(date);
   }
 
-  void setToDoRecord(ToDoRecord toDoRecord) {
-    _toDoRepository.setToDo(toDoRecord.toDo);
-    _categoryRepository.setCategory(toDoRecord.toDo, toDoRecord.category);
+  Future<void> setToDoRecord(ToDoRecord toDoRecord) async {
+    final categoryId = await _categoryRepository.setCategory(toDoRecord.category);
+    _toDoRepository.setToDo(toDoRecord.toDo.buildNew(categoryId: categoryId));
   }
 
   void removeToDo(ToDo toDo) {

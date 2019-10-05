@@ -116,9 +116,9 @@ class DayBloc {
     ));
   }
 
-  void onToDoEditingDone() {
+  Future<void> onToDoEditingDone() async {
     final editedRecord = _state.value.editingToDoRecord.buildNew(isDraft: false);
-    _usecases.setToDoRecord(editedRecord);
+    await _usecases.setToDoRecord(editedRecord);
 
     _initState(_state.value.date, scrollToBottom: true);
   }
@@ -143,8 +143,11 @@ class DayBloc {
   }
 
   void onCategoryEditorCategoryClicked(Category category) {
+    final recordWithNewCategory = _state.value.editingToDoRecord.buildNew(category: category);
     _state.add(_state.value.buildNew(
+      editingToDoRecord: recordWithNewCategory,
       editingCategory: category,
+      editorState: EditorState.SHOWN_TODO,
     ));
   }
 
@@ -154,12 +157,12 @@ class DayBloc {
 
   void onCategoryPickerSelected(CategoryPicker item) {
     final updatedCategory = item.isFillType ? _state.value.editingCategory.buildNew(
-      fillColor: item.color.value,
-      borderColor: Category.INVALID_COLOR,
+      fillColor: item.color,
+      borderColor: Category.COLOR_INVALID,
       imagePath: '',
     ) : _state.value.editingCategory.buildNew(
-      fillColor: Category.INVALID_COLOR,
-      borderColor: item.color.value,
+      fillColor: Category.COLOR_INVALID,
+      borderColor: item.color,
       imagePath: '',
     );
     final index = _state.value.categoryPickers.indexWhere((it) => it == item);
@@ -170,7 +173,7 @@ class DayBloc {
   }
 
   void onCreateNewCategoryClicked() {
-    final newCategory = _state.value.editingCategory.buildNew(id: Category.ID_DRAFT);
+    final newCategory = _state.value.editingCategory.buildNew(id: Category.ID_NEW);
     final recordWithNewCategory = _state.value.editingToDoRecord.buildNew(category: newCategory);
     _state.add(_state.value.buildNew(
       editingToDoRecord: recordWithNewCategory,

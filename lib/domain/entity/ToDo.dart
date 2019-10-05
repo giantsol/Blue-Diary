@@ -1,5 +1,6 @@
 
 import 'package:todo_app/data/AppDatabase.dart';
+import 'package:todo_app/domain/entity/Category.dart';
 
 class ToDo {
   static String createWhereQueryForToDos() => '${AppDatabase.COLUMN_YEAR} = ?'
@@ -10,8 +11,6 @@ class ToDo {
     ' AND ${AppDatabase.COLUMN_MONTH} = ?'
     ' AND ${AppDatabase.COLUMN_DAY} = ?'
     ' AND ${AppDatabase.COLUMN_ORDER} = ?';
-
-  static String createWhereQueryForCategory() => '${AppDatabase.COLUMN_TODO_KEY} = ?';
 
   static List<dynamic> createWhereArgsForToDos(DateTime date) => [
     date.year,
@@ -26,10 +25,6 @@ class ToDo {
     toDo.order,
   ];
 
-  static List<dynamic> createWhereArgsForCategory(ToDo toDo) => [
-    toDo.key,
-  ];
-
   static ToDo fromDatabase(Map<String, dynamic> map) {
     return ToDo(
       year: map[AppDatabase.COLUMN_YEAR] ?? 0,
@@ -38,6 +33,7 @@ class ToDo {
       order: map[AppDatabase.COLUMN_ORDER] ?? 0,
       text: map[AppDatabase.COLUMN_TEXT] ?? '',
       isDone: (map[AppDatabase.COLUMN_DONE] ?? 0) == 1,
+      categoryId: map[AppDatabase.COLUMN_CATEGORY_ID] ?? Category.ID_DEFAULT,
     );
   }
 
@@ -47,6 +43,7 @@ class ToDo {
   final int order;
   final String text;
   final bool isDone;
+  final int categoryId;
 
   String get key => '$year-$month-$day-$order';
 
@@ -57,6 +54,7 @@ class ToDo {
     this.order = 0,
     this.text = '',
     this.isDone = false,
+    this.categoryId = Category.ID_DEFAULT,
   });
 
   ToDo buildNew({
@@ -66,6 +64,7 @@ class ToDo {
     int order,
     String text,
     bool isDone,
+    int categoryId,
   }) {
     return ToDo(
       year: year ?? this.year,
@@ -74,6 +73,7 @@ class ToDo {
       order: order ?? this.order,
       text: text ?? this.text,
       isDone: isDone ?? this.isDone,
+      categoryId: categoryId ?? this.categoryId,
     );
   }
 
@@ -85,6 +85,7 @@ class ToDo {
       AppDatabase.COLUMN_ORDER: order,
       AppDatabase.COLUMN_TEXT: text,
       AppDatabase.COLUMN_DONE: isDone ? 1 : 0,
+      AppDatabase.COLUMN_CATEGORY_ID: categoryId,
     };
   }
 }

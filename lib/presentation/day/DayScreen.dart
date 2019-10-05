@@ -359,7 +359,7 @@ class _ToDoItem extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 36),
-                category.isNone ? Padding(
+                category.type == CategoryType.DEFAULT ? Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Text(
                     toDo.text,
@@ -501,18 +501,13 @@ class _CategoryThumbnail extends StatelessWidget {
           height: height,
           fontSize: fontSize,
         );
-      case CategoryType.FILL:
+      default:
         return _FillCategoryThumbnail(
           color: category.fillColor,
           initial: category.initial,
           width: width,
           height: height,
           fontSize: fontSize,
-        );
-      default:
-        return _DefaultCategoryThumbnail(
-          width: width,
-          height: height,
         );
     }
   }
@@ -539,7 +534,7 @@ class _ImageCategoryThumbnail extends StatelessWidget {
 }
 
 class _BorderCategoryThumbnail extends StatelessWidget {
-  final int color;
+  final Color color;
   final String initial;
   final double width;
   final double height;
@@ -561,7 +556,7 @@ class _BorderCategoryThumbnail extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: Color(color),
+          color: color,
           width: 2,
         ),
       ),
@@ -579,7 +574,7 @@ class _BorderCategoryThumbnail extends StatelessWidget {
 }
 
 class _FillCategoryThumbnail extends StatelessWidget {
-  final int color;
+  final Color color;
   final String initial;
   final double width;
   final double height;
@@ -600,7 +595,7 @@ class _FillCategoryThumbnail extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Color(color),
+        color: color,
       ),
       child: Center(
         child: Text(
@@ -680,7 +675,7 @@ class _ToDoEditorContainer extends StatelessWidget {
                 ),
                 _ToDoEditorCategoryButton(
                   bloc: bloc,
-                  categoryName: editingToDoRecord.category.displayName,
+                  categoryName: editingToDoRecord.category.name,
                 )
               ],
             ),
@@ -901,7 +896,7 @@ class _CategoryEditorCategoryList extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                         child: Text(
-                          category.displayName,
+                          category.name,
                           style: TextStyle(
                             color: AppColors.TEXT_BLACK,
                             fontSize: 14,
@@ -941,7 +936,7 @@ class _CategoryEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final addButtonEnabled = category.name.length > 0;
-    final modifyButtonEnabled = !category.isNone && category.name.length > 0;
+    final modifyButtonEnabled = category.type != CategoryType.DEFAULT && category.name.length > 0;
     return Material(
       type: MaterialType.transparency,
       child: Row(
