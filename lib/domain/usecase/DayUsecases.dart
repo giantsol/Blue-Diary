@@ -1,4 +1,5 @@
 
+import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
@@ -45,5 +46,9 @@ class DayUsecases {
 
   void removeToDo(ToDo toDo) {
     _toDoRepository.removeToDo(toDo);
+  }
+
+  Future<List<Category>> getAllCategories() async {
+    return _categoryRepository.getAllCategories();
   }
 }

@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:todo_app/domain/entity/Category.dart';
+import 'package:todo_app/domain/entity/CategoryPicker.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
 import 'package:todo_app/domain/usecase/DayUsecases.dart';
@@ -23,6 +25,8 @@ class DayBloc {
     final dayMemo = await _usecases.getDayMemo(date);
     final nextOrder = toDoRecords.isEmpty ? 0 : toDoRecords.last.toDo.order + 1;
     final draft = ToDoRecord.createDraft(_state.value.date, nextOrder);
+    final draftCategory = draft.category.buildNew();
+    final allCategories = await _usecases.getAllCategories();
     _state.add(_state.value.buildNew(
       year: date.year,
       month: date.month,
@@ -31,6 +35,8 @@ class DayBloc {
       dayMemo: dayMemo,
       toDoRecords: toDoRecords,
       editingToDoRecord: draft,
+      editingCategory: draftCategory,
+      allCategories: allCategories,
     ));
   }
 
@@ -58,8 +64,10 @@ class DayBloc {
     final toDoRecords = _state.value.toDoRecords;
     final nextOrder = toDoRecords.isEmpty ? 0 : toDoRecords.last.toDo.order + 1;
     final draft = ToDoRecord.createDraft(_state.value.date, nextOrder);
+    final draftCategory = draft.category.buildNew();
     _state.add(_state.value.buildNew(
       editingToDoRecord: draft,
+      editingCategory: draftCategory,
       editorState: EditorState.SHOWN_TODO,
     ));
   }
@@ -88,9 +96,9 @@ class DayBloc {
   }
 
   void onEditingCategoryTextChanged(String changed) {
-    final currentEditingRecord = _state.value.editingToDoRecord;
-    final updated = currentEditingRecord.buildNew(category: currentEditingRecord.category.buildNew(name: changed));
-    _state.add(_state.value.buildNew(editingToDoRecord: updated));
+    _state.add(_state.value.buildNew(
+      editingCategory: _state.value.editingCategory.buildNew(name: changed),
+    ));
   }
 
   void onEditingToDoTextChanged(String changed) {
@@ -102,21 +110,36 @@ class DayBloc {
   void onToDoRecordItemClicked(ToDoRecord toDoRecord) {
     _state.add(_state.value.buildNew(
       editingToDoRecord: toDoRecord,
+      editingCategory: toDoRecord.category.buildNew(),
       editorState: EditorState.SHOWN_TODO,
     ));
   }
 
   void onToDoEditingDone() {
-    final newToDoRecord = _state.value.editingToDoRecord.buildNew(isDraft: false);
-    final newRecords = List.of(_state.value.toDoRecords)..add(newToDoRecord);
+    final editingRecord = _state.value.editingToDoRecord;
+    final isAddedNew = editingRecord.isDraft;
+    final editedRecord = _state.value.editingToDoRecord.buildNew(isDraft: false);
+    final newRecords = List.of(_state.value.toDoRecords);
+    if (isAddedNew) {
+      newRecords.add(editedRecord);
+    } else {
+      final replaceIndex = newRecords.indexWhere((it) => it.toDo.key == editedRecord.toDo.key);
+      if (replaceIndex >= 0) {
+        newRecords[replaceIndex] = editedRecord;
+      }
+    }
+
     final nextOrder = newRecords.last.toDo.order + 1;
     final draft = ToDoRecord.createDraft(_state.value.date, nextOrder);
+    final draftCategory = draft.category.buildNew();
     _state.add(_state.value.buildNew(
       toDoRecords: newRecords,
       editingToDoRecord: draft,
+      editingCategory: draftCategory,
       scrollToBottomEvent: true,
     ));
-    _usecases.setToDoRecord(newToDoRecord);
+
+    _usecases.setToDoRecord(editedRecord);
   }
 
   void onEditorCategoryButtonClicked() {
@@ -136,6 +159,51 @@ class DayBloc {
       ));
     }
     _usecases.removeToDo(toDoRecord.toDo);
+  }
+
+  void onCategoryEditorCategoryClicked(Category category) {
+    _state.add(_state.value.buildNew(
+      editingCategory: category,
+    ));
+  }
+
+  void onChoosePhotoClicked() {
+
+  }
+
+  void onCategoryPickerSelected(CategoryPicker item) {
+    final updatedCategory = item.isFillType ? _state.value.editingCategory.buildNew(
+      fillColor: item.color.value,
+      borderColor: Category.INVALID_COLOR,
+      imagePath: '',
+    ) : _state.value.editingCategory.buildNew(
+      fillColor: Category.INVALID_COLOR,
+      borderColor: item.color.value,
+      imagePath: '',
+    );
+    final index = _state.value.categoryPickers.indexWhere((it) => it == item);
+    _state.add(_state.value.buildNew(
+      editingCategory: updatedCategory,
+      selectedPickerIndex: index,
+    ));
+  }
+
+  void onCreateNewCategoryClicked() {
+    final newCategory = _state.value.editingCategory.buildNew(id: null);
+    final recordWithNewCategory = _state.value.editingToDoRecord.buildNew(category: newCategory);
+    _state.add(_state.value.buildNew(
+      editingToDoRecord: recordWithNewCategory,
+      editingCategory: newCategory,
+      editorState: EditorState.SHOWN_TODO,
+    ));
+  }
+
+  void onModifyCategoryClicked() {
+    final recordWithNewCategory = _state.value.editingToDoRecord.buildNew(category: _state.value.editingCategory);
+    _state.add(_state.value.buildNew(
+      editingToDoRecord: recordWithNewCategory,
+      editorState: EditorState.SHOWN_TODO,
+    ));
   }
 
   void dispose() {

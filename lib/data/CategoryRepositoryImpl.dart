@@ -18,4 +18,9 @@ class CategoryRepositoryImpl implements CategoryRepository {
   void setCategory(ToDo toDo, Category category) {
     _db.setCategory(toDo, category);
   }
+
+  @override
+  Future<List<Category>> getAllCategories() async {
+    return _db.getAllCategories();
+  }
 }

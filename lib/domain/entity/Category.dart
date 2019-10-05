@@ -27,7 +27,7 @@ class Category {
   final int borderColor;
   final String imagePath;
 
-  String get initial => name[0];
+  String get initial => name.isEmpty ? '' : name[0];
   CategoryType get type {
     if (imagePath.length > 0) {
       return CategoryType.IMAGE;
@@ -51,12 +51,14 @@ class Category {
   });
 
   Category buildNew({
+    int id,
     String name,
     int fillColor,
     int borderColor,
     String imagePath,
   }) {
     return Category(
+      id: id,
       name: name ?? this.name,
       fillColor: fillColor ?? this.fillColor,
       borderColor: borderColor ?? this.borderColor,

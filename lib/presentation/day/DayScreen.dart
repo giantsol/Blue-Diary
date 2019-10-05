@@ -1,8 +1,10 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/domain/entity/Category.dart';
+import 'package:todo_app/domain/entity/CategoryPicker.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
 import 'package:todo_app/presentation/day/DayBloc.dart';
@@ -97,7 +99,9 @@ class _DayScreenState extends State<DayScreen> {
                 ) : _CategoryEditorContainer(
                   bloc: _bloc,
                   allCategories: state.allCategories,
-                  editingCategory: state.editingToDoRecord.category,
+                  editingCategory: state.editingCategory,
+                  categoryPickers: state.categoryPickers,
+                  selectedPickerIndex: state.selectedPickerIndex,
                 )
               ],
             ),
@@ -765,7 +769,7 @@ class _ToDoEditorCategoryButton extends StatelessWidget {
             color: AppColors.PRIMARY,
           ),
           child: Text(
-            '분류: $categoryName',
+            '카테고리: $categoryName',
             style: TextStyle(
               fontSize: 14,
               color: AppColors.TEXT_WHITE,
@@ -781,11 +785,15 @@ class _CategoryEditorContainer extends StatelessWidget {
   final DayBloc bloc;
   final List<Category> allCategories;
   final Category editingCategory;
+  final List<CategoryPicker> categoryPickers;
+  final int selectedPickerIndex;
 
   _CategoryEditorContainer({
     @required this.bloc,
     @required this.allCategories,
     @required this.editingCategory,
+    @required this.categoryPickers,
+    @required this.selectedPickerIndex,
   });
 
   @override
@@ -816,7 +824,34 @@ class _CategoryEditorContainer extends StatelessWidget {
                     _CategoryEditor(
                       bloc: bloc,
                       category: editingCategory,
-                    )
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: <Widget>[
+                          _ChoosePhotoButton(
+                            bloc: bloc,
+                          ),
+                          Expanded(
+                            child: SizedBox(
+                              height: 28,
+                              child: ListView.builder(
+                                itemCount: categoryPickers.length,
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) {
+                                  final categoryPicker = categoryPickers[index];
+                                  return _CategoryPickerItem(
+                                    bloc: bloc,
+                                    item: categoryPicker,
+                                    isSelected: index == selectedPickerIndex,
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 )
               ],
@@ -839,50 +874,56 @@ class _CategoryEditorCategoryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 138,
-      child: ListView.builder(
-        itemCount: allCategories.length,
-        itemBuilder: (context, index) {
-          final category = allCategories[index];
-          return Column(
-            children: <Widget>[
-              index == 0 ? SizedBox(height: 4,) : Container(),
-              Row(
-                children: <Widget>[
-                  SizedBox(width: 8,),
-                  Padding(
-                    padding: const EdgeInsets.all(6),
-                    child: _CategoryThumbnail(
-                      category: category,
-                      width: 24,
-                      height: 24,
-                      fontSize: 14),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                    child: Text(
-                      category.displayName,
-                      style: TextStyle(
-                        color: AppColors.TEXT_BLACK,
-                        fontSize: 14,
+    return Material(
+      type: MaterialType.transparency,
+      child: SizedBox(
+        height: 138,
+        child: ListView.builder(
+          itemCount: allCategories.length,
+          itemBuilder: (context, index) {
+            final category = allCategories[index];
+            return Column(
+              children: <Widget>[
+                index == 0 ? SizedBox(height: 4,) : Container(),
+                InkWell(
+                  onTap: () => bloc.onCategoryEditorCategoryClicked(category),
+                  child: Row(
+                    children: <Widget>[
+                      SizedBox(width: 8,),
+                      Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: _CategoryThumbnail(
+                          category: category,
+                          width: 24,
+                          height: 24,
+                          fontSize: 14),
                       ),
-                    ),
-                  )
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Container(
-                  width: double.infinity,
-                  height: 1,
-                  color: AppColors.DIVIDER,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                        child: Text(
+                          category.displayName,
+                          style: TextStyle(
+                            color: AppColors.TEXT_BLACK,
+                            fontSize: 14,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              index == allCategories.length - 1 ? SizedBox(height: 4,) : const SizedBox.shrink(),
-            ],
-          );
-        },
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Container(
+                    width: double.infinity,
+                    height: 1,
+                    color: AppColors.DIVIDER,
+                  ),
+                ),
+                index == allCategories.length - 1 ? SizedBox(height: 4,) : const SizedBox.shrink(),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -899,35 +940,131 @@ class _CategoryEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        _CategoryThumbnail(
-          category: category,
+    final addButtonEnabled = category.name.length > 0;
+    final modifyButtonEnabled = !category.isNone && category.name.length > 0;
+    return Material(
+      type: MaterialType.transparency,
+      child: Row(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+            child: _CategoryThumbnail(
+              category: category,
+              width: 24,
+              height: 24,
+              fontSize: 14
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              child: ToDoEditorTextField(
+                text: category.name,
+                hintText: '카테고리 이름 입력',
+                onChanged: (s) => bloc.onEditingCategoryTextChanged(s),
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: addButtonEnabled ? bloc.onCreateNewCategoryClicked : null,
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Text(
+                '새로 생성',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: addButtonEnabled ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
+                ),
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: modifyButtonEnabled ? bloc.onModifyCategoryClicked : null,
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Text(
+                '수정',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: modifyButtonEnabled ? AppColors.SECONDARY : AppColors.TEXT_BLACK_LIGHT,
+                )
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChoosePhotoButton extends StatelessWidget {
+  final DayBloc bloc;
+
+  _ChoosePhotoButton({
+    @required this.bloc,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 14, top: 2, right: 10, bottom: 2),
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => bloc.onChoosePhotoClicked(),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 9),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(6)),
+            color: AppColors.PRIMARY,
+          ),
+          child: Text(
+            '사진선택',
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.TEXT_WHITE,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CategoryPickerItem extends StatelessWidget {
+  final DayBloc bloc;
+  final CategoryPicker item;
+  final bool isSelected;
+
+  _CategoryPickerItem({
+    @required this.bloc,
+    @required this.item,
+    @required this.isSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final checkAssetName = item.isFillType ? 'assets/ic_check_white.png' : 'assets/ic_check_black.png';
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () => bloc.onCategoryPickerSelected(item),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+        child: Container(
           width: 24,
           height: 24,
-          fontSize: 14
-        ),
-        Expanded(
-          child: ToDoEditorTextField(
-            text: category.name,
-            onChanged: (s) => bloc.onEditingCategoryTextChanged(s),
+          decoration: item.isFillType ? BoxDecoration(
+            shape: BoxShape.circle,
+            color: item.color,
+          ) : BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: item.color,
+              width: 2,
+            ),
           ),
+          child: isSelected ? Image.asset(checkAssetName) : const SizedBox.shrink(),
         ),
-        Text(
-          '새로 생성',
-          style: TextStyle(
-            fontSize: 14,
-            color: category.name.length > 0 ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
-          ),
-        ),
-        Text(
-          '수정',
-          style: TextStyle(
-            fontSize: 14,
-            color: category.isNone ? AppColors.TEXT_BLACK_LIGHT : AppColors.SECONDARY,
-          )
-        ),
-      ],
+      ),
     );
   }
 }

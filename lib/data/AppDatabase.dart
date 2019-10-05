@@ -270,6 +270,20 @@ class AppDatabase {
     }
   }
 
+  Future<List<Category>> getAllCategories() async {
+    final db = await _database.first;
+    List<Map<String, dynamic>> maps = await db.query(
+      TABLE_CATEGORIES
+    );
+    final List<Category> result = [];
+    for (int i = 0; i < maps.length; i++) {
+      final category = Category.fromDatabase(maps[i]);
+      result.add(category);
+    }
+    result.sort((a, b) => a.id - b.id);
+    return result;
+  }
+
   Future<void> setCategory(ToDo toDo, Category category) async {
     final db = await _database.first;
     await db.insert(
