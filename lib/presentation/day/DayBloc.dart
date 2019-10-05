@@ -125,6 +125,8 @@ class DayBloc {
 
   void onEditorCategoryButtonClicked() {
     _state.add(_state.value.buildNew(
+      editingCategory: _state.value.editingToDoRecord.category.buildNew(),
+      selectedPickerIndex: -1,
       editorState: EditorState.SHOWN_CATEGORY,
     ));
   }
