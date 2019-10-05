@@ -3,6 +3,7 @@ import 'package:todo_app/data/AppDatabase.dart';
 
 class Category {
   static const ID_NONE = -1;
+  static const ID_DRAFT = -2;
   static const INVALID_COLOR = 0;
 
   static String createWhereQuery() => '${AppDatabase.COLUMN_ID} = ?';
@@ -58,7 +59,7 @@ class Category {
     String imagePath,
   }) {
     return Category(
-      id: id,
+      id: id ?? this.id,
       name: name ?? this.name,
       fillColor: fillColor ?? this.fillColor,
       borderColor: borderColor ?? this.borderColor,
@@ -67,13 +68,22 @@ class Category {
   }
 
   Map<String, dynamic> toDatabase() {
-    return {
-      AppDatabase.COLUMN_ID: id,
-      AppDatabase.COLUMN_NAME: name,
-      AppDatabase.COLUMN_FILL_COLOR: fillColor,
-      AppDatabase.COLUMN_BORDER_COLOR: borderColor,
-      AppDatabase.COLUMN_IMAGE_PATH: imagePath,
-    };
+    if (id == ID_DRAFT) {
+      return {
+        AppDatabase.COLUMN_NAME: name,
+        AppDatabase.COLUMN_FILL_COLOR: fillColor,
+        AppDatabase.COLUMN_BORDER_COLOR: borderColor,
+        AppDatabase.COLUMN_IMAGE_PATH: imagePath,
+      };
+    } else {
+      return {
+        AppDatabase.COLUMN_ID: id,
+        AppDatabase.COLUMN_NAME: name,
+        AppDatabase.COLUMN_FILL_COLOR: fillColor,
+        AppDatabase.COLUMN_BORDER_COLOR: borderColor,
+        AppDatabase.COLUMN_IMAGE_PATH: imagePath,
+      };
+    }
   }
 }
 

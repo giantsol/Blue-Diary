@@ -1,4 +1,5 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
@@ -286,17 +287,17 @@ class AppDatabase {
 
   Future<void> setCategory(ToDo toDo, Category category) async {
     final db = await _database.first;
+    final id = await db.insert(
+      TABLE_CATEGORIES,
+      category.toDatabase(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
     await db.insert(
       TABLE_TODO_CATEGORY,
       {
         COLUMN_TODO_KEY: toDo.key,
-        COLUMN_CATEGORY_ID: category.id,
+        COLUMN_CATEGORY_ID: id,
       },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-    await db.insert(
-      TABLE_CATEGORIES,
-      category.toDatabase(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }

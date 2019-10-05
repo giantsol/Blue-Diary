@@ -20,12 +20,12 @@ class DayBloc {
     _initState(date);
   }
 
-  Future<void> _initState(DateTime date) async {
+  Future<void> _initState(DateTime date, {bool scrollToBottom}) async {
     final toDoRecords = await _usecases.getToDoRecords(date);
     final dayMemo = await _usecases.getDayMemo(date);
     final nextOrder = toDoRecords.isEmpty ? 0 : toDoRecords.last.toDo.order + 1;
-    final draft = ToDoRecord.createDraft(_state.value.date, nextOrder);
-    final draftCategory = draft.category.buildNew();
+    final editingToDoRecord = ToDoRecord.createDraft(_state.value.date, nextOrder);
+    final editingCategory = editingToDoRecord.category.buildNew();
     final allCategories = await _usecases.getAllCategories();
     _state.add(_state.value.buildNew(
       year: date.year,
@@ -34,9 +34,10 @@ class DayBloc {
       weekday: date.weekday,
       dayMemo: dayMemo,
       toDoRecords: toDoRecords,
-      editingToDoRecord: draft,
-      editingCategory: draftCategory,
+      editingToDoRecord: editingToDoRecord,
+      editingCategory: editingCategory,
       allCategories: allCategories,
+      scrollToBottomEvent: scrollToBottom,
     ));
   }
 
@@ -109,37 +110,17 @@ class DayBloc {
 
   void onToDoRecordItemClicked(ToDoRecord toDoRecord) {
     _state.add(_state.value.buildNew(
-      editingToDoRecord: toDoRecord,
+      editingToDoRecord: toDoRecord.buildNew(),
       editingCategory: toDoRecord.category.buildNew(),
       editorState: EditorState.SHOWN_TODO,
     ));
   }
 
   void onToDoEditingDone() {
-    final editingRecord = _state.value.editingToDoRecord;
-    final isAddedNew = editingRecord.isDraft;
     final editedRecord = _state.value.editingToDoRecord.buildNew(isDraft: false);
-    final newRecords = List.of(_state.value.toDoRecords);
-    if (isAddedNew) {
-      newRecords.add(editedRecord);
-    } else {
-      final replaceIndex = newRecords.indexWhere((it) => it.toDo.key == editedRecord.toDo.key);
-      if (replaceIndex >= 0) {
-        newRecords[replaceIndex] = editedRecord;
-      }
-    }
-
-    final nextOrder = newRecords.last.toDo.order + 1;
-    final draft = ToDoRecord.createDraft(_state.value.date, nextOrder);
-    final draftCategory = draft.category.buildNew();
-    _state.add(_state.value.buildNew(
-      toDoRecords: newRecords,
-      editingToDoRecord: draft,
-      editingCategory: draftCategory,
-      scrollToBottomEvent: true,
-    ));
-
     _usecases.setToDoRecord(editedRecord);
+
+    _initState(_state.value.date, scrollToBottom: true);
   }
 
   void onEditorCategoryButtonClicked() {
@@ -189,7 +170,7 @@ class DayBloc {
   }
 
   void onCreateNewCategoryClicked() {
-    final newCategory = _state.value.editingCategory.buildNew(id: null);
+    final newCategory = _state.value.editingCategory.buildNew(id: Category.ID_DRAFT);
     final recordWithNewCategory = _state.value.editingToDoRecord.buildNew(category: newCategory);
     _state.add(_state.value.buildNew(
       editingToDoRecord: recordWithNewCategory,
