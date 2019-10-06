@@ -18,25 +18,6 @@ class DateInWeek {
   final int month;
   final int nthWeek;
 
-  String get monthAndNthWeekText {
-    final month = this.month;
-    final nthWeek = this.nthWeek;
-    switch (nthWeek) {
-      case 0:
-        return '$month월 첫째주';
-      case 1:
-        return '$month월 둘째주';
-      case 2:
-        return '$month월 셋째주';
-      case 3:
-        return '$month월 넷째주';
-      case 4:
-        return '$month월 다섯째주';
-      default:
-        throw Exception('invalid nthWeek value: $nthWeek');
-    }
-  }
-
   const DateInWeek({
     this.year = 0,
     this.month = 0,

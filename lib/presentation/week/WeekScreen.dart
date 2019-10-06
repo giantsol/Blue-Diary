@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:infinity_page_view/infinity_page_view.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Delegators.dart';
+import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
@@ -77,8 +78,8 @@ class _WeekScreenState extends State<WeekScreen> {
           children: [
             _Header(
               bloc: _bloc,
-              displayYear: state.year,
-              displayMonthAndWeek: state.monthAndWeek,
+              displayYear: state.year.toString(),
+              displayMonthAndWeek: AppLocalizations.of(context).getMonthAndNthWeek(state.month, state.nthWeek),
             ),
             Expanded(
               child: Stack(
@@ -491,7 +492,7 @@ class _DayPreviewItemContent extends StatelessWidget {
                                 children: [
                                   dayRecord.isToday == true ? _DayPreviewItemTodayText() : const SizedBox.shrink(),
                                   Text(
-                                    dayRecord.title,
+                                    AppLocalizations.of(context).getDayRecordTitle(dayRecord.month, dayRecord.day),
                                     style: TextStyle(
                                       fontSize: 18,
                                       color: AppColors.TEXT_BLACK,

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:todo_app/AppColors.dart';
+import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/CategoryPicker.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
@@ -96,7 +97,7 @@ class _DayScreenState extends State<DayScreen> {
                   children: <Widget>[
                     _Header(
                       bloc: _bloc,
-                      title: state.title,
+                      title: AppLocalizations.of(context).getDayScreenTitle(state.month, state.day, state.weekday),
                     ),
                     Expanded(
                       child: Stack(
@@ -223,7 +224,7 @@ class _EmptyToDoListView extends StatelessWidget {
         Expanded(
           child: Center(
             child: Text(
-              '기록이 없습니다',
+              AppLocalizations.of(context).noToDos,
               style: TextStyle(
                 fontSize: 18,
                 color: AppColors.TEXT_BLACK_LIGHT,
@@ -690,7 +691,7 @@ class _ToDoEditor extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 15),
             child: ToDoEditorTextField(
               text: toDo.text,
-              hintText: editingToDoRecord.isDraft ? '작업 추가' : '작업 수정' ,
+              hintText: editingToDoRecord.isDraft ? AppLocalizations.of(context).addTask : AppLocalizations.of(context).modifyTask ,
               onChanged: (s) => bloc.onEditingToDoTextChanged(s),
             ),
           ),
@@ -701,7 +702,7 @@ class _ToDoEditor extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(14),
               child: Text(
-                editingToDoRecord.isDraft ? '추가' : '수정',
+                editingToDoRecord.isDraft ? AppLocalizations.of(context).add : AppLocalizations.of(context).modify,
                 style: TextStyle(
                   fontSize: 14,
                   color: toDo.text.length > 0 ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
@@ -742,7 +743,7 @@ class _ToDoEditorCategoryButton extends StatelessWidget {
             color: AppColors.PRIMARY,
           ),
           child: Text(
-            '카테고리: $categoryName',
+            '${AppLocalizations.of(context).category}: ${categoryName.isEmpty ? AppLocalizations.of(context).categoryNone : categoryName}',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
@@ -878,7 +879,7 @@ class _CategoryEditorCategoryList extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                           child: Text(
-                            category.name,
+                            category.name.isEmpty ? AppLocalizations.of(context).categoryNone : category.name,
                             style: TextStyle(
                               color: AppColors.TEXT_BLACK,
                               fontSize: 14,
@@ -938,7 +939,7 @@ class _CategoryEditor extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 14),
               child: ToDoEditorTextField(
                 text: category.name,
-                hintText: '카테고리 이름 입력',
+                hintText: AppLocalizations.of(context).category,
                 onChanged: (s) => bloc.onEditingCategoryTextChanged(s),
               ),
             ),
@@ -948,7 +949,7 @@ class _CategoryEditor extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(14),
               child: Text(
-                '새로 생성',
+                AppLocalizations.of(context).create,
                 style: TextStyle(
                   fontSize: 14,
                   color: addButtonEnabled ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
@@ -964,7 +965,7 @@ class _CategoryEditor extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(14),
               child: Text(
-                '수정',
+                AppLocalizations.of(context).modify,
                 style: TextStyle(
                   fontSize: 14,
                   color: modifyButtonEnabled ? AppColors.SECONDARY : AppColors.TEXT_BLACK_LIGHT,
@@ -1002,7 +1003,7 @@ class _ChoosePhotoButton extends StatelessWidget {
             color: AppColors.PRIMARY,
           ),
           child: Text(
-            '사진선택',
+            AppLocalizations.of(context).choosePhoto,
             style: TextStyle(
               fontSize: 14,
               color: AppColors.TEXT_WHITE,

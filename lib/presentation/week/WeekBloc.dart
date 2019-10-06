@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Delegators.dart';
+import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayRecord.dart';
@@ -44,8 +45,9 @@ class WeekBloc {
 
     _state.add(_state.value.buildNew(
       viewState: WeekViewState.NORMAL,
-      year: dateInWeek.year.toString(),
-      monthAndWeek: dateInWeek.monthAndNthWeekText,
+      year: dateInWeek.year,
+      month: dateInWeek.month,
+      nthWeek: dateInWeek.nthWeek,
       weekRecords: weekRecords,
       weekRecordPageIndex: currentWeekRecordPageIndex,
     ));
@@ -100,14 +102,14 @@ class WeekBloc {
       builder: (context) {
         return AlertDialog(
           title: Text(
-            '비밀번호 설정',
+            AppLocalizations.of(context).createPassword,
             style: TextStyle(
               color: AppColors.TEXT_BLACK,
               fontSize: 20,
             ),
           ),
           content: Text(
-            '아직 설정된 비밀번호가 없네요!\n비밀번호를 새로 만드시겠어요?',
+            AppLocalizations.of(context).createPasswordBody,
             style: TextStyle(
               color: AppColors.TEXT_BLACK_LIGHT,
               fontSize: 16,
@@ -116,7 +118,7 @@ class WeekBloc {
           actions: <Widget>[
             FlatButton(
               child: Text(
-                '취소',
+                AppLocalizations.of(context).cancel,
                 style: TextStyle(
                   color: AppColors.TEXT_BLACK,
                   fontSize: 14,
@@ -126,7 +128,7 @@ class WeekBloc {
             ),
             FlatButton(
               child: Text(
-                '확인',
+                AppLocalizations.of(context).ok,
                 style: TextStyle(
                   color: AppColors.PRIMARY,
                   fontSize: 14,

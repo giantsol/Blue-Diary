@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
+import 'package:todo_app/Localization.dart';
 import 'package:todo_app/presentation/inputpassword/InputPasswordBloc.dart';
 import 'package:todo_app/presentation/inputpassword/InputPasswordState.dart';
 import 'package:virtual_keyboard/virtual_keyboard.dart';
@@ -63,14 +64,14 @@ class _InputPasswordScreenState extends State<InputPasswordScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Text(
-                          state.title,
+                          state.showErrorMsg ? AppLocalizations.of(context).retryInputPassword : AppLocalizations.of(context).inputPassword,
                           style: TextStyle(
                             fontSize: 18,
                             color: AppColors.TEXT_WHITE,
                             decorationStyle: null,
                           ),
                         ),
-                        state.errorMsg.isEmpty ? Column(
+                        !state.showErrorMsg ? Column(
                           children: <Widget>[
                             SizedBox(height: 73,),
                             _Passwords(
@@ -81,7 +82,7 @@ class _InputPasswordScreenState extends State<InputPasswordScreen> {
                           children: <Widget>[
                             SizedBox(height: 8,),
                             Text(
-                              state.errorMsg,
+                              '${AppLocalizations.of(context).confirmPasswordFail} (${state.failCount}/${InputPasswordState.MAX_FAIL_COUNT})',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.red,

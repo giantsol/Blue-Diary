@@ -14,7 +14,6 @@ class DayRecord {
 
   bool get hasTrailingDots => weekday != DateTime.sunday;
   String get key => '$year-$month-$day';
-  String get title => '$month월 $day일';
   int get totalToDosCount => toDos.length;
   int get doneToDosCount => toDos.where((toDo) => toDo.isDone).length;
   bool get hasBorder => totalToDosCount > 0;

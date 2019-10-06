@@ -32,7 +32,6 @@ class DayState {
   final bool scrollToBottomEvent;
   final bool scrollToToDoListEvent;
 
-  String get title => '$month월 $day일 ${_toWeekDayString(weekday)}';
   bool get isMemoExpanded => dayMemo?.isExpanded != false;
   bool get isFabVisible => editorState == EditorState.HIDDEN;
   DateTime get date => DateTime(year, month, day);

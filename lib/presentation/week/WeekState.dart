@@ -9,30 +9,34 @@ enum WeekViewState {
 class WeekState {
   // todo: declared viewState, but not using it anywhere yet
   final WeekViewState viewState;
-  final String year;
-  final String monthAndWeek;
+  final int year;
+  final int month;
+  final int nthWeek;
   final List<WeekRecord> weekRecords;
   final int weekRecordPageIndex;
 
   const WeekState({
     this.viewState = WeekViewState.WHOLE_LOADING,
-    this.year = '',
-    this.monthAndWeek = '',
+    this.year = 0,
+    this.month = 0,
+    this.nthWeek = 0,
     this.weekRecords = const [],
     this.weekRecordPageIndex = 0,
   });
 
   WeekState buildNew({
     WeekViewState viewState,
-    String year,
-    String monthAndWeek,
+    int year,
+    int month,
+    int nthWeek,
     List<WeekRecord> weekRecords,
     int weekRecordPageIndex,
   }) {
     return WeekState(
       viewState: viewState ?? this.viewState,
       year: year ?? this.year,
-      monthAndWeek: monthAndWeek ?? this.monthAndWeek,
+      month: month ?? this.month,
+      nthWeek: nthWeek ?? this.nthWeek,
       weekRecords: weekRecords ?? this.weekRecords,
       weekRecordPageIndex: weekRecordPageIndex ?? this.weekRecordPageIndex,
     );

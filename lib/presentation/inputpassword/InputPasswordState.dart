@@ -5,8 +5,7 @@ class InputPasswordState {
   final int failCount;
   final bool isLoading;
 
-  String get title => failCount == 0 ? '비밀번호 입력' : '다시 입력해 주세요.';
-  String get errorMsg => failCount == 0 ? '' : '일치하지 않습니다. ($failCount/$MAX_FAIL_COUNT)';
+  bool get showErrorMsg => failCount > 1;
 
   const InputPasswordState({
     this.password = '',

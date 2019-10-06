@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/AppColors.dart';
+import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/CategoryPicker.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
@@ -216,14 +217,14 @@ class DayBloc {
       builder: (context) {
         return AlertDialog(
           title: Text(
-            '카테고리 삭제',
+            AppLocalizations.of(context).removeCategory,
             style: TextStyle(
               color: AppColors.TEXT_BLACK,
               fontSize: 20,
             ),
           ),
           content: Text(
-            '${category.name} 카테고리를 삭제하시겠습니까?',
+            AppLocalizations.of(context).removeCategoryBody,
             style: TextStyle(
               color: AppColors.TEXT_BLACK_LIGHT,
               fontSize: 16,
@@ -232,7 +233,7 @@ class DayBloc {
           actions: <Widget>[
             FlatButton(
               child: Text(
-                '취소',
+                AppLocalizations.of(context).cancel,
                 style: TextStyle(
                   color: AppColors.TEXT_BLACK,
                   fontSize: 14,
@@ -242,7 +243,7 @@ class DayBloc {
             ),
             FlatButton(
               child: Text(
-                '확인',
+                AppLocalizations.of(context).ok,
                 style: TextStyle(
                   color: AppColors.PRIMARY,
                   fontSize: 14,

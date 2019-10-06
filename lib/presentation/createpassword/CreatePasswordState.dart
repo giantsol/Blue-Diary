@@ -9,7 +9,6 @@ class CreatePasswordState {
   final String password;
   final String passwordConfirm;
 
-  String get title => phase == CreatePasswordPhase.FIRST ? '새 비밀번호 생성' : '새 비밀번호 확인';
   int get passwordLength => phase == CreatePasswordPhase.FIRST ? password.length : passwordConfirm.length;
 
   const CreatePasswordState({

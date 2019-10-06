@@ -50,7 +50,7 @@ class Category {
 
   const Category({
     this.id = ID_DEFAULT,
-    this.name = '없음',
+    this.name = '',
     this.fillColor = COLOR_DEFAULT,
     this.borderColor = COLOR_INVALID,
     this.imagePath = '',

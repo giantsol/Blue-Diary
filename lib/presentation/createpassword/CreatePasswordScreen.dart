@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
+import 'package:todo_app/Localization.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordBloc.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordState.dart';
 import 'package:virtual_keyboard/virtual_keyboard.dart';
@@ -54,7 +55,8 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Text(
-                          state.title,
+                          state.phase == CreatePasswordPhase.FIRST ? AppLocalizations.of(context).newPassword
+                            : AppLocalizations.of(context).confirmNewPassword,
                           style: TextStyle(
                             fontSize: 18,
                             color: AppColors.TEXT_WHITE,
@@ -155,4 +157,4 @@ class _Passwords extends StatelessWidget {
       ),
     );
   }
-  }
+}

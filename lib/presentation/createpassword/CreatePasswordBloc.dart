@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/usecase/CreatePasswordUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordState.dart';
@@ -69,7 +70,7 @@ class CreatePasswordBloc {
           Navigator.pop(context);
         } else {
           _state.add(_state.value.buildNew(
-            errorMsg: '일치하지 않습니다',
+            errorMsg: AppLocalizations.of(context).confirmPasswordFail,
             passwordConfirm: '',
           ));
         }

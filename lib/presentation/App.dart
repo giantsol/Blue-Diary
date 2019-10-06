@@ -2,8 +2,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Dependencies.dart';
+import 'package:todo_app/Localization.dart';
 import 'package:todo_app/presentation/home/HomeScreen.dart';
 
 // 앱 프로세스에 상주하는 static dependency injection
@@ -29,6 +31,15 @@ class App extends StatelessWidget {
         accentColor: AppColors.SECONDARY,
         splashColor: AppColors.RIPPLE,
       ),
+      localizationsDelegates: [
+        const AppLocalizationsDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en'),
+        const Locale('ko'),
+      ],
       builder: (context, widget) {
         if (kReleaseMode) {
           ErrorWidget.builder = (FlutterErrorDetails errorDetails) {

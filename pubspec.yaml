@@ -32,6 +32,9 @@ dependencies:
   virtual_keyboard: ^0.1.4
   image_picker: ^0.6.1+4
 
+  flutter_localizations:
+    sdk: flutter
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
