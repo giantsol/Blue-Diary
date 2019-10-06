@@ -178,13 +178,17 @@ class _Header extends StatelessWidget {
           ),
           onTap: () => bloc.onBackArrowClicked(context),
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 15),
-          child: Text(
-            title,
-            style: TextStyle(
-              fontSize: 24,
-              color: AppColors.TEXT_BLACK,
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 15),
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 24,
+                color: AppColors.TEXT_BLACK,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),
@@ -602,6 +606,7 @@ class _ColorCategoryThumbnail extends StatelessWidget {
             fontSize: fontSize,
             color: isFill ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
           ),
+          textScaleFactor: 1.0,
         ),
       ),
     );

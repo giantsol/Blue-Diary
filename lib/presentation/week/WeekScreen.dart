@@ -173,7 +173,9 @@ class _Header extends StatelessWidget {
                   style: TextStyle(
                     color: AppColors.TEXT_BLACK,
                     fontSize: 24,
-                  )
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
