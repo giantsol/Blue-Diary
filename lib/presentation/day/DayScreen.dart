@@ -379,51 +379,52 @@ class _ToDoItem extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 36),
-                category.id == Category.ID_DEFAULT ? Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  child: Text(
-                    toDo.text,
-                    style: toDo.isDone ? TextStyle(
-                      fontSize: 14,
-                      color: AppColors.TEXT_BLACK_LIGHT,
-                      decoration: TextDecoration.lineThrough,
-                      decorationColor: AppColors.TEXT_BLACK_LIGHT,
-                      decorationThickness: 2,
-                    ) : TextStyle(
-                      fontSize: 14,
-                      color: AppColors.TEXT_BLACK,
+                Expanded(
+                  child: category.id == Category.ID_DEFAULT ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Text(
+                      toDo.text,
+                      style: toDo.isDone ? TextStyle(
+                        fontSize: 14,
+                        color: AppColors.TEXT_BLACK_LIGHT,
+                        decoration: TextDecoration.lineThrough,
+                        decorationColor: AppColors.TEXT_BLACK_LIGHT,
+                        decorationThickness: 2,
+                      ) : TextStyle(
+                        fontSize: 14,
+                        color: AppColors.TEXT_BLACK,
+                      ),
+                    ),
+                  ) : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 7),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          toDo.text,
+                          style: toDo.isDone ? TextStyle(
+                            fontSize: 14,
+                            color: AppColors.TEXT_BLACK_LIGHT,
+                            decoration: TextDecoration.lineThrough,
+                            decorationColor: AppColors.TEXT_BLACK_LIGHT,
+                            decorationThickness: 2,
+                          ) : TextStyle(
+                            fontSize: 14,
+                            color: AppColors.TEXT_BLACK,
+                          ),
+                        ),
+                        SizedBox(height: 2,),
+                        Text(
+                          category.name,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.TEXT_BLACK_LIGHT,
+                          ),
+                        )
+                      ],
                     ),
                   ),
-                ) : Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 7),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        toDo.text,
-                        style: toDo.isDone ? TextStyle(
-                          fontSize: 14,
-                          color: AppColors.TEXT_BLACK_LIGHT,
-                          decoration: TextDecoration.lineThrough,
-                          decorationColor: AppColors.TEXT_BLACK_LIGHT,
-                          decorationThickness: 2,
-                        ) : TextStyle(
-                          fontSize: 14,
-                          color: AppColors.TEXT_BLACK,
-                        ),
-                      ),
-                      SizedBox(height: 2,),
-                      Text(
-                        category.name,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.TEXT_BLACK_LIGHT,
-                        ),
-                      )
-                    ],
-                  ),
                 ),
-                Spacer(),
                 toDo.isDone ? Padding(
                   padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 19),
                   child: Image.asset('assets/ic_check.png'),
@@ -726,12 +727,17 @@ class _ToDoEditorCategoryButton extends StatelessWidget {
         onTap: () => bloc.onEditorCategoryButtonClicked(),
         child: Container(
           padding: const EdgeInsets.all(5),
+          constraints: BoxConstraints(
+            maxWidth: 200,
+          ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(6)),
             color: AppColors.PRIMARY,
           ),
           child: Text(
             '카테고리: $categoryName',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 14,
               color: AppColors.TEXT_WHITE,
@@ -861,13 +867,15 @@ class _CategoryEditorCategoryList extends StatelessWidget {
                           height: 24,
                           fontSize: 14),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                        child: Text(
-                          category.name,
-                          style: TextStyle(
-                            color: AppColors.TEXT_BLACK,
-                            fontSize: 14,
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                          child: Text(
+                            category.name,
+                            style: TextStyle(
+                              color: AppColors.TEXT_BLACK,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                       )
@@ -938,6 +946,9 @@ class _CategoryEditor extends StatelessWidget {
                   fontSize: 14,
                   color: addButtonEnabled ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
                 ),
+                strutStyle: StrutStyle(
+                  fontSize: 14,
+                ),
               ),
             ),
           ),
@@ -950,7 +961,10 @@ class _CategoryEditor extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   color: modifyButtonEnabled ? AppColors.SECONDARY : AppColors.TEXT_BLACK_LIGHT,
-                )
+                ),
+                strutStyle: StrutStyle(
+                  fontSize: 14,
+                ),
               ),
             ),
           ),
