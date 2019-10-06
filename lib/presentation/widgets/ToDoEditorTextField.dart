@@ -29,7 +29,8 @@ class _ToDoEditorTextFieldState extends State<ToDoEditorTextField> {
   @override
   Widget build(BuildContext context) {
     final controller = TextEditingController.fromValue(
-      _value?.copyWith(text: widget.text) ?? TextEditingValue(text: widget.text),
+      _value?.copyWith(text: widget.text) ??
+        TextEditingValue(text: widget.text),
     );
 
     controller.addListener(() {

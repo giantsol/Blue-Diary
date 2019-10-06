@@ -1,4 +1,5 @@
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:todo_app/AppColors.dart';
@@ -28,6 +29,14 @@ class App extends StatelessWidget {
         accentColor: AppColors.SECONDARY,
         splashColor: AppColors.RIPPLE,
       ),
+      builder: (context, widget) {
+        if (kReleaseMode) {
+          ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
+            return Container();
+          };
+        }
+        return widget;
+      },
       home: HomeScreen(),
       debugShowCheckedModeBanner: false,
     );
