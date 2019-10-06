@@ -26,12 +26,15 @@ class _WeekScreenState extends State<WeekScreen> {
   WeekBloc _bloc;
   InfinityPageController _weekRecordPageController;
   final Map<String, FocusNode> _focusNodes = {};
+  ScrollController _scrollController;
+  final GlobalKey<_HeaderShadowState> _headerShadowState = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     _bloc = WeekBloc(delegator: widget.weekBlocDelegator);
     _weekRecordPageController = InfinityPageController(initialPage: _bloc.getInitialState().weekRecordPageIndex);
+    _scrollController = ScrollController();
   }
 
   @override
@@ -47,6 +50,8 @@ class _WeekScreenState extends State<WeekScreen> {
 
     _focusNodes.forEach((key, focusNode) => focusNode.dispose());
     _focusNodes.clear();
+
+    _scrollController.dispose();
   }
 
   @override
@@ -76,21 +81,33 @@ class _WeekScreenState extends State<WeekScreen> {
               displayMonthAndWeek: state.monthAndWeek,
             ),
             Expanded(
-              child: InfinityPageView(
-                controller: _weekRecordPageController,
-                itemCount: state.weekRecords.length,
-                itemBuilder: (context, index) {
-                  final weekRecords = state.weekRecords;
-                  if (weekRecords.isEmpty || weekRecords[index] == null) {
-                    return null;
-                  }
-                  return _WeekRecord(
-                    bloc: _bloc,
-                    weekRecord: weekRecords[index],
-                    focusNodeProvider: _getOrCreateFocusNode,
-                  );
-                },
-                onPageChanged: (changedIndex) => _bloc.onWeekRecordPageChanged(changedIndex),
+              child: Stack(
+                children: <Widget>[
+                  InfinityPageView(
+                    controller: _weekRecordPageController,
+                    itemCount: state.weekRecords.length,
+                    itemBuilder: (context, index) {
+                      final weekRecords = state.weekRecords;
+                      if (weekRecords.isEmpty || weekRecords[index] == null) {
+                        return null;
+                      }
+                      return _WeekRecord(
+                        bloc: _bloc,
+                        weekRecord: weekRecords[index],
+                        focusNodeProvider: _getOrCreateFocusNode,
+                        scrollController: _scrollController,
+                      );
+                    },
+                    onPageChanged: (changedIndex) {
+                      _headerShadowState.currentState.updateShadowVisibility(false);
+                      _bloc.onWeekRecordPageChanged(changedIndex);
+                    },
+                  ),
+                  _HeaderShadow(
+                    key: _headerShadowState,
+                    scrollController: _scrollController,
+                  ),
+                ],
               ),
             ),
           ]
@@ -171,16 +188,19 @@ class _WeekRecord extends StatelessWidget {
   final WeekBloc bloc;
   final WeekRecord weekRecord;
   final FocusNodeProvider focusNodeProvider;
+  final ScrollController scrollController;
 
   _WeekRecord({
     @required this.bloc,
     @required this.weekRecord,
     @required this.focusNodeProvider,
+    @required this.scrollController,
   });
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      controller: scrollController,
       child: Column(
         children: [
           _CheckPointsBox(
@@ -698,6 +718,63 @@ class _TrailingDots extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _HeaderShadow extends StatefulWidget {
+  final ScrollController scrollController;
+
+  _HeaderShadow({
+    Key key,
+    @required this.scrollController,
+  }): super(key: key);
+
+  @override
+  State createState() => _HeaderShadowState();
+}
+
+class _HeaderShadowState extends State<_HeaderShadow> {
+  bool _isShadowVisible = false;
+  var _scrollListener;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollListener = () {
+      try {
+        updateShadowVisibility(widget.scrollController.position.pixels > 0);
+      } catch (e) {
+        updateShadowVisibility(false);
+      }
+    };
+    widget.scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget.scrollController.removeListener(_scrollListener);
+  }
+
+  void updateShadowVisibility(bool visible) {
+    setState(() {
+      _isShadowVisible = visible;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: _isShadowVisible ? 6 : 0,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppColors.DIVIDER, AppColors.DIVIDER.withAlpha(0)]
+        )
       ),
     );
   }

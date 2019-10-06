@@ -99,14 +99,21 @@ class _DayScreenState extends State<DayScreen> {
                       title: state.title,
                     ),
                     Expanded(
-                      child: state.toDoRecords.length == 0 ? _EmptyToDoListView(
-                        bloc: _bloc,
-                        dayMemo: state.dayMemo,
-                      ) : _ToDoListView(
-                        bloc: _bloc,
-                        dayMemo: state.dayMemo,
-                        toDoRecords: state.toDoRecords,
-                        scrollController: _toDoScrollController,
+                      child: Stack(
+                        children: <Widget>[
+                          state.toDoRecords.length == 0 ? _EmptyToDoListView(
+                            bloc: _bloc,
+                            dayMemo: state.dayMemo,
+                          ) : _ToDoListView(
+                            bloc: _bloc,
+                            dayMemo: state.dayMemo,
+                            toDoRecords: state.toDoRecords,
+                            scrollController: _toDoScrollController,
+                          ),
+                          _HeaderShadow(
+                            scrollController: _toDoScrollController,
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -1041,6 +1048,54 @@ class _CategoryPickerItem extends StatelessWidget {
           ),
           child: isSelected ? Image.asset(checkAssetName) : const SizedBox.shrink(),
         ),
+      ),
+    );
+  }
+}
+
+class _HeaderShadow extends StatefulWidget {
+  final ScrollController scrollController;
+
+  _HeaderShadow({
+    @required this.scrollController,
+  });
+
+  @override
+  State createState() => _HeaderShadowState();
+}
+
+class _HeaderShadowState extends State<_HeaderShadow> {
+  bool _isShadowVisible = false;
+  var _scrollListener;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollListener = () {
+      setState(() {
+        _isShadowVisible = widget.scrollController.position.pixels > 0;
+      });
+    };
+    widget.scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget.scrollController.removeListener(_scrollListener);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: _isShadowVisible ? 6 : 0,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppColors.DIVIDER, AppColors.DIVIDER.withAlpha(0)]
+        )
       ),
     );
   }
