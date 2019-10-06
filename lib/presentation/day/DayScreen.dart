@@ -56,27 +56,30 @@ class _DayScreenState extends State<DayScreen> {
   }
 
   Widget _buildUI(DayState state) {
-    if (_toDoScrollController.hasClients) {
       if (state.scrollToBottomEvent) {
         SchedulerBinding.instance.addPostFrameCallback((duration) {
-          _toDoScrollController.position.jumpTo(
-            _toDoScrollController.position.maxScrollExtent,
-          );
-        });
-      }
-      if (state.scrollToToDoListEvent) {
-        Future.delayed(const Duration(milliseconds: 500), () {
-          final double targetPixel = state.isMemoExpanded ? 170 : 70;
-          if (_toDoScrollController.position.pixels < targetPixel) {
-            _toDoScrollController.position.animateTo(
-              targetPixel,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
+          if (_toDoScrollController.hasClients) {
+            _toDoScrollController.position.jumpTo(
+              _toDoScrollController.position.maxScrollExtent,
             );
           }
         });
       }
-    }
+
+      if (state.scrollToToDoListEvent) {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (_toDoScrollController.hasClients) {
+            final double targetPixel = state.isMemoExpanded ? 170 : 70;
+            if (_toDoScrollController.position.pixels < targetPixel) {
+              _toDoScrollController.position.animateTo(
+                targetPixel,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+            }
+          }
+        });
+      }
 
     return WillPopScope(
       onWillPop: () async => _bloc.onWillPopScope(),
