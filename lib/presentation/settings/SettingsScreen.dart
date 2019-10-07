@@ -22,6 +22,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     _bloc = SettingsBloc();
+    _bloc.setNeedUpdateListener(_needUpdateListener);
+  }
+
+  void _needUpdateListener() {
+    setState(() { });
   }
 
   @override

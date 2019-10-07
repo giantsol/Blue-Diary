@@ -10,9 +10,16 @@ import 'package:todo_app/Secrets.dart';
 import 'package:todo_app/domain/usecase/SettingsUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordScreen.dart';
+import 'package:todo_app/presentation/inputpassword/InputPasswordScreen.dart';
 
 class SettingsBloc {
   final SettingsUsecases _usecases = dependencies.settingsUsecases;
+
+  void Function() _needUpdateListener;
+
+  void setNeedUpdateListener(void Function() listener) {
+    this._needUpdateListener = listener;
+  }
 
   Future<void> onDefaultLockChanged(BuildContext context, ScaffoldState scaffoldState) async {
     final isDefaultLocked = await _usecases.getDefaultLocked();
@@ -21,6 +28,23 @@ class SettingsBloc {
     if (isDefaultLocked && userPassword.isEmpty) {
       _usecases.setDefaultLocked(false);
       _showCreatePasswordDialog(context, scaffoldState);
+    } else if (!isDefaultLocked) {
+      _usecases.setDefaultLocked(true); // 비번 입력하기 전에는 바뀌면 안되므로 일단은 다시 되돌려버림
+
+      scaffoldState.showBottomSheet((context) =>
+        InputPasswordScreen(onSuccess: () {
+          _usecases.setDefaultLocked(false);
+          if (_needUpdateListener != null) {
+            _needUpdateListener();
+          }
+        }, onFail: () {
+          scaffoldState.showSnackBar(SnackBar(
+            content: Text(AppLocalizations.of(context).unlockFail),
+            duration: Duration(seconds: 2),
+          ));
+        },
+        )
+      );
     }
   }
 
