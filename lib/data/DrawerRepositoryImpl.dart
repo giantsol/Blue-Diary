@@ -3,7 +3,7 @@ import 'package:todo_app/domain/entity/DrawerItem.dart';
 import 'package:todo_app/domain/repository/DrawerRepository.dart';
 
 class DrawerRepositoryImpl implements DrawerRepository {
-  final DrawerHeaderItem _drawerHeaderItem = DrawerHeaderItem('ToDo App');
+  final DrawerHeaderItem _drawerHeaderItem = DrawerHeaderItem('Blue Diary');
   final List<DrawerChildScreenItem> _drawerChildScreenItems = [
     DrawerChildScreenItem(DrawerChildScreenItem.KEY_RECORD, isSelected: true),
   ];

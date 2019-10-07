@@ -23,7 +23,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ToDo App',
+      title: 'Blue Diary',
       theme: ThemeData(
         primaryColor: AppColors.PRIMARY,
         primaryColorLight: AppColors.PRIMARY_LIGHT,
