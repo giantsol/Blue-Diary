@@ -26,6 +26,12 @@ class WeekBloc {
 
   WeekBloc({this.delegator}) {
     _initState();
+
+    delegator.addSettingsChangedListener(_settingsChangedListener);
+  }
+
+  void _settingsChangedListener() {
+    _initState();
   }
 
   Future<void> _initState({int weekRecordPageIndex}) async {
@@ -78,7 +84,7 @@ class WeekBloc {
 
         _usecases.setCheckPointsLocked(weekRecord.dateInWeek, false);
       }, onFail: () {
-        delegator.showSnackBar(Text('잠금 해제에 실패하셨습니다'), duration: Duration(seconds: 2));
+        delegator.showSnackBar(Text(AppLocalizations.of(context).unlockFail), duration: Duration(seconds: 2));
       }),
     );
   }
@@ -142,7 +148,6 @@ class WeekBloc {
     );
   }
 
-
   void onCheckPointTextChanged(WeekRecord weekRecord, CheckPoint checkPoint, String changed) {
     final updatedCheckPoint = checkPoint.buildNew(text: changed);
     final updatedWeekRecord = weekRecord.buildNewCheckPointUpdated(updatedCheckPoint);
@@ -163,7 +168,7 @@ class WeekBloc {
           );
           _initState();
         }, onFail: () {
-          delegator.showSnackBar(Text('잠금 해제에 실패하셨습니다'), duration: Duration(seconds: 2));
+          delegator.showSnackBar(Text(AppLocalizations.of(context).unlockFail), duration: Duration(seconds: 2));
         }),
       );
     } else {
@@ -187,7 +192,7 @@ class WeekBloc {
         final date = DateTime(dayRecord.year, dayRecord.month, dayRecord.day);
         _usecases.setDayRecordLocked(date, false);
       }, onFail: () {
-        delegator.showSnackBar(Text('잠금 해제에 실패하셨습니다'), duration: Duration(seconds: 2));
+        delegator.showSnackBar(Text(AppLocalizations.of(context).unlockFail), duration: Duration(seconds: 2));
       }),
     );
   }
@@ -218,12 +223,12 @@ class WeekBloc {
         final isPasswordSaved = await _usecases.getUserPassword().then((s) => s.length == 4);
         if (isPasswordSaved) {
           delegator.showSnackBar(
-            Text('비밀번호가 설정되었습니다!'),
+            Text(AppLocalizations.of(context).createPasswordSuccess),
             duration: Duration(seconds: 2),
           );
         } else {
           delegator.showSnackBar(
-            Text('비밀번호가 설정되지 않았습니다!'),
+            Text(AppLocalizations.of(context).createPasswordFail),
             duration: Duration(seconds: 2),
           );
         }
@@ -233,5 +238,7 @@ class WeekBloc {
 
   void dispose() {
     _state.close();
+
+    delegator.removeSettingsChangedListener(_settingsChangedListener);
   }
 }

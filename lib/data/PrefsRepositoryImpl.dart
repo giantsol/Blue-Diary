@@ -17,4 +17,18 @@ class PrefsRepositoryImpl implements PrefsRepository {
     return _prefs.setUserPassword(password);
   }
 
+  @override
+  Future<bool> getDefaultLocked() async {
+    return _prefs.getDefaultLocked();
+  }
+
+  @override
+  Future<bool> setDefaultLocked(bool value) async {
+    return _prefs.setDefaultLocked(value);
+  }
+
+  @override
+  Future<String> getRecoveryEmail() async {
+    return _prefs.getRecoveryEmail();
+  }
 }

@@ -7,6 +7,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/entity/DrawerItem.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
+import 'package:todo_app/presentation/settings/SettingsScreen.dart';
 
 class HomeBloc {
   final _state = BehaviorSubject<HomeState>.seeded(HomeState());
@@ -14,6 +15,8 @@ class HomeBloc {
   Stream<HomeState> observeState() => _state.distinct();
 
   final _usecases = dependencies.homeUsecases;
+
+  final List<void Function()> _settingsChangedEventListeners = [];
 
   HomeBloc() {
     _initState();
@@ -29,6 +32,16 @@ class HomeBloc {
   void onDrawerChildScreenItemClicked(BuildContext context, DrawerChildScreenItem item) {
     Navigator.of(context).pop();
     setCurrentDrawerChildScreenItem(item.key);
+  }
+
+  Future<void> onDrawerScreenItemClicked(BuildContext context, DrawerScreenItem item) async {
+    Navigator.pop(context);
+    await Navigator.push(context,
+      MaterialPageRoute(
+        builder: (context) => SettingsScreen(),
+      )
+    );
+    _dispatchSettingsChangedEvent();
   }
 
   void onMenuIconClicked(ScaffoldState scaffoldState) {
@@ -54,8 +67,25 @@ class HomeBloc {
     ));
   }
 
+  void _dispatchSettingsChangedEvent() {
+    for (var listener in _settingsChangedEventListeners) {
+      listener();
+    }
+  }
+
+  void addSettingsChangedListener(void Function() listener) {
+    if (!_settingsChangedEventListeners.contains(listener)) {
+      _settingsChangedEventListeners.add(listener);
+    }
+  }
+
+  void removeSettingsChangedListener(void Function() listener) {
+    _settingsChangedEventListeners.remove(listener);
+  }
+
   void dispose() {
     _state.close();
+    _settingsChangedEventListeners.clear();
   }
 
 }

@@ -14,8 +14,8 @@ class HomeUsecases {
 
     final List<DrawerItem> allDrawerItems = [childScreenItems, screenItems].expand((l) => l).toList();
     // 4번째 아이템 뒤에 공백을 넣음
-    if (allDrawerItems.length >= 4) {
-      allDrawerItems.insert(4, DrawerSpacerItem());
+    if (allDrawerItems.length >= 2) {
+      allDrawerItems.insert(2, DrawerSpacerItem());
     }
     allDrawerItems.insert(0, headerItem);
     return allDrawerItems;

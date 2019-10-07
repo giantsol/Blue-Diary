@@ -9,13 +9,13 @@ class LockRepositoryImpl implements LockRepository {
   const LockRepositoryImpl(this._db);
 
   @override
-  Future<bool> getIsCheckPointsLocked(DateTime date) async {
-    return await _db.getIsCheckPointsLocked(date);
+  Future<bool> getIsCheckPointsLocked(DateTime date, bool defaultValue) async {
+    return await _db.getIsCheckPointsLocked(date, defaultValue);
   }
 
   @override
-  Future<bool> getIsDayRecordLocked(DateTime date) async {
-    return await _db.getIsDayRecordLocked(date);
+  Future<bool> getIsDayRecordLocked(DateTime date, bool defaultValue) async {
+    return await _db.getIsDayRecordLocked(date, defaultValue);
   }
 
   @override

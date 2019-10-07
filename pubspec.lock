@@ -100,6 +100,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0+1"
+  preferences:
+    dependency: "direct main"
+    description:
+      name: preferences
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.0.1"
   quiver:
     dependency: transitive
     description:
@@ -154,13 +161,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
-  streaming_shared_preferences:
-    dependency: "direct main"
-    description:
-      name: streaming_shared_preferences
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
   string_scanner:
     dependency: transitive
     description:

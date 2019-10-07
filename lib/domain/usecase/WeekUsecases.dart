@@ -38,7 +38,8 @@ class WeekUsecases {
   Future<WeekRecord> _getWeekRecord(DateTime date) async {
     final today = _dateRepository.getToday();
     final dateInWeek = DateInWeek.fromDate(date);
-    final isCheckPointsLocked = await _lockRepository.getIsCheckPointsLocked(date);
+    final defaultLocked = await _prefsRepository.getDefaultLocked();
+    final isCheckPointsLocked = await _lockRepository.getIsCheckPointsLocked(date, defaultLocked);
     final checkPoints = await _memoRepository.getCheckPoints(date);
 
     final datesInWeek = Utils.getDatesInWeek(date);
@@ -46,7 +47,7 @@ class WeekUsecases {
     for (int i = 0; i < datesInWeek.length; i++) {
       final date = datesInWeek[i];
       final toDos = await _toDoRepository.getToDos(date);
-      final isLocked = await _lockRepository.getIsDayRecordLocked(date);
+      final isLocked = await _lockRepository.getIsDayRecordLocked(date, defaultLocked);
       final dayRecord = DayRecord(
         year: date.year,
         month: date.month,

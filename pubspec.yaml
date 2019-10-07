@@ -28,12 +28,13 @@ dependencies:
   infinity_page_view: ^1.0.0
   sqflite: ^1.1.6
   path: ^1.6.2
-  streaming_shared_preferences: ^1.0.1
   virtual_keyboard: ^0.1.4
   image_picker: ^0.6.1+4
 
   flutter_localizations:
     sdk: flutter
+
+  preferences: ^5.0.1
 
 dev_dependencies:
   flutter_test:

@@ -167,14 +167,14 @@ class AppDatabase {
     return checkPoints;
   }
 
-  Future<bool> getIsCheckPointsLocked(DateTime date) async {
+  Future<bool> getIsCheckPointsLocked(DateTime date, bool defaultValue) async {
     final db = await _database.first;
     final Map<String, dynamic> map = await db.query(
       TABLE_LOCKS,
       where: Lock.createWhereQuery(),
       whereArgs: Lock.createWhereArgsForCheckPoints(DateInWeek.fromDate(date)),
     ).then((l) => l.isEmpty ? null : l[0]);
-    return map != null ? Lock.fromDatabase(map).isLocked : false;
+    return map != null ? Lock.fromDatabase(map).isLocked : defaultValue;
   }
 
   Future<void> setIsCheckPointsLocked(DateInWeek dateInWeek, bool value) async {
@@ -212,14 +212,14 @@ class AppDatabase {
     );
   }
 
-  Future<bool> getIsDayRecordLocked(DateTime date) async {
+  Future<bool> getIsDayRecordLocked(DateTime date, bool defaultValue) async {
     final db = await _database.first;
     final Map<String, dynamic> map = await db.query(
       TABLE_LOCKS,
       where: Lock.createWhereQuery(),
       whereArgs: Lock.createWhereArgsForDayRecord(date),
     ).then((l) => l.isEmpty ? null : l[0]);
-    return map != null ? Lock.fromDatabase(map).isLocked : false;
+    return map != null ? Lock.fromDatabase(map).isLocked : defaultValue;
   }
 
   Future<void> setToDo(ToDo toDo) async {

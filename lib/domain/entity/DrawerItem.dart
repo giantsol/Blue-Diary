@@ -9,28 +9,22 @@ class DrawerHeaderItem implements DrawerItem {
 
 // 기록, 달력 등 같이 HomeScreen에 들어가는 child screen들
 class DrawerChildScreenItem implements DrawerItem {
-  static const KEY_WEEK = 'week';
   static const KEY_RECORD = 'record';
-  static const KEY_CALENDAR = 'calendar';
-  static const KEY_STATISTICS = 'statistics';
 
   final String key;
-  final String title;
   final bool isSelected;
   final bool isEnabled;
 
-  const DrawerChildScreenItem(this.key, this.title, {
+  const DrawerChildScreenItem(this.key, {
     this.isSelected = false,
     this.isEnabled = true,
   });
 
   DrawerChildScreenItem buildNew({
-    String title,
     bool isSelected,
     bool isEnabled
   }) {
     return DrawerChildScreenItem(this.key,
-      title ?? this.title,
       isSelected: isSelected ?? this.isSelected,
       isEnabled: isEnabled ?? this.isEnabled);
   }
@@ -40,21 +34,18 @@ class DrawerChildScreenItem implements DrawerItem {
 class DrawerScreenItem implements DrawerItem {
   static const KEY_SETTINGS = 'settings';
   static const KEY_ABOUT = 'about';
-  static const KEY_REPORT_BUG = 'report-bug';
 
   final String key;
-  final String title;
   final bool isEnabled;
 
-  const DrawerScreenItem(this.key, this.title, {
+  const DrawerScreenItem(this.key, {
     this.isEnabled = true,
   });
 
   DrawerScreenItem buildNew({
-    String title,
     bool isEnabled,
   }) {
-    return DrawerScreenItem(this.key, title ?? this.title,
+    return DrawerScreenItem(this.key,
       isEnabled: isEnabled ?? this.isEnabled);
   }
 }

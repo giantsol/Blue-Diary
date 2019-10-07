@@ -1,6 +1,7 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_app/domain/entity/DrawerItem.dart';
 
 class AppLocalizations {
   static const NEW_PASSWORD = "newPassword";
@@ -10,6 +11,9 @@ class AppLocalizations {
   static const RETRY_INPUT_PASSWORD = "retryInputPassword";
   static const CREATE_PASSWORD = "createPassword";
   static const CREATE_PASSWORD_BODY = "createPasswordBody";
+  static const CREATE_PASSWORD_SUCCESS = "createPasswordSuccess";
+  static const CREATE_PASSWORD_FAIL = "createPasswordFail";
+  static const UNLOCK_FAIL = "unlockFail";
 
   static const CANCEL = "cancel";
   static const OK = "ok";
@@ -29,6 +33,20 @@ class AppLocalizations {
 
   static const CHOOSE_PHOTO = "choosePhoto";
 
+  static const DRAWER_RECORD = "drawerRecord";
+  static const DRAWER_SETTINGS = "drawerSettings";
+  static const DRAWER_ABOUT = "drawerAbout";
+
+  static const SETTINGS = "settings";
+  static const SETTINGS_GENERAL = "settingsGeneral";
+  static const SETTINGS_DEFAULT_LOCK = "settingsDefaultLock";
+  static const SETTINGS_RESET_PASSWORD = "settingsResetPassword";
+  static const SETTINGS_RECOVERY_EMAIL = "settingsRecoveryEmail";
+
+  static const INVALID_EMAIL = "invalidEmail";
+
+  static const SEND_TEMP_PASSWORD = "sendTempPassword";
+
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
@@ -42,6 +60,9 @@ class AppLocalizations {
       RETRY_INPUT_PASSWORD: 'Retry Password',
       CREATE_PASSWORD: 'Create Password',
       CREATE_PASSWORD_BODY: 'You haven\'t set your password yet!\nGo create new password?',
+      CREATE_PASSWORD_SUCCESS: 'Password has been set successfully!',
+      CREATE_PASSWORD_FAIL: 'Password has not been set',
+      UNLOCK_FAIL: 'Failed to unlock',
 
       CANCEL: 'Cancel',
       OK: 'Ok',
@@ -60,6 +81,20 @@ class AppLocalizations {
       MODIFY_TASK: 'Modify Task',
 
       CHOOSE_PHOTO: 'Choose Photo',
+
+      DRAWER_RECORD: 'Record',
+      DRAWER_SETTINGS: 'Settings',
+      DRAWER_ABOUT: 'About',
+
+      SETTINGS: 'Settings',
+      SETTINGS_GENERAL: 'General',
+      SETTINGS_DEFAULT_LOCK: 'Lock By Default',
+      SETTINGS_RESET_PASSWORD: 'Reset Password',
+      SETTINGS_RECOVERY_EMAIL: 'Recovery Email',
+
+      INVALID_EMAIL: 'Invalid Email',
+
+      SEND_TEMP_PASSWORD: 'Send Temporary Password',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -69,6 +104,9 @@ class AppLocalizations {
       RETRY_INPUT_PASSWORD: '다시 입력해 주세요.',
       CREATE_PASSWORD: '비밀번호 설정',
       CREATE_PASSWORD_BODY: '아직 설정된 비밀번호가 없네요!\n비밀번호를 새로 만드시겠어요?',
+      CREATE_PASSWORD_SUCCESS: '비밀번호가 설정되었습니다!',
+      CREATE_PASSWORD_FAIL: '비밀번호가 설정되지 않았습니다',
+      UNLOCK_FAIL: '잠금해제에 실패하였습니다',
 
       CANCEL: '취소',
       OK: '확인',
@@ -87,6 +125,20 @@ class AppLocalizations {
       MODIFY_TASK: '작업 수정',
 
       CHOOSE_PHOTO: '사진 선택',
+
+      DRAWER_RECORD: '기록',
+      DRAWER_SETTINGS: '설정',
+      DRAWER_ABOUT: 'About',
+
+      SETTINGS: 'Settings',
+      SETTINGS_GENERAL: '일반',
+      SETTINGS_DEFAULT_LOCK: '디폴트로 잠금',
+      SETTINGS_RESET_PASSWORD: '비밀번호 재설정',
+      SETTINGS_RECOVERY_EMAIL: '복원 이메일',
+
+      INVALID_EMAIL: '올바른 이메일 형식이 아닙니다',
+
+      SEND_TEMP_PASSWORD: '임시 비밀번호 전송',
    },
   };
 
@@ -101,6 +153,9 @@ class AppLocalizations {
   String get retryInputPassword => _localizedValues[locale.languageCode][RETRY_INPUT_PASSWORD];
   String get createPassword => _localizedValues[locale.languageCode][CREATE_PASSWORD];
   String get createPasswordBody => _localizedValues[locale.languageCode][CREATE_PASSWORD_BODY];
+  String get createPasswordSuccess => _localizedValues[locale.languageCode][CREATE_PASSWORD_SUCCESS];
+  String get createPasswordFail => _localizedValues[locale.languageCode][CREATE_PASSWORD_FAIL];
+  String get unlockFail => _localizedValues[locale.languageCode][UNLOCK_FAIL];
 
   String get cancel => _localizedValues[locale.languageCode][CANCEL];
   String get ok => _localizedValues[locale.languageCode][OK];
@@ -119,6 +174,16 @@ class AppLocalizations {
   String get modifyTask => _localizedValues[locale.languageCode][MODIFY_TASK];
 
   String get choosePhoto => _localizedValues[locale.languageCode][CHOOSE_PHOTO];
+
+  String get settings => _localizedValues[locale.languageCode][SETTINGS];
+  String get settingsGeneral => _localizedValues[locale.languageCode][SETTINGS_GENERAL];
+  String get settingsDefaultLock => _localizedValues[locale.languageCode][SETTINGS_DEFAULT_LOCK];
+  String get settingsResetPassword => _localizedValues[locale.languageCode][SETTINGS_RESET_PASSWORD];
+  String get settingsRecoveryEmail => _localizedValues[locale.languageCode][SETTINGS_RECOVERY_EMAIL];
+
+  String get invalidEmail => _localizedValues[locale.languageCode][INVALID_EMAIL];
+
+  String get sendTempPassword => _localizedValues[locale.languageCode][SEND_TEMP_PASSWORD];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {
@@ -217,6 +282,19 @@ class AppLocalizations {
       } else {
         return 'Sunday';
       }
+    }
+  }
+
+  String getDrawerTitle(String drawerKey) {
+    switch (drawerKey) {
+      case DrawerChildScreenItem.KEY_RECORD:
+        return _localizedValues[locale.languageCode][DRAWER_RECORD];
+      case DrawerScreenItem.KEY_SETTINGS:
+        return _localizedValues[locale.languageCode][DRAWER_SETTINGS];
+      case DrawerScreenItem.KEY_ABOUT:
+        return _localizedValues[locale.languageCode][DRAWER_ABOUT];
+      default:
+        return '';
     }
   }
 }

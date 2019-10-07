@@ -17,9 +17,15 @@ abstract class ShowSnackBarDelegator {
   });
 }
 
+abstract class SettingsChangedListenerDelegator {
+  void addSettingsChangedListener(void Function() listener);
+  void removeSettingsChangedListener(void Function() listener);
+}
+
 abstract class WeekBlocDelegator implements
   ShowBottomSheetDelegator,
   SetCurrentDrawerChildScreenItemDelegator,
-  ShowSnackBarDelegator {
+  ShowSnackBarDelegator,
+  SettingsChangedListenerDelegator {
 
 }

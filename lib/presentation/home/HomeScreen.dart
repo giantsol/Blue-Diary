@@ -2,10 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:todo_app/Delegators.dart';
+import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/DrawerItem.dart';
 import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
-import 'package:todo_app/presentation/home/calendar/CalendarScreen.dart';
 import 'package:todo_app/presentation/week/WeekScreen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -84,6 +84,16 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
   }) {
     _bloc.showSnackBar(_scaffoldKey.currentState, widget, duration);
   }
+
+  @override
+  void addSettingsChangedListener(listener) {
+    _bloc.addSettingsChangedListener(listener);
+  }
+
+  @override
+  void removeSettingsChangedListener(listener) {
+    _bloc.removeSettingsChangedListener(listener);
+  }
 }
 
 class _ChildScreen extends StatelessWidget {
@@ -98,12 +108,10 @@ class _ChildScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     switch (childScreenKey) {
-      case DrawerChildScreenItem.KEY_WEEK:
+      case DrawerChildScreenItem.KEY_RECORD:
         return WeekScreen(
           weekBlocDelegator: weekBlocDelegator
         );
-      case DrawerChildScreenItem.KEY_CALENDAR:
-        return CalendarScreen();
       default:
         throw Exception('Not existing child sreen: $childScreenKey');
     }
@@ -168,16 +176,16 @@ class _Drawer extends StatelessWidget {
                       );
                     } else if (item is DrawerChildScreenItem) {
                       return ListTile(
-                        title: Text(item.title),
+                        title: Text(AppLocalizations.of(context).getDrawerTitle(item.key)),
                         enabled: item.isEnabled,
                         selected: item.isSelected,
                         onTap: () => bloc.onDrawerChildScreenItemClicked(context, item),
                       );
                     } else if (item is DrawerScreenItem) {
                       return ListTile(
-                        title: Text(item.title),
+                        title: Text(AppLocalizations.of(context).getDrawerTitle(item.key)),
                         enabled: item.isEnabled,
-                        onTap: () => {},
+                        onTap: () => bloc.onDrawerScreenItemClicked(context, item),
                       );
                     } else {
                       return Spacer();
