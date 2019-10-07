@@ -217,18 +217,20 @@ class WeekBloc {
 
   void _onCreatePasswordOkClicked(BuildContext context) {
     Navigator.pop(context);
+    final successMsg = AppLocalizations.of(context).createPasswordSuccess;
+    final failMsg = AppLocalizations.of(context).createPasswordFail;
     delegator.showBottomSheet(
         (context) => CreatePasswordScreen(),
       onClosed: (any) async {
         final isPasswordSaved = await _usecases.getUserPassword().then((s) => s.length == 4);
         if (isPasswordSaved) {
           delegator.showSnackBar(
-            Text(AppLocalizations.of(context).createPasswordSuccess),
+            Text(successMsg),
             duration: Duration(seconds: 2),
           );
         } else {
           delegator.showSnackBar(
-            Text(AppLocalizations.of(context).createPasswordFail),
+            Text(failMsg),
             duration: Duration(seconds: 2),
           );
         }

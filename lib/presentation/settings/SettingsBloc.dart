@@ -72,16 +72,18 @@ class SettingsBloc {
 
   Future<void> _onCreatePasswordOkClicked(BuildContext context, ScaffoldState scaffoldState) async {
     Navigator.pop(context);
+    final successMsg = AppLocalizations.of(context).createPasswordSuccess;
+    final failMsg = AppLocalizations.of(context).createPasswordFail;
     await scaffoldState.showBottomSheet((context) => CreatePasswordScreen()).closed;
     final isPasswordSaved = await _usecases.getUserPassword().then((s) => s.length > 0);
     if (isPasswordSaved) {
       scaffoldState.showSnackBar(SnackBar(
-        content: Text(AppLocalizations.of(context).createPasswordSuccess),
+        content: Text(successMsg),
         duration: Duration(seconds: 2),
       ));
     } else {
       scaffoldState.showSnackBar(SnackBar(
-        content: Text(AppLocalizations.of(context).createPasswordFail),
+        content: Text(failMsg),
         duration: Duration(seconds: 2),
       ));
     }

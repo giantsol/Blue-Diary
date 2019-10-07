@@ -130,7 +130,7 @@ class AppLocalizations {
       DRAWER_SETTINGS: '설정',
       DRAWER_ABOUT: 'About',
 
-      SETTINGS: 'Settings',
+      SETTINGS: '설정',
       SETTINGS_GENERAL: '일반',
       SETTINGS_DEFAULT_LOCK: '디폴트로 잠금',
       SETTINGS_RESET_PASSWORD: '비밀번호 재설정',
