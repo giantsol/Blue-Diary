@@ -53,6 +53,7 @@ class AppLocalizations {
   static const TEMP_PASSWORD_MAIL_SUBJECT = "tempPasswordMailSubject";
   static const TEMP_PASSWORD_MAIL_BODY = "tempPasswordMailBody";
   static const TEMP_PASSWORD_MAIL_SENT = "tempPasswordMailSent";
+  static const TEMP_PASSWORD_MAIL_SEND_FAILED = "tempPasswordMailSendFailed";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -107,8 +108,9 @@ class AppLocalizations {
       CONFIRM_SEND_TEMP_PASSWORD_BODY: 'Your previous password will be overriden by temporary password, and will be sent to your recovery email.',
       FAILED_TO_SAVE_TEMP_PASSWORD_BY_UNKNOWN_ERROR: 'Failed to save temporary password by unknown error',
       TEMP_PASSWORD_MAIL_SUBJECT: '[Blue Diary] Your temporary password has been set',
-      TEMP_PASSWORD_MAIL_BODY: 'Your password has been set as below:\n',
-      TEMP_PASSWORD_MAIL_SENT: 'Password has been reset. Please check your recovery email.',
+      TEMP_PASSWORD_MAIL_BODY: 'Your password has been set: ',
+      TEMP_PASSWORD_MAIL_SENT: 'Mail has been sent! Check your recovery email.',
+      TEMP_PASSWORD_MAIL_SEND_FAILED: 'Mail has not been sent. Please check your recovery email again.',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -158,8 +160,9 @@ class AppLocalizations {
       CONFIRM_SEND_TEMP_PASSWORD_BODY: '기존의 비밀번호가 임시 비밀번호로 바뀌고, 임시 비밀번호가 복원 이메일로 전송됩니다.',
       FAILED_TO_SAVE_TEMP_PASSWORD_BY_UNKNOWN_ERROR: '알 수 없는 오류로 임시 비밀번호 설정에 실패하였습니다',
       TEMP_PASSWORD_MAIL_SUBJECT: '[Blue Diary] 임시 비밀번호',
-      TEMP_PASSWORD_MAIL_BODY: '비밀번호가 아래와 같이 설정되었습니다:\n',
-      TEMP_PASSWORD_MAIL_SENT: '비밀번호가 재설정되었습니다. 복원 이메일을 확인해주세요.',
+      TEMP_PASSWORD_MAIL_BODY: '비밀번호가 다음과 같이 설정되었습니다: ',
+      TEMP_PASSWORD_MAIL_SENT: '메일이 발송되었습니다! 이메일을 확인해주세요.',
+      TEMP_PASSWORD_MAIL_SEND_FAILED: '메일 발송에 실패하였습니다. 복원 이메일을 확인해주세요.',
     },
   };
 
@@ -212,6 +215,7 @@ class AppLocalizations {
   String get tempPasswordMailSubject => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_SUBJECT];
   String get tempPasswordMailBody => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_BODY];
   String get tempPasswordMailSent => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_SENT];
+  String get tempPasswordMailSendFailed => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_SEND_FAILED];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {

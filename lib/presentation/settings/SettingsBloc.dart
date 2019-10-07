@@ -1,9 +1,12 @@
 
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
+import 'package:todo_app/Secrets.dart';
 import 'package:todo_app/domain/usecase/SettingsUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordScreen.dart';
@@ -156,21 +159,40 @@ class SettingsBloc {
   }
 
   Future<void> _onConfirmSendTempPasswordOkClicked(BuildContext context, ScaffoldState scaffoldState) async {
+    final mailSentMsg = AppLocalizations.of(context).tempPasswordMailSent;
+    final mailSendFailedMsg = AppLocalizations.of(context).tempPasswordMailSendFailed;
+    final failedToSaveTempPasswordMsg = AppLocalizations.of(context).failedToSaveTempPasswordByUnknownError;
     Navigator.pop(context);
     final prevPassword = await _usecases.getUserPassword();
     await _usecases.setUserPassword(_generateRandomPassword());
     final changedPassword = await _usecases.getUserPassword();
     if (changedPassword.isNotEmpty && prevPassword != changedPassword) {
-      // todo: send email
-      final message = AppLocalizations.of(context).tempPasswordMailSent;
-      scaffoldState.showSnackBar(SnackBar(
-        content: Text(message),
-        duration: Duration(seconds: 2),
-      ));
+      final mailTitle = AppLocalizations.of(context).tempPasswordMailSubject;
+      final mailBody = AppLocalizations.of(context).tempPasswordMailBody;
+      final recoveryEmail = await _usecases.getRecoveryEmail();
+      final body = '{"personalizations":[{"to":[{"email":"$recoveryEmail"}],"subject":"$mailTitle"}],"content": [{"type": "text/plain", "value": "$mailBody$changedPassword"}],"from":{"email":"giantsol64@gmail.com","name":"Blue Diary Developer"}}';
+      final response = await http.post(
+        'https://api.sendgrid.com/v3/mail/send',
+        headers: {
+          HttpHeaders.authorizationHeader: SENDGRID_AUTHORIZATION,
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: body,
+      );
+      if ([200, 201, 202].contains(response.statusCode)) {
+        scaffoldState.showSnackBar(SnackBar(
+          content: Text(mailSentMsg),
+          duration: Duration(seconds: 2),
+        ));
+      } else {
+        scaffoldState.showSnackBar(SnackBar(
+          content: Text(mailSendFailedMsg),
+          duration: Duration(seconds: 2),
+        ));
+      }
     } else {
-      final message = AppLocalizations.of(context).failedToSaveTempPasswordByUnknownError;
       scaffoldState.showSnackBar(SnackBar(
-        content: Text(message),
+        content: Text(failedToSaveTempPasswordMsg),
         duration: Duration(seconds: 2),
       ));
     }
