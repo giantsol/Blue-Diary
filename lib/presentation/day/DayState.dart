@@ -8,12 +8,14 @@ import 'package:todo_app/domain/entity/ToDoRecord.dart';
 
 class DayState {
   static const CATEGORY_PICKERS = [
-    CategoryPicker(true, AppColors.PRIMARY),
-    CategoryPicker(true, AppColors.SECONDARY),
-    CategoryPicker(true, AppColors.TERTIARY),
-    CategoryPicker(false, AppColors.PRIMARY),
-    CategoryPicker(false, AppColors.SECONDARY),
-    CategoryPicker(false, AppColors.TERTIARY),
+    CategoryPicker(true, AppColors.CATEGORY_COLOR_01),
+    CategoryPicker(true, AppColors.CATEGORY_COLOR_02),
+    CategoryPicker(true, AppColors.CATEGORY_COLOR_03),
+    CategoryPicker(true, AppColors.CATEGORY_COLOR_04),
+    CategoryPicker(false, AppColors.CATEGORY_COLOR_01),
+    CategoryPicker(false, AppColors.CATEGORY_COLOR_02),
+    CategoryPicker(false, AppColors.CATEGORY_COLOR_03),
+    CategoryPicker(false, AppColors.CATEGORY_COLOR_04),
   ];
 
   final int year;
@@ -92,7 +94,7 @@ class DayState {
     final newRecords = List.of(toDoRecords);
     final updatedIndex = newRecords.indexWhere((it) => it.toDo.key == updated.key);
     if (updatedIndex >= 0) {
-        newRecords[updatedIndex] = newRecords[updatedIndex].buildNew(toDo: updated);
+      newRecords[updatedIndex] = newRecords[updatedIndex].buildNew(toDo: updated);
     }
     return buildNew(toDoRecords: newRecords);
   }

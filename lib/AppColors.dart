@@ -29,8 +29,8 @@ class AppColors {
 
   static const SCRIM = Color(0x7F000000);
 
-  static const CATEGORY_COLORS = [
-    // todo: add pastel colors
-    Color(0xFF888844),
-  ];
+  static const CATEGORY_COLOR_01 = Color(0xFFB29DD9);
+  static const CATEGORY_COLOR_02 = Color(0xFFFE6B64);
+  static const CATEGORY_COLOR_03 = Color(0xFF77DD77);
+  static const CATEGORY_COLOR_04 = Color(0xFF779ECB);
 }
