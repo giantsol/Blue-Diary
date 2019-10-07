@@ -227,8 +227,34 @@ class SettingsBloc {
     return '${rand.nextInt(10)}${rand.nextInt(10)}${rand.nextInt(10)}${rand.nextInt(10)}';
   }
 
-  void onResetPasswordClicked() {
+  Future<void> onResetPasswordClicked(BuildContext context, ScaffoldState scaffoldState) async {
+    final prevPassword = await _usecases.getUserPassword();
+    if (prevPassword.isEmpty) {
+      _showCreatePasswordDialog(context, scaffoldState);
+    } else {
+      final changedMsg = AppLocalizations.of(context).passwordChanged;
+      final unchangedMsg = AppLocalizations.of(context).passwordUnchanged;
 
+      scaffoldState.showBottomSheet((context) =>
+        InputPasswordScreen(onSuccess: () async {
+          await scaffoldState
+            .showBottomSheet((context) => CreatePasswordScreen())
+            .closed;
+          final changedPassword = await _usecases.getUserPassword();
+          if (prevPassword != changedPassword) {
+            scaffoldState.showSnackBar(SnackBar(
+              content: Text(changedMsg),
+              duration: Duration(seconds: 2),
+            ));
+          } else {
+            scaffoldState.showSnackBar(SnackBar(
+              content: Text(unchangedMsg),
+              duration: Duration(seconds: 2),
+            ));
+          }
+        })
+      );
+    }
   }
 
   void dispose() {

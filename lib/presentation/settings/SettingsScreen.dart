@@ -66,8 +66,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           alignment: Alignment.centerLeft,
           child: FlatButton(
             child: Text(AppLocalizations.of(context).sendTempPassword),
-            // email 설정 안했으면 이메일 설정부터 해달라는 Snackbar
-            // 전송되었으면 전송되었다는 snackbar
             onPressed: () => _bloc.onSendTempPasswordClicked(context, _scaffoldKey.currentState),
           ),
         ),
@@ -75,8 +73,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           alignment: Alignment.centerLeft,
           child: FlatButton(
             child: Text(AppLocalizations.of(context).settingsResetPassword),
-            // 아직 설정된 비밀번호가 없으면 처음처럼 비밀번호 설정 다이얼로그
-            onPressed: () => _bloc.onResetPasswordClicked(),
+            onPressed: () => _bloc.onResetPasswordClicked(context, _scaffoldKey.currentState),
           ),
         )
       ]),

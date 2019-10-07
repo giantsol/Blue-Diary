@@ -14,6 +14,8 @@ class AppLocalizations {
   static const CREATE_PASSWORD_SUCCESS = "createPasswordSuccess";
   static const CREATE_PASSWORD_FAIL = "createPasswordFail";
   static const UNLOCK_FAIL = "unlockFail";
+  static const PASSWORD_CHANGED = "passwordChanged";
+  static const PASSWORD_UNCHANGED = "passwordUnchanged";
 
   static const CANCEL = "cancel";
   static const OK = "ok";
@@ -71,6 +73,8 @@ class AppLocalizations {
       CREATE_PASSWORD_SUCCESS: 'Password has been set successfully!',
       CREATE_PASSWORD_FAIL: 'Password has not been set',
       UNLOCK_FAIL: 'Failed to unlock',
+      PASSWORD_CHANGED: 'Password changed!',
+      PASSWORD_UNCHANGED: 'Password not changed',
 
       CANCEL: 'Cancel',
       OK: 'Ok',
@@ -123,6 +127,8 @@ class AppLocalizations {
       CREATE_PASSWORD_SUCCESS: '비밀번호가 설정되었습니다!',
       CREATE_PASSWORD_FAIL: '비밀번호가 설정되지 않았습니다',
       UNLOCK_FAIL: '잠금해제에 실패하였습니다',
+      PASSWORD_CHANGED: '비밀번호가 변경되었습니다!',
+      PASSWORD_UNCHANGED: '비밀번호가 변경되지 않았습니다.',
 
       CANCEL: '취소',
       OK: '확인',
@@ -180,6 +186,8 @@ class AppLocalizations {
   String get createPasswordSuccess => _localizedValues[locale.languageCode][CREATE_PASSWORD_SUCCESS];
   String get createPasswordFail => _localizedValues[locale.languageCode][CREATE_PASSWORD_FAIL];
   String get unlockFail => _localizedValues[locale.languageCode][UNLOCK_FAIL];
+  String get passwordChanged => _localizedValues[locale.languageCode][PASSWORD_CHANGED];
+  String get passwordUnchanged => _localizedValues[locale.languageCode][PASSWORD_UNCHANGED];
 
   String get cancel => _localizedValues[locale.languageCode][CANCEL];
   String get ok => _localizedValues[locale.languageCode][OK];
