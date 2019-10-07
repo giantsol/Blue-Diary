@@ -5,7 +5,7 @@ class InputPasswordState {
   final int failCount;
   final bool isLoading;
 
-  bool get showErrorMsg => failCount > 1;
+  bool get showErrorMsg => failCount > 0;
 
   const InputPasswordState({
     this.password = '',

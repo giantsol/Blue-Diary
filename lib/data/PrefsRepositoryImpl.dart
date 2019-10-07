@@ -13,7 +13,7 @@ class PrefsRepositoryImpl implements PrefsRepository {
   }
 
   @override
-  Future<bool> setUserPassword(String password) async {
+  Future<void> setUserPassword(String password) async {
     return _prefs.setUserPassword(password);
   }
 
@@ -23,7 +23,7 @@ class PrefsRepositoryImpl implements PrefsRepository {
   }
 
   @override
-  Future<bool> setDefaultLocked(bool value) async {
+  Future<void> setDefaultLocked(bool value) async {
     return _prefs.setDefaultLocked(value);
   }
 

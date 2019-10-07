@@ -6,7 +6,7 @@ class CreatePasswordUsecases {
 
   const CreatePasswordUsecases(this._prefsRepository);
 
-  Future<bool> setUserPassword(String password) async {
-    return _prefsRepository.setUserPassword(password);
+  void setUserPassword(String password) {
+    _prefsRepository.setUserPassword(password);
   }
 }

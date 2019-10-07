@@ -16,7 +16,7 @@ class AppPreferences {
     return PrefService.getString(KEY_USER_PASSWORD) ?? '';
   }
 
-  Future<bool> setUserPassword(String password) async {
+  Future<void> setUserPassword(String password) async {
     return PrefService.setString(KEY_USER_PASSWORD, password);
   }
 
@@ -24,7 +24,7 @@ class AppPreferences {
     return PrefService.getBool(KEY_DEFAULT_LOCK) ?? false;
   }
 
-  Future<bool> setDefaultLocked(bool value) async {
+  Future<void> setDefaultLocked(bool value) async {
     return PrefService.setBool(KEY_DEFAULT_LOCK, value);
   }
 

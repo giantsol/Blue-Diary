@@ -45,34 +45,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
           defaultVal: false,
           onChange: () => _bloc.onDefaultLockChanged(context, _scaffoldKey.currentState),
         ),
-        PreferenceTitle(AppLocalizations.of(context).settingsResetPassword),
-        TextFieldPreference(
-          AppLocalizations.of(context).settingsRecoveryEmail,
-          AppPreferences.KEY_RECOVERY_EMAIL,
-          keyboardType: TextInputType.emailAddress,
-          validator: (s) {
-            if (!_isEmail(s)) {
-              return AppLocalizations.of(context).invalidEmail;
-            }
-            return null;
-          },
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: FlatButton(
-            child: Text(AppLocalizations.of(context).sendTempPassword),
-            // email 설정 안했으면 이메일 설정부터 해달라는 Snackbar
-            // 전송되었으면 전송되었다는 snackbar
-            onPressed: () => _bloc.onSendTempPasswordClicked(),
-          ),
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: FlatButton(
-            child: Text(AppLocalizations.of(context).settingsResetPassword),
-            onPressed: () => _bloc.onResetPasswordClicked(),
-          ),
-        )
+        // todo: 메일 지원하면 풀어야함
+//        PreferenceTitle(AppLocalizations.of(context).settingsResetPassword),
+//        TextFieldPreference(
+//          AppLocalizations.of(context).settingsRecoveryEmail,
+//          AppPreferences.KEY_RECOVERY_EMAIL,
+//          keyboardType: TextInputType.emailAddress,
+//          validator: (s) {
+//            if (!_isEmail(s)) {
+//              return AppLocalizations.of(context).invalidEmail;
+//            }
+//            return null;
+//          },
+//        ),
+//        Align(
+//          alignment: Alignment.centerLeft,
+//          child: FlatButton(
+//            child: Text(AppLocalizations.of(context).sendTempPassword),
+//            // email 설정 안했으면 이메일 설정부터 해달라는 Snackbar
+//            // 전송되었으면 전송되었다는 snackbar
+//            onPressed: () => _bloc.onSendTempPasswordClicked(context, _scaffoldKey.currentState),
+//          ),
+//        ),
+//        Align(
+//          alignment: Alignment.centerLeft,
+//          child: FlatButton(
+//            child: Text(AppLocalizations.of(context).settingsResetPassword),
+//            // 아직 설정된 비밀번호가 없으면 처음처럼 비밀번호 설정 다이얼로그
+//            onPressed: () => _bloc.onResetPasswordClicked(),
+//          ),
+//        )
       ]),
     );
   }

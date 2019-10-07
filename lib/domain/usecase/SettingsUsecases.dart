@@ -10,11 +10,19 @@ class SettingsUsecases {
     return _prefsRepository.getDefaultLocked();
   }
 
-  Future<bool> setDefaultLocked(bool value) async {
-    return _prefsRepository.setDefaultLocked(value);
+  void setDefaultLocked(bool value) {
+    _prefsRepository.setDefaultLocked(value);
   }
 
   Future<String> getUserPassword() async {
     return _prefsRepository.getUserPassword();
+  }
+
+  Future<void> setUserPassword(String value) async {
+    return _prefsRepository.setUserPassword(value);
+  }
+
+  Future<String> getRecoveryEmail() async {
+    return _prefsRepository.getRecoveryEmail();
   }
 }

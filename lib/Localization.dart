@@ -42,10 +42,17 @@ class AppLocalizations {
   static const SETTINGS_DEFAULT_LOCK = "settingsDefaultLock";
   static const SETTINGS_RESET_PASSWORD = "settingsResetPassword";
   static const SETTINGS_RECOVERY_EMAIL = "settingsRecoveryEmail";
+  static const NO_RECOVERY_EMAIL = "noRecoveryEmail";
 
   static const INVALID_EMAIL = "invalidEmail";
 
   static const SEND_TEMP_PASSWORD = "sendTempPassword";
+  static const CONFIRM_SEND_TEMP_PASSWORD = "confirmSendTempPassword";
+  static const CONFIRM_SEND_TEMP_PASSWORD_BODY = "confirmSendTempPasswordBody";
+  static const FAILED_TO_SAVE_TEMP_PASSWORD_BY_UNKNOWN_ERROR = "failedToSaveTempPasswordByUnknownError";
+  static const TEMP_PASSWORD_MAIL_SUBJECT = "tempPasswordMailSubject";
+  static const TEMP_PASSWORD_MAIL_BODY = "tempPasswordMailBody";
+  static const TEMP_PASSWORD_MAIL_SENT = "tempPasswordMailSent";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -91,10 +98,17 @@ class AppLocalizations {
       SETTINGS_DEFAULT_LOCK: 'Lock By Default',
       SETTINGS_RESET_PASSWORD: 'Reset Password',
       SETTINGS_RECOVERY_EMAIL: 'Recovery Email',
+      NO_RECOVERY_EMAIL: 'Please write your recovery email first',
 
       INVALID_EMAIL: 'Invalid Email',
 
       SEND_TEMP_PASSWORD: 'Send Temporary Password',
+      CONFIRM_SEND_TEMP_PASSWORD: 'Send Temporary Password',
+      CONFIRM_SEND_TEMP_PASSWORD_BODY: 'Your previous password will be overriden by temporary password, and will be sent to your recovery email.',
+      FAILED_TO_SAVE_TEMP_PASSWORD_BY_UNKNOWN_ERROR: 'Failed to save temporary password by unknown error',
+      TEMP_PASSWORD_MAIL_SUBJECT: '[Blue Diary] Your temporary password has been set',
+      TEMP_PASSWORD_MAIL_BODY: 'Your password has been set as below:\n',
+      TEMP_PASSWORD_MAIL_SENT: 'Password has been reset. Please check your recovery email.',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -135,11 +149,18 @@ class AppLocalizations {
       SETTINGS_DEFAULT_LOCK: '디폴트로 잠금',
       SETTINGS_RESET_PASSWORD: '비밀번호 재설정',
       SETTINGS_RECOVERY_EMAIL: '복원 이메일',
+      NO_RECOVERY_EMAIL: '복원 이메일을 먼저 작성해주세요',
 
       INVALID_EMAIL: '올바른 이메일 형식이 아닙니다',
 
-      SEND_TEMP_PASSWORD: '임시 비밀번호 전송',
-   },
+      SEND_TEMP_PASSWORD: '임시 비밀번호 발송',
+      CONFIRM_SEND_TEMP_PASSWORD: '임시 비밀번호 발송',
+      CONFIRM_SEND_TEMP_PASSWORD_BODY: '기존의 비밀번호가 임시 비밀번호로 바뀌고, 임시 비밀번호가 복원 이메일로 전송됩니다.',
+      FAILED_TO_SAVE_TEMP_PASSWORD_BY_UNKNOWN_ERROR: '알 수 없는 오류로 임시 비밀번호 설정에 실패하였습니다',
+      TEMP_PASSWORD_MAIL_SUBJECT: '[Blue Diary] 임시 비밀번호',
+      TEMP_PASSWORD_MAIL_BODY: '비밀번호가 아래와 같이 설정되었습니다:\n',
+      TEMP_PASSWORD_MAIL_SENT: '비밀번호가 재설정되었습니다. 복원 이메일을 확인해주세요.',
+    },
   };
 
   final Locale locale;
@@ -180,10 +201,17 @@ class AppLocalizations {
   String get settingsDefaultLock => _localizedValues[locale.languageCode][SETTINGS_DEFAULT_LOCK];
   String get settingsResetPassword => _localizedValues[locale.languageCode][SETTINGS_RESET_PASSWORD];
   String get settingsRecoveryEmail => _localizedValues[locale.languageCode][SETTINGS_RECOVERY_EMAIL];
+  String get noRecoveryEmail => _localizedValues[locale.languageCode][NO_RECOVERY_EMAIL];
 
   String get invalidEmail => _localizedValues[locale.languageCode][INVALID_EMAIL];
 
   String get sendTempPassword => _localizedValues[locale.languageCode][SEND_TEMP_PASSWORD];
+  String get confirmSendTempPassword => _localizedValues[locale.languageCode][CONFIRM_SEND_TEMP_PASSWORD];
+  String get confirmSendTempPasswordBody => _localizedValues[locale.languageCode][CONFIRM_SEND_TEMP_PASSWORD_BODY];
+  String get failedToSaveTempPasswordByUnknownError => _localizedValues[locale.languageCode][FAILED_TO_SAVE_TEMP_PASSWORD_BY_UNKNOWN_ERROR];
+  String get tempPasswordMailSubject => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_SUBJECT];
+  String get tempPasswordMailBody => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_BODY];
+  String get tempPasswordMailSent => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_SENT];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {
@@ -220,17 +248,17 @@ class AppLocalizations {
 
   String _getMonthName(int month) {
     return month == DateTime.january ? 'January'
-        : month == DateTime.february ? 'February'
-        : month == DateTime.march ? 'March'
-        : month == DateTime.april ? 'April'
-        : month == DateTime.may ? 'May'
-        : month == DateTime.june ? 'June'
-        : month == DateTime.july ? 'July'
-        : month == DateTime.august ? 'August'
-        : month == DateTime.september ? 'September'
-        : month == DateTime.october ? 'October'
-        : month == DateTime.november ? 'November'
-        : 'December';
+      : month == DateTime.february ? 'February'
+      : month == DateTime.march ? 'March'
+      : month == DateTime.april ? 'April'
+      : month == DateTime.may ? 'May'
+      : month == DateTime.june ? 'June'
+      : month == DateTime.july ? 'July'
+      : month == DateTime.august ? 'August'
+      : month == DateTime.september ? 'September'
+      : month == DateTime.october ? 'October'
+      : month == DateTime.november ? 'November'
+      : 'December';
   }
 
   String getDayRecordTitle(int month, int day) {

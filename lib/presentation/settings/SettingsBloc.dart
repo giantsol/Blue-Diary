@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
@@ -89,8 +91,94 @@ class SettingsBloc {
     }
   }
 
-  void onSendTempPasswordClicked() {
+  Future<void> onSendTempPasswordClicked(BuildContext context, ScaffoldState scaffoldState) async {
+    final recoveryEmail = await _usecases.getRecoveryEmail();
+    if (recoveryEmail.isEmpty) {
+      final message = AppLocalizations.of(context).noRecoveryEmail;
+      scaffoldState.showSnackBar(SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 2),
+      ));
+    } else {
+      _showConfirmSendTempPasswordDialog(context, scaffoldState);
+    }
+  }
 
+  Future<void> _showConfirmSendTempPasswordDialog(BuildContext context, ScaffoldState scaffoldState) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            AppLocalizations.of(context).confirmSendTempPassword,
+            style: TextStyle(
+              color: AppColors.TEXT_BLACK,
+              fontSize: 20,
+            ),
+          ),
+          content: Text(
+            AppLocalizations.of(context).confirmSendTempPasswordBody,
+            style: TextStyle(
+              color: AppColors.TEXT_BLACK_LIGHT,
+              fontSize: 16,
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                AppLocalizations.of(context).cancel,
+                style: TextStyle(
+                  color: AppColors.TEXT_BLACK,
+                  fontSize: 14,
+                ),
+              ),
+              onPressed: () => _onConfirmSendTempPasswordCancelClicked(context),
+            ),
+            FlatButton(
+              child: Text(
+                AppLocalizations.of(context).ok,
+                style: TextStyle(
+                  color: AppColors.PRIMARY,
+                  fontSize: 14,
+                ),
+              ),
+              onPressed: () => _onConfirmSendTempPasswordOkClicked(context, scaffoldState),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  void _onConfirmSendTempPasswordCancelClicked(BuildContext context) {
+    Navigator.pop(context);
+  }
+
+  Future<void> _onConfirmSendTempPasswordOkClicked(BuildContext context, ScaffoldState scaffoldState) async {
+    Navigator.pop(context);
+    final prevPassword = await _usecases.getUserPassword();
+    await _usecases.setUserPassword(_generateRandomPassword());
+    final changedPassword = await _usecases.getUserPassword();
+    if (changedPassword.isNotEmpty && prevPassword != changedPassword) {
+      // todo: send email
+      final message = AppLocalizations.of(context).tempPasswordMailSent;
+      scaffoldState.showSnackBar(SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 2),
+      ));
+    } else {
+      final message = AppLocalizations.of(context).failedToSaveTempPasswordByUnknownError;
+      scaffoldState.showSnackBar(SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 2),
+      ));
+    }
+  }
+
+  String _generateRandomPassword() {
+    final rand = Random();
+    return '${rand.nextInt(10)}${rand.nextInt(10)}${rand.nextInt(10)}${rand.nextInt(10)}';
   }
 
   void onResetPasswordClicked() {
