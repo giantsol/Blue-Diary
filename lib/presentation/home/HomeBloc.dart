@@ -35,13 +35,15 @@ class HomeBloc {
   }
 
   Future<void> onDrawerScreenItemClicked(BuildContext context, DrawerScreenItem item) async {
-    Navigator.pop(context);
-    await Navigator.push(context,
-      MaterialPageRoute(
-        builder: (context) => SettingsScreen(),
-      )
-    );
-    _dispatchSettingsChangedEvent();
+    if (item.key == DrawerScreenItem.KEY_SETTINGS) {
+      Navigator.pop(context);
+      await Navigator.push(context,
+        MaterialPageRoute(
+          builder: (context) => SettingsScreen(),
+        )
+      );
+      _dispatchSettingsChangedEvent();
+    }
   }
 
   void onMenuIconClicked(ScaffoldState scaffoldState) {
