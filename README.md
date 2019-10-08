@@ -88,7 +88,7 @@ Above three directories are divided to as closely follow Uncle Bob's [Clean Arch
 Besides these directories are flat Dart files inside [lib](https://github.com/giantsol/Blue-Diary/tree/master/lib) folder:
 
 1. [AppColors.dart](https://github.com/giantsol/Blue-Diary/blob/master/lib/AppColors.dart): just simple color constants.
-2. [Delegators.dart](https://github.com/giantsol/Blue-Diary/blob/master/lib/Delegators.dart): I used delegators when children needed to call parent's methods. However, as I've become more familir with Flutter now, I guess [ancestorStateOfType](https://api.flutter.dev/flutter/widgets/Element/ancestorStateOfType.html) can just do that job... researching on it!
+2. [Delegators.dart](https://github.com/giantsol/Blue-Diary/blob/master/lib/Delegators.dart): I used delegators when children needed to call parent's methods. However, as I've become more familiar with Flutter now, I guess [ancestorStateOfType](https://api.flutter.dev/flutter/widgets/Element/ancestorStateOfType.html) can just do that job... researching on it!
 3. [Dependencies.dart](https://github.com/giantsol/Blue-Diary/blob/master/lib/Dependencies.dart): contains singleton objects such as repositories and usecases. Basically, it enables a very simple injection pattern like `dependencies.weekUsecases` as in [WeekBloc.dart](https://github.com/giantsol/Blue-Diary/blob/master/lib/presentation/week/WeekBloc.dart).
 4. [Localization.dart](https://github.com/giantsol/Blue-Diary/blob/master/lib/Localization.dart): where localization texts are declared.
 5. [Main.dart](https://github.com/giantsol/Blue-Diary/blob/master/lib/Main.dart): the main entry point of this app.
