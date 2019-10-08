@@ -53,10 +53,10 @@ android {
 
     signingConfigs {
         release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties.getProperty('keyAlias', 'ignore')
+            keyPassword keystoreProperties.getProperty('keyPassword', 'ignore')
+            storeFile file(keystoreProperties.getProperty('storeFile', 'ignore'))
+            storePassword keystoreProperties.getProperty('storePassword', 'ignore')
         }
     }
     buildTypes {
