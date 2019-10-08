@@ -28,20 +28,15 @@
 
 ## Usage
 
-You can build and run this app by yourself. You'll need [Git](https://git-scm.com) and [Flutter](https://flutter.dev/docs/get-started/install) installed first. After that, from your command line:
+You can build and run this app by yourself. You'll need [Git](https://git-scm.com) and [Flutter](https://flutter.dev/docs/get-started/install),and [Android Studio](https://developer.android.com/studio) installed first. After that, clone this project by running command:
 
 ```
-# Clone this repository
 $ git clone https://github.com/giantsol/Blue-Diary.git
-
-# Go into the repository
-$ cd Blue-Diary
-
-# Install dependencies
-$ flutter packages get
 ```
 
-Build will fail at this moment because this app uses [Sendgrid](https://sendgrid.com/?opt=variant-header) to send emails in [SettingsBloc](https://github.com/giantsol/Blue-Diary/blob/master/lib/presentation/settings/SettingsBloc.dart) file, and `SENDGRID_AUTHORIZATION` constant isn't git-controlled.
+Open cloned directory with Android Studio and it'll notify you to run `Packages get` to install dependencies. Do that.
+
+Lastly, when you try to run the project, build will fail because this app uses [Sendgrid](https://sendgrid.com/?opt=variant-header) to send emails in [SettingsBloc](https://github.com/giantsol/Blue-Diary/blob/master/lib/presentation/settings/SettingsBloc.dart) file, and `SENDGRID_AUTHORIZATION` constant isn't git-controlled.
 
 You can solve this in 2 ways:
 
@@ -66,7 +61,9 @@ headers: {
 },
 ```
 
-Build the app again, and run `flutter run` from console or press `Run` button from Android Studio. 
+Build the app again, and press `Run` button from Android Studio. 
+
+If you still can't run it, please leave <a href="#feedback">Feedback</a>!
 
 ## Architecture
 
