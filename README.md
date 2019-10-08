@@ -61,7 +61,7 @@ headers: {
 },
 ```
 
-Build the app again, and press `Run` button from Android Studio. 
+Press `Run` button again, and it should build fine. 
 
 If you still can't run it, please leave <a href="#feedback">Feedback</a>!
 
