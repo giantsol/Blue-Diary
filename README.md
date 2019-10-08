@@ -36,7 +36,7 @@ $ git clone https://github.com/giantsol/Blue-Diary.git
 
 Open cloned directory with Android Studio and it'll notify you to run `Packages get` to install dependencies. Do that.
 
-Lastly, when you try to run the project, build will fail because this app uses [Sendgrid](https://sendgrid.com/?opt=variant-header) to send emails in [SettingsBloc](https://github.com/giantsol/Blue-Diary/blob/master/lib/presentation/settings/SettingsBloc.dart) file, and `SENDGRID_AUTHORIZATION` constant isn't git-controlled.
+Lastly, when you try to run the project by pressing `Run` button at the top, build will fail because this app uses [Sendgrid](https://sendgrid.com/?opt=variant-header) to send emails in [SettingsBloc](https://github.com/giantsol/Blue-Diary/blob/master/lib/presentation/settings/SettingsBloc.dart) file, and `SENDGRID_AUTHORIZATION` constant isn't git-controlled.
 
 You can solve this in 2 ways:
 
