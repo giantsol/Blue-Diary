@@ -60,6 +60,10 @@ android {
         }
     }
     buildTypes {
+        debug {
+            applicationIdSuffix '.debug'
+            resValue "string", "app_name", "Blue Diary Debug"
+        }
 
         release {
             signingConfig signingConfigs.release
@@ -68,6 +72,8 @@ android {
             useProguard true
 
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            resValue "string", "app_name", "Blue Diary"
         }
     }
 }
