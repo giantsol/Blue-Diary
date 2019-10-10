@@ -83,7 +83,6 @@ class WeekBloc {
       InputPasswordScreen(onSuccess: () {
         final updatedWeekRecord = weekRecord.buildNew(isCheckPointsLocked: false);
         _state.add(_state.value.buildNewWeekRecordUpdated(updatedWeekRecord));
-
         _usecases.setCheckPointsLocked(weekRecord.dateInWeek, false);
       }, onFail: () {
         delegator.showSnackBar(AppLocalizations.of(context).unlockFail, _snackBarDuration);
@@ -165,7 +164,7 @@ class WeekBloc {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DayScreen(date: dayRecord.date),
+              builder: (context) => DayScreen(dayRecord.date),
             ),
           );
           _initState();
@@ -177,7 +176,7 @@ class WeekBloc {
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => DayScreen(date: dayRecord.date),
+          builder: (context) => DayScreen(dayRecord.date),
         ),
       );
       _initState();
@@ -214,7 +213,7 @@ class WeekBloc {
   }
 
   void _onCreatePasswordCancelClicked(BuildContext context) {
-    Navigator.of(context).pop();
+    Navigator.pop(context);
   }
 
   void _onCreatePasswordOkClicked(BuildContext context) {
@@ -235,7 +234,6 @@ class WeekBloc {
 
   void dispose() {
     _state.close();
-
     delegator.removeSettingsChangedListener(_settingsChangedListener);
   }
 }

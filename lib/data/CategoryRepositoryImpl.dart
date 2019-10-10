@@ -1,30 +1,30 @@
 
-import 'package:todo_app/data/AppDatabase.dart';
+import 'package:todo_app/data/datasource/CategoryDataSource.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/repository/CategoryRepository.dart';
 
 class CategoryRepositoryImpl implements CategoryRepository {
-  final AppDatabase _db;
+  final CategoryDataSource _dataSource;
 
-  const CategoryRepositoryImpl(this._db);
+  const CategoryRepositoryImpl(this._dataSource);
 
   @override
   Future<Category> getCategory(int id) async {
-    return _db.getCategory(id);
+    return _dataSource.getCategory(id);
   }
 
   @override
   Future<int> setCategory(Category category) async {
-    return _db.setCategory(category);
+    return _dataSource.setCategory(category);
   }
 
   @override
   Future<List<Category>> getAllCategories() async {
-    return _db.getAllCategories();
+    return _dataSource.getAllCategories();
   }
 
   @override
   Future<void> removeCategory(Category category) async {
-    return _db.removeCategory(category);
+    return _dataSource.removeCategory(category);
   }
 }

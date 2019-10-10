@@ -1,32 +1,32 @@
 
-import 'package:todo_app/data/AppDatabase.dart';
+import 'package:todo_app/data/datasource/MemoDataSource.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/repository/MemoRepository.dart';
 
 class MemoRepositoryImpl implements MemoRepository {
-  final AppDatabase _db;
+  final MemoDataSource _dataSource;
 
-  const MemoRepositoryImpl(this._db);
+  const MemoRepositoryImpl(this._dataSource);
 
   @override
   Future<List<CheckPoint>> getCheckPoints(DateTime date) async {
-    return await _db.getCheckPoints(date);
+    return await _dataSource.getCheckPoints(date);
   }
 
   @override
   Future<DayMemo> getDayMemo(DateTime date) async {
-    return await _db.getDayMemo(date);
+    return await _dataSource.getDayMemo(date);
   }
 
   @override
   void setDayMemo(DayMemo dayMemo) {
-    _db.setDayMemo(dayMemo);
+    _dataSource.setDayMemo(dayMemo);
   }
 
   @override
   void setCheckPoint(CheckPoint checkPoint) {
-    _db.setCheckPoint(checkPoint);
+    _dataSource.setCheckPoint(checkPoint);
   }
 
 }

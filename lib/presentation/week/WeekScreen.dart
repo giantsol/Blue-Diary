@@ -48,11 +48,11 @@ class _WeekScreenState extends State<WeekScreen> {
   void dispose() {
     super.dispose();
     _bloc.dispose();
+    _weekRecordPageController.dispose();
+    _scrollController.dispose();
 
     _focusNodes.forEach((key, focusNode) => focusNode.dispose());
     _focusNodes.clear();
-
-    _scrollController.dispose();
   }
 
   @override
@@ -71,48 +71,44 @@ class _WeekScreenState extends State<WeekScreen> {
       onWillPop: () async {
         return !_unfocusTextFieldIfAny();
       },
-      child: GestureDetector(
-        onTapDown: (_) => _unfocusTextFieldIfAny(),
-        behavior: HitTestBehavior.translucent,
-        child: Column(
-          children: [
-            _Header(
-              bloc: _bloc,
-              displayYear: state.year.toString(),
-              displayMonthAndWeek: AppLocalizations.of(context).getMonthAndNthWeek(state.month, state.nthWeek),
+      child: Column(
+        children: [
+          _Header(
+            bloc: _bloc,
+            displayYear: state.year.toString(),
+            displayMonthAndWeek: AppLocalizations.of(context).getMonthAndNthWeek(state.month, state.nthWeek),
+          ),
+          Expanded(
+            child: Stack(
+              children: <Widget>[
+                InfinityPageView(
+                  controller: _weekRecordPageController,
+                  itemCount: state.weekRecords.length,
+                  itemBuilder: (context, index) {
+                    final weekRecords = state.weekRecords;
+                    if (weekRecords.isEmpty || weekRecords[index] == null) {
+                      return null;
+                    }
+                    return _WeekRecord(
+                      bloc: _bloc,
+                      weekRecord: weekRecords[index],
+                      focusNodeProvider: _getOrCreateFocusNode,
+                      scrollController: _scrollController,
+                    );
+                  },
+                  onPageChanged: (changedIndex) {
+                    _headerShadowState.currentState.updateShadowVisibility(false);
+                    _bloc.onWeekRecordPageChanged(changedIndex);
+                  },
+                ),
+                _HeaderShadow(
+                  key: _headerShadowState,
+                  scrollController: _scrollController,
+                ),
+              ],
             ),
-            Expanded(
-              child: Stack(
-                children: <Widget>[
-                  InfinityPageView(
-                    controller: _weekRecordPageController,
-                    itemCount: state.weekRecords.length,
-                    itemBuilder: (context, index) {
-                      final weekRecords = state.weekRecords;
-                      if (weekRecords.isEmpty || weekRecords[index] == null) {
-                        return null;
-                      }
-                      return _WeekRecord(
-                        bloc: _bloc,
-                        weekRecord: weekRecords[index],
-                        focusNodeProvider: _getOrCreateFocusNode,
-                        scrollController: _scrollController,
-                      );
-                    },
-                    onPageChanged: (changedIndex) {
-                      _headerShadowState.currentState.updateShadowVisibility(false);
-                      _bloc.onWeekRecordPageChanged(changedIndex);
-                    },
-                  ),
-                  _HeaderShadow(
-                    key: _headerShadowState,
-                    scrollController: _scrollController,
-                  ),
-                ],
-              ),
-            ),
-          ]
-        ),
+          ),
+        ]
       ),
     );
   }
@@ -190,7 +186,7 @@ class _Header extends StatelessWidget {
 class _WeekRecord extends StatelessWidget {
   final WeekBloc bloc;
   final WeekRecord weekRecord;
-  final FocusNodeProvider focusNodeProvider;
+  final FocusNode Function(String key) focusNodeProvider;
   final ScrollController scrollController;
 
   _WeekRecord({
@@ -232,7 +228,7 @@ class _WeekRecord extends StatelessWidget {
 class _CheckPointsBox extends StatelessWidget {
   final WeekBloc bloc;
   final WeekRecord weekRecord;
-  final FocusNodeProvider focusNodeProvider;
+  final FocusNode Function(String key) focusNodeProvider;
 
   _CheckPointsBox({
     @required this.bloc,
@@ -273,7 +269,8 @@ class _CheckPointsBox extends StatelessWidget {
                   ],
                 ),
               ),
-              !weekRecord.isCheckPointsLocked ? Padding(
+              weekRecord.isCheckPointsLocked ? const SizedBox.shrink()
+                : Padding(
                 padding: const EdgeInsets.only(bottom: 9),
                 child: Column(
                   children: List.generate(weekRecord.checkPoints.length, (index) {
@@ -285,7 +282,7 @@ class _CheckPointsBox extends StatelessWidget {
                     );
                   }),
                 ),
-              ) : const SizedBox.shrink(),
+              ),
             ],
           ),
         ),
@@ -303,31 +300,24 @@ class _LockedIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 38,
-      height: 38,
-      child: Stack(
-        children: [
-          Center(
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.SECONDARY,
-                shape: BoxShape.circle,
-              ),
-              width: 28,
-              height: 28,
-              alignment: Alignment.center,
-              child: Image.asset('assets/ic_lock_on.png'),
+    return InkWell(
+      customBorder: CircleBorder(),
+      onTap: onTap,
+      child: SizedBox(
+        width: 38,
+        height: 38,
+        child: Center(
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.SECONDARY,
+              shape: BoxShape.circle,
             ),
+            width: 28,
+            height: 28,
+            alignment: Alignment.center,
+            child: Image.asset('assets/ic_lock_on.png'),
           ),
-          Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              customBorder: CircleBorder(),
-              onTap: onTap,
-            ),
-          )
-        ]
+        ),
       ),
     );
   }
@@ -342,31 +332,24 @@ class _UnlockedIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 38,
-      height: 38,
-      child: Stack(
-        children: [
-          Center(
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.BACKGROUND_GREY,
-                shape: BoxShape.circle,
-              ),
-              width: 28,
-              height: 28,
-              alignment: Alignment.center,
-              child: Image.asset('assets/ic_lock_off.png'),
+    return InkWell(
+      customBorder: CircleBorder(),
+      onTap: onTap,
+      child: SizedBox(
+        width: 38,
+        height: 38,
+        child: Center(
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.BACKGROUND_GREY,
+              shape: BoxShape.circle,
             ),
+            width: 28,
+            height: 28,
+            alignment: Alignment.center,
+            child: Image.asset('assets/ic_lock_off.png'),
           ),
-          Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              customBorder: CircleBorder(),
-              onTap: onTap,
-            ),
-          )
-        ]
+        ),
       ),
     );
   }
@@ -376,7 +359,7 @@ class _CheckPointItem extends StatelessWidget {
   final WeekBloc bloc;
   final WeekRecord weekRecord;
   final CheckPoint checkPoint;
-  final FocusNodeProvider focusNodeProvider;
+  final FocusNode Function(String key) focusNodeProvider;
 
   _CheckPointItem({
     @required this.bloc,
@@ -429,8 +412,6 @@ class _CheckPointItem extends StatelessWidget {
   }
 }
 
-typedef FocusNodeProvider = FocusNode Function(String key);
-
 class _DayPreviewItem extends StatelessWidget {
   final WeekBloc bloc;
   final WeekRecord weekRecord;
@@ -477,62 +458,53 @@ class _DayPreviewItemContent extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(
-          child: IntrinsicHeight(
-            child: Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                  child: Row(
-                    children: [
-                      _DayPreviewItemThumbnail(
-                        hasBorder: dayRecord.hasBorder,
-                        filledRatio: dayRecord.filledRatio,
-                        text: dayRecord.thumbnailString,
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 18, top: 4, bottom: 4,),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                children: [
-                                  dayRecord.isToday == true ? _DayPreviewItemTodayText() : const SizedBox.shrink(),
-                                  Text(
-                                    AppLocalizations.of(context).getDayRecordTitle(dayRecord.month, dayRecord.day),
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: AppColors.TEXT_BLACK,
-                                    ),
-                                  ),
-                                  SizedBox(width: 12),
-                                  dayRecord.filledRatio == 1.0 ? _DayPreviewItemCompleteText() : const SizedBox.shrink(),
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 2,),
-                                child: Text(
-                                  dayRecord.subtitle,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: dayRecord.subtitleColor,
-                                  ),
+          child: InkWell(
+            onTap: () => bloc.onDayPreviewClicked(context, dayRecord),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 15),
+              child: Row(
+                children: [
+                  _DayPreviewItemThumbnail(
+                    hasBorder: dayRecord.hasBorder,
+                    filledRatio: dayRecord.filledRatio,
+                    text: dayRecord.thumbnailString,
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 18, top: 4, bottom: 4,),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            children: [
+                              dayRecord.isToday == true ? _DayPreviewItemTodayText() : const SizedBox.shrink(),
+                              Text(
+                                AppLocalizations.of(context).getDayRecordTitle(dayRecord.month, dayRecord.day),
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: AppColors.TEXT_BLACK,
                                 ),
                               ),
+                              SizedBox(width: 12),
+                              dayRecord.filledRatio == 1.0 ? _DayPreviewItemCompleteText() : const SizedBox.shrink(),
                             ],
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Material(
-                  type: MaterialType.transparency,
-                  child: InkWell(
-                    onTap: () => bloc.onDayPreviewClicked(context, dayRecord),
-                  ),
-                ),
-              ]
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2,),
+                            child: Text(
+                              dayRecord.subtitle,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: dayRecord.subtitleColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),

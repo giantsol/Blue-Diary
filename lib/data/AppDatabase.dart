@@ -2,6 +2,10 @@
 import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:todo_app/data/datasource/CategoryDataSource.dart';
+import 'package:todo_app/data/datasource/LockDataSource.dart';
+import 'package:todo_app/data/datasource/MemoDataSource.dart';
+import 'package:todo_app/data/datasource/ToDoDataSource.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
@@ -9,7 +13,10 @@ import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/Lock.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 
-class AppDatabase {
+class AppDatabase implements ToDoDataSource,
+  MemoDataSource,
+  LockDataSource,
+  CategoryDataSource {
   static const String TABLE_CHECK_POINTS = 'checkpoints';
   static const String TABLE_TODOS = 'todos';
   static const String TABLE_LOCKS = 'locks';
@@ -110,6 +117,7 @@ class AppDatabase {
     );
   }
 
+  @override
   Future<List<ToDo>> getToDos(DateTime date) async {
     final db = await _database.first;
     final List<Map<String, dynamic>> maps = await db.query(
@@ -126,26 +134,27 @@ class AppDatabase {
     return result;
   }
 
-  Future<void> setDayMemo(DayMemo dayMemo) async {
+  @override
+  Future<void> setToDo(ToDo toDo) async {
     final db = await _database.first;
     await db.insert(
-      TABLE_DAY_MEMOS,
-      dayMemo.toDatabase(),
+      TABLE_TODOS,
+      toDo.toDatabase(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  Future<DayMemo> getDayMemo(DateTime date) async {
+  @override
+  Future<void> removeToDo(ToDo toDo) async {
     final db = await _database.first;
-    final Map<String, dynamic> map = await db.query(
-      TABLE_DAY_MEMOS,
-      where: DayMemo.createWhereQuery(),
-      whereArgs: DayMemo.createWhereArgs(date),
-    ).then((l) => l.isEmpty ? null : l[0]);
-    return map != null ? DayMemo.fromDatabase(map)
-      : DayMemo(year: date.year, month: date.month, day: date.day);
+    await db.delete(
+      TABLE_TODOS,
+      where: ToDo.createWhereQueryForToDo(),
+      whereArgs: ToDo.createWhereArgsForToDo(toDo),
+    );
   }
 
+  @override
   Future<List<CheckPoint>> getCheckPoints(DateTime date) async {
     final db = await _database.first;
     final dateInWeek = DateInWeek.fromDate(date);
@@ -167,6 +176,39 @@ class AppDatabase {
     return checkPoints;
   }
 
+  @override
+  Future<void> setCheckPoint(CheckPoint checkPoint) async {
+    final db = await _database.first;
+    await db.insert(
+      TABLE_CHECK_POINTS,
+      checkPoint.toDatabase(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  @override
+  Future<DayMemo> getDayMemo(DateTime date) async {
+    final db = await _database.first;
+    final Map<String, dynamic> map = await db.query(
+      TABLE_DAY_MEMOS,
+      where: DayMemo.createWhereQuery(),
+      whereArgs: DayMemo.createWhereArgs(date),
+    ).then((l) => l.isEmpty ? null : l[0]);
+    return map != null ? DayMemo.fromDatabase(map)
+      : DayMemo(year: date.year, month: date.month, day: date.day);
+  }
+
+  @override
+  Future<void> setDayMemo(DayMemo dayMemo) async {
+    final db = await _database.first;
+    await db.insert(
+      TABLE_DAY_MEMOS,
+      dayMemo.toDatabase(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  @override
   Future<bool> getIsCheckPointsLocked(DateTime date, bool defaultValue) async {
     final db = await _database.first;
     final Map<String, dynamic> map = await db.query(
@@ -177,6 +219,7 @@ class AppDatabase {
     return map != null ? Lock.fromDatabase(map).isLocked : defaultValue;
   }
 
+  @override
   Future<void> setIsCheckPointsLocked(DateInWeek dateInWeek, bool value) async {
     final db = await _database.first;
     final map = {
@@ -190,6 +233,7 @@ class AppDatabase {
     );
   }
 
+  @override
   Future<void> setIsDayRecordLocked(DateTime date, bool value) async {
     final db = await _database.first;
     final map = {
@@ -203,15 +247,7 @@ class AppDatabase {
     );
   }
 
-  Future<void> setCheckPoint(CheckPoint checkPoint) async {
-    final db = await _database.first;
-    await db.insert(
-      TABLE_CHECK_POINTS,
-      checkPoint.toDatabase(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
+  @override
   Future<bool> getIsDayRecordLocked(DateTime date, bool defaultValue) async {
     final db = await _database.first;
     final Map<String, dynamic> map = await db.query(
@@ -222,24 +258,7 @@ class AppDatabase {
     return map != null ? Lock.fromDatabase(map).isLocked : defaultValue;
   }
 
-  Future<void> setToDo(ToDo toDo) async {
-    final db = await _database.first;
-    await db.insert(
-      TABLE_TODOS,
-      toDo.toDatabase(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  Future<void> removeToDo(ToDo toDo) async {
-    final db = await _database.first;
-    await db.delete(
-      TABLE_TODOS,
-      where: ToDo.createWhereQueryForToDo(),
-      whereArgs: ToDo.createWhereArgsForToDo(toDo),
-    );
-  }
-
+  @override
   Future<Category> getCategory(int id) async {
     final db = await _database.first;
     Map<String, dynamic> map = await db.query(
@@ -250,6 +269,7 @@ class AppDatabase {
     return map != null ? Category.fromDatabase(map) : Category();
   }
 
+  @override
   Future<List<Category>> getAllCategories() async {
     final db = await _database.first;
     List<Map<String, dynamic>> maps = await db.query(
@@ -266,6 +286,7 @@ class AppDatabase {
     return result;
   }
 
+  @override
   Future<int> setCategory(Category category) async {
     if (category.id == Category.ID_DEFAULT) {
       return Category.ID_DEFAULT;
@@ -279,6 +300,7 @@ class AppDatabase {
     }
   }
 
+  @override
   Future<void> removeCategory(Category category) async {
     final db = await _database.first;
     await db.delete(

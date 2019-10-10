@@ -14,6 +14,7 @@ import 'package:todo_app/presentation/createpassword/CreatePasswordScreen.dart';
 import 'package:todo_app/presentation/inputpassword/InputPasswordScreen.dart';
 
 class SettingsBloc {
+  static const _SENDGRID_SEND_API_ENDPOINT = 'https://api.sendgrid.com/v3/mail/send';
   final SettingsUsecases _usecases = dependencies.settingsUsecases;
 
   void Function() _needUpdateListener;
@@ -32,7 +33,9 @@ class SettingsBloc {
       _usecases.setDefaultLocked(false);
       _showCreatePasswordDialog(context, scaffoldState);
     } else if (!isDefaultLocked) {
-      _usecases.setDefaultLocked(true); // 비번 입력하기 전에는 바뀌면 안되므로 일단은 다시 되돌려버림
+      // set it to true forcefully instantly.
+      // will set to false when user inputs password correctly
+      _usecases.setDefaultLocked(true);
       Utils.showBottomSheet(scaffoldState, (context) =>
         InputPasswordScreen(onSuccess: () {
           _usecases.setDefaultLocked(false);
@@ -175,27 +178,33 @@ class SettingsBloc {
   }
 
   Future<void> _onConfirmSendTempPasswordOkClicked(BuildContext context, ScaffoldState scaffoldState) async {
+    Navigator.pop(context);
+
     final mailSentMsg = AppLocalizations.of(context).tempPasswordMailSent;
     final mailSendFailedMsg = AppLocalizations.of(context).tempPasswordMailSendFailed;
     final failedToSaveTempPasswordMsg = AppLocalizations.of(context).failedToSaveTempPasswordByUnknownError;
-    Navigator.pop(context);
+
     final prevPassword = await _usecases.getUserPassword();
-    await _usecases.setUserPassword(_generateRandomPassword());
+    await _usecases.setUserPassword(_createRandomPassword());
     final changedPassword = await _usecases.getUserPassword();
+
     if (changedPassword.isNotEmpty && prevPassword != changedPassword) {
       final mailTitle = AppLocalizations.of(context).tempPasswordMailSubject;
       final mailBody = AppLocalizations.of(context).tempPasswordMailBody;
       final recoveryEmail = await _usecases.getRecoveryEmail();
-      final body = '{"personalizations":[{"to":[{"email":"$recoveryEmail"}],"subject":"$mailTitle"}],"content": [{"type": "text/plain", "value": "$mailBody$changedPassword"}],"from":{"email":"giantsol64@gmail.com","name":"Blue Diary Developer"}}';
+      final body = _createEmailBodyJson(
+        targetEmail: recoveryEmail,
+        title: mailTitle,
+        body: '$mailBody$changedPassword');
       final response = await http.post(
-        'https://api.sendgrid.com/v3/mail/send',
+        _SENDGRID_SEND_API_ENDPOINT,
         headers: {
           HttpHeaders.authorizationHeader: SENDGRID_AUTHORIZATION,
           HttpHeaders.contentTypeHeader: 'application/json',
         },
         body: body,
       );
-      if ([200, 201, 202].contains(response.statusCode)) {
+      if (response.statusCode.toString().startsWith('2')) {
         Utils.showSnackBar(scaffoldState, mailSentMsg, _snackBarDuration);
       } else {
         Utils.showSnackBar(scaffoldState, mailSendFailedMsg, _snackBarDuration);
@@ -205,9 +214,17 @@ class SettingsBloc {
     }
   }
 
-  String _generateRandomPassword() {
+  String _createRandomPassword() {
     final rand = Random();
     return '${rand.nextInt(10)}${rand.nextInt(10)}${rand.nextInt(10)}${rand.nextInt(10)}';
+  }
+
+  String _createEmailBodyJson({
+    @required String targetEmail,
+    @required String title,
+    @required String body,
+  }) {
+    return '{"personalizations":[{"to":[{"email":"$targetEmail"}],"subject":"$title"}],"content": [{"type": "text/plain", "value": "$body"}],"from":{"email":"giantsol64@gmail.com","name":"Blue Diary Developer"}}';
   }
 
   Future<void> onResetPasswordClicked(BuildContext context, ScaffoldState scaffoldState) async {

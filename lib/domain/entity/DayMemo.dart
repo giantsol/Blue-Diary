@@ -29,6 +29,8 @@ class DayMemo {
   final String hint;
   final bool isExpanded;
 
+  String get key => '$year-$month-$day';
+
   const DayMemo({
     this.year = 0,
     this.month = 0,

@@ -44,20 +44,20 @@ class DayBloc {
     ));
   }
 
-  bool onWillPopScope() {
+  bool handleBackPress() {
     final editorState = _state.value.editorState;
     if (editorState == EditorState.SHOWN_CATEGORY) {
       _state.add(_state.value.buildNew(
         editorState: EditorState.SHOWN_TODO,
       ));
-      return false;
+      return true;
     } else if (editorState == EditorState.SHOWN_TODO) {
       _state.add(_state.value.buildNew(
         editorState: EditorState.HIDDEN,
       ));
-      return false;
+      return true;
     }
-    return true;
+    return false;
   }
 
   void onBackArrowClicked(BuildContext context) {

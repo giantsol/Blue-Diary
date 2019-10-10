@@ -18,9 +18,7 @@ import 'package:todo_app/presentation/widgets/AppTextField.dart';
 class DayScreen extends StatefulWidget {
   final DateTime date;
 
-  DayScreen({
-    @required this.date,
-  });
+  DayScreen(this.date);
 
   @override
   State createState() => _DayScreenState();
@@ -29,6 +27,8 @@ class DayScreen extends StatefulWidget {
 class _DayScreenState extends State<DayScreen> {
   DayBloc _bloc;
   ScrollController _toDoScrollController;
+  // todo: is this the right way to use focusnodes?
+  final Map<String, FocusNode> _focusNodes = {};
 
   @override
   void initState() {
@@ -42,6 +42,9 @@ class _DayScreenState extends State<DayScreen> {
     super.dispose();
     _bloc.dispose();
     _toDoScrollController.dispose();
+
+    _focusNodes.forEach((key, focusNode) => focusNode.dispose());
+    _focusNodes.clear();
   }
 
   @override
@@ -56,86 +59,109 @@ class _DayScreenState extends State<DayScreen> {
   }
 
   Widget _buildUI(DayState state) {
-      if (state.scrollToBottomEvent) {
-        SchedulerBinding.instance.addPostFrameCallback((duration) {
-          if (_toDoScrollController.hasClients) {
-            _toDoScrollController.position.jumpTo(
-              _toDoScrollController.position.maxScrollExtent,
+    if (state.scrollToBottomEvent) {
+      SchedulerBinding.instance.addPostFrameCallback((duration) {
+        if (_toDoScrollController.hasClients) {
+          _toDoScrollController.position.jumpTo(
+            _toDoScrollController.position.maxScrollExtent,
+          );
+        }
+      });
+    }
+
+    if (state.scrollToToDoListEvent) {
+      // 500.. magic number..
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (_toDoScrollController.hasClients) {
+          final double targetPixel = state.isMemoExpanded ? 170 : 70;
+          if (_toDoScrollController.position.pixels < targetPixel) {
+            _toDoScrollController.position.animateTo(
+              targetPixel,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
             );
           }
-        });
-      }
-
-      if (state.scrollToToDoListEvent) {
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (_toDoScrollController.hasClients) {
-            final double targetPixel = state.isMemoExpanded ? 170 : 70;
-            if (_toDoScrollController.position.pixels < targetPixel) {
-              _toDoScrollController.position.animateTo(
-                targetPixel,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOut,
-              );
-            }
-          }
-        });
-      }
+        }
+      });
+    }
 
     return WillPopScope(
-      onWillPop: () async => _bloc.onWillPopScope(),
+      onWillPop: () async => !_bloc.handleBackPress() && !_unfocusTextFieldIfAny(),
       child: SafeArea(
-        child: Material(
-          child: Scaffold(
-            floatingActionButton: state.isFabVisible ? _FAB(
-              bloc: _bloc,
-            ) : null,
-            body: Stack(
-              fit: StackFit.expand,
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    _Header(
-                      bloc: _bloc,
-                      title: AppLocalizations.of(context).getDayScreenTitle(state.month, state.day, state.weekday),
+        child: Scaffold(
+          floatingActionButton: state.isFabVisible ? _FAB(
+            bloc: _bloc,
+          ) : null,
+          body: Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  _Header(
+                    bloc: _bloc,
+                    title: AppLocalizations.of(context).getDayScreenTitle(state.month, state.day, state.weekday),
+                  ),
+                  Expanded(
+                    child: Stack(
+                      children: <Widget>[
+                        state.toDoRecords.length == 0 ? _EmptyToDoListView(
+                          bloc: _bloc,
+                          dayMemo: state.dayMemo,
+                          focusNodeProvider: _getOrCreateFocusNode,
+                        ) : _ToDoListView(
+                          bloc: _bloc,
+                          dayMemo: state.dayMemo,
+                          toDoRecords: state.toDoRecords,
+                          scrollController: _toDoScrollController,
+                          focusNodeProvider: _getOrCreateFocusNode,
+                        ),
+                        _HeaderShadow(
+                          scrollController: _toDoScrollController,
+                        ),
+                      ],
                     ),
-                    Expanded(
-                      child: Stack(
-                        children: <Widget>[
-                          state.toDoRecords.length == 0 ? _EmptyToDoListView(
-                            bloc: _bloc,
-                            dayMemo: state.dayMemo,
-                          ) : _ToDoListView(
-                            bloc: _bloc,
-                            dayMemo: state.dayMemo,
-                            toDoRecords: state.toDoRecords,
-                            scrollController: _toDoScrollController,
-                          ),
-                          _HeaderShadow(
-                            scrollController: _toDoScrollController,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                // 키보드 위 입력창
-                state.editorState == EditorState.HIDDEN ? const SizedBox.shrink()
-                  : state.editorState == EditorState.SHOWN_TODO ? _ToDoEditorContainer(
-                  bloc: _bloc,
-                  editingToDoRecord: state.editingToDoRecord,
-                ) : _CategoryEditorContainer(
-                  bloc: _bloc,
-                  allCategories: state.allCategories,
-                  editingCategory: state.editingCategory,
-                  categoryPickers: state.categoryPickers,
-                  selectedPickerIndex: state.selectedPickerIndex,
-                )
-              ],
-            ),
+                  ),
+                ],
+              ),
+              // editor positioned just above the keyboard
+              state.editorState == EditorState.HIDDEN ? const SizedBox.shrink()
+                : state.editorState == EditorState.SHOWN_TODO ? _ToDoEditorContainer(
+                bloc: _bloc,
+                editingToDoRecord: state.editingToDoRecord,
+                focusNodeProvider: _getOrCreateFocusNode,
+              ) : _CategoryEditorContainer(
+                bloc: _bloc,
+                allCategories: state.allCategories,
+                editingCategory: state.editingCategory,
+                categoryPickers: state.categoryPickers,
+                selectedPickerIndex: state.selectedPickerIndex,
+                focusNodeProvider: _getOrCreateFocusNode,
+              ),
+            ],
           ),
         ),
       ),
     );
+  }
+
+  FocusNode _getOrCreateFocusNode(String key) {
+    if (_focusNodes.containsKey(key)) {
+      return _focusNodes[key];
+    } else {
+      final newFocusNode = FocusNode();
+      _focusNodes[key] = newFocusNode;
+      return newFocusNode;
+    }
+  }
+
+  bool _unfocusTextFieldIfAny() {
+    for (FocusNode focusNode in _focusNodes.values) {
+      if (focusNode.hasPrimaryFocus) {
+        focusNode.unfocus();
+        return true;
+      }
+    }
+    return false;
   }
 }
 
@@ -199,10 +225,12 @@ class _Header extends StatelessWidget {
 class _EmptyToDoListView extends StatelessWidget {
   final DayBloc bloc;
   final DayMemo dayMemo;
+  final FocusNode Function(String key) focusNodeProvider;
 
   _EmptyToDoListView({
     @required this.bloc,
     @required this.dayMemo,
+    @required this.focusNodeProvider,
   });
 
   @override
@@ -213,6 +241,7 @@ class _EmptyToDoListView extends StatelessWidget {
         _DayMemo(
           bloc: bloc,
           dayMemo: dayMemo,
+          focusNodeProvider: focusNodeProvider,
         ),
         Padding(
           padding: EdgeInsets.only(left: 18, top: 20),
@@ -243,10 +272,12 @@ class _EmptyToDoListView extends StatelessWidget {
 class _DayMemo extends StatelessWidget {
   final DayBloc bloc;
   final DayMemo dayMemo;
+  final FocusNode Function(String key) focusNodeProvider;
 
   _DayMemo({
     @required this.bloc,
     @required this.dayMemo,
+    @required this.focusNodeProvider,
   });
 
   @override
@@ -292,6 +323,7 @@ class _DayMemo extends StatelessWidget {
               child: SizedBox(
                 height: 93,
                 child: AppTextField(
+                  focusNode: focusNodeProvider(dayMemo.key),
                   text: dayMemo.text,
                   textSize: 12,
                   textColor: AppColors.TEXT_WHITE,
@@ -315,12 +347,14 @@ class _ToDoListView extends StatelessWidget {
   final DayMemo dayMemo;
   final List<ToDoRecord> toDoRecords;
   final ScrollController scrollController;
+  final FocusNode Function(String key) focusNodeProvider;
 
   _ToDoListView({
     @required this.bloc,
     @required this.dayMemo,
     @required this.toDoRecords,
     @required this.scrollController,
+    @required this.focusNodeProvider,
   });
 
   @override
@@ -333,6 +367,7 @@ class _ToDoListView extends StatelessWidget {
           return _DayMemo(
             bloc: bloc,
             dayMemo: dayMemo,
+            focusNodeProvider: focusNodeProvider,
           );
         } else if (index == 1) {
           return Padding(
@@ -620,10 +655,12 @@ class _ColorCategoryThumbnail extends StatelessWidget {
 class _ToDoEditorContainer extends StatelessWidget {
   final DayBloc bloc;
   final ToDoRecord editingToDoRecord;
+  final FocusNode Function(String key) focusNodeProvider;
 
   _ToDoEditorContainer({
     @required this.bloc,
     @required this.editingToDoRecord,
+    @required this.focusNodeProvider,
   });
 
   @override
@@ -657,6 +694,7 @@ class _ToDoEditorContainer extends StatelessWidget {
                 _ToDoEditor(
                   bloc: bloc,
                   editingToDoRecord: editingToDoRecord,
+                  focusNodeProvider: focusNodeProvider,
                 ),
                 _ToDoEditorCategoryButton(
                   bloc: bloc,
@@ -674,10 +712,14 @@ class _ToDoEditorContainer extends StatelessWidget {
 class _ToDoEditor extends StatelessWidget {
   final DayBloc bloc;
   final ToDoRecord editingToDoRecord;
+  final FocusNode Function(String key) focusNodeProvider;
+
+  final _focusNodeKey = 'toDoEditor';
 
   _ToDoEditor({
     @required this.bloc,
     @required this.editingToDoRecord,
+    @required this.focusNodeProvider,
   });
 
   @override
@@ -699,6 +741,7 @@ class _ToDoEditor extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 15),
             child: AppTextField(
+              focusNode: focusNodeProvider(_focusNodeKey),
               text: toDo.text,
               textSize: 14,
               textColor: AppColors.TEXT_BLACK,
@@ -757,7 +800,8 @@ class _ToDoEditorCategoryButton extends StatelessWidget {
             color: AppColors.PRIMARY,
           ),
           child: Text(
-            '${AppLocalizations.of(context).category}: ${categoryName.isEmpty ? AppLocalizations.of(context).categoryNone : categoryName}',
+            '${AppLocalizations.of(context).category}: '
+              '${categoryName.isEmpty ? AppLocalizations.of(context).categoryNone : categoryName}',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
@@ -777,6 +821,7 @@ class _CategoryEditorContainer extends StatelessWidget {
   final Category editingCategory;
   final List<CategoryPicker> categoryPickers;
   final int selectedPickerIndex;
+  final FocusNode Function(String key) focusNodeProvider;
 
   _CategoryEditorContainer({
     @required this.bloc,
@@ -784,6 +829,7 @@ class _CategoryEditorContainer extends StatelessWidget {
     @required this.editingCategory,
     @required this.categoryPickers,
     @required this.selectedPickerIndex,
+    @required this.focusNodeProvider,
   });
 
   @override
@@ -814,6 +860,7 @@ class _CategoryEditorContainer extends StatelessWidget {
                     _CategoryEditor(
                       bloc: bloc,
                       category: editingCategory,
+                      focusNodeProvider: focusNodeProvider,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
@@ -872,48 +919,11 @@ class _CategoryEditorCategoryList extends StatelessWidget {
           itemCount: allCategories.length,
           itemBuilder: (context, index) {
             final category = allCategories[index];
-            return Column(
-              children: <Widget>[
-                index == 0 ? SizedBox(height: 4,) : Container(),
-                InkWell(
-                  onTap: () => bloc.onCategoryEditorCategoryClicked(category),
-                  onLongPress: () => bloc.onCategoryEditorCategoryLongClicked(context, category),
-                  child: Row(
-                    children: <Widget>[
-                      SizedBox(width: 8,),
-                      Padding(
-                        padding: const EdgeInsets.all(6),
-                        child: _CategoryThumbnail(
-                          category: category,
-                          width: 24,
-                          height: 24,
-                          fontSize: 14),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                          child: Text(
-                            category.name.isEmpty ? AppLocalizations.of(context).categoryNone : category.name,
-                            style: TextStyle(
-                              color: AppColors.TEXT_BLACK,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Container(
-                    width: double.infinity,
-                    height: 1,
-                    color: AppColors.DIVIDER,
-                  ),
-                ),
-                index == allCategories.length - 1 ? SizedBox(height: 4,) : const SizedBox.shrink(),
-              ],
+            return _CategoryListItem(
+              bloc: bloc,
+              category: category,
+              isFirst: index == 0,
+              isLast: index == allCategories.length - 1,
             );
           },
         ),
@@ -922,13 +932,78 @@ class _CategoryEditorCategoryList extends StatelessWidget {
   }
 }
 
+class _CategoryListItem extends StatelessWidget {
+  final DayBloc bloc;
+  final Category category;
+  final bool isFirst;
+  final bool isLast;
+
+  _CategoryListItem({
+    @required this.bloc,
+    @required this.category,
+    @required this.isFirst,
+    @required this.isLast,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        isFirst ? SizedBox(height: 4,) : Container(),
+        InkWell(
+          onTap: () => bloc.onCategoryEditorCategoryClicked(category),
+          onLongPress: () => bloc.onCategoryEditorCategoryLongClicked(context, category),
+          child: Row(
+            children: <Widget>[
+              SizedBox(width: 8,),
+              Padding(
+                padding: const EdgeInsets.all(6),
+                child: _CategoryThumbnail(
+                  category: category,
+                  width: 24,
+                  height: 24,
+                  fontSize: 14),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                  child: Text(
+                    category.name.isEmpty ? AppLocalizations.of(context).categoryNone : category.name,
+                    style: TextStyle(
+                      color: AppColors.TEXT_BLACK,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Container(
+            width: double.infinity,
+            height: 1,
+            color: AppColors.DIVIDER,
+          ),
+        ),
+        isLast ? SizedBox(height: 4,) : const SizedBox.shrink(),
+      ],
+    );
+  }
+}
+
 class _CategoryEditor extends StatelessWidget {
   final DayBloc bloc;
   final Category category;
+  final FocusNode Function(String key) focusNodeProvider;
+
+  final _focusNodeKey = 'categoryEditor';
 
   _CategoryEditor({
     @required this.bloc,
     @required this.category,
+    @required this.focusNodeProvider,
   });
 
   @override
@@ -952,6 +1027,7 @@ class _CategoryEditor extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 14),
               child: AppTextField(
+                focusNode: focusNodeProvider(_focusNodeKey),
                 text: category.name,
                 textSize: 14,
                 textColor: AppColors.TEXT_BLACK,

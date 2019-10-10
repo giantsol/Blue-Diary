@@ -30,7 +30,7 @@ class HomeBloc {
   }
 
   void onDrawerChildScreenItemClicked(BuildContext context, DrawerChildScreenItem item) {
-    Navigator.of(context).pop();
+    Navigator.pop(context);
     setCurrentDrawerChildScreenItem(item.key);
   }
 
@@ -56,7 +56,7 @@ class HomeBloc {
   }
 
   void _dispatchSettingsChangedEvent() {
-    for (var listener in _settingsChangedEventListeners) {
+    for (final listener in _settingsChangedEventListeners) {
       listener();
     }
   }

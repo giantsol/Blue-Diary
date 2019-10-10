@@ -85,6 +85,7 @@ class DayState {
       allCategories: allCategories ?? this.allCategories,
       selectedPickerIndex: selectedPickerIndex ?? this.selectedPickerIndex,
 
+      // these are one-time events, so default to false if not given to "true" as parameter
       scrollToBottomEvent: scrollToBottomEvent ?? false,
       scrollToToDoListEvent: scrollToToDoListEvent ?? false,
     );
@@ -97,24 +98,6 @@ class DayState {
       newRecords[updatedIndex] = newRecords[updatedIndex].buildNew(toDo: updated);
     }
     return buildNew(toDoRecords: newRecords);
-  }
-
-  String _toWeekDayString(int weekDay) {
-    if (weekDay == DateTime.monday) {
-      return '월요일';
-    } else if (weekDay == DateTime.tuesday) {
-      return '화요일';
-    } else if (weekDay == DateTime.wednesday) {
-      return '수요일';
-    } else if (weekDay == DateTime.thursday) {
-      return '목요일';
-    } else if (weekDay == DateTime.friday) {
-      return '금요일';
-    } else if (weekDay == DateTime.saturday) {
-      return '토요일';
-    } else {
-      return '일요일';
-    }
   }
 }
 
