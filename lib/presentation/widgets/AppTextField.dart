@@ -14,7 +14,6 @@ class AppTextField extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final int minLines;
   final int maxLines;
-  final bool autoFocus;
 
   AppTextField({
     Key key,
@@ -28,7 +27,6 @@ class AppTextField extends StatefulWidget {
     this.onChanged,
     this.minLines = 1,
     this.maxLines = 1,
-    this.autoFocus = false,
   }): super(key: key);
 
   @override
@@ -56,7 +54,6 @@ class _AppTextFieldState extends State<AppTextField> {
       child: TextField(
         focusNode: widget.focusNode,
         controller: controller,
-        autofocus: widget.autoFocus,
         style: TextStyle(
           fontSize: widget.textSize,
           color: widget.textColor,

@@ -720,17 +720,25 @@ class _ToDoEditorContainer extends StatelessWidget {
 }
 
 class _ToDoEditor extends StatelessWidget {
+  static const _focusNodeKey = 'toDoEditor';
+
   final DayBloc bloc;
   final ToDoRecord editingToDoRecord;
-  final FocusNode Function(String key) focusNodeProvider;
-
-  final _focusNodeKey = 'toDoEditor';
+  final FocusNode _focusNode;
 
   _ToDoEditor({
     @required this.bloc,
     @required this.editingToDoRecord,
-    @required this.focusNodeProvider,
-  });
+    @required FocusNode Function(String key) focusNodeProvider,
+  }): _focusNode = focusNodeProvider(_focusNodeKey);
+
+  @override
+  StatelessElement createElement() {
+    SchedulerBinding.instance.addPostFrameCallback((duration) {
+      _focusNode.requestFocus();
+    });
+    return super.createElement();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -751,7 +759,7 @@ class _ToDoEditor extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 15),
             child: AppTextField(
-              focusNode: focusNodeProvider(_focusNodeKey),
+              focusNode: _focusNode,
               text: toDo.text,
               textSize: 14,
               textColor: AppColors.TEXT_BLACK,
@@ -759,7 +767,6 @@ class _ToDoEditor extends StatelessWidget {
               hintTextSize: 14,
               hintColor: AppColors.TEXT_BLACK_LIGHT,
               onChanged: (s) => bloc.onEditingToDoTextChanged(s),
-              autoFocus: true,
             ),
           ),
         ),
@@ -1004,17 +1011,25 @@ class _CategoryListItem extends StatelessWidget {
 }
 
 class _CategoryEditor extends StatelessWidget {
+  static const _focusNodeKey = 'categoryEditor';
+
   final DayBloc bloc;
   final Category category;
-  final FocusNode Function(String key) focusNodeProvider;
-
-  final _focusNodeKey = 'categoryEditor';
+  final FocusNode _focusNode;
 
   _CategoryEditor({
     @required this.bloc,
     @required this.category,
-    @required this.focusNodeProvider,
-  });
+    @required FocusNode Function(String key) focusNodeProvider,
+  }): _focusNode = focusNodeProvider(_focusNodeKey);
+
+  @override
+  StatelessElement createElement() {
+    SchedulerBinding.instance.addPostFrameCallback((duration) {
+      _focusNode.requestFocus();
+    });
+    return super.createElement();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1037,7 +1052,7 @@ class _CategoryEditor extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 14),
               child: AppTextField(
-                focusNode: focusNodeProvider(_focusNodeKey),
+                focusNode: _focusNode,
                 text: category.name,
                 textSize: 14,
                 textColor: AppColors.TEXT_BLACK,
@@ -1045,7 +1060,6 @@ class _CategoryEditor extends StatelessWidget {
                 hintTextSize: 14,
                 hintColor: AppColors.TEXT_BLACK_LIGHT,
                 onChanged: (s) => bloc.onEditingCategoryTextChanged(s),
-                autoFocus: true,
               ),
             ),
           ),
