@@ -30,6 +30,11 @@ class App extends StatelessWidget {
         primaryColorDark: AppColors.PRIMARY_DARK,
         accentColor: AppColors.SECONDARY,
         splashColor: AppColors.RIPPLE,
+        textTheme: TextTheme(
+          subhead: TextStyle(
+            textBaseline: TextBaseline.alphabetic
+          ),
+        ),
       ),
       localizationsDelegates: [
         const AppLocalizationsDelegate(),
