@@ -123,6 +123,10 @@ class DayBloc {
   }
 
   Future<void> onToDoEditingDone() async {
+    if (_state.value.editingToDoRecord.toDo.text.length == 0) {
+      return;
+    }
+
     final editedRecord = _state.value.editingToDoRecord.buildNew(isDraft: false);
     await _usecases.setToDoRecord(editedRecord);
 

@@ -14,6 +14,7 @@ class AppTextField extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final int minLines;
   final int maxLines;
+  final void Function() onEditingComplete;
 
   AppTextField({
     Key key,
@@ -27,6 +28,7 @@ class AppTextField extends StatefulWidget {
     this.onChanged,
     this.minLines = 1,
     this.maxLines = 1,
+    this.onEditingComplete,
   }): super(key: key);
 
   @override
@@ -70,6 +72,7 @@ class _AppTextFieldState extends State<AppTextField> {
           )
         ),
         textAlign: TextAlign.left,
+        onEditingComplete: widget.onEditingComplete,
       ),
     );
   }

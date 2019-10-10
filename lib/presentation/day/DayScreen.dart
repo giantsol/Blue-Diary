@@ -767,6 +767,7 @@ class _ToDoEditor extends StatelessWidget {
               hintTextSize: 14,
               hintColor: AppColors.TEXT_BLACK_LIGHT,
               onChanged: (s) => bloc.onEditingToDoTextChanged(s),
+              onEditingComplete: () => bloc.onToDoEditingDone(),
             ),
           ),
         ),
@@ -783,7 +784,7 @@ class _ToDoEditor extends StatelessWidget {
                 ),
               ),
             ),
-            onTap: toDo.text.length > 0 ? () => bloc.onToDoEditingDone() : null,
+            onTap: () => bloc.onToDoEditingDone(),
           ),
         )
       ],
