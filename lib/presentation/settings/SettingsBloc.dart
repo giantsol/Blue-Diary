@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/Secrets.dart';
+import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/usecase/SettingsUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordScreen.dart';
@@ -16,6 +17,8 @@ class SettingsBloc {
   final SettingsUsecases _usecases = dependencies.settingsUsecases;
 
   void Function() _needUpdateListener;
+
+  final _snackBarDuration = const Duration(seconds: 2);
 
   void setNeedUpdateListener(void Function() listener) {
     this._needUpdateListener = listener;
@@ -30,20 +33,15 @@ class SettingsBloc {
       _showCreatePasswordDialog(context, scaffoldState);
     } else if (!isDefaultLocked) {
       _usecases.setDefaultLocked(true); // 비번 입력하기 전에는 바뀌면 안되므로 일단은 다시 되돌려버림
-
-      scaffoldState.showBottomSheet((context) =>
+      Utils.showBottomSheet(scaffoldState, (context) =>
         InputPasswordScreen(onSuccess: () {
           _usecases.setDefaultLocked(false);
           if (_needUpdateListener != null) {
             _needUpdateListener();
           }
         }, onFail: () {
-          scaffoldState.showSnackBar(SnackBar(
-            content: Text(AppLocalizations.of(context).unlockFail),
-            duration: Duration(seconds: 2),
-          ));
-        },
-        )
+          Utils.showSnackBar(scaffoldState, AppLocalizations.of(context).unlockFail, Duration(seconds: 2));
+        }),
       );
     }
   }
@@ -103,29 +101,23 @@ class SettingsBloc {
     Navigator.pop(context);
     final successMsg = AppLocalizations.of(context).createPasswordSuccess;
     final failMsg = AppLocalizations.of(context).createPasswordFail;
-    await scaffoldState.showBottomSheet((context) => CreatePasswordScreen()).closed;
-    final isPasswordSaved = await _usecases.getUserPassword().then((s) => s.length > 0);
-    if (isPasswordSaved) {
-      scaffoldState.showSnackBar(SnackBar(
-        content: Text(successMsg),
-        duration: Duration(seconds: 2),
-      ));
-    } else {
-      scaffoldState.showSnackBar(SnackBar(
-        content: Text(failMsg),
-        duration: Duration(seconds: 2),
-      ));
-    }
+    Utils.showBottomSheet(scaffoldState, (context) => CreatePasswordScreen(),
+      onClosed: () async {
+        final isPasswordSaved = await _usecases.getUserPassword().then((s) => s.length > 0);
+        if (isPasswordSaved) {
+          Utils.showSnackBar(scaffoldState, successMsg, _snackBarDuration);
+        } else {
+          Utils.showSnackBar(scaffoldState, failMsg, _snackBarDuration);
+        }
+      }
+    );
   }
 
   Future<void> onSendTempPasswordClicked(BuildContext context, ScaffoldState scaffoldState) async {
     final recoveryEmail = await _usecases.getRecoveryEmail();
     if (recoveryEmail.isEmpty) {
       final message = AppLocalizations.of(context).noRecoveryEmail;
-      scaffoldState.showSnackBar(SnackBar(
-        content: Text(message),
-        duration: Duration(seconds: 2),
-      ));
+      Utils.showSnackBar(scaffoldState, message, _snackBarDuration);
     } else {
       _showConfirmSendTempPasswordDialog(context, scaffoldState);
     }
@@ -204,21 +196,12 @@ class SettingsBloc {
         body: body,
       );
       if ([200, 201, 202].contains(response.statusCode)) {
-        scaffoldState.showSnackBar(SnackBar(
-          content: Text(mailSentMsg),
-          duration: Duration(seconds: 2),
-        ));
+        Utils.showSnackBar(scaffoldState, mailSentMsg, _snackBarDuration);
       } else {
-        scaffoldState.showSnackBar(SnackBar(
-          content: Text(mailSendFailedMsg),
-          duration: Duration(seconds: 2),
-        ));
+        Utils.showSnackBar(scaffoldState, mailSendFailedMsg, _snackBarDuration);
       }
     } else {
-      scaffoldState.showSnackBar(SnackBar(
-        content: Text(failedToSaveTempPasswordMsg),
-        duration: Duration(seconds: 2),
-      ));
+      Utils.showSnackBar(scaffoldState, failedToSaveTempPasswordMsg, _snackBarDuration);
     }
   }
 
@@ -235,23 +218,18 @@ class SettingsBloc {
       final changedMsg = AppLocalizations.of(context).passwordChanged;
       final unchangedMsg = AppLocalizations.of(context).passwordUnchanged;
 
-      scaffoldState.showBottomSheet((context) =>
+      Utils.showBottomSheet(scaffoldState, (context) =>
         InputPasswordScreen(onSuccess: () async {
-          await scaffoldState
-            .showBottomSheet((context) => CreatePasswordScreen())
-            .closed;
-          final changedPassword = await _usecases.getUserPassword();
-          if (prevPassword != changedPassword) {
-            scaffoldState.showSnackBar(SnackBar(
-              content: Text(changedMsg),
-              duration: Duration(seconds: 2),
-            ));
-          } else {
-            scaffoldState.showSnackBar(SnackBar(
-              content: Text(unchangedMsg),
-              duration: Duration(seconds: 2),
-            ));
-          }
+          Utils.showBottomSheet(scaffoldState, (context) => CreatePasswordScreen(),
+            onClosed: () async {
+              final changedPassword = await _usecases.getUserPassword();
+              if (prevPassword != changedPassword) {
+                Utils.showSnackBar(scaffoldState, changedMsg, _snackBarDuration);
+              } else {
+                Utils.showSnackBar(scaffoldState, unchangedMsg, _snackBarDuration);
+              }
+            }
+          );
         })
       );
     }

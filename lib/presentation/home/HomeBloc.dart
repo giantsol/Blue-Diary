@@ -55,20 +55,6 @@ class HomeBloc {
     _initState();
   }
 
-  Future<void> showBottomSheet(ScaffoldState scaffoldState, Function(BuildContext context) builder, Function(dynamic) onClosed) async {
-    final controller = scaffoldState.showBottomSheet(builder);
-    if (onClosed != null) {
-      onClosed(await controller.closed);
-    }
-  }
-
-  void showSnackBar(ScaffoldState scaffoldState, Widget widget, Duration duration) {
-    scaffoldState.showSnackBar(SnackBar(
-      content: widget,
-      duration: duration ?? Duration(seconds: 4),
-    ));
-  }
-
   void _dispatchSettingsChangedEvent() {
     for (var listener in _settingsChangedEventListeners) {
       listener();

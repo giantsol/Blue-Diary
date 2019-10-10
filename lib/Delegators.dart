@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 
 abstract class ShowBottomSheetDelegator {
-  void showBottomSheet(Function(BuildContext) builder, {
-    Function(dynamic) onClosed
+  void showBottomSheet(void Function(BuildContext) builder, {
+    void Function() onClosed
   });
 }
 
@@ -12,9 +12,7 @@ abstract class SetCurrentDrawerChildScreenItemDelegator {
 }
 
 abstract class ShowSnackBarDelegator {
-  void showSnackBar(Widget widget, {
-    Duration duration,
-  });
+  void showSnackBar(String text, Duration duration);
 }
 
 abstract class SettingsChangedListenerDelegator {

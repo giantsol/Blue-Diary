@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
+import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/DrawerItem.dart';
 import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
@@ -66,10 +67,10 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
   }
 
   @override
-  void showBottomSheet(Function(BuildContext) builder, {
-    Function(dynamic) onClosed
+  void showBottomSheet(void Function(BuildContext) builder, {
+    void Function() onClosed
   }) {
-    _bloc.showBottomSheet(_scaffoldKey.currentState, builder, onClosed);
+    Utils.showBottomSheet(_scaffoldKey.currentState, builder, onClosed: onClosed);
   }
 
   @override
@@ -78,10 +79,8 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
   }
 
   @override
-  void showSnackBar(Widget widget, {
-    Duration duration,
-  }) {
-    _bloc.showSnackBar(_scaffoldKey.currentState, widget, duration);
+  void showSnackBar(String text, Duration duration) {
+    Utils.showSnackBar(_scaffoldKey.currentState, text, duration);
   }
 
   @override

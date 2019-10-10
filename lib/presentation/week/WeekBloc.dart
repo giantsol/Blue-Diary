@@ -24,6 +24,8 @@ class WeekBloc {
 
   final WeekUsecases _usecases = dependencies.weekUsecases;
 
+  final _snackBarDuration = const Duration(seconds: 2);
+
   WeekBloc({this.delegator}) {
     _initState();
 
@@ -84,7 +86,7 @@ class WeekBloc {
 
         _usecases.setCheckPointsLocked(weekRecord.dateInWeek, false);
       }, onFail: () {
-        delegator.showSnackBar(Text(AppLocalizations.of(context).unlockFail), duration: Duration(seconds: 2));
+        delegator.showSnackBar(AppLocalizations.of(context).unlockFail, _snackBarDuration);
       }),
     );
   }
@@ -168,7 +170,7 @@ class WeekBloc {
           );
           _initState();
         }, onFail: () {
-          delegator.showSnackBar(Text(AppLocalizations.of(context).unlockFail), duration: Duration(seconds: 2));
+          delegator.showSnackBar(AppLocalizations.of(context).unlockFail, _snackBarDuration);
         }),
       );
     } else {
@@ -192,7 +194,7 @@ class WeekBloc {
         final date = DateTime(dayRecord.year, dayRecord.month, dayRecord.day);
         _usecases.setDayRecordLocked(date, false);
       }, onFail: () {
-        delegator.showSnackBar(Text(AppLocalizations.of(context).unlockFail), duration: Duration(seconds: 2));
+        delegator.showSnackBar(AppLocalizations.of(context).unlockFail, _snackBarDuration);
       }),
     );
   }
@@ -219,20 +221,13 @@ class WeekBloc {
     Navigator.pop(context);
     final successMsg = AppLocalizations.of(context).createPasswordSuccess;
     final failMsg = AppLocalizations.of(context).createPasswordFail;
-    delegator.showBottomSheet(
-        (context) => CreatePasswordScreen(),
-      onClosed: (any) async {
+    delegator.showBottomSheet((context) => CreatePasswordScreen(),
+      onClosed: () async {
         final isPasswordSaved = await _usecases.getUserPassword().then((s) => s.length == 4);
         if (isPasswordSaved) {
-          delegator.showSnackBar(
-            Text(successMsg),
-            duration: Duration(seconds: 2),
-          );
+          delegator.showSnackBar(successMsg, _snackBarDuration);
         } else {
-          delegator.showSnackBar(
-            Text(failMsg),
-            duration: Duration(seconds: 2),
-          );
+          delegator.showSnackBar(failMsg, _snackBarDuration);
         }
       }
     );
