@@ -98,7 +98,9 @@ If you have any questions on why the heck I've done something strange, or have a
 
 ## Download
 
-Android version of this app is in pending publication state. Will update link when it's published.
+<a href='https://play.google.com/store/apps/details?id=com.giantsol.blue_diary'>
+  <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width='200'/>
+</a>
 
 iOS version, not yet.
 
