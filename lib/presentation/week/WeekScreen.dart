@@ -67,7 +67,8 @@ class _WeekScreenState extends State<WeekScreen> {
   }
 
   Widget _buildUI(WeekState state) {
-    return WillPopScope(
+    return state.viewState == WeekViewState.WHOLE_LOADING ? _WholeLoadingView()
+      : WillPopScope(
       onWillPop: () async {
         return !_unfocusTextFieldIfAny();
       },
@@ -131,6 +132,15 @@ class _WeekScreenState extends State<WeekScreen> {
       }
     }
     return false;
+  }
+}
+
+class _WholeLoadingView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
   }
 }
 

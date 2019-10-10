@@ -85,7 +85,8 @@ class _DayScreenState extends State<DayScreen> {
       });
     }
 
-    return WillPopScope(
+    return state.viewState == DayViewState.WHOLE_LOADING ? _WholeLoadingView()
+      : WillPopScope(
       onWillPop: () async => !_bloc.handleBackPress() && !_unfocusTextFieldIfAny(),
       child: SafeArea(
         child: Scaffold(
@@ -162,6 +163,15 @@ class _DayScreenState extends State<DayScreen> {
       }
     }
     return false;
+  }
+}
+
+class _WholeLoadingView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
   }
 }
 

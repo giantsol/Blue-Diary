@@ -6,6 +6,11 @@ import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
 
+enum DayViewState {
+  WHOLE_LOADING,
+  NORMAL,
+}
+
 class DayState {
   static const CATEGORY_PICKERS = [
     CategoryPicker(true, AppColors.CATEGORY_COLOR_01),
@@ -18,6 +23,7 @@ class DayState {
     CategoryPicker(false, AppColors.CATEGORY_COLOR_04),
   ];
 
+  final DayViewState viewState;
   final int year;
   final int month;
   final int day;
@@ -39,6 +45,7 @@ class DayState {
   DateTime get date => DateTime(year, month, day);
 
   const DayState({
+    this.viewState = DayViewState.WHOLE_LOADING,
     this.year = 0,
     this.month = 0,
     this.day = 0,
@@ -57,6 +64,7 @@ class DayState {
   });
 
   DayState buildNew({
+    DayViewState viewState,
     int year,
     int month,
     int day,
@@ -73,6 +81,7 @@ class DayState {
     bool scrollToToDoListEvent,
   }) {
     return DayState(
+      viewState: viewState ?? this.viewState,
       year: year ?? this.year,
       month: month ?? this.month,
       day: day ?? this.day,

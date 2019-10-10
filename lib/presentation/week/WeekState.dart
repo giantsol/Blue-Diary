@@ -7,7 +7,6 @@ enum WeekViewState {
 }
 
 class WeekState {
-  // todo: declared viewState, but not using it anywhere yet
   final WeekViewState viewState;
   final int year;
   final int month;

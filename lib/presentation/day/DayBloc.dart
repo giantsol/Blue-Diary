@@ -31,6 +31,7 @@ class DayBloc {
     final editingCategory = editingToDoRecord.category.buildNew();
     final allCategories = await _usecases.getAllCategories();
     _state.add(_state.value.buildNew(
+      viewState: DayViewState.NORMAL,
       year: date.year,
       month: date.month,
       day: date.day,
