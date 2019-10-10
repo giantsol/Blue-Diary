@@ -9,7 +9,7 @@ import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/presentation/week/WeekBloc.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
-import 'package:todo_app/presentation/widgets/CheckPointTextField.dart';
+import 'package:todo_app/presentation/widgets/AppTextField.dart';
 
 class WeekScreen extends StatefulWidget {
   final WeekBlocDelegator weekBlocDelegator;
@@ -409,11 +409,16 @@ class _CheckPointItem extends StatelessWidget {
               constraints: BoxConstraints(minHeight: 30,),
               child: Container(
                 alignment: Alignment.center,
-                child: CheckPointTextField(
+                child: AppTextField(
                   focusNode: focusNodeProvider(checkPoint.key),
                   text: checkPoint.text,
+                  textSize: 12,
+                  textColor: AppColors.TEXT_WHITE,
                   hintText: checkPoint.hint,
+                  hintTextSize: 12,
+                  hintColor: AppColors.TEXT_WHITE_DARK,
                   onChanged: (s) => bloc.onCheckPointTextChanged(weekRecord, checkPoint, s),
+                  maxLines: 2,
                 ),
               ),
             ),

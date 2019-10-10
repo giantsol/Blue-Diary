@@ -13,8 +13,7 @@ import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
 import 'package:todo_app/presentation/day/DayBloc.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
-import 'package:todo_app/presentation/widgets/DayMemoTextField.dart';
-import 'package:todo_app/presentation/widgets/ToDoEditorTextField.dart';
+import 'package:todo_app/presentation/widgets/AppTextField.dart';
 
 class DayScreen extends StatefulWidget {
   final DateTime date;
@@ -292,10 +291,15 @@ class _DayMemo extends StatelessWidget {
               padding: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
               child: SizedBox(
                 height: 93,
-                child: DayMemoTextField(
+                child: AppTextField(
                   text: dayMemo.text,
+                  textSize: 12,
+                  textColor: AppColors.TEXT_WHITE,
                   hintText: dayMemo.hint,
+                  hintTextSize: 12,
+                  hintColor: AppColors.TEXT_WHITE_DARK,
                   onChanged: (s) => bloc.onDayMemoTextChanged(s),
+                  maxLines: null,
                 ),
               ),
             ) : const SizedBox.shrink(),
@@ -694,10 +698,15 @@ class _ToDoEditor extends StatelessWidget {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 15),
-            child: ToDoEditorTextField(
+            child: AppTextField(
               text: toDo.text,
+              textSize: 14,
+              textColor: AppColors.TEXT_BLACK,
               hintText: editingToDoRecord.isDraft ? AppLocalizations.of(context).addTask : AppLocalizations.of(context).modifyTask ,
+              hintTextSize: 14,
+              hintColor: AppColors.TEXT_BLACK_LIGHT,
               onChanged: (s) => bloc.onEditingToDoTextChanged(s),
+              autoFocus: true,
             ),
           ),
         ),
@@ -942,10 +951,15 @@ class _CategoryEditor extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 14),
-              child: ToDoEditorTextField(
+              child: AppTextField(
                 text: category.name,
+                textSize: 14,
+                textColor: AppColors.TEXT_BLACK,
                 hintText: AppLocalizations.of(context).category,
+                hintTextSize: 14,
+                hintColor: AppColors.TEXT_BLACK_LIGHT,
                 onChanged: (s) => bloc.onEditingCategoryTextChanged(s),
+                autoFocus: true,
               ),
             ),
           ),

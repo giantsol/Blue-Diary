@@ -16,38 +16,29 @@ class AppLocalizations {
   static const UNLOCK_FAIL = "unlockFail";
   static const PASSWORD_CHANGED = "passwordChanged";
   static const PASSWORD_UNCHANGED = "passwordUnchanged";
-
   static const CANCEL = "cancel";
   static const OK = "ok";
   static const ADD = "add";
   static const MODIFY = "modify";
   static const CREATE = "new";
-
   static const NO_TODOS = "noToDos";
-
   static const CATEGORY = "category";
   static const REMOVE_CATEGORY = "removeCategory";
   static const REMOVE_CATEGORY_BODY = "removeCategoryBody";
   static const CATEGORY_NONE = "categoryNone";
-
   static const ADD_TASK = "addTask";
   static const MODIFY_TASK = "modifyTask";
-
   static const CHOOSE_PHOTO = "choosePhoto";
-
   static const DRAWER_RECORD = "drawerRecord";
   static const DRAWER_SETTINGS = "drawerSettings";
   static const DRAWER_ABOUT = "drawerAbout";
-
   static const SETTINGS = "settings";
   static const SETTINGS_GENERAL = "settingsGeneral";
   static const SETTINGS_DEFAULT_LOCK = "settingsDefaultLock";
   static const SETTINGS_RESET_PASSWORD = "settingsResetPassword";
   static const SETTINGS_RECOVERY_EMAIL = "settingsRecoveryEmail";
   static const NO_RECOVERY_EMAIL = "noRecoveryEmail";
-
   static const INVALID_EMAIL = "invalidEmail";
-
   static const SEND_TEMP_PASSWORD = "sendTempPassword";
   static const CONFIRM_SEND_TEMP_PASSWORD = "confirmSendTempPassword";
   static const CONFIRM_SEND_TEMP_PASSWORD_BODY = "confirmSendTempPasswordBody";
@@ -75,38 +66,29 @@ class AppLocalizations {
       UNLOCK_FAIL: 'Failed to unlock',
       PASSWORD_CHANGED: 'Password changed!',
       PASSWORD_UNCHANGED: 'Password not changed',
-
       CANCEL: 'Cancel',
       OK: 'Ok',
       ADD: 'Add',
       MODIFY: 'Modify',
       CREATE: 'Create',
-
       NO_TODOS: 'No TODO yet!',
-
       CATEGORY: 'Category',
       REMOVE_CATEGORY: 'Remove Category',
       REMOVE_CATEGORY_BODY: 'Are you sure you want to remove this category?',
       CATEGORY_NONE: 'None',
-
       ADD_TASK: 'Add Task',
       MODIFY_TASK: 'Modify Task',
-
       CHOOSE_PHOTO: 'Choose Photo',
-
       DRAWER_RECORD: 'Record',
       DRAWER_SETTINGS: 'Settings',
       DRAWER_ABOUT: 'About',
-
       SETTINGS: 'Settings',
       SETTINGS_GENERAL: 'General',
       SETTINGS_DEFAULT_LOCK: 'Lock By Default',
       SETTINGS_RESET_PASSWORD: 'Reset Password',
       SETTINGS_RECOVERY_EMAIL: 'Recovery Email',
       NO_RECOVERY_EMAIL: 'Please write your recovery email first',
-
       INVALID_EMAIL: 'Invalid Email',
-
       SEND_TEMP_PASSWORD: 'Send Temporary Password',
       CONFIRM_SEND_TEMP_PASSWORD: 'Send Temporary Password',
       CONFIRM_SEND_TEMP_PASSWORD_BODY: 'Your previous password will be overriden by temporary password, and will be sent to your recovery email.',
@@ -129,38 +111,29 @@ class AppLocalizations {
       UNLOCK_FAIL: '잠금해제에 실패하였습니다',
       PASSWORD_CHANGED: '비밀번호가 변경되었습니다!',
       PASSWORD_UNCHANGED: '비밀번호가 변경되지 않았습니다.',
-
       CANCEL: '취소',
       OK: '확인',
       ADD: '추가',
       MODIFY: '수정',
       CREATE: '생성',
-
       NO_TODOS: '기록이 없습니다',
-
       CATEGORY: '카테고리',
       REMOVE_CATEGORY: '카테고리 삭제',
       REMOVE_CATEGORY_BODY: '이 카테고리를 삭제하시겠습니까?',
       CATEGORY_NONE: '없음',
-
       ADD_TASK: '작업 추가',
       MODIFY_TASK: '작업 수정',
-
       CHOOSE_PHOTO: '사진 선택',
-
       DRAWER_RECORD: '기록',
       DRAWER_SETTINGS: '설정',
       DRAWER_ABOUT: 'About',
-
       SETTINGS: '설정',
       SETTINGS_GENERAL: '일반',
       SETTINGS_DEFAULT_LOCK: '디폴트로 잠금',
       SETTINGS_RESET_PASSWORD: '비밀번호 재설정',
       SETTINGS_RECOVERY_EMAIL: '복원 이메일',
       NO_RECOVERY_EMAIL: '복원 이메일을 먼저 작성해주세요',
-
       INVALID_EMAIL: '올바른 이메일 형식이 아닙니다',
-
       SEND_TEMP_PASSWORD: '임시 비밀번호 발송',
       CONFIRM_SEND_TEMP_PASSWORD: '임시 비밀번호 발송',
       CONFIRM_SEND_TEMP_PASSWORD_BODY: '기존의 비밀번호가 임시 비밀번호로 바뀌고, 임시 비밀번호가 복원 이메일로 전송됩니다.',
@@ -188,34 +161,26 @@ class AppLocalizations {
   String get unlockFail => _localizedValues[locale.languageCode][UNLOCK_FAIL];
   String get passwordChanged => _localizedValues[locale.languageCode][PASSWORD_CHANGED];
   String get passwordUnchanged => _localizedValues[locale.languageCode][PASSWORD_UNCHANGED];
-
   String get cancel => _localizedValues[locale.languageCode][CANCEL];
   String get ok => _localizedValues[locale.languageCode][OK];
   String get add => _localizedValues[locale.languageCode][ADD];
   String get modify => _localizedValues[locale.languageCode][MODIFY];
   String get create => _localizedValues[locale.languageCode][CREATE];
-
   String get noToDos => _localizedValues[locale.languageCode][NO_TODOS];
-
   String get category => _localizedValues[locale.languageCode][CATEGORY];
   String get removeCategory => _localizedValues[locale.languageCode][REMOVE_CATEGORY];
   String get removeCategoryBody => _localizedValues[locale.languageCode][REMOVE_CATEGORY_BODY];
   String get categoryNone => _localizedValues[locale.languageCode][CATEGORY_NONE];
-
   String get addTask => _localizedValues[locale.languageCode][ADD_TASK];
   String get modifyTask => _localizedValues[locale.languageCode][MODIFY_TASK];
-
   String get choosePhoto => _localizedValues[locale.languageCode][CHOOSE_PHOTO];
-
   String get settings => _localizedValues[locale.languageCode][SETTINGS];
   String get settingsGeneral => _localizedValues[locale.languageCode][SETTINGS_GENERAL];
   String get settingsDefaultLock => _localizedValues[locale.languageCode][SETTINGS_DEFAULT_LOCK];
   String get settingsResetPassword => _localizedValues[locale.languageCode][SETTINGS_RESET_PASSWORD];
   String get settingsRecoveryEmail => _localizedValues[locale.languageCode][SETTINGS_RECOVERY_EMAIL];
   String get noRecoveryEmail => _localizedValues[locale.languageCode][NO_RECOVERY_EMAIL];
-
   String get invalidEmail => _localizedValues[locale.languageCode][INVALID_EMAIL];
-
   String get sendTempPassword => _localizedValues[locale.languageCode][SEND_TEMP_PASSWORD];
   String get confirmSendTempPassword => _localizedValues[locale.languageCode][CONFIRM_SEND_TEMP_PASSWORD];
   String get confirmSendTempPasswordBody => _localizedValues[locale.languageCode][CONFIRM_SEND_TEMP_PASSWORD_BODY];

@@ -47,7 +47,7 @@ class HomeBloc {
   }
 
   void onMenuIconClicked(ScaffoldState scaffoldState) {
-    scaffoldState?.openEndDrawer();
+    scaffoldState.openEndDrawer();
   }
 
   void setCurrentDrawerChildScreenItem(String key) {

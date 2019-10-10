@@ -54,7 +54,6 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
             ),
             _SideMenuIcon(
               bloc: _bloc,
-              scaffoldState: _scaffoldKey.currentState,
             ),
           ],
         ),
@@ -120,11 +119,9 @@ class _ChildScreen extends StatelessWidget {
 
 class _SideMenuIcon extends StatelessWidget {
   final HomeBloc bloc;
-  final ScaffoldState scaffoldState;
 
   _SideMenuIcon({
     @required this.bloc,
-    @required this.scaffoldState,
   });
 
   @override
@@ -139,7 +136,7 @@ class _SideMenuIcon extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
             child: Image.asset('assets/ic_side_menu.png'),
           ),
-          onTap: () => bloc.onMenuIconClicked(scaffoldState),
+          onTap: () => bloc.onMenuIconClicked(Scaffold.of(context)),
         ),
       ),
     );

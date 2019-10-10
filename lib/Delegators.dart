@@ -26,6 +26,4 @@ abstract class WeekBlocDelegator implements
   ShowBottomSheetDelegator,
   SetCurrentDrawerChildScreenItemDelegator,
   ShowSnackBarDelegator,
-  SettingsChangedListenerDelegator {
-
-}
+  SettingsChangedListenerDelegator { }
