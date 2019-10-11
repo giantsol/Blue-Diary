@@ -15,6 +15,7 @@ import 'package:todo_app/domain/entity/ToDoRecord.dart';
 import 'package:todo_app/presentation/day/DayBloc.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
 import 'package:todo_app/presentation/widgets/AppTextField.dart';
+import 'package:virtual_keyboard/virtual_keyboard.dart';
 
 class DayScreen extends StatefulWidget {
   static const MAX_DAY_PAGE = 100;
@@ -126,6 +127,8 @@ class _DayScreenState extends State<DayScreen> {
                                 dayRecord: dayRecord,
                                 focusNodeProvider: _getOrCreateFocusNode,
                                 scrollController: _toDoScrollController,
+                                inputPasswordLength: state.inputPassword.length,
+                                isUnlockedAllByUser: state.isUnlockedAllByUser,
                               );
                             }
                           },
@@ -203,18 +206,26 @@ class _DayRecord extends StatelessWidget {
   final DayRecord dayRecord;
   final FocusNode Function(String key) focusNodeProvider;
   final ScrollController scrollController;
+  final int inputPasswordLength;
+  final bool isUnlockedAllByUser;
 
   _DayRecord({
     @required this.bloc,
     @required this.dayRecord,
     @required this.focusNodeProvider,
     @required this.scrollController,
+    @required this.inputPasswordLength,
+    @required this.isUnlockedAllByUser,
   });
 
   @override
   Widget build(BuildContext context) {
     final dayRecord = this.dayRecord;
-    return dayRecord.toDoRecords.length == 0 ? _EmptyToDoListView(
+    final showLockView = dayRecord.isLocked && !isUnlockedAllByUser;
+    return showLockView ? _LockView(
+      bloc: bloc,
+      inputPasswordLength: inputPasswordLength,
+    ) : dayRecord.toDoRecords.length == 0 ? _EmptyToDoListView(
       bloc: bloc,
       dayMemo: dayRecord.dayMemo,
       focusNodeProvider: focusNodeProvider,
@@ -281,6 +292,82 @@ class _Header extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _LockView extends StatelessWidget {
+  final DayBloc bloc;
+  final int inputPasswordLength;
+
+  _LockView({
+    @required this.bloc,
+    @required this.inputPasswordLength,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: Container(
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  'This day is locked. You can unlock all days temporarily',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: AppColors.TEXT_BLACK,
+                  ),
+                ),
+                SizedBox(height: 73,),
+                _Passwords(
+                  passwordLength: inputPasswordLength,
+                ),
+              ],
+            ),
+          ),
+        ),
+        Container(
+          color: AppColors.BACKGROUND_WHITE,
+          child: VirtualKeyboard(
+            fontSize: 18,
+            type: VirtualKeyboardType.Numeric,
+            onKeyPress: (key) => bloc.onLockViewVirtualKeyPressed(key),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class _Passwords extends StatelessWidget {
+  final int passwordLength;
+
+  _Passwords({
+    @required this.passwordLength,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 16,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(4, (i) {
+          return Padding(
+            padding: i > 0 ? const EdgeInsets.only(left: 12) : const EdgeInsets.all(0),
+            child: SizedBox(
+              width: 19,
+              child: Center(
+                child: i <= passwordLength - 1 ? Image.asset('assets/ic_circle_white.png') : Image.asset('assets/ic_underline.png'),
+              ),
+            ),
+          );
+        }),
+      ),
     );
   }
 }

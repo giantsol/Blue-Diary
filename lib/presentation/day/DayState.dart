@@ -36,6 +36,8 @@ class DayState {
   final int initialDayRecordPageIndex;
   final DateTime currentDate;
   final int currentDayRecordPageIndex;
+  final String inputPassword;
+  final bool isUnlockedAllByUser;
 
   final bool scrollToBottomEvent;
   final bool scrollToToDoListEvent;
@@ -44,7 +46,7 @@ class DayState {
   int get month => currentDate?.month ?? 0;
   int get day => currentDate?.day ?? 0;
   int get weekday => currentDate?.weekday ?? 0;
-  bool get isFabVisible => editorState == EditorState.HIDDEN;
+  bool get isFabVisible => editorState == EditorState.HIDDEN && (!currentDayRecord.isLocked || isUnlockedAllByUser);
   DayRecord get currentDayRecord => pageIndexDayRecordMap[currentDayRecordPageIndex];
 
   const DayState({
@@ -60,6 +62,8 @@ class DayState {
     this.initialDayRecordPageIndex = DayScreen.INITIAL_DAY_PAGE,
     this.currentDate,
     this.currentDayRecordPageIndex = DayScreen.INITIAL_DAY_PAGE,
+    this.inputPassword = '',
+    this.isUnlockedAllByUser = false,
 
     this.scrollToBottomEvent = false,
     this.scrollToToDoListEvent = false,
@@ -82,6 +86,8 @@ class DayState {
     DateTime initialDate,
     int currentDayRecordPageIndex,
     DateTime currentDate,
+    String inputPassword,
+    bool isUnlockedAllByUser,
 
     bool scrollToBottomEvent,
     bool scrollToToDoListEvent,
@@ -104,6 +110,8 @@ class DayState {
       initialDate: initialDate ?? this.initialDate,
       currentDayRecordPageIndex: currentDayRecordPageIndex ?? this.currentDayRecordPageIndex,
       currentDate: currentDate ?? this.currentDate,
+      inputPassword: inputPassword ?? this.inputPassword,
+      isUnlockedAllByUser: isUnlockedAllByUser ?? this.isUnlockedAllByUser,
 
       // these are one-time events, so default to false if not given to "true" as parameter
       scrollToBottomEvent: scrollToBottomEvent ?? false,

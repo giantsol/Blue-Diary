@@ -76,4 +76,8 @@ class DayUsecases {
   Future<int> setCategory(Category category) async {
     return await _categoryRepository.setCategory(category);
   }
+
+  Future<String> getUserPassword() async {
+    return await _prefsRepository.getUserPassword();
+  }
 }
