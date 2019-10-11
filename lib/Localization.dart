@@ -238,7 +238,7 @@ class AppLocalizations {
       : 'December';
   }
 
-  String getDayRecordTitle(int month, int day) {
+  String getDayPreviewTitle(int month, int day) {
     if (locale.languageCode == 'ko') {
       return '$month월 $day일';
     } else {

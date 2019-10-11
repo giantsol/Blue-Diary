@@ -5,7 +5,7 @@ import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
-import 'package:todo_app/domain/entity/DayRecord.dart';
+import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/presentation/week/WeekBloc.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
@@ -220,11 +220,11 @@ class _WeekRecord extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: Column(
-              children: List.generate(weekRecord.dayRecords.length, (index) {
+              children: List.generate(weekRecord.dayPreviews.length, (index) {
                 return _DayPreviewItem(
                   bloc: bloc,
                   weekRecord: weekRecord,
-                  dayRecord: weekRecord.dayRecords[index]
+                  dayPreview: weekRecord.dayPreviews[index]
                 );
               })
             ),
@@ -425,12 +425,12 @@ class _CheckPointItem extends StatelessWidget {
 class _DayPreviewItem extends StatelessWidget {
   final WeekBloc bloc;
   final WeekRecord weekRecord;
-  final DayRecord dayRecord;
+  final DayPreview dayPreview;
 
   _DayPreviewItem({
     @required this.bloc,
     @required this.weekRecord,
-    @required this.dayRecord,
+    @required this.dayPreview,
   });
 
   @override
@@ -441,10 +441,10 @@ class _DayPreviewItem extends StatelessWidget {
         _DayPreviewItemContent(
           bloc: bloc,
           weekRecord: weekRecord,
-          dayRecord: dayRecord,
+          dayPreview: dayPreview,
         ),
-        dayRecord.hasTrailingDots ? _DayPreviewItemTrailingDots(
-          filledRatio: dayRecord.filledRatio,
+        dayPreview.hasTrailingDots ? _DayPreviewItemTrailingDots(
+          filledRatio: dayPreview.filledRatio,
         ) : const SizedBox.shrink(),
       ],
     );
@@ -455,12 +455,12 @@ class _DayPreviewItem extends StatelessWidget {
 class _DayPreviewItemContent extends StatelessWidget {
   final WeekBloc bloc;
   final WeekRecord weekRecord;
-  final DayRecord dayRecord;
+  final DayPreview dayPreview;
 
   _DayPreviewItemContent({
     @required this.bloc,
     @required this.weekRecord,
-    @required this.dayRecord,
+    @required this.dayPreview,
   });
 
   @override
@@ -469,15 +469,15 @@ class _DayPreviewItemContent extends StatelessWidget {
       children: <Widget>[
         Expanded(
           child: InkWell(
-            onTap: () => bloc.onDayPreviewClicked(context, dayRecord),
+            onTap: () => bloc.onDayPreviewClicked(context, dayPreview),
             child: Padding(
               padding: const EdgeInsets.only(left: 15),
               child: Row(
                 children: [
                   _DayPreviewItemThumbnail(
-                    hasBorder: dayRecord.hasBorder,
-                    filledRatio: dayRecord.filledRatio,
-                    text: dayRecord.thumbnailString,
+                    hasBorder: dayPreview.hasBorder,
+                    filledRatio: dayPreview.filledRatio,
+                    text: dayPreview.thumbnailString,
                   ),
                   Expanded(
                     child: Padding(
@@ -487,25 +487,25 @@ class _DayPreviewItemContent extends StatelessWidget {
                         children: <Widget>[
                           Row(
                             children: [
-                              dayRecord.isToday == true ? _DayPreviewItemTodayText() : const SizedBox.shrink(),
+                              dayPreview.isToday == true ? _DayPreviewItemTodayText() : const SizedBox.shrink(),
                               Text(
-                                AppLocalizations.of(context).getDayRecordTitle(dayRecord.month, dayRecord.day),
+                                AppLocalizations.of(context).getDayPreviewTitle(dayPreview.month, dayPreview.day),
                                 style: TextStyle(
                                   fontSize: 18,
                                   color: AppColors.TEXT_BLACK,
                                 ),
                               ),
                               SizedBox(width: 12),
-                              dayRecord.filledRatio == 1.0 ? _DayPreviewItemCompleteText() : const SizedBox.shrink(),
+                              dayPreview.filledRatio == 1.0 ? _DayPreviewItemCompleteText() : const SizedBox.shrink(),
                             ],
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 2,),
                             child: Text(
-                              dayRecord.subtitle,
+                              dayPreview.subtitle,
                               style: TextStyle(
                                 fontSize: 14,
-                                color: dayRecord.subtitleColor,
+                                color: dayPreview.subtitleColor,
                               ),
                             ),
                           ),
@@ -520,10 +520,10 @@ class _DayPreviewItemContent extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.only(right: 9),
-          child: dayRecord.isLocked ? _LockedIcon(
-            onTap: () => bloc.onDayPreviewLockedIconClicked(weekRecord, dayRecord),
+          child: dayPreview.isLocked ? _LockedIcon(
+            onTap: () => bloc.onDayPreviewLockedIconClicked(weekRecord, dayPreview),
           ) : _UnlockedIcon(
-            onTap: () => bloc.onDayPreviewUnlockedIconClicked(weekRecord, dayRecord, context),
+            onTap: () => bloc.onDayPreviewUnlockedIconClicked(weekRecord, dayPreview, context),
           ),
         ),
       ],

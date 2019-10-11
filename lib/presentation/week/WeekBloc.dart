@@ -6,7 +6,7 @@ import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
-import 'package:todo_app/domain/entity/DayRecord.dart';
+import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/domain/usecase/WeekUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
@@ -157,14 +157,14 @@ class WeekBloc {
     _usecases.setCheckPoint(checkPoint);
   }
 
-  Future<void> onDayPreviewClicked(BuildContext context, DayRecord dayRecord) async {
-    if (dayRecord.isLocked) {
+  Future<void> onDayPreviewClicked(BuildContext context, DayPreview dayPreview) async {
+    if (dayPreview.isLocked) {
       delegator.showBottomSheet((context) =>
         InputPasswordScreen(onSuccess: () async {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DayScreen(dayRecord.date),
+              builder: (context) => DayScreen(dayPreview.date),
             ),
           );
           _initState();
@@ -176,21 +176,21 @@ class WeekBloc {
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => DayScreen(dayRecord.date),
+          builder: (context) => DayScreen(dayPreview.date),
         ),
       );
       _initState();
     }
   }
 
-  void onDayPreviewLockedIconClicked(WeekRecord weekRecord, DayRecord dayRecord) {
+  void onDayPreviewLockedIconClicked(WeekRecord weekRecord, DayPreview dayPreview) {
     delegator.showBottomSheet((context) =>
       InputPasswordScreen(onSuccess: () {
-        final updatedDayRecord = dayRecord.buildNew(isLocked: false);
-        final updatedWeekRecord = weekRecord.buildNewDayRecordUpdated(updatedDayRecord);
+        final updatedDayPreview = dayPreview.buildNew(isLocked: false);
+        final updatedWeekRecord = weekRecord.buildNewDayPreviewUpdated(updatedDayPreview);
         _state.add(_state.value.buildNewWeekRecordUpdated(updatedWeekRecord));
 
-        final date = DateTime(dayRecord.year, dayRecord.month, dayRecord.day);
+        final date = DateTime(dayPreview.year, dayPreview.month, dayPreview.day);
         _usecases.setDayRecordLocked(date, false);
       }, onFail: () {
         delegator.showSnackBar(AppLocalizations.of(context).unlockFail, _snackBarDuration);
@@ -198,16 +198,16 @@ class WeekBloc {
     );
   }
 
-  Future<void> onDayPreviewUnlockedIconClicked(WeekRecord weekRecord, DayRecord dayRecord, BuildContext context) async {
+  Future<void> onDayPreviewUnlockedIconClicked(WeekRecord weekRecord, DayPreview dayPreview, BuildContext context) async {
     final password = await _usecases.getUserPassword();
     if (password.isEmpty) {
       _showCreatePasswordDialog(context);
     } else {
-      final updatedDayRecord = dayRecord.buildNew(isLocked: true);
-      final updatedWeekRecord = weekRecord.buildNewDayRecordUpdated(updatedDayRecord);
+      final updatedDayPreview = dayPreview.buildNew(isLocked: true);
+      final updatedWeekRecord = weekRecord.buildNewDayPreviewUpdated(updatedDayPreview);
       _state.add(_state.value.buildNewWeekRecordUpdated(updatedWeekRecord));
 
-      final date = DateTime(dayRecord.year, dayRecord.month, dayRecord.day);
+      final date = DateTime(dayPreview.year, dayPreview.month, dayPreview.day);
       _usecases.setDayRecordLocked(date, true);
     }
   }

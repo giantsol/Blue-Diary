@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 
-class DayRecord {
+class DayPreview {
   final int year;
   final int month;
   final int day;
@@ -40,7 +40,7 @@ class DayRecord {
     }
   }
 
-  const DayRecord({
+  const DayPreview({
     this.year = 0,
     this.month = 0,
     this.day = 0,
@@ -50,10 +50,10 @@ class DayRecord {
     this.isToday = false,
   });
 
-  DayRecord buildNew({
+  DayPreview buildNew({
     bool isLocked,
   }) {
-    return DayRecord(
+    return DayPreview(
       year: this.year,
       month: this.month,
       day: this.day,
