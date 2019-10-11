@@ -72,4 +72,8 @@ class DayUsecases {
   Future<void> removeCategory(Category category) async {
     return _categoryRepository.removeCategory(category);
   }
+
+  Future<int> setCategory(Category category) async {
+    return await _categoryRepository.setCategory(category);
+  }
 }

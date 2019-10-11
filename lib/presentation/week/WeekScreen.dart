@@ -138,8 +138,12 @@ class _WeekScreenState extends State<WeekScreen> {
 class _WholeLoadingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: CircularProgressIndicator(),
+    return SafeArea(
+      child: Container(
+        color: Colors.white,
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 }

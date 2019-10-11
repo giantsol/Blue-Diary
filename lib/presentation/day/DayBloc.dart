@@ -171,14 +171,10 @@ class DayBloc {
     final editingToDoRecord = _createDraftToDoRecord(_state.value.currentDate, toDoRecords);
     final editingCategory = editingToDoRecord.category.buildNew();
 
-    // todo: not here, do this when category editing is completed
-    final allCategories = await _usecases.getAllCategories();
-
     _state.add(_state.value.buildNew(
       currentDayRecord: updatedDayRecord,
       editingToDoRecord: editingToDoRecord,
       editingCategory: editingCategory,
-      allCategories: allCategories,
       scrollToBottomEvent: true,
     ));
   }
@@ -245,21 +241,36 @@ class DayBloc {
     ));
   }
 
-  void onCreateNewCategoryClicked() {
-    final newCategory = _state.value.editingCategory.buildNew(id: Category.ID_NEW);
+  Future<void> onCreateNewCategoryClicked() async {
+    final newCategoryId = await _usecases.setCategory(_state.value.editingCategory.buildNew(id: Category.ID_NEW));
+    final newCategory = _state.value.editingCategory.buildNew(id: newCategoryId);
     final recordWithNewCategory = _state.value.editingToDoRecord.buildNew(category: newCategory);
+
+    final allCategories = await _usecases.getAllCategories();
+
     _state.add(_state.value.buildNew(
       editingToDoRecord: recordWithNewCategory,
       editingCategory: newCategory,
       editorState: EditorState.SHOWN_TODO,
+      allCategories: allCategories,
     ));
   }
 
-  void onModifyCategoryClicked() {
-    final recordWithNewCategory = _state.value.editingToDoRecord.buildNew(category: _state.value.editingCategory);
+  Future<void> onModifyCategoryClicked() async {
+    final modifiedCategory = _state.value.editingCategory;
+    final recordWithNewCategory = _state.value.editingToDoRecord.buildNew(category: modifiedCategory);
+
+    await _usecases.setCategory(modifiedCategory);
+    final currentDayRecord = _state.value.currentDayRecord;
+    final toDoRecords = await _usecases.getToDoRecords(_state.value.currentDate);
+    final updatedDayRecord = currentDayRecord.buildNew(toDoRecords: toDoRecords);
+    final allCategories = await _usecases.getAllCategories();
+
     _state.add(_state.value.buildNew(
       editingToDoRecord: recordWithNewCategory,
       editorState: EditorState.SHOWN_TODO,
+      currentDayRecord: updatedDayRecord,
+      allCategories: allCategories,
     ));
   }
 
