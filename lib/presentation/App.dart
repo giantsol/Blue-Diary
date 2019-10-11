@@ -25,6 +25,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'Blue Diary',
       theme: ThemeData(
+        canvasColor: AppColors.BACKGROUND_WHITE,
         primaryColor: AppColors.PRIMARY,
         primaryColorLight: AppColors.PRIMARY_LIGHT,
         primaryColorDark: AppColors.PRIMARY_DARK,

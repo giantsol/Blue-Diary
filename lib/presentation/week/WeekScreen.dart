@@ -140,7 +140,7 @@ class _WholeLoadingView extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        color: Colors.white,
+        color: AppColors.BACKGROUND_WHITE,
         alignment: Alignment.center,
         child: CircularProgressIndicator(),
       ),

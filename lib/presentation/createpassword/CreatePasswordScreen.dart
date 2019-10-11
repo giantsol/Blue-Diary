@@ -93,7 +93,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
               ),
             ),
             Container(
-              color: Colors.white,
+              color: AppColors.BACKGROUND_WHITE,
               child: VirtualKeyboard(
                 fontSize: 18,
                 type: VirtualKeyboardType.Numeric,

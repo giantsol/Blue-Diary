@@ -19,6 +19,8 @@ class AppColors {
   static const TEXT_WHITE = Color(0xFFFFFFFF);
   static const TEXT_WHITE_DARK = Color(0xFFD4D4D4);
 
+  // same value as Colors.grey[50], which is the default of MaterialApp Theme's canvasColor
+  static const BACKGROUND_WHITE = Color(0xFFFAFAFA);
   static const BACKGROUND_GREY = Color(0xFFD8D8D8);
   static const BACKGROUND_GREY_DARK = Color(0xFFABABAB);
 

@@ -190,7 +190,7 @@ class _WholeLoadingView extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        color: Colors.white,
+        color: AppColors.BACKGROUND_WHITE,
         alignment: Alignment.center,
         child: CircularProgressIndicator(),
       ),
@@ -729,7 +729,7 @@ class _ToDoEditorContainer extends StatelessWidget {
             color: AppColors.DIVIDER,
           ),
           Container(
-            color: Colors.white,
+            color: AppColors.BACKGROUND_WHITE,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -892,7 +892,7 @@ class _CategoryEditorContainer extends StatelessWidget {
         Align(
           alignment: Alignment.bottomCenter,
           child: Container(
-            color: Colors.white,
+            color: AppColors.BACKGROUND_WHITE,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[

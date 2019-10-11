@@ -102,7 +102,7 @@ class _InputPasswordScreenState extends State<InputPasswordScreen> {
               ),
             ),
             Container(
-              color: Colors.white,
+              color: AppColors.BACKGROUND_WHITE,
               child: VirtualKeyboard(
                 fontSize: 18,
                 type: VirtualKeyboardType.Numeric,
