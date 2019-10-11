@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
+import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/CategoryPicker.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
@@ -187,10 +187,18 @@ class DayBloc {
     ));
   }
 
-  void onToDoRecordDismissed(ToDoRecord toDoRecord) {
+  void onToDoRecordItemLongClicked(BuildContext context, ToDoRecord toDoRecord) {
+    Utils.showAppDialog(context,
+      AppLocalizations.of(context).removeToDo,
+      AppLocalizations.of(context).removeToDoBody,
+        null,
+        () => _onRemoveToDoOkClicked(toDoRecord.toDo));
+  }
+
+  void _onRemoveToDoOkClicked(ToDo toDo) {
     final currentDayRecord = _state.value.currentDayRecord;
     final toDoRecords = currentDayRecord.toDoRecords;
-    final removedIndex = toDoRecords.indexWhere((it) => it.toDo.key == toDoRecord.toDo.key);
+    final removedIndex = toDoRecords.indexWhere((it) => it.toDo.key == toDo.key);
     if (removedIndex >= 0) {
       final newRecords = List.of(toDoRecords);
       newRecords.removeAt(removedIndex);
@@ -199,7 +207,7 @@ class DayBloc {
         currentDayRecord: updatedDayRecord,
       ));
     }
-    _usecases.removeToDo(toDoRecord.toDo);
+    _usecases.removeToDo(toDo);
   }
 
   void onCategoryEditorCategoryClicked(Category category) {
@@ -279,58 +287,14 @@ class DayBloc {
       return;
     }
 
-    showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            AppLocalizations.of(context).removeCategory,
-            style: TextStyle(
-              color: AppColors.TEXT_BLACK,
-              fontSize: 20,
-            ),
-          ),
-          content: Text(
-            AppLocalizations.of(context).removeCategoryBody,
-            style: TextStyle(
-              color: AppColors.TEXT_BLACK_LIGHT,
-              fontSize: 16,
-            ),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text(
-                AppLocalizations.of(context).cancel,
-                style: TextStyle(
-                  color: AppColors.TEXT_BLACK,
-                  fontSize: 14,
-                ),
-              ),
-              onPressed: () => _onRemoveCategoryCancelClicked(context),
-            ),
-            FlatButton(
-              child: Text(
-                AppLocalizations.of(context).ok,
-                style: TextStyle(
-                  color: AppColors.PRIMARY,
-                  fontSize: 14,
-                ),
-              ),
-              onPressed: () => _onRemoveCategoryOkClicked(context, category),
-            )
-          ],
-        );
-      },
-    );
-  }
-
-  void _onRemoveCategoryCancelClicked(BuildContext context) {
-    Navigator.of(context).pop();
+    Utils.showAppDialog(context,
+      AppLocalizations.of(context).removeCategory,
+      AppLocalizations.of(context).removeCategoryBody,
+        null,
+        () => _onRemoveCategoryOkClicked(context, category));
   }
 
   Future<void> _onRemoveCategoryOkClicked(BuildContext context, Category category) async {
-    Navigator.of(context).pop();
     await _usecases.removeCategory(category);
     final currentDayRecord = _state.value.currentDayRecord;
     final toDoRecords = await _usecases.getToDoRecords(_state.value.currentDate);

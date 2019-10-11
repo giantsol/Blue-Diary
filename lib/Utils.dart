@@ -1,6 +1,8 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:todo_app/AppColors.dart';
+import 'package:todo_app/Localization.dart';
 
 class Utils {
 
@@ -32,6 +34,65 @@ class Utils {
       content: Text(text),
       duration: duration,
     ));
+  }
+
+  static Future<T> showAppDialog<T>(BuildContext context,
+    String title, String body,
+    void Function() onCancelClicked, void Function() onOkClicked) async {
+    return showDialog<T>(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            title,
+            style: TextStyle(
+              color: AppColors.TEXT_BLACK,
+              fontSize: 20,
+            ),
+          ),
+          content: Text(
+            body,
+            style: TextStyle(
+              color: AppColors.TEXT_BLACK_LIGHT,
+              fontSize: 16,
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                AppLocalizations.of(context).cancel,
+                style: TextStyle(
+                  color: AppColors.TEXT_BLACK,
+                  fontSize: 14,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                if (onCancelClicked != null) {
+                  onCancelClicked();
+                }
+              },
+            ),
+            FlatButton(
+              child: Text(
+                AppLocalizations.of(context).ok,
+                style: TextStyle(
+                  color: AppColors.PRIMARY,
+                  fontSize: 14,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                if (onOkClicked != null) {
+                  onOkClicked();
+                }
+              },
+            )
+          ],
+        );
+      },
+    );
   }
 
 }

@@ -4,6 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
+import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
@@ -103,50 +104,11 @@ class WeekBloc {
   }
 
   Future<void> _showCreatePasswordDialog(BuildContext context) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            AppLocalizations.of(context).createPassword,
-            style: TextStyle(
-              color: AppColors.TEXT_BLACK,
-              fontSize: 20,
-            ),
-          ),
-          content: Text(
-            AppLocalizations.of(context).createPasswordBody,
-            style: TextStyle(
-              color: AppColors.TEXT_BLACK_LIGHT,
-              fontSize: 16,
-            ),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text(
-                AppLocalizations.of(context).cancel,
-                style: TextStyle(
-                  color: AppColors.TEXT_BLACK,
-                  fontSize: 14,
-                ),
-              ),
-              onPressed: () => _onCreatePasswordCancelClicked(context),
-            ),
-            FlatButton(
-              child: Text(
-                AppLocalizations.of(context).ok,
-                style: TextStyle(
-                  color: AppColors.PRIMARY,
-                  fontSize: 14,
-                ),
-              ),
-              onPressed: () => _onCreatePasswordOkClicked(context),
-            )
-          ],
-        );
-      },
-    );
+    return Utils.showAppDialog<void>(context,
+      AppLocalizations.of(context).createPassword,
+      AppLocalizations.of(context).createPasswordBody,
+        null,
+        () => _onCreatePasswordOkClicked(context));
   }
 
   void onCheckPointTextChanged(WeekRecord weekRecord, CheckPoint checkPoint, String changed) {
@@ -212,12 +174,7 @@ class WeekBloc {
     }
   }
 
-  void _onCreatePasswordCancelClicked(BuildContext context) {
-    Navigator.pop(context);
-  }
-
   void _onCreatePasswordOkClicked(BuildContext context) {
-    Navigator.pop(context);
     final successMsg = AppLocalizations.of(context).createPasswordSuccess;
     final failMsg = AppLocalizations.of(context).createPasswordFail;
     delegator.showBottomSheet((context) => CreatePasswordScreen(),

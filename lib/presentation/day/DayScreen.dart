@@ -475,98 +475,93 @@ class _ToDoItem extends StatelessWidget {
       children: <Widget>[
         _ToDoItemDivider(),
         InkWell(
-          child: Dismissible(
-            key: Key(toDo.key),
-            direction: DismissDirection.endToStart,
-            background: _ToDoItemDismissibleBackground(),
-            onDismissed: (direction) => bloc.onToDoRecordDismissed(toDoRecord),
-            child: Row(
-              children: <Widget>[
-                SizedBox(width: 18,),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: _CategoryThumbnail(
-                    category: category,
-                    width: 36,
-                    height: 36,
-                    fontSize: 18,
-                  ),
+          child: Row(
+            children: <Widget>[
+              SizedBox(width: 18,),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: _CategoryThumbnail(
+                  category: category,
+                  width: 36,
+                  height: 36,
+                  fontSize: 18,
                 ),
-                SizedBox(width: 36),
-                Expanded(
-                  child: category.id == Category.ID_DEFAULT ? Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Text(
-                      toDo.text,
-                      style: toDo.isDone ? TextStyle(
-                        fontSize: 14,
-                        color: AppColors.TEXT_BLACK_LIGHT,
-                        decoration: TextDecoration.lineThrough,
-                        decorationColor: AppColors.TEXT_BLACK_LIGHT,
-                        decorationThickness: 2,
-                      ) : TextStyle(
-                        fontSize: 14,
-                        color: AppColors.TEXT_BLACK,
-                      ),
-                    ),
-                  ) : Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 7),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          toDo.text,
-                          style: toDo.isDone ? TextStyle(
-                            fontSize: 14,
-                            color: AppColors.TEXT_BLACK_LIGHT,
-                            decoration: TextDecoration.lineThrough,
-                            decorationColor: AppColors.TEXT_BLACK_LIGHT,
-                            decorationThickness: 2,
-                          ) : TextStyle(
-                            fontSize: 14,
-                            color: AppColors.TEXT_BLACK,
-                          ),
-                        ),
-                        SizedBox(height: 2,),
-                        Text(
-                          category.name,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.TEXT_BLACK_LIGHT,
-                          ),
-                        )
-                      ],
+              ),
+              SizedBox(width: 36),
+              Expanded(
+                child: category.id == Category.ID_DEFAULT ? Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Text(
+                    toDo.text,
+                    style: toDo.isDone ? TextStyle(
+                      fontSize: 14,
+                      color: AppColors.TEXT_BLACK_LIGHT,
+                      decoration: TextDecoration.lineThrough,
+                      decorationColor: AppColors.TEXT_BLACK_LIGHT,
+                      decorationThickness: 2,
+                    ) : TextStyle(
+                      fontSize: 14,
+                      color: AppColors.TEXT_BLACK,
                     ),
                   ),
-                ),
-                toDo.isDone ? Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 19),
-                  child: Image.asset('assets/ic_check.png'),
                 ) : Padding(
-                  padding: const EdgeInsets.only(right: 4),
-                  child: InkWell(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 14, top: 14, right: 14, bottom: 14),
-                      child: Container(
-                        width: 20,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: AppColors.TEXT_BLACK_LIGHT,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(2)),
+                  padding: const EdgeInsets.symmetric(vertical: 7),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        toDo.text,
+                        style: toDo.isDone ? TextStyle(
+                          fontSize: 14,
+                          color: AppColors.TEXT_BLACK_LIGHT,
+                          decoration: TextDecoration.lineThrough,
+                          decorationColor: AppColors.TEXT_BLACK_LIGHT,
+                          decorationThickness: 2,
+                        ) : TextStyle(
+                          fontSize: 14,
+                          color: AppColors.TEXT_BLACK,
                         ),
                       ),
-                    ),
-                    customBorder: CircleBorder(),
-                    onTap: () => bloc.onToDoCheckBoxClicked(toDo),
+                      SizedBox(height: 2,),
+                      Text(
+                        category.name,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.TEXT_BLACK_LIGHT,
+                        ),
+                      )
+                    ],
                   ),
                 ),
-              ],
-            )
+              ),
+              toDo.isDone ? Padding(
+                padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 19),
+                child: Image.asset('assets/ic_check.png'),
+              ) : Padding(
+                padding: const EdgeInsets.only(right: 4),
+                child: InkWell(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 14, top: 14, right: 14, bottom: 14),
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: AppColors.TEXT_BLACK_LIGHT,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(2)),
+                      ),
+                    ),
+                  ),
+                  customBorder: CircleBorder(),
+                  onTap: () => bloc.onToDoCheckBoxClicked(toDo),
+                ),
+              ),
+            ],
           ),
           onTap: () => bloc.onToDoRecordItemClicked(toDoRecord),
+          onLongPress: () => bloc.onToDoRecordItemLongClicked(context, toDoRecord),
         ),
         isLast ? _ToDoItemDivider() : const SizedBox.shrink(),
         isLast ? const SizedBox(height: 96) : const SizedBox.shrink(),
@@ -584,22 +579,6 @@ class _ToDoItemDivider extends StatelessWidget {
         width: double.infinity,
         height: 1,
         color: AppColors.DIVIDER,
-      ),
-    );
-  }
-}
-
-class _ToDoItemDismissibleBackground extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.SECONDARY,
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 16, right: 21, bottom: 16),
-          child: Image.asset('assets/ic_trash.png'),
-        ),
       ),
     );
   }

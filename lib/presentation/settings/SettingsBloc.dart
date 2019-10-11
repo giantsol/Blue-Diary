@@ -4,7 +4,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/Secrets.dart';
 import 'package:todo_app/Utils.dart';
@@ -50,58 +49,15 @@ class SettingsBloc {
   }
 
   Future<void> _showCreatePasswordDialog(BuildContext context, ScaffoldState scaffoldState) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            AppLocalizations.of(context).createPassword,
-            style: TextStyle(
-              color: AppColors.TEXT_BLACK,
-              fontSize: 20,
-            ),
-          ),
-          content: Text(
-            AppLocalizations.of(context).createPasswordBody,
-            style: TextStyle(
-              color: AppColors.TEXT_BLACK_LIGHT,
-              fontSize: 16,
-            ),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text(
-                AppLocalizations.of(context).cancel,
-                style: TextStyle(
-                  color: AppColors.TEXT_BLACK,
-                  fontSize: 14,
-                ),
-              ),
-              onPressed: () => _onCreatePasswordCancelClicked(context),
-            ),
-            FlatButton(
-              child: Text(
-                AppLocalizations.of(context).ok,
-                style: TextStyle(
-                  color: AppColors.PRIMARY,
-                  fontSize: 14,
-                ),
-              ),
-              onPressed: () => _onCreatePasswordOkClicked(context, scaffoldState),
-            )
-          ],
-        );
-      },
+    return Utils.showAppDialog(context,
+      AppLocalizations.of(context).createPassword,
+      AppLocalizations.of(context).createPasswordBody,
+      null,
+        () => _onCreatePasswordOkClicked(context, scaffoldState),
     );
   }
 
-  void _onCreatePasswordCancelClicked(BuildContext context) {
-    Navigator.pop(context);
-  }
-
   Future<void> _onCreatePasswordOkClicked(BuildContext context, ScaffoldState scaffoldState) async {
-    Navigator.pop(context);
     final successMsg = AppLocalizations.of(context).createPasswordSuccess;
     final failMsg = AppLocalizations.of(context).createPasswordFail;
     Utils.showBottomSheet(scaffoldState, (context) => CreatePasswordScreen(),
@@ -127,59 +83,15 @@ class SettingsBloc {
   }
 
   Future<void> _showConfirmSendTempPasswordDialog(BuildContext context, ScaffoldState scaffoldState) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            AppLocalizations.of(context).confirmSendTempPassword,
-            style: TextStyle(
-              color: AppColors.TEXT_BLACK,
-              fontSize: 20,
-            ),
-          ),
-          content: Text(
-            AppLocalizations.of(context).confirmSendTempPasswordBody,
-            style: TextStyle(
-              color: AppColors.TEXT_BLACK_LIGHT,
-              fontSize: 16,
-            ),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text(
-                AppLocalizations.of(context).cancel,
-                style: TextStyle(
-                  color: AppColors.TEXT_BLACK,
-                  fontSize: 14,
-                ),
-              ),
-              onPressed: () => _onConfirmSendTempPasswordCancelClicked(context),
-            ),
-            FlatButton(
-              child: Text(
-                AppLocalizations.of(context).ok,
-                style: TextStyle(
-                  color: AppColors.PRIMARY,
-                  fontSize: 14,
-                ),
-              ),
-              onPressed: () => _onConfirmSendTempPasswordOkClicked(context, scaffoldState),
-            )
-          ],
-        );
-      },
+    return Utils.showAppDialog(context,
+      AppLocalizations.of(context).confirmSendTempPassword,
+      AppLocalizations.of(context).confirmSendTempPasswordBody,
+      null,
+        () => _onConfirmSendTempPasswordOkClicked(context, scaffoldState),
     );
   }
 
-  void _onConfirmSendTempPasswordCancelClicked(BuildContext context) {
-    Navigator.pop(context);
-  }
-
   Future<void> _onConfirmSendTempPasswordOkClicked(BuildContext context, ScaffoldState scaffoldState) async {
-    Navigator.pop(context);
-
     final mailSentMsg = AppLocalizations.of(context).tempPasswordMailSent;
     final mailSendFailedMsg = AppLocalizations.of(context).tempPasswordMailSendFailed;
     final failedToSaveTempPasswordMsg = AppLocalizations.of(context).failedToSaveTempPasswordByUnknownError;
