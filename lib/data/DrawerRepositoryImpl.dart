@@ -9,7 +9,7 @@ class DrawerRepositoryImpl implements DrawerRepository {
   ];
   final List<DrawerScreenItem> _drawerScreenItems = [
     DrawerScreenItem(DrawerScreenItem.KEY_SETTINGS),
-    DrawerScreenItem(DrawerScreenItem.KEY_ABOUT),
+//    DrawerScreenItem(DrawerScreenItem.KEY_ABOUT),
   ];
 
   @override
