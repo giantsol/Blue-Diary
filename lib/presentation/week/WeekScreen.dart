@@ -28,7 +28,7 @@ class _WeekScreenState extends State<WeekScreen> {
   InfinityPageController _weekRecordPageController;
   final Map<String, FocusNode> _focusNodes = {};
   ScrollController _scrollController;
-  final GlobalKey<_HeaderShadowState> _headerShadowState = GlobalKey();
+  final GlobalKey<_HeaderShadowState> _headerShadowKey = GlobalKey();
 
   @override
   void initState() {
@@ -98,12 +98,12 @@ class _WeekScreenState extends State<WeekScreen> {
                     );
                   },
                   onPageChanged: (changedIndex) {
-                    _headerShadowState.currentState.updateShadowVisibility(false);
+                    _headerShadowKey.currentState.updateShadowVisibility(false);
                     _bloc.onWeekRecordPageChanged(changedIndex);
                   },
                 ),
                 _HeaderShadow(
-                  key: _headerShadowState,
+                  key: _headerShadowKey,
                   scrollController: _scrollController,
                 ),
               ],

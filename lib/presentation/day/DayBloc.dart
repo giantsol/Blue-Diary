@@ -13,6 +13,8 @@ import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
 
 class DayBloc {
+  static const _oneDay = const Duration(days: 1);
+
   final _state = BehaviorSubject<DayState>.seeded(DayState());
   DayState getInitialState() => _state.value;
   Stream<DayState> observeState() => _state.distinct();
@@ -23,26 +25,53 @@ class DayBloc {
     _initState(date);
   }
 
-  Future<void> _initState(DateTime date, {bool scrollToBottom}) async {
-    final toDoRecords = await _usecases.getToDoRecords(date);
-    final dayMemo = await _usecases.getDayMemo(date);
-    final nextOrder = toDoRecords.isEmpty ? 0 : toDoRecords.last.toDo.order + 1;
-    final editingToDoRecord = ToDoRecord.createDraft(_state.value.date, nextOrder);
-    final editingCategory = editingToDoRecord.category.buildNew();
+  // initialDate is the date user clicked in WeekScreen to enter DayScreen
+  Future<void> _initState(DateTime initialDate) async {
+    final currentDate = initialDate;
+    final currentDayRecord = await _usecases.getDayRecord(currentDate);
+    final prevDayRecord = await _usecases.getDayRecord(currentDate.subtract(_oneDay));
+    final nextDayRecord = await _usecases.getDayRecord(currentDate.add(_oneDay));
     final allCategories = await _usecases.getAllCategories();
+
+    final editingToDoRecord = _createDraftToDoRecord(currentDate, currentDayRecord.toDoRecords);
+    final editingCategory = editingToDoRecord.category.buildNew();
     _state.add(_state.value.buildNew(
       viewState: DayViewState.NORMAL,
-      year: date.year,
-      month: date.month,
-      day: date.day,
-      weekday: date.weekday,
-      dayMemo: dayMemo,
-      toDoRecords: toDoRecords,
+      currentDayRecord: currentDayRecord,
+      prevDayRecord: prevDayRecord,
+      nextDayRecord: nextDayRecord,
       editingToDoRecord: editingToDoRecord,
       editingCategory: editingCategory,
       allCategories: allCategories,
-      scrollToBottomEvent: scrollToBottom,
+      initialDate: initialDate,
+      currentDate: currentDate,
     ));
+  }
+
+  Future<void> onDayRecordPageIndexChanged(int newIndex) async {
+    final currentDate = _state.value.initialDate.add(Duration(days: newIndex - _state.value.initialDayRecordPageIndex));
+    final currentDayRecord = await _usecases.getDayRecord(currentDate);
+    final prevDayRecord = await _usecases.getDayRecord(currentDate.subtract(_oneDay));
+    final nextDayRecord = await _usecases.getDayRecord(currentDate.add(_oneDay));
+
+    final editingToDoRecord = _createDraftToDoRecord(currentDate, currentDayRecord.toDoRecords);
+    final editingCategory = editingToDoRecord.category.buildNew();
+    _state.add(_state.value.buildNew(
+      viewState: DayViewState.NORMAL,
+      currentDayRecord: currentDayRecord,
+      prevDayRecord: prevDayRecord,
+      nextDayRecord: nextDayRecord,
+      editorState: EditorState.HIDDEN,
+      editingToDoRecord: editingToDoRecord,
+      editingCategory: editingCategory,
+      currentDayRecordPageIndex: newIndex,
+      currentDate: currentDate,
+    ));
+  }
+
+  ToDoRecord _createDraftToDoRecord(DateTime date, List<ToDoRecord> currentRecords) {
+    final nextOrder = currentRecords.isEmpty ? 0 : currentRecords.last.toDo.order + 1;
+    return ToDoRecord.createDraft(date, nextOrder);
   }
 
   bool handleBackPress() {
@@ -66,9 +95,9 @@ class DayBloc {
   }
 
   void onAddToDoClicked(BuildContext context) {
-    final toDoRecords = _state.value.toDoRecords;
-    final nextOrder = toDoRecords.isEmpty ? 0 : toDoRecords.last.toDo.order + 1;
-    final draft = ToDoRecord.createDraft(_state.value.date, nextOrder);
+    final currentDayRecord = _state.value.currentDayRecord;
+    final toDoRecords = currentDayRecord.toDoRecords;
+    final draft = _createDraftToDoRecord(_state.value.currentDate, toDoRecords);
     final draftCategory = draft.category.buildNew();
     _state.add(_state.value.buildNew(
       editingToDoRecord: draft,
@@ -79,20 +108,25 @@ class DayBloc {
   }
 
   void onDayMemoCollapseOrExpandClicked() {
-    final current = _state.value.dayMemo;
-    final updated = current.buildNew(isExpanded: !current.isExpanded);
+    final currentDayRecord = _state.value.currentDayRecord;
+    final currentDayMemo = currentDayRecord.dayMemo;
+    final updatedDayMemo = currentDayMemo.buildNew(isExpanded: !currentDayMemo.isExpanded);
+    final updatedDayRecord = currentDayRecord.buildNew(dayMemo: updatedDayMemo);
     _state.add(_state.value.buildNew(
-      dayMemo: updated,
+      currentDayRecord: updatedDayRecord,
     ));
-    _usecases.setDayMemo(updated);
+    _usecases.setDayMemo(updatedDayMemo);
   }
 
   void onDayMemoTextChanged(String changed) {
-    final updated = _state.value.dayMemo.buildNew(text: changed);
+    final currentDayRecord = _state.value.currentDayRecord;
+    final currentDayMemo = currentDayRecord.dayMemo;
+    final updatedDayMemo = currentDayMemo.buildNew(text: changed);
+    final updatedDayRecord = currentDayRecord.buildNew(dayMemo: updatedDayMemo);
     _state.add(_state.value.buildNew(
-      dayMemo: updated,
+      currentDayRecord: updatedDayRecord,
     ));
-    _usecases.setDayMemo(updated);
+    _usecases.setDayMemo(updatedDayMemo);
   }
 
   void onToDoCheckBoxClicked(ToDo toDo) {
@@ -130,7 +164,23 @@ class DayBloc {
     final editedRecord = _state.value.editingToDoRecord.buildNew(isDraft: false);
     await _usecases.setToDoRecord(editedRecord);
 
-    _initState(_state.value.date, scrollToBottom: true);
+    final currentDayRecord = _state.value.currentDayRecord;
+    final toDoRecords = await _usecases.getToDoRecords(_state.value.currentDate);
+    final updatedDayRecord = currentDayRecord.buildNew(toDoRecords: toDoRecords);
+
+    final editingToDoRecord = _createDraftToDoRecord(_state.value.currentDate, toDoRecords);
+    final editingCategory = editingToDoRecord.category.buildNew();
+
+    // todo: not here, do this when category editing is completed
+    final allCategories = await _usecases.getAllCategories();
+
+    _state.add(_state.value.buildNew(
+      currentDayRecord: updatedDayRecord,
+      editingToDoRecord: editingToDoRecord,
+      editingCategory: editingCategory,
+      allCategories: allCategories,
+      scrollToBottomEvent: true,
+    ));
   }
 
   void onEditorCategoryButtonClicked() {
@@ -142,13 +192,15 @@ class DayBloc {
   }
 
   void onToDoRecordDismissed(ToDoRecord toDoRecord) {
-    final toDoRecords = _state.value.toDoRecords;
+    final currentDayRecord = _state.value.currentDayRecord;
+    final toDoRecords = currentDayRecord.toDoRecords;
     final removedIndex = toDoRecords.indexWhere((it) => it.toDo.key == toDoRecord.toDo.key);
     if (removedIndex >= 0) {
       final newRecords = List.of(toDoRecords);
       newRecords.removeAt(removedIndex);
+      final updatedDayRecord = currentDayRecord.buildNew(toDoRecords: newRecords);
       _state.add(_state.value.buildNew(
-        toDoRecords: newRecords,
+        currentDayRecord: updatedDayRecord,
       ));
     }
     _usecases.removeToDo(toDoRecord.toDo);
@@ -269,10 +321,12 @@ class DayBloc {
   Future<void> _onRemoveCategoryOkClicked(BuildContext context, Category category) async {
     Navigator.of(context).pop();
     await _usecases.removeCategory(category);
-    final toDoRecords = await _usecases.getToDoRecords(_state.value.date);
+    final currentDayRecord = _state.value.currentDayRecord;
+    final toDoRecords = await _usecases.getToDoRecords(_state.value.currentDate);
+    final updatedDayRecord = currentDayRecord.buildNew(toDoRecords: toDoRecords);
     final allCategories = await _usecases.getAllCategories();
     _state.add(_state.value.buildNew(
-      toDoRecords: toDoRecords,
+      currentDayRecord: updatedDayRecord,
       allCategories: allCategories,
     ));
   }

@@ -10,12 +10,16 @@ import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/CategoryPicker.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
+import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
 import 'package:todo_app/presentation/day/DayBloc.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
 import 'package:todo_app/presentation/widgets/AppTextField.dart';
 
 class DayScreen extends StatefulWidget {
+  static const MAX_DAY_PAGE = 100;
+  static const INITIAL_DAY_PAGE = 50;
+
   final DateTime date;
 
   DayScreen(this.date);
@@ -29,12 +33,15 @@ class _DayScreenState extends State<DayScreen> {
   ScrollController _toDoScrollController;
   // todo: is this the right way to use focusnodes?
   final Map<String, FocusNode> _focusNodes = {};
+  PageController _pageController;
+  final GlobalKey<_HeaderShadowState> _headerShadowKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     _bloc = DayBloc(widget.date);
     _toDoScrollController = ScrollController();
+    _pageController = PageController(initialPage: _bloc.getInitialState().initialDayRecordPageIndex);
   }
 
   @override
@@ -42,6 +49,7 @@ class _DayScreenState extends State<DayScreen> {
     super.dispose();
     _bloc.dispose();
     _toDoScrollController.dispose();
+    _pageController.dispose();
 
     _focusNodes.forEach((key, focusNode) => focusNode.dispose());
     _focusNodes.clear();
@@ -73,7 +81,7 @@ class _DayScreenState extends State<DayScreen> {
       // 500.. magic number..
       Future.delayed(const Duration(milliseconds: 500), () {
         if (_toDoScrollController.hasClients) {
-          final double targetPixel = state.isMemoExpanded ? 170 : 70;
+          final double targetPixel = state.currentDayRecord.dayMemo.isExpanded ? 170 : 70;
           if (_toDoScrollController.position.pixels < targetPixel) {
             _toDoScrollController.position.animateTo(
               targetPixel,
@@ -105,18 +113,29 @@ class _DayScreenState extends State<DayScreen> {
                   Expanded(
                     child: Stack(
                       children: <Widget>[
-                        state.toDoRecords.length == 0 ? _EmptyToDoListView(
-                          bloc: _bloc,
-                          dayMemo: state.dayMemo,
-                          focusNodeProvider: _getOrCreateFocusNode,
-                        ) : _ToDoListView(
-                          bloc: _bloc,
-                          dayMemo: state.dayMemo,
-                          toDoRecords: state.toDoRecords,
-                          scrollController: _toDoScrollController,
-                          focusNodeProvider: _getOrCreateFocusNode,
+                        PageView.builder(
+                          controller: _pageController,
+                          itemCount: DayScreen.MAX_DAY_PAGE,
+                          itemBuilder: (context, index) {
+                            final dayRecord = state.getDayRecordForPageIndex(index);
+                            if (dayRecord == null) {
+                              return null;
+                            } else {
+                              return _DayRecord(
+                                bloc: _bloc,
+                                dayRecord: dayRecord,
+                                focusNodeProvider: _getOrCreateFocusNode,
+                                scrollController: _toDoScrollController,
+                              );
+                            }
+                          },
+                          onPageChanged: (changedIndex) {
+                            _headerShadowKey.currentState.updateShadowVisibility(false);
+                            _bloc.onDayRecordPageIndexChanged(changedIndex);
+                          },
                         ),
                         _HeaderShadow(
+                          key: _headerShadowKey,
                           scrollController: _toDoScrollController,
                         ),
                       ],
@@ -171,6 +190,36 @@ class _WholeLoadingView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: CircularProgressIndicator(),
+    );
+  }
+}
+
+class _DayRecord extends StatelessWidget {
+  final DayBloc bloc;
+  final DayRecord dayRecord;
+  final FocusNode Function(String key) focusNodeProvider;
+  final ScrollController scrollController;
+
+  _DayRecord({
+    @required this.bloc,
+    @required this.dayRecord,
+    @required this.focusNodeProvider,
+    @required this.scrollController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final dayRecord = this.dayRecord;
+    return dayRecord.toDoRecords.length == 0 ? _EmptyToDoListView(
+      bloc: bloc,
+      dayMemo: dayRecord.dayMemo,
+      focusNodeProvider: focusNodeProvider,
+    ) : _ToDoListView(
+      bloc: bloc,
+      dayMemo: dayRecord.dayMemo,
+      toDoRecords: dayRecord.toDoRecords,
+      scrollController: scrollController,
+      focusNodeProvider: focusNodeProvider,
     );
   }
 }
@@ -1178,8 +1227,9 @@ class _HeaderShadow extends StatefulWidget {
   final ScrollController scrollController;
 
   _HeaderShadow({
+    Key key,
     @required this.scrollController,
-  });
+  }): super(key: key);
 
   @override
   State createState() => _HeaderShadowState();
@@ -1193,9 +1243,11 @@ class _HeaderShadowState extends State<_HeaderShadow> {
   void initState() {
     super.initState();
     _scrollListener = () {
-      setState(() {
-        _isShadowVisible = widget.scrollController.position.pixels > 0;
-      });
+      try {
+        updateShadowVisibility(widget.scrollController.position.pixels > 0);
+      } catch (e) {
+        updateShadowVisibility(false);
+      }
     };
     widget.scrollController.addListener(_scrollListener);
   }
@@ -1204,6 +1256,12 @@ class _HeaderShadowState extends State<_HeaderShadow> {
   void dispose() {
     super.dispose();
     widget.scrollController.removeListener(_scrollListener);
+  }
+
+  void updateShadowVisibility(bool visible) {
+    setState(() {
+      _isShadowVisible = visible;
+    });
   }
 
   @override

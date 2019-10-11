@@ -1,18 +1,35 @@
 
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
+import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
 import 'package:todo_app/domain/repository/CategoryRepository.dart';
+import 'package:todo_app/domain/repository/LockRepository.dart';
 import 'package:todo_app/domain/repository/MemoRepository.dart';
+import 'package:todo_app/domain/repository/PrefRepository.dart';
 import 'package:todo_app/domain/repository/ToDoRepository.dart';
 
 class DayUsecases {
   final ToDoRepository _toDoRepository;
   final CategoryRepository _categoryRepository;
   final MemoRepository _memoRepository;
+  final PrefsRepository _prefsRepository;
+  final LockRepository _lockRepository;
 
-  const DayUsecases(this._toDoRepository, this._categoryRepository, this._memoRepository);
+  const DayUsecases(this._toDoRepository, this._categoryRepository, this._memoRepository, this._prefsRepository, this._lockRepository);
+
+  Future<DayRecord> getDayRecord(DateTime date) async {
+    final toDoRecords = await getToDoRecords(date);
+    final dayMemo = await getDayMemo(date);
+    final defaultLocked = await _prefsRepository.getDefaultLocked();
+    final isLocked = await _lockRepository.getIsDayRecordLocked(date, defaultLocked);
+    return DayRecord(
+      toDoRecords: toDoRecords,
+      dayMemo: dayMemo,
+      isLocked: isLocked,
+    );
+  }
 
   Future<List<ToDoRecord>> getToDoRecords(DateTime date) async {
     final List<ToDoRecord> toDoRecords = [];

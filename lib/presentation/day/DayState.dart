@@ -2,9 +2,10 @@
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/CategoryPicker.dart';
-import 'package:todo_app/domain/entity/DayMemo.dart';
+import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
+import 'package:todo_app/presentation/day/DayScreen.dart';
 
 enum DayViewState {
   WHOLE_LOADING,
@@ -24,75 +25,85 @@ class DayState {
   ];
 
   final DayViewState viewState;
-  final int year;
-  final int month;
-  final int day;
-  final int weekday;
-  final DayMemo dayMemo;
-  final List<ToDoRecord> toDoRecords;
+  final Map<int, DayRecord> pageIndexDayRecordMap;
   final EditorState editorState;
   final ToDoRecord editingToDoRecord;
   final Category editingCategory;
   final List<Category> allCategories;
   final List<CategoryPicker> categoryPickers;
   final int selectedPickerIndex;
+  final DateTime initialDate;
+  final int initialDayRecordPageIndex;
+  final DateTime currentDate;
+  final int currentDayRecordPageIndex;
 
   final bool scrollToBottomEvent;
   final bool scrollToToDoListEvent;
 
-  bool get isMemoExpanded => dayMemo?.isExpanded != false;
+  int get year => currentDate?.year ?? 0;
+  int get month => currentDate?.month ?? 0;
+  int get day => currentDate?.day ?? 0;
+  int get weekday => currentDate?.weekday ?? 0;
   bool get isFabVisible => editorState == EditorState.HIDDEN;
-  DateTime get date => DateTime(year, month, day);
+  DayRecord get currentDayRecord => pageIndexDayRecordMap[currentDayRecordPageIndex];
 
   const DayState({
     this.viewState = DayViewState.WHOLE_LOADING,
-    this.year = 0,
-    this.month = 0,
-    this.day = 0,
-    this.weekday = 0,
-    this.dayMemo = const DayMemo(),
-    this.toDoRecords = const [],
+    this.pageIndexDayRecordMap = const {},
     this.editorState = EditorState.HIDDEN,
     this.editingToDoRecord = const ToDoRecord(),
     this.editingCategory = const Category(),
     this.allCategories = const [],
     this.categoryPickers = CATEGORY_PICKERS,
     this.selectedPickerIndex = -1,
+    this.initialDate,
+    this.initialDayRecordPageIndex = DayScreen.INITIAL_DAY_PAGE,
+    this.currentDate,
+    this.currentDayRecordPageIndex = DayScreen.INITIAL_DAY_PAGE,
 
     this.scrollToBottomEvent = false,
     this.scrollToToDoListEvent = false,
   });
 
+  DayRecord getDayRecordForPageIndex(int index) {
+    return pageIndexDayRecordMap[index];
+  }
+
   DayState buildNew({
     DayViewState viewState,
-    int year,
-    int month,
-    int day,
-    int weekday,
-    DayMemo dayMemo,
-    List<ToDoRecord> toDoRecords,
+    DayRecord currentDayRecord,
+    DayRecord prevDayRecord,
+    DayRecord nextDayRecord,
     EditorState editorState,
     ToDoRecord editingToDoRecord,
     Category editingCategory,
     List<Category> allCategories,
     int selectedPickerIndex,
+    DateTime initialDate,
+    int currentDayRecordPageIndex,
+    DateTime currentDate,
 
     bool scrollToBottomEvent,
     bool scrollToToDoListEvent,
   }) {
+    final prevMap = this.pageIndexDayRecordMap;
+    final currentPageIndex = currentDayRecordPageIndex ?? this.currentDayRecordPageIndex;
+    final Map<int, DayRecord> pageIndexDayRecordMap = {
+      currentPageIndex - 1: prevDayRecord ?? prevMap[currentPageIndex - 1],
+      currentPageIndex: currentDayRecord ?? prevMap[currentPageIndex],
+      currentPageIndex + 1: nextDayRecord ?? prevMap[currentPageIndex + 1],
+    };
     return DayState(
       viewState: viewState ?? this.viewState,
-      year: year ?? this.year,
-      month: month ?? this.month,
-      day: day ?? this.day,
-      weekday: weekday ?? this.weekday,
-      dayMemo: dayMemo ?? this.dayMemo,
-      toDoRecords: toDoRecords ?? this.toDoRecords,
+      pageIndexDayRecordMap: pageIndexDayRecordMap,
       editorState: editorState ?? this.editorState,
       editingToDoRecord: editingToDoRecord ?? this.editingToDoRecord,
       editingCategory: editingCategory ?? this.editingCategory,
       allCategories: allCategories ?? this.allCategories,
       selectedPickerIndex: selectedPickerIndex ?? this.selectedPickerIndex,
+      initialDate: initialDate ?? this.initialDate,
+      currentDayRecordPageIndex: currentDayRecordPageIndex ?? this.currentDayRecordPageIndex,
+      currentDate: currentDate ?? this.currentDate,
 
       // these are one-time events, so default to false if not given to "true" as parameter
       scrollToBottomEvent: scrollToBottomEvent ?? false,
@@ -101,12 +112,15 @@ class DayState {
   }
 
   DayState buildNewToDoUpdated(ToDo updated) {
-    final newRecords = List.of(toDoRecords);
+    final newRecords = List.of(currentDayRecord.toDoRecords);
     final updatedIndex = newRecords.indexWhere((it) => it.toDo.key == updated.key);
     if (updatedIndex >= 0) {
       newRecords[updatedIndex] = newRecords[updatedIndex].buildNew(toDo: updated);
+      final updatedDayRecord = currentDayRecord.buildNew(toDoRecords: newRecords);
+      return buildNew(currentDayRecord: updatedDayRecord);
+    } else {
+      return this;
     }
-    return buildNew(toDoRecords: newRecords);
   }
 }
 

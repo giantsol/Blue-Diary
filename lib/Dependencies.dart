@@ -37,6 +37,6 @@ class Dependencies {
   final WeekUsecases weekUsecases = WeekUsecases(_memoRepository, _dateRepository, _toDoRepository, _lockRepository, _prefsRepository);
   final CreatePasswordUsecases createPasswordUsecases = CreatePasswordUsecases(_prefsRepository);
   final InputPasswordUsecases inputPasswordUsecases = InputPasswordUsecases(_prefsRepository);
-  final DayUsecases dayUsecases = DayUsecases(_toDoRepository, _categoryRepository, _memoRepository);
+  final DayUsecases dayUsecases = DayUsecases(_toDoRepository, _categoryRepository, _memoRepository, _prefsRepository, _lockRepository);
   final SettingsUsecases settingsUsecases = SettingsUsecases(_prefsRepository);
 }
