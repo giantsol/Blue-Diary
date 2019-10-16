@@ -1,10 +1,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/Utils.dart';
-import 'package:todo_app/domain/entity/DrawerItem.dart';
+import 'package:todo_app/domain/entity/BottomNavigationItem.dart';
 import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
 import 'package:todo_app/presentation/week/WeekScreen.dart';
@@ -44,24 +45,18 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
   }
 
   Widget _buildUI(HomeState state) {
-    return SafeArea(
-      child: Scaffold(
-        key: _scaffoldKey,
-        body: Stack(
-          children: <Widget>[
-            _ChildScreen(
-              childScreenKey: state.currentChildScreenKey,
-              weekBlocDelegator: this,
-            ),
-            _SideMenuIcon(
-              bloc: _bloc,
-            ),
-          ],
-        ),
-        endDrawer: _Drawer(
-          bloc: _bloc,
-          drawerItems: state.allDrawerItems,
-        ),
+    return Scaffold(
+      key: _scaffoldKey,
+      body: Stack(
+        children: <Widget>[
+          _ChildScreen(
+            childScreenKey: state.currentChildScreenKey,
+            weekBlocDelegator: this,
+          ),
+          _BottomNavigationBar(
+            navigationItems: state.navigationItems,
+          ),
+        ],
       ),
     );
   }
@@ -71,11 +66,6 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
     void Function() onClosed
   }) {
     Utils.showBottomSheet(_scaffoldKey.currentState, builder, onClosed: onClosed);
-  }
-
-  @override
-  void setCurrentDrawerChildScreenItem(String key) {
-    _bloc.setCurrentDrawerChildScreenItem(key);
   }
 
   @override
@@ -106,7 +96,7 @@ class _ChildScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     switch (childScreenKey) {
-      case DrawerChildScreenItem.KEY_RECORD:
+      case BottomNavigationItem.KEY_RECORD:
         return WeekScreen(
           weekBlocDelegator: weekBlocDelegator
         );
@@ -116,82 +106,81 @@ class _ChildScreen extends StatelessWidget {
   }
 }
 
-class _SideMenuIcon extends StatelessWidget {
-  final HomeBloc bloc;
+class _BottomNavigationBar extends StatelessWidget {
+  final List<BottomNavigationItem> navigationItems;
 
-  _SideMenuIcon({
-    @required this.bloc,
+  _BottomNavigationBar({
+    @required this.navigationItems,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.topRight,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 4),
-        child: InkWell(
-          customBorder: CircleBorder(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-            child: Image.asset('assets/ic_side_menu.png'),
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            width: double.infinity,
+            height: 6,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [AppColors.DIVIDER, AppColors.DIVIDER.withAlpha(0)]
+              )
+            ),
           ),
-          onTap: () => bloc.onMenuIconClicked(Scaffold.of(context)),
-        ),
-      ),
+          Container(
+            height: 55,
+            color: AppColors.BACKGROUND_WHITE,
+            child: Row(
+              children: List.generate(navigationItems.length, (index) {
+                return _BottomNavigationItem(
+                  item: navigationItems[index],
+                );
+              }),
+            ),
+          ),
+        ],
+      )
     );
   }
 }
 
-class _Drawer extends StatelessWidget {
-  final HomeBloc bloc;
-  final List<DrawerItem> drawerItems;
+class _BottomNavigationItem extends StatelessWidget {
+  final BottomNavigationItem item;
 
-  _Drawer({
-    @required this.bloc,
-    @required this.drawerItems,
+  _BottomNavigationItem({
+    @required this.item,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: constraints.copyWith(
-                minHeight: constraints.maxHeight,
-                maxHeight: double.infinity,
-              ),
-              child: IntrinsicHeight(
-                child: Column(
-                  children: List.generate(drawerItems.length, (index) {
-                    final item = drawerItems[index];
-                    if (item is DrawerHeaderItem) {
-                      return DrawerHeader(
-                        child: Text(item.title),
-                      );
-                    } else if (item is DrawerChildScreenItem) {
-                      return ListTile(
-                        title: Text(AppLocalizations.of(context).getDrawerTitle(item.key)),
-                        enabled: item.isEnabled,
-                        selected: item.isSelected,
-                        onTap: () => bloc.onDrawerChildScreenItemClicked(context, item),
-                      );
-                    } else if (item is DrawerScreenItem) {
-                      return ListTile(
-                        title: Text(AppLocalizations.of(context).getDrawerTitle(item.key)),
-                        enabled: item.isEnabled,
-                        onTap: () => bloc.onDrawerScreenItemClicked(context, item),
-                      );
-                    } else {
-                      return Spacer();
-                    }
-                  }),
+    final title = item.key == BottomNavigationItem.KEY_RECORD ? AppLocalizations.of(context).recordNavigationTitle
+      : AppLocalizations.of(context).settingsNavigationTitle;
+    return Expanded(
+      child: Material(
+        child: InkWell(
+          onTap: () { },
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Image.asset(item.iconPath),
+                SizedBox(height: 2),
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: item.titleColor,
+                    fontSize: 14,
+                  ),
+                  textScaleFactor: 1.0,
                 ),
-              ),
+              ],
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

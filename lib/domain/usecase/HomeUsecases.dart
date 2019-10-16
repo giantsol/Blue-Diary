@@ -1,27 +1,26 @@
 
-import 'package:todo_app/domain/entity/DrawerItem.dart';
-import 'package:todo_app/domain/repository/DrawerRepository.dart';
+import 'package:todo_app/AppColors.dart';
+import 'package:todo_app/domain/entity/BottomNavigationItem.dart';
 
 class HomeUsecases {
-  final DrawerRepository _drawerRepository;
+  var _currentNavigationItemIndex = 0;
 
-  const HomeUsecases(this._drawerRepository);
-
-  List<DrawerItem> getAllDrawerItems() {
-    final headerItem = _drawerRepository.getDrawerHeaderItem();
-    final childScreenItems = _drawerRepository.getDrawerChildScreenItems();
-    final screenItems = _drawerRepository.getDrawerScreenItems();
-
-    final List<DrawerItem> allDrawerItems = [childScreenItems, screenItems].expand((l) => l).toList();
-    // insert Spacer after 2nd item
-    if (allDrawerItems.length >= 2) {
-      allDrawerItems.insert(2, DrawerSpacerItem());
-    }
-    allDrawerItems.insert(0, headerItem);
-    return allDrawerItems;
+  List<BottomNavigationItem> getNavigationItems() {
+    final recordNavigationItem = BottomNavigationItem(
+      key: BottomNavigationItem.KEY_RECORD,
+      iconPath: _currentNavigationItemIndex == 0 ? 'assets/ic_record_activated.png' : 'assets/ic_record.png',
+      titleColor: _currentNavigationItemIndex == 0 ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
+    );
+    final settingsNavigationItem = BottomNavigationItem(
+      key: BottomNavigationItem.KEY_SETTINGS,
+      iconPath: _currentNavigationItemIndex == 1 ? 'assets/ic_settings_activated.png' : 'assets/ic_settings.png',
+      titleColor: _currentNavigationItemIndex == 1 ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
+    );
+    return [recordNavigationItem, settingsNavigationItem];
   }
 
-  void setCurrentDrawerChildScreenItem(String key) {
-    _drawerRepository.setCurrentDrawerChildScreenItem(key);
+  String getCurrentChildScreenKey() {
+    return _currentNavigationItemIndex == 0 ? BottomNavigationItem.KEY_RECORD
+      : BottomNavigationItem.KEY_SETTINGS;
   }
 }

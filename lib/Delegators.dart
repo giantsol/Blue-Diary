@@ -7,10 +7,6 @@ abstract class ShowBottomSheetDelegator {
   });
 }
 
-abstract class SetCurrentDrawerChildScreenItemDelegator {
-  void setCurrentDrawerChildScreenItem(String key);
-}
-
 abstract class ShowSnackBarDelegator {
   void showSnackBar(String text, Duration duration);
 }
@@ -22,6 +18,5 @@ abstract class SettingsChangedListenerDelegator {
 
 abstract class WeekBlocDelegator implements
   ShowBottomSheetDelegator,
-  SetCurrentDrawerChildScreenItemDelegator,
   ShowSnackBarDelegator,
   SettingsChangedListenerDelegator { }

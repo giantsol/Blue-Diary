@@ -1,26 +1,23 @@
 
-import 'package:todo_app/domain/entity/DrawerItem.dart';
+import 'package:todo_app/domain/entity/BottomNavigationItem.dart';
 
 class HomeState {
-  final List<DrawerItem> allDrawerItems;
+  final List<BottomNavigationItem> navigationItems;
+  final String currentChildScreenKey;
 
   const HomeState({
-    this.allDrawerItems = const [],
+    this.navigationItems = const [],
+    this.currentChildScreenKey,
   });
 
-  String get currentChildScreenKey {
-    int index = allDrawerItems.indexWhere((item) => item is DrawerChildScreenItem && item.isSelected);
-    if (index >= 0) {
-      return (allDrawerItems[index] as DrawerChildScreenItem).key;
-    } else {
-      return null;
-    }
-  }
-
   HomeState buildNew({
-    List<DrawerItem> allDrawerItems,
+    List<BottomNavigationItem> navigationItems,
+    String currentChildScreenKey,
   }) {
-    return HomeState(allDrawerItems: allDrawerItems ?? this.allDrawerItems);
+    return HomeState(
+      navigationItems: navigationItems ?? this.navigationItems,
+      currentChildScreenKey: currentChildScreenKey ?? this.currentChildScreenKey,
+    );
   }
 
 }

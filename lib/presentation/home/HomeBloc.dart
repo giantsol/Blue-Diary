@@ -2,12 +2,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/domain/entity/DrawerItem.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
-import 'package:todo_app/presentation/settings/SettingsScreen.dart';
 
 class HomeBloc {
   final _state = BehaviorSubject<HomeState>.seeded(HomeState());
@@ -23,36 +20,12 @@ class HomeBloc {
   }
 
   void _initState() {
-    final allDrawerItems = _usecases.getAllDrawerItems();
+    final navigationItems = _usecases.getNavigationItems();
+    final currentChildScreenKey = _usecases.getCurrentChildScreenKey();
     _state.add(_state.value.buildNew(
-      allDrawerItems: allDrawerItems,
+      navigationItems: navigationItems,
+      currentChildScreenKey: currentChildScreenKey,
     ));
-  }
-
-  void onDrawerChildScreenItemClicked(BuildContext context, DrawerChildScreenItem item) {
-    Navigator.pop(context);
-    setCurrentDrawerChildScreenItem(item.key);
-  }
-
-  Future<void> onDrawerScreenItemClicked(BuildContext context, DrawerScreenItem item) async {
-    if (item.key == DrawerScreenItem.KEY_SETTINGS) {
-      Navigator.pop(context);
-      await Navigator.push(context,
-        MaterialPageRoute(
-          builder: (context) => SettingsScreen(),
-        )
-      );
-      _dispatchSettingsChangedEvent();
-    }
-  }
-
-  void onMenuIconClicked(ScaffoldState scaffoldState) {
-    scaffoldState.openEndDrawer();
-  }
-
-  void setCurrentDrawerChildScreenItem(String key) {
-    _usecases.setCurrentDrawerChildScreenItem(key);
-    _initState();
   }
 
   void _dispatchSettingsChangedEvent() {

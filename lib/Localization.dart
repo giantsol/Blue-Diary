@@ -1,7 +1,6 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_app/domain/entity/DrawerItem.dart';
 
 class AppLocalizations {
   static const NEW_PASSWORD = "newPassword";
@@ -29,9 +28,6 @@ class AppLocalizations {
   static const ADD_TASK = "addTask";
   static const MODIFY_TASK = "modifyTask";
   static const CHOOSE_PHOTO = "choosePhoto";
-  static const DRAWER_RECORD = "drawerRecord";
-  static const DRAWER_SETTINGS = "drawerSettings";
-  static const DRAWER_ABOUT = "drawerAbout";
   static const SETTINGS = "settings";
   static const SETTINGS_GENERAL = "settingsGeneral";
   static const SETTINGS_DEFAULT_LOCK = "settingsDefaultLock";
@@ -49,6 +45,8 @@ class AppLocalizations {
   static const TEMP_PASSWORD_MAIL_SEND_FAILED = "tempPasswordMailSendFailed";
   static const REMOVE_TO_DO = "removeToDo";
   static const REMOVE_TO_DO_BODY = "removeToDoBody";
+  static const RECORD_NAVIGATION_TITLE = "recordNavigationTitle";
+  static const SETTINGS_NAVIGATION_TITLE = "settingsNavigationTitle";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -81,9 +79,6 @@ class AppLocalizations {
       ADD_TASK: 'Add Task',
       MODIFY_TASK: 'Modify Task',
       CHOOSE_PHOTO: 'Choose Photo',
-      DRAWER_RECORD: 'Record',
-      DRAWER_SETTINGS: 'Settings',
-      DRAWER_ABOUT: 'About',
       SETTINGS: 'Settings',
       SETTINGS_GENERAL: 'General',
       SETTINGS_DEFAULT_LOCK: 'Lock By Default',
@@ -101,6 +96,8 @@ class AppLocalizations {
       TEMP_PASSWORD_MAIL_SEND_FAILED: 'Mail has not been sent. Please check your recovery email again.',
       REMOVE_TO_DO: 'Remove TODO',
       REMOVE_TO_DO_BODY: 'Are you sure you want to remove this TODO?',
+      RECORD_NAVIGATION_TITLE: 'Record',
+      SETTINGS_NAVIGATION_TITLE: 'Settings',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -128,9 +125,6 @@ class AppLocalizations {
       ADD_TASK: '작업 추가',
       MODIFY_TASK: '작업 수정',
       CHOOSE_PHOTO: '사진 선택',
-      DRAWER_RECORD: '기록',
-      DRAWER_SETTINGS: '설정',
-      DRAWER_ABOUT: 'About',
       SETTINGS: '설정',
       SETTINGS_GENERAL: '일반',
       SETTINGS_DEFAULT_LOCK: '디폴트로 잠금',
@@ -148,6 +142,8 @@ class AppLocalizations {
       TEMP_PASSWORD_MAIL_SEND_FAILED: '메일 발송에 실패하였습니다. 복원 이메일을 확인해주세요.',
       REMOVE_TO_DO: '작업 삭제',
       REMOVE_TO_DO_BODY: '이 작업을 삭제하시겠습니까?',
+      RECORD_NAVIGATION_TITLE: '기록',
+      SETTINGS_NAVIGATION_TITLE: '설정',
     },
   };
 
@@ -197,6 +193,8 @@ class AppLocalizations {
   String get tempPasswordMailSendFailed => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_SEND_FAILED];
   String get removeToDo => _localizedValues[locale.languageCode][REMOVE_TO_DO];
   String get removeToDoBody => _localizedValues[locale.languageCode][REMOVE_TO_DO_BODY];
+  String get recordNavigationTitle => _localizedValues[locale.languageCode][RECORD_NAVIGATION_TITLE];
+  String get settingsNavigationTitle => _localizedValues[locale.languageCode][SETTINGS_NAVIGATION_TITLE];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {
@@ -298,18 +296,6 @@ class AppLocalizations {
     }
   }
 
-  String getDrawerTitle(String drawerKey) {
-    switch (drawerKey) {
-      case DrawerChildScreenItem.KEY_RECORD:
-        return _localizedValues[locale.languageCode][DRAWER_RECORD];
-      case DrawerScreenItem.KEY_SETTINGS:
-        return _localizedValues[locale.languageCode][DRAWER_SETTINGS];
-      case DrawerScreenItem.KEY_ABOUT:
-        return _localizedValues[locale.languageCode][DRAWER_ABOUT];
-      default:
-        return '';
-    }
-  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
