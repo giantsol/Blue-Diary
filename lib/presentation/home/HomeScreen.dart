@@ -47,11 +47,31 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
   Widget _buildUI(HomeState state) {
     return Scaffold(
       key: _scaffoldKey,
-      body: Stack(
+      body: Column(
         children: <Widget>[
-          _ChildScreen(
-            childScreenKey: state.currentChildScreenKey,
-            weekBlocDelegator: this,
+          Expanded(
+            child: Stack(
+              children: <Widget>[
+                _ChildScreen(
+                  childScreenKey: state.currentChildScreenKey,
+                  weekBlocDelegator: this,
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    width: double.infinity,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: [AppColors.DIVIDER, AppColors.DIVIDER.withAlpha(0)]
+                      )
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           _BottomNavigationBar(
             navigationItems: state.navigationItems,
@@ -91,7 +111,7 @@ class _ChildScreen extends StatelessWidget {
   _ChildScreen({
     @required this.childScreenKey,
     @required this.weekBlocDelegator,
-});
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -117,32 +137,18 @@ class _BottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.bottomCenter,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Container(
-            width: double.infinity,
-            height: 6,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                colors: [AppColors.DIVIDER, AppColors.DIVIDER.withAlpha(0)]
-              )
-            ),
-          ),
-          Container(
-            height: 55,
-            color: AppColors.BACKGROUND_WHITE,
-            child: Row(
-              children: List.generate(navigationItems.length, (index) {
-                return _BottomNavigationItem(
-                  item: navigationItems[index],
-                );
-              }),
-            ),
-          ),
-        ],
+      child: Container(
+        constraints: BoxConstraints(
+          minHeight: 55,
+        ),
+        color: AppColors.BACKGROUND_WHITE,
+        child: Row(
+          children: List.generate(navigationItems.length, (index) {
+            return _BottomNavigationItem(
+              item: navigationItems[index],
+            );
+          }),
+        ),
       )
     );
   }
@@ -163,21 +169,24 @@ class _BottomNavigationItem extends StatelessWidget {
       child: Material(
         child: InkWell(
           onTap: () { },
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Image.asset(item.iconPath),
-                SizedBox(height: 2),
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: item.titleColor,
-                    fontSize: 14,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Image.asset(item.iconPath),
+                  SizedBox(height: 2),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: item.titleColor,
+                      fontSize: 14,
+                    ),
+                    textScaleFactor: 1.0,
                   ),
-                  textScaleFactor: 1.0,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

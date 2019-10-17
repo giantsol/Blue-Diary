@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   static const PRIMARY = Color(0xFF317ACD);
-  static const PRIMARY_LIGHT = Color(0xFF6EA9FF);
+  static const PRIMARY_LIGHT = Color(0xFF8EB5E1);
+  static const PRIMARY_LIGHT_LIGHT = Color(0xFFDBE6F3);
   static const PRIMARY_DARK = Color(0xFF004F9B);
 
   static const SECONDARY = Color(0xFFCD317A);
@@ -21,7 +22,7 @@ class AppColors {
 
   // same value as Colors.grey[50], which is the default of MaterialApp Theme's canvasColor
   static const BACKGROUND_WHITE = Color(0xFFFAFAFA);
-  static const BACKGROUND_GREY = Color(0xFFD8D8D8);
+  static const BACKGROUND_GREY = Color(0xFFD4D4D4);
   static const BACKGROUND_GREY_DARK = Color(0xFFABABAB);
 
   static const DIVIDER = Color(0xFFEEEEEE);

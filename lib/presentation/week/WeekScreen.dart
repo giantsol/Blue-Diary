@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:infinity_page_view/infinity_page_view.dart';
 import 'package:todo_app/AppColors.dart';
@@ -67,49 +69,51 @@ class _WeekScreenState extends State<WeekScreen> {
   }
 
   Widget _buildUI(WeekState state) {
-    return state.viewState == WeekViewState.WHOLE_LOADING ? _WholeLoadingView()
-      : WillPopScope(
-      onWillPop: () async {
-        return !_unfocusTextFieldIfAny();
-      },
-      child: Column(
-        children: [
-          _Header(
-            bloc: _bloc,
-            displayYear: state.year.toString(),
-            displayMonthAndWeek: AppLocalizations.of(context).getMonthAndNthWeek(state.month, state.nthWeek),
-          ),
-          Expanded(
-            child: Stack(
-              children: <Widget>[
-                InfinityPageView(
-                  controller: _weekRecordPageController,
-                  itemCount: state.weekRecords.length,
-                  itemBuilder: (context, index) {
-                    final weekRecords = state.weekRecords;
-                    if (weekRecords.isEmpty || weekRecords[index] == null) {
-                      return null;
-                    }
-                    return _WeekRecord(
-                      bloc: _bloc,
-                      weekRecord: weekRecords[index],
-                      focusNodeProvider: _getOrCreateFocusNode,
-                      scrollController: _scrollController,
-                    );
-                  },
-                  onPageChanged: (changedIndex) {
-                    _headerShadowKey.currentState.updateShadowVisibility(false);
-                    _bloc.onWeekRecordPageChanged(changedIndex);
-                  },
-                ),
-                _HeaderShadow(
-                  key: _headerShadowKey,
-                  scrollController: _scrollController,
-                ),
-              ],
+    return SafeArea(
+      child: state.viewState == WeekViewState.WHOLE_LOADING ? _WholeLoadingView()
+        : WillPopScope(
+        onWillPop: () async {
+          return !_unfocusTextFieldIfAny();
+        },
+        child: Column(
+          children: [
+            _Header(
+              bloc: _bloc,
+              displayYear: state.year.toString(),
+              displayMonthAndWeek: AppLocalizations.of(context).getMonthAndNthWeek(state.month, state.nthWeek),
             ),
-          ),
-        ]
+            Expanded(
+              child: Stack(
+                children: <Widget>[
+                  InfinityPageView(
+                    controller: _weekRecordPageController,
+                    itemCount: state.weekRecords.length,
+                    itemBuilder: (context, index) {
+                      final weekRecords = state.weekRecords;
+                      if (weekRecords.isEmpty || weekRecords[index] == null) {
+                        return null;
+                      }
+                      return _WeekRecord(
+                        bloc: _bloc,
+                        weekRecord: weekRecords[index],
+                        focusNodeProvider: _getOrCreateFocusNode,
+                        scrollController: _scrollController,
+                      );
+                    },
+                    onPageChanged: (changedIndex) {
+                      _headerShadowKey.currentState.updateShadowVisibility(false);
+                      _bloc.onWeekRecordPageChanged(changedIndex);
+                    },
+                  ),
+                  _HeaderShadow(
+                    key: _headerShadowKey,
+                    scrollController: _scrollController,
+                  ),
+                ],
+              ),
+            ),
+          ]
+        ),
       ),
     );
   }
@@ -138,12 +142,10 @@ class _WeekScreenState extends State<WeekScreen> {
 class _WholeLoadingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        color: AppColors.BACKGROUND_WHITE,
-        alignment: Alignment.center,
-        child: CircularProgressIndicator(),
-      ),
+    return Container(
+      color: AppColors.BACKGROUND_WHITE,
+      alignment: Alignment.center,
+      child: CircularProgressIndicator(),
     );
   }
 }
@@ -162,36 +164,51 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 55),
-      child: InkWell(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 8, bottom: 8, left: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                displayYear,
-                style: TextStyle(
-                  color: AppColors.TEXT_BLACK,
-                  fontSize: 12,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  displayMonthAndWeek,
-                  style: TextStyle(
-                    color: AppColors.TEXT_BLACK,
-                    fontSize: 24,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: <Widget>[
+          SizedBox(width: 4,),
+          InkWell(
+            onTap: () { },
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Image.asset('assets/ic_prev.png'),
+            ),
           ),
-        ),
-        onTap: () => bloc.onHeaderClicked(),
+          Expanded(
+            child: Column(
+              children: [
+                Text(
+                  displayYear,
+                  style: TextStyle(
+                    color: AppColors.TEXT_BLACK_LIGHT,
+                    fontSize: 14,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    displayMonthAndWeek,
+                    style: TextStyle(
+                      color: AppColors.TEXT_BLACK,
+                      fontSize: 24,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          InkWell(
+            onTap: () { },
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Image.asset('assets/ic_next.png'),
+            ),
+          ),
+          SizedBox(width: 4,),
+        ],
       ),
     );
   }
@@ -222,7 +239,7 @@ class _WeekRecord extends StatelessWidget {
             focusNodeProvider: focusNodeProvider,
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
+            padding: const EdgeInsets.only(top: 12,),
             child: Column(
               children: List.generate(weekRecord.dayPreviews.length, (index) {
                 return _DayPreviewItem(
@@ -253,116 +270,39 @@ class _CheckPointsBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 6, top: 6, right: 6),
+      padding: const EdgeInsets.only(left: 24, top: 12, right: 24),
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.PRIMARY,
           borderRadius: BorderRadius.all(Radius.circular(6)),
         ),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 7, top: 3, right: 3, bottom: 3),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 5),
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      'CHECK POINTS',
-                      style: TextStyle(
-                        color: AppColors.TEXT_WHITE,
-                        fontSize: 18,
-                      ),
-                    ),
-                    Spacer(),
-                    weekRecord.isCheckPointsLocked ? _LockedIcon(
-                      onTap: () => bloc.onCheckPointsLockedIconClicked(weekRecord),
-                    ) : _UnlockedIcon(
-                      onTap: () => bloc.onCheckPointsUnlockedIconClicked(weekRecord, context),
-                    ),
-                  ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 12, top: 12,),
+              child: Text(
+                'CHECK POINTS',
+                style: TextStyle(
+                  color: AppColors.TEXT_WHITE,
+                  fontSize: 18,
                 ),
               ),
-              weekRecord.isCheckPointsLocked ? const SizedBox.shrink()
-                : Padding(
-                padding: const EdgeInsets.only(bottom: 9),
-                child: Column(
-                  children: List.generate(weekRecord.checkPoints.length, (index) {
-                    return _CheckPointItem(
-                      bloc: bloc,
-                      weekRecord: weekRecord,
-                      checkPoint: weekRecord.checkPoints[index],
-                      focusNodeProvider: focusNodeProvider,
-                    );
-                  }),
-                ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8, top: 3, right: 12, bottom: 12,),
+              child: Column(
+                children: List.generate(weekRecord.checkPoints.length, (index) {
+                  return _CheckPointItem(
+                    bloc: bloc,
+                    weekRecord: weekRecord,
+                    checkPoint: weekRecord.checkPoints[index],
+                    focusNodeProvider: focusNodeProvider,
+                  );
+                }),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _LockedIcon extends StatelessWidget {
-  final void Function() onTap;
-
-  _LockedIcon({
-    @required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      customBorder: CircleBorder(),
-      onTap: onTap,
-      child: SizedBox(
-        width: 38,
-        height: 38,
-        child: Center(
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.SECONDARY,
-              shape: BoxShape.circle,
             ),
-            width: 28,
-            height: 28,
-            alignment: Alignment.center,
-            child: Image.asset('assets/ic_lock_on.png'),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _UnlockedIcon extends StatelessWidget {
-  final void Function() onTap;
-
-  _UnlockedIcon({
-    @required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      customBorder: CircleBorder(),
-      onTap: onTap,
-      child: SizedBox(
-        width: 38,
-        height: 38,
-        child: Center(
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.BACKGROUND_GREY,
-              shape: BoxShape.circle,
-            ),
-            width: 28,
-            height: 28,
-            alignment: Alignment.center,
-            child: Image.asset('assets/ic_lock_off.png'),
-          ),
+          ],
         ),
       ),
     );
@@ -385,7 +325,7 @@ class _CheckPointItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 4, right: 7),
+      padding: const EdgeInsets.only(top: 4),
       child: Row(
         children: <Widget>[
           ConstrainedBox(
@@ -400,7 +340,7 @@ class _CheckPointItem extends StatelessWidget {
               ),
             )
           ),
-          SizedBox(width: 5,),
+          SizedBox(width: 4,),
           Expanded(
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: 30,),
@@ -439,111 +379,152 @@ class _DayPreviewItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _DayPreviewItemContent(
-          bloc: bloc,
-          weekRecord: weekRecord,
-          dayPreview: dayPreview,
-        ),
-        dayPreview.hasTrailingDots ? _DayPreviewItemTrailingDots(
-          filledRatio: dayPreview.filledRatio,
-        ) : const SizedBox.shrink(),
-      ],
-    );
-  }
-}
-
-// all day preview content from Mon ~ lock icon
-class _DayPreviewItemContent extends StatelessWidget {
-  final WeekBloc bloc;
-  final WeekRecord weekRecord;
-  final DayPreview dayPreview;
-
-  _DayPreviewItemContent({
-    @required this.bloc,
-    @required this.weekRecord,
-    @required this.dayPreview,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: InkWell(
-            onTap: () => bloc.onDayPreviewClicked(context, dayPreview),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 15),
-              child: Row(
-                children: [
-                  _DayPreviewItemThumbnail(
-                    hasBorder: dayPreview.hasBorder,
-                    filledRatio: dayPreview.filledRatio,
-                    text: dayPreview.thumbnailString,
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 18, top: 4, bottom: 4,),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            children: [
-                              dayPreview.isToday == true ? _DayPreviewItemTodayText() : const SizedBox.shrink(),
-                              Text(
-                                AppLocalizations.of(context).getDayPreviewTitle(dayPreview.month, dayPreview.day),
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: AppColors.TEXT_BLACK,
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              dayPreview.filledRatio == 1.0 ? _DayPreviewItemCompleteText() : const SizedBox.shrink(),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 2,),
-                            child: Text(
-                              dayPreview.subtitle,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: dayPreview.subtitleColor,
-                              ),
+    final isPastDay = true;
+    final hasAnyToDo = dayPreview.toDos.length > 0;
+    return InkWell(
+      onTap: () => bloc.onDayPreviewClicked(context, dayPreview),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: IntrinsicHeight(
+          child: Row(
+            children: [
+              _DayPreviewItemThumbnail(
+                text: dayPreview.thumbnailString,
+                ratio: dayPreview.filledRatio,
+                bgColor: !hasAnyToDo ? AppColors.BACKGROUND_GREY : AppColors.PRIMARY_LIGHT_LIGHT,
+                fgColor: isPastDay ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
+                isTopLineVisible: false,
+                isBottomLineVisible: true,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 14, top: 8, bottom: 8,),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        children: [
+                          Text(
+                            AppLocalizations.of(context).getDayPreviewTitle(dayPreview.month, dayPreview.day),
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: isPastDay ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
                             ),
                           ),
+                          SizedBox(width: 8),
+                          dayPreview.isToday == true ? _DayPreviewItemTodayText() : const SizedBox.shrink(),
                         ],
                       ),
-                    ),
-                  )
-                ],
-              ),
-            ),
+                      SizedBox(height: 4,),
+                      Row(
+                        children: <Widget>[
+                          Image.asset(isPastDay ? 'assets/ic_preview_memo_light.png' : 'assets/ic_preview_memo.png'),
+                          SizedBox(width: 8),
+                          Text(
+                            '-',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isPastDay ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
+                            ),
+                          )
+                        ],
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Image.asset(isPastDay ? 'assets/ic_preview_todo_light.png' : 'assets/ic_preview_todo.png'),
+                          SizedBox(width: 8),
+                          Text(
+                            'Flutter 개발',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isPastDay ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(right: 9),
-          child: dayPreview.isLocked ? _LockedIcon(
-            onTap: () => bloc.onDayPreviewLockedIconClicked(weekRecord, dayPreview),
-          ) : _UnlockedIcon(
-            onTap: () => bloc.onDayPreviewUnlockedIconClicked(weekRecord, dayPreview, context),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
 
 class _DayPreviewItemThumbnail extends StatelessWidget {
-  final bool hasBorder;
-  final double filledRatio;
   final String text;
+  final double ratio;
+  final Color bgColor;
+  final Color fgColor;
+  final bool isTopLineVisible;
+  final bool isBottomLineVisible;
 
   _DayPreviewItemThumbnail({
-    @required this.hasBorder,
-    @required this.filledRatio,
     @required this.text,
+    @required this.ratio,
+    @required this.bgColor,
+    @required this.fgColor,
+    @required this.isTopLineVisible,
+    @required this.isBottomLineVisible,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isBothLineVisible = isTopLineVisible && isBottomLineVisible;
+    final isLineVisible = isTopLineVisible || isBottomLineVisible;
+    final lineAlignment = isBothLineVisible ? Alignment.center
+      : isTopLineVisible ? Alignment.topCenter
+      : Alignment.bottomCenter;
+    final heightFactor = isBothLineVisible ? 1.0 : 0.5;
+    return Stack(
+      alignment: AlignmentDirectional.center,
+      children: <Widget>[
+        isLineVisible ? Align(
+          alignment: lineAlignment,
+          child: ClipRect(
+            child: Align(
+              alignment: lineAlignment,
+              heightFactor: heightFactor,
+              child: Container(
+                color: AppColors.PRIMARY,
+                width: 2,
+              ),
+            ),
+          ),
+        ) : const SizedBox.shrink(),
+        _ThumbnailCircle(
+          color: bgColor,
+          ratio: 1.0,
+        ),
+        _ThumbnailCircle(
+          color: fgColor,
+          ratio: ratio,
+        ),
+        Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: AppColors.TEXT_WHITE,
+              fontSize: 14,
+            ),
+            textScaleFactor: 1.0,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ThumbnailCircle extends StatelessWidget {
+  final Color color;
+  final double ratio;
+
+  _ThumbnailCircle({
+    @required this.color,
+    @required this.ratio,
   });
 
   @override
@@ -551,69 +532,90 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
     return SizedBox(
       width: 48,
       height: 48,
-      child: Stack(
-        children: <Widget>[
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColors.BACKGROUND_GREY,
-                shape: BoxShape.circle,
-                border: hasBorder ? Border.all(
-                  color: AppColors.PRIMARY,
-                  width: 2,
-                ) : null,
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: ClipRect(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                heightFactor: filledRatio,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: AppColors.PRIMARY,
-                    shape: BoxShape.circle,
+      child: ClipPath(
+        clipper: ratio < 1 ? _ThumbnailCircleClipper(
+          ratio: ratio,
+        ) : null,
+        child: Stack(
+          children: <Widget>[
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppColors.BACKGROUND_WHITE,
+                    width: 4,
                   ),
-                  child: Container(),
                 ),
-              )
-            ),
-          ),
-          Center(
-            child: Text(
-              text,
-              style: TextStyle(
-                color: AppColors.TEXT_WHITE,
-                fontSize: 18,
               ),
-              textScaleFactor: 1.0,
             ),
-          ),
-        ],
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: color,
+                    width: 2,
+                  )
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
+class _ThumbnailCircleClipper extends CustomClipper<Path> {
+  final double ratio;
+
+  _ThumbnailCircleClipper({
+    @required this.ratio,
+  });
+
+  @override
+  Path getClip(Size size) {
+    final centerX = size.width / 2;
+    final centerY = size.height / 2;
+    final path = Path()
+      ..moveTo(centerX, centerY)
+      ..arcTo(
+        Rect.fromCenter(center: Offset(centerX, centerY),
+          width: size.width,
+          height: size.height),
+        _degreesToRadians(-90),
+        _degreesToRadians(360 * ratio),
+        false
+      );
+    path.close();
+    return path;
+  }
+
+  double _degreesToRadians(double degrees) {
+    return degrees / 180 * pi;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => true;
+
+}
+
 class _DayPreviewItemTodayText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(right: 4,),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.SECONDARY,
-          borderRadius: BorderRadius.all(Radius.circular(6)),
-        ),
-        padding: EdgeInsets.symmetric(vertical: 1, horizontal: 3,),
-        child: Text(
-          'TODAY',
-          style: TextStyle(
-            color: AppColors.TEXT_WHITE,
-            fontSize: 8,
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.SECONDARY,
+        borderRadius: BorderRadius.all(Radius.circular(6)),
+      ),
+      padding: EdgeInsets.symmetric(vertical: 1, horizontal: 3,),
+      child: Text(
+        'TODAY',
+        style: TextStyle(
+          color: AppColors.TEXT_WHITE,
+          fontSize: 8,
         ),
       ),
     );
@@ -632,87 +634,6 @@ class _DayPreviewItemCompleteText extends StatelessWidget {
           color: AppColors.TERTIARY,
         )
       )
-    );
-  }
-}
-
-class _DayPreviewItemTrailingDots extends StatelessWidget {
-  final double filledRatio;
-
-  _DayPreviewItemTrailingDots({
-    @required this.filledRatio,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 37),
-      child: SizedBox(
-        width: 4,
-        height: 16,
-        child: Stack(
-          children: [
-            _TrailingDots(
-              color: AppColors.BACKGROUND_GREY,
-              filledRatio: 1.0,
-            ),
-            _TrailingDots(
-              color: AppColors.PRIMARY,
-              filledRatio: filledRatio,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TrailingDots extends StatelessWidget {
-  final Color color;
-  final double filledRatio;
-
-  _TrailingDots({
-    @required this.color,
-    @required this.filledRatio,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRect(
-      child: Align(
-        alignment: Alignment.topCenter,
-        heightFactor: filledRatio,
-        child: Column(
-          children: <Widget>[
-            Container(
-              width: 4,
-              height: 4,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
-            ),
-            SizedBox(height: 2,),
-            Container(
-              width: 4,
-              height: 4,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
-            ),
-            SizedBox(height: 2,),
-            Container(
-              width: 4,
-              height: 4,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -74,11 +74,6 @@ class WeekBloc {
     _initState(weekRecordPageIndex: newIndex);
   }
 
-  void onHeaderClicked() {
-    _usecases.setCurrentDateToToday();
-    _initState();
-  }
-
   void onCheckPointsLockedIconClicked(WeekRecord weekRecord) {
     delegator.showBottomSheet((context) =>
       InputPasswordScreen(onSuccess: () {
