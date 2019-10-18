@@ -44,20 +44,49 @@ class WeekUsecases {
 
     final datesInWeek = Utils.getDatesInWeek(date);
     List<DayPreview> dayPreviews = [];
+    bool prevDayCompleted = false;
+    bool curDayCompleted = false;
     for (int i = 0; i < datesInWeek.length; i++) {
       final date = datesInWeek[i];
       final toDos = await _toDoRepository.getToDos(date);
       final isLocked = await _lockRepository.getIsDayRecordLocked(date, defaultLocked);
+      final memo = await _memoRepository.getDayMemo(date);
+
+      toDos.sort((t1, t2) {
+        if (t1.isDone && !t2.isDone) {
+          return 1;
+        } else if (!t1.isDone && t2.isDone){
+          return -1;
+        } else {
+          return t1.order - t2.order;
+        }
+      });
+      curDayCompleted = toDos.length > 0 && toDos.length == toDos.where((toDo) => toDo.isDone).length;
       final dayPreview = DayPreview(
         year: date.year,
         month: date.month,
         day: date.day,
         weekday: date.weekday,
-        toDos: toDos,
+        totalToDosCount: toDos.length,
+        doneToDosCount: toDos.where((it) => it.isDone).length,
         isLocked: isLocked,
         isToday: Utils.isSameDay(date, today),
+        isLightColor: !curDayCompleted && today.compareTo(date) > 0,
+        isTopLineVisible: (curDayCompleted && prevDayCompleted) || (date == today && prevDayCompleted),
+        isTopLineLightColor: !curDayCompleted,
+        memoPreview: memo.text.length > 0 ? memo.text.replaceAll(RegExp(r'\n'), ', ') : '-',
+        toDoPreviews: toDos.length > 2 ? toDos.sublist(0, 2) : toDos,
       );
       dayPreviews.add(dayPreview);
+
+      if (i > 0) {
+        dayPreviews[i - 1] = dayPreviews[i - 1].buildNew(
+          isBottomLineVisible: (prevDayCompleted && curDayCompleted) || (date == today && prevDayCompleted),
+          isBottomLineLightColor: !curDayCompleted,
+        );
+      }
+
+      prevDayCompleted = curDayCompleted;
     }
 
     return WeekRecord(dateInWeek: dateInWeek, isCheckPointsLocked: isCheckPointsLocked, checkPoints: checkPoints, dayPreviews: dayPreviews);

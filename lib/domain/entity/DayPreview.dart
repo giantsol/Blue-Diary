@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
+import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 
 class DayPreview {
@@ -8,35 +9,32 @@ class DayPreview {
   final int month;
   final int day;
   final int weekday;
-  final List<ToDo> toDos;
+  final int totalToDosCount;
+  final int doneToDosCount;
   final bool isLocked;
   final bool isToday;
+  final bool isLightColor;
+  final bool isTopLineVisible;
+  final bool isTopLineLightColor;
+  final bool isBottomLineVisible;
+  final bool isBottomLineLightColor;
+  final String memoPreview;
+  final List<ToDo> toDoPreviews;
 
   bool get hasTrailingDots => weekday != DateTime.sunday;
   String get key => '$year-$month-$day';
-  int get totalToDosCount => toDos.length;
-  int get doneToDosCount => toDos.where((toDo) => toDo.isDone).length;
   bool get hasBorder => totalToDosCount > 0;
-  double get filledRatio => totalToDosCount == 0 ? 0 : doneToDosCount / totalToDosCount.toDouble();
+  double get ratio => totalToDosCount == 0 ? 0 : doneToDosCount / totalToDosCount.toDouble();
   String get subtitle => totalToDosCount == 0 ? 'No TODO' : '$doneToDosCount/$totalToDosCount achieved';
   Color get subtitleColor => totalToDosCount == 0 ? AppColors.TEXT_BLACK_LIGHT : AppColors.PRIMARY;
   DateTime get date => DateTime(year, month, day);
 
   String get thumbnailString {
-    if (weekday == DateTime.monday) {
-      return 'Mon';
-    } else if (weekday == DateTime.tuesday) {
-      return 'Tue';
-    } else if (weekday == DateTime.wednesday) {
-      return 'Wed';
-    } else if (weekday == DateTime.thursday) {
-      return 'Thu';
-    } else if (weekday == DateTime.friday) {
-      return 'Fri';
-    } else if (weekday == DateTime.saturday) {
-      return 'Sat';
+    if (totalToDosCount == 0) {
+      return '-';
     } else {
-      return 'Sun';
+      final percent = (ratio * 100).toInt();
+      return '$percent%';
     }
   }
 
@@ -45,22 +43,40 @@ class DayPreview {
     this.month = 0,
     this.day = 0,
     this.weekday = 0,
-    this.toDos = const [],
+    this.totalToDosCount = 0,
+    this.doneToDosCount = 0,
     this.isLocked = false,
     this.isToday = false,
+    this.isLightColor = false,
+    this.isTopLineVisible = false,
+    this.isTopLineLightColor = false,
+    this.isBottomLineVisible = false,
+    this.isBottomLineLightColor = false,
+    this.memoPreview = '-',
+    this.toDoPreviews = const [],
   });
 
   DayPreview buildNew({
     bool isLocked,
+    bool isBottomLineVisible,
+    bool isBottomLineLightColor,
   }) {
     return DayPreview(
       year: this.year,
       month: this.month,
       day: this.day,
       weekday: this.weekday,
-      toDos: this.toDos,
+      totalToDosCount: this.totalToDosCount,
+      doneToDosCount: this.doneToDosCount,
       isLocked: isLocked ?? this.isLocked,
       isToday: this.isToday,
+      isLightColor: this.isLightColor,
+      isTopLineVisible: this.isTopLineVisible,
+      isTopLineLightColor: this.isTopLineLightColor,
+      isBottomLineVisible: isBottomLineVisible ?? this.isBottomLineVisible,
+      isBottomLineLightColor: isBottomLineLightColor ?? this.isBottomLineLightColor,
+      memoPreview: this.memoPreview,
+      toDoPreviews: this.toDoPreviews,
     );
   }
 }

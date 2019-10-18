@@ -244,11 +244,12 @@ class AppLocalizations {
       : 'December';
   }
 
-  String getDayPreviewTitle(int month, int day) {
+  String getDayPreviewTitle(int month, int day, int weekday) {
+    final weekdayString = _getWeekDayName(weekday);
     if (locale.languageCode == 'ko') {
-      return '$month월 $day일';
+      return '$month월 $day일 $weekdayString';
     } else {
-      return '${_getMonthName(month)} $day';
+      return '$weekdayString, ${_getMonthName(month)} $day';
     }
   }
 
@@ -296,6 +297,13 @@ class AppLocalizations {
     }
   }
 
+  String getMoreToDos(int count) {
+    if (locale.languageCode == 'ko') {
+      return '외 $count개';
+    } else {
+      return 'and $count more';
+    }
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

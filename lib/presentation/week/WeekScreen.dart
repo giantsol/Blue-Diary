@@ -8,6 +8,7 @@ import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
+import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/presentation/week/WeekBloc.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
@@ -379,8 +380,10 @@ class _DayPreviewItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPastDay = true;
-    final hasAnyToDo = dayPreview.toDos.length > 0;
+    final isLightColor = dayPreview.isLightColor;
+    final hasAnyToDo = dayPreview.totalToDosCount > 0;
+    final firstToDo = dayPreview.toDoPreviews.length >= 1 ? dayPreview.toDoPreviews[0] : null;
+    final secondToDo = dayPreview.toDoPreviews.length >= 2 ? dayPreview.toDoPreviews[1] : null;
     return InkWell(
       onTap: () => bloc.onDayPreviewClicked(context, dayPreview),
       child: Padding(
@@ -390,11 +393,13 @@ class _DayPreviewItem extends StatelessWidget {
             children: [
               _DayPreviewItemThumbnail(
                 text: dayPreview.thumbnailString,
-                ratio: dayPreview.filledRatio,
+                ratio: dayPreview.ratio,
                 bgColor: !hasAnyToDo ? AppColors.BACKGROUND_GREY : AppColors.PRIMARY_LIGHT_LIGHT,
-                fgColor: isPastDay ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
-                isTopLineVisible: false,
-                isBottomLineVisible: true,
+                fgColor: isLightColor ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
+                isTopLineVisible: dayPreview.isTopLineVisible,
+                isTopLineLightColor: dayPreview.isTopLineLightColor,
+                isBottomLineVisible: dayPreview.isBottomLineVisible,
+                isBottomLineLightColor: dayPreview.isBottomLineLightColor,
               ),
               Expanded(
                 child: Padding(
@@ -405,10 +410,10 @@ class _DayPreviewItem extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            AppLocalizations.of(context).getDayPreviewTitle(dayPreview.month, dayPreview.day),
+                            AppLocalizations.of(context).getDayPreviewTitle(dayPreview.month, dayPreview.day, dayPreview.weekday),
                             style: TextStyle(
                               fontSize: 18,
-                              color: isPastDay ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
+                              color: isLightColor ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
                             ),
                           ),
                           SizedBox(width: 8),
@@ -416,31 +421,15 @@ class _DayPreviewItem extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: 4,),
-                      Row(
-                        children: <Widget>[
-                          Image.asset(isPastDay ? 'assets/ic_preview_memo_light.png' : 'assets/ic_preview_memo.png'),
-                          SizedBox(width: 8),
-                          Text(
-                            '-',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isPastDay ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
-                            ),
-                          )
-                        ],
+                      _DayPreviewItemMemo(
+                        isLightColor: isLightColor,
+                        memo: dayPreview.memoPreview,
                       ),
-                      Row(
-                        children: <Widget>[
-                          Image.asset(isPastDay ? 'assets/ic_preview_todo_light.png' : 'assets/ic_preview_todo.png'),
-                          SizedBox(width: 8),
-                          Text(
-                            'Flutter 개발',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isPastDay ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
-                            ),
-                          )
-                        ],
+                      _DayPreviewItemToDos(
+                        isLightColor: isLightColor,
+                        firstToDo: firstToDo,
+                        secondToDo: secondToDo,
+                        moreToDosCount: dayPreview.totalToDosCount - dayPreview.toDoPreviews.length,
                       ),
                     ],
                   ),
@@ -460,7 +449,9 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
   final Color bgColor;
   final Color fgColor;
   final bool isTopLineVisible;
+  final bool isTopLineLightColor;
   final bool isBottomLineVisible;
+  final bool isBottomLineLightColor;
 
   _DayPreviewItemThumbnail({
     @required this.text,
@@ -468,28 +459,37 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
     @required this.bgColor,
     @required this.fgColor,
     @required this.isTopLineVisible,
+    @required this.isTopLineLightColor,
     @required this.isBottomLineVisible,
+    @required this.isBottomLineLightColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isBothLineVisible = isTopLineVisible && isBottomLineVisible;
-    final isLineVisible = isTopLineVisible || isBottomLineVisible;
-    final lineAlignment = isBothLineVisible ? Alignment.center
-      : isTopLineVisible ? Alignment.topCenter
-      : Alignment.bottomCenter;
-    final heightFactor = isBothLineVisible ? 1.0 : 0.5;
     return Stack(
       alignment: AlignmentDirectional.center,
       children: <Widget>[
-        isLineVisible ? Align(
-          alignment: lineAlignment,
+        isTopLineVisible ? Align(
+          alignment: Alignment.topCenter,
           child: ClipRect(
             child: Align(
-              alignment: lineAlignment,
-              heightFactor: heightFactor,
+              alignment: Alignment.topCenter,
+              heightFactor: 0.5,
               child: Container(
-                color: AppColors.PRIMARY,
+                color: isTopLineLightColor ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
+                width: 2,
+              ),
+            ),
+          ),
+        ) : const SizedBox.shrink(),
+        isBottomLineVisible ? Align(
+          alignment: Alignment.bottomCenter,
+          child: ClipRect(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              heightFactor: 0.5,
+              child: Container(
+                color: isBottomLineLightColor ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
                 width: 2,
               ),
             ),
@@ -513,6 +513,148 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
             textScaleFactor: 1.0,
           ),
         ),
+      ],
+    );
+  }
+}
+
+class _DayPreviewItemMemo extends StatelessWidget {
+  final bool isLightColor;
+  final String memo;
+
+  _DayPreviewItemMemo({
+    @required this.isLightColor,
+    @required this.memo,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 1,),
+      child: Row(
+        children: <Widget>[
+          Image.asset(isLightColor ? 'assets/ic_preview_memo_light.png' : 'assets/ic_preview_memo.png'),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              memo,
+              style: TextStyle(
+                fontSize: 12,
+                color: isLightColor ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
+              ),
+              strutStyle: StrutStyle(
+                fontSize: 12,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _DayPreviewItemToDos extends StatelessWidget {
+  final bool isLightColor;
+  final ToDo firstToDo;
+  final ToDo secondToDo;
+  final int moreToDosCount;
+
+  _DayPreviewItemToDos({
+    @required this.isLightColor,
+    @required this.firstToDo,
+    @required this.secondToDo,
+    @required this.moreToDosCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final hasNoToDos = firstToDo == null && secondToDo == null;
+    final hasOneToDo = firstToDo != null && secondToDo == null;
+    return Row(
+      children: <Widget>[
+        Image.asset(isLightColor ? 'assets/ic_preview_todo_light.png' : 'assets/ic_preview_todo.png'),
+        SizedBox(width: 8),
+        hasNoToDos ? Text(
+          '-',
+          style: TextStyle(
+            fontSize: 12,
+            color: isLightColor ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
+          ),
+        ) : hasOneToDo ? Expanded(
+          child: Text(
+            firstToDo.text,
+            style: TextStyle(
+              fontSize: 12,
+              color: isLightColor || firstToDo.isDone ? AppColors.TEXT_BLACK_LIGHT
+                : AppColors.TEXT_BLACK,
+              decoration: firstToDo.isDone ? TextDecoration.lineThrough : null,
+              decorationColor: AppColors.TEXT_BLACK_LIGHT,
+              decorationThickness: 2,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ) : Expanded(
+          child: Row(
+            children: <Widget>[
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: 70,
+                ),
+                child: Text(
+                  firstToDo.text,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isLightColor || firstToDo.isDone ? AppColors.TEXT_BLACK_LIGHT
+                      : AppColors.TEXT_BLACK,
+                    decoration: firstToDo.isDone ? TextDecoration.lineThrough : null,
+                    decorationColor: AppColors.TEXT_BLACK_LIGHT,
+                    decorationThickness: 2,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Text(
+                ', ',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isLightColor ? AppColors.TEXT_BLACK_LIGHT
+                    : AppColors.TEXT_BLACK,
+                ),
+              ),
+              Expanded(
+                child: Row(
+                  children: <Widget>[
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: 70,
+                      ),
+                      child: Text(
+                        secondToDo.text,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isLightColor || secondToDo.isDone ? AppColors.TEXT_BLACK_LIGHT
+                            : AppColors.TEXT_BLACK,
+                          decoration: secondToDo.isDone ? TextDecoration.lineThrough : null,
+                          decorationColor: AppColors.TEXT_BLACK_LIGHT,
+                          decorationThickness: 2,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    moreToDosCount > 0 ? Text(
+                      AppLocalizations.of(context).getMoreToDos(moreToDosCount),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.TEXT_BLACK_LIGHT,
+                      ),
+                    ) : const SizedBox.shrink(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        )
       ],
     );
   }
