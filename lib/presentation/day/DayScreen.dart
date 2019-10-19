@@ -97,9 +97,9 @@ class _DayScreenState extends State<DayScreen> {
     return state.viewState == DayViewState.WHOLE_LOADING ? _WholeLoadingView()
       : WillPopScope(
       onWillPop: () async => !_bloc.handleBackPress() && !_unfocusTextFieldIfAny(),
-      child: SafeArea(
-        child: Scaffold(
-          body: Stack(
+      child: Scaffold(
+        body: SafeArea(
+          child: Stack(
             children: <Widget>[
               Column(
                 children: <Widget>[
