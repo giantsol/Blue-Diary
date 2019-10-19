@@ -164,19 +164,19 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: <Widget>[
-          SizedBox(width: 4,),
-          InkWell(
-            onTap: () { },
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Image.asset('assets/ic_prev.png'),
-            ),
+    return Row(
+      children: <Widget>[
+        SizedBox(width: 4,),
+        InkWell(
+          onTap: () { },
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Image.asset('assets/ic_prev.png'),
           ),
-          Expanded(
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
             child: Column(
               children: [
                 Text(
@@ -201,16 +201,16 @@ class _Header extends StatelessWidget {
               ],
             ),
           ),
-          InkWell(
-            onTap: () { },
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Image.asset('assets/ic_next.png'),
-            ),
+        ),
+        InkWell(
+          onTap: () { },
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Image.asset('assets/ic_next.png'),
           ),
-          SizedBox(width: 4,),
-        ],
-      ),
+        ),
+        SizedBox(width: 4,),
+      ],
     );
   }
 }
@@ -291,7 +291,7 @@ class _CheckPointsBox extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 8, top: 3, right: 12, bottom: 12,),
+              padding: const EdgeInsets.only(left: 8, top: 4, right: 12, bottom: 12,),
               child: Column(
                 children: List.generate(weekRecord.checkPoints.length, (index) {
                   return _CheckPointItem(

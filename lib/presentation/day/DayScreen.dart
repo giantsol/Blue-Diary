@@ -99,11 +99,7 @@ class _DayScreenState extends State<DayScreen> {
       onWillPop: () async => !_bloc.handleBackPress() && !_unfocusTextFieldIfAny(),
       child: SafeArea(
         child: Scaffold(
-          floatingActionButton: state.isFabVisible ? _FAB(
-            bloc: _bloc,
-          ) : null,
           body: Stack(
-            fit: StackFit.expand,
             children: <Widget>[
               Column(
                 children: <Widget>[
@@ -160,6 +156,12 @@ class _DayScreenState extends State<DayScreen> {
                 selectedPickerIndex: state.selectedPickerIndex,
                 focusNodeProvider: _getOrCreateFocusNode,
               ),
+              state.isFabVisible ? _FAB(
+                bloc: _bloc,
+              ) : const SizedBox.shrink(),
+              state.isFabVisible ? _BackFAB(
+                bloc: _bloc,
+              ) : const SizedBox.shrink(),
             ],
           ),
         ),
@@ -221,11 +223,7 @@ class _DayRecord extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dayRecord = this.dayRecord;
-    final showLockView = dayRecord.isLocked && !isUnlockedAllByUser;
-    return showLockView ? _LockView(
-      bloc: bloc,
-      inputPasswordLength: inputPasswordLength,
-    ) : dayRecord.toDoRecords.length == 0 ? _EmptyToDoListView(
+    return dayRecord.toDoRecords.length == 0 ? _EmptyToDoListView(
       bloc: bloc,
       dayMemo: dayRecord.dayMemo,
       focusNodeProvider: focusNodeProvider,
@@ -248,11 +246,40 @@ class _FAB extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      child: Image.asset('assets/ic_plus.png'),
-      backgroundColor: AppColors.PRIMARY,
-      splashColor: AppColors.PRIMARY_DARK,
-      onPressed: () => bloc.onAddToDoClicked(context),
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Padding(
+        padding: const EdgeInsets.only(right: 16, bottom: 16,),
+        child: FloatingActionButton(
+          child: Image.asset('assets/ic_plus.png'),
+          backgroundColor: AppColors.PRIMARY,
+          splashColor: AppColors.PRIMARY_DARK,
+          onPressed: () => bloc.onAddToDoClicked(context),
+        ),
+      ),
+    );
+  }
+}
+
+class _BackFAB extends StatelessWidget {
+  final DayBloc bloc;
+
+  _BackFAB({
+    @required this.bloc,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomLeft,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 16, bottom: 16,),
+        child: FloatingActionButton(
+          child: Image.asset('assets/ic_back_arrow.png'),
+          backgroundColor: AppColors.BACKGROUND_WHITE,
+          onPressed: () => { },
+        ),
+      ),
     );
   }
 }
@@ -270,74 +297,36 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
+        SizedBox(width: 4,),
         InkWell(
+          onTap: () { },
           child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Image.asset('assets/ic_back_arrow.png'),
+            padding: const EdgeInsets.all(20),
+            child: Image.asset('assets/ic_prev.png'),
           ),
-          onTap: () => bloc.onBackArrowClicked(context),
         ),
         Expanded(
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 15),
+            padding: const EdgeInsets.symmetric(vertical: 14,),
             child: Text(
               title,
               style: TextStyle(
                 fontSize: 24,
                 color: AppColors.TEXT_BLACK,
               ),
-              maxLines: 1,
               overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
             ),
           ),
         ),
-      ],
-    );
-  }
-}
-
-class _LockView extends StatelessWidget {
-  final DayBloc bloc;
-  final int inputPasswordLength;
-
-  _LockView({
-    @required this.bloc,
-    @required this.inputPasswordLength,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: Container(
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  'This day is locked. You can unlock all days temporarily',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: AppColors.TEXT_BLACK,
-                  ),
-                ),
-                SizedBox(height: 73,),
-                _Passwords(
-                  passwordLength: inputPasswordLength,
-                ),
-              ],
-            ),
+        InkWell(
+          onTap: () { },
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Image.asset('assets/ic_next.png'),
           ),
         ),
-        Container(
-          color: AppColors.BACKGROUND_WHITE,
-          child: VirtualKeyboard(
-            fontSize: 18,
-            type: VirtualKeyboardType.Numeric,
-            onKeyPress: (key) => bloc.onLockViewVirtualKeyPressed(key),
-          ),
-        )
+        SizedBox(width: 4,),
       ],
     );
   }
@@ -394,7 +383,7 @@ class _EmptyToDoListView extends StatelessWidget {
           focusNodeProvider: focusNodeProvider,
         ),
         Padding(
-          padding: EdgeInsets.only(left: 18, top: 20),
+          padding: EdgeInsets.only(left: 36, top: 20),
           child: Text(
             'TODO',
             style: TextStyle(
@@ -434,44 +423,29 @@ class _DayMemo extends StatelessWidget {
   Widget build(BuildContext context) {
     final isExpanded = dayMemo.isExpanded;
     return Padding(
-      padding: EdgeInsets.only(left: 6, top: 6, right: 6),
+      padding: EdgeInsets.only(left: 24, top: 12, right: 24),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: AppColors.PRIMARY,
           borderRadius: BorderRadius.all(Radius.circular(6)),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Row(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Text(
-                    'MEMO',
-                    style: TextStyle(
-                      color: AppColors.TEXT_WHITE,
-                      fontSize: 18,
-                    ),
-                  ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                'MEMO',
+                style: TextStyle(
+                  color: AppColors.TEXT_WHITE,
+                  fontSize: 18,
                 ),
-                Spacer(),
-                Padding(
-                  padding: const EdgeInsets.only(right: 4),
-                  child: GestureDetector(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
-                      child: isExpanded ? Image.asset('assets/ic_collapse.png') : Image.asset('assets/ic_expand.png'),
-                    ),
-                    behavior: HitTestBehavior.translucent,
-                    onTap: () => bloc.onDayMemoCollapseOrExpandClicked(),
-                  ),
-                )
-              ],
+              ),
             ),
             isExpanded ? Padding(
               padding: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
               child: SizedBox(
-                height: 93,
+                height: 97,
                 child: AppTextField(
                   focusNode: focusNodeProvider(dayMemo.key),
                   text: dayMemo.text,
@@ -521,7 +495,7 @@ class _ToDoListView extends StatelessWidget {
           );
         } else if (index == 1) {
           return Padding(
-            padding: EdgeInsets.only(left: 18, top: 20, bottom: 12),
+            padding: EdgeInsets.only(left: 36, top: 20, bottom: 12),
             child: Text(
               'TODO',
               style: TextStyle(
@@ -564,7 +538,7 @@ class _ToDoItem extends StatelessWidget {
         InkWell(
           child: Row(
             children: <Widget>[
-              SizedBox(width: 18,),
+              SizedBox(width: 36,),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 6),
                 child: _CategoryThumbnail(
@@ -622,10 +596,10 @@ class _ToDoItem extends StatelessWidget {
                 ),
               ),
               toDo.isDone ? Padding(
-                padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 19),
+                padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 39),
                 child: Image.asset('assets/ic_check.png'),
               ) : Padding(
-                padding: const EdgeInsets.only(right: 4),
+                padding: const EdgeInsets.only(right: 24),
                 child: InkWell(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 14, top: 14, right: 14, bottom: 14),
@@ -661,7 +635,7 @@ class _ToDoItemDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.symmetric(horizontal: 24),
       child: Container(
         width: double.infinity,
         height: 1,
@@ -825,10 +799,35 @@ class _ToDoEditorContainer extends StatelessWidget {
                   editingToDoRecord: editingToDoRecord,
                   focusNodeProvider: focusNodeProvider,
                 ),
-                _ToDoEditorCategoryButton(
-                  bloc: bloc,
-                  categoryName: editingToDoRecord.category.name,
-                )
+                SizedBox(height: 2,),
+                Row(
+                  children: <Widget>[
+                    _ToDoEditorCategoryButton(
+                      bloc: bloc,
+                      categoryName: editingToDoRecord.category.name,
+                    ),
+                    Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10,),
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: InkWell(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 14,),
+                            child: Text(
+                              AppLocalizations.of(context).cancel,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.SECONDARY,
+                              ),
+                            ),
+                          ),
+                          onTap: () => { },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           )
@@ -863,50 +862,53 @@ class _ToDoEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     final category = editingToDoRecord.category;
     final toDo = editingToDoRecord.toDo;
-    return Row(
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-          child: _CategoryThumbnail(
+    return Padding(
+      padding: const EdgeInsets.only(left: 24, top: 10,),
+      child: Row(
+        children: <Widget>[
+          _CategoryThumbnail(
             category: category,
             width: 24,
             height: 24,
             fontSize: 14,
           ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            child: AppTextField(
-              focusNode: _focusNode,
-              text: toDo.text,
-              textSize: 14,
-              textColor: AppColors.TEXT_BLACK,
-              hintText: editingToDoRecord.isDraft ? AppLocalizations.of(context).addTask : AppLocalizations.of(context).modifyTask ,
-              hintTextSize: 14,
-              hintColor: AppColors.TEXT_BLACK_LIGHT,
-              onChanged: (s) => bloc.onEditingToDoTextChanged(s),
-              onEditingComplete: () => bloc.onToDoEditingDone(),
-            ),
-          ),
-        ),
-        Material(
-          type: MaterialType.transparency,
-          child: InkWell(
+          Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Text(
-                editingToDoRecord.isDraft ? AppLocalizations.of(context).add : AppLocalizations.of(context).modify,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: toDo.text.length > 0 ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
-                ),
+              padding: const EdgeInsets.only(left: 14, top: 4, bottom: 4,),
+              child: AppTextField(
+                focusNode: _focusNode,
+                text: toDo.text,
+                textSize: 14,
+                textColor: AppColors.TEXT_BLACK,
+                hintText: editingToDoRecord.isDraft ? AppLocalizations.of(context).addTask : AppLocalizations.of(context).modifyTask ,
+                hintTextSize: 14,
+                hintColor: AppColors.TEXT_BLACK_LIGHT,
+                onChanged: (s) => bloc.onEditingToDoTextChanged(s),
+                onEditingComplete: () => bloc.onToDoEditingDone(),
               ),
             ),
-            onTap: () => bloc.onToDoEditingDone(),
           ),
-        )
-      ],
+          Padding(
+            padding: const EdgeInsets.only(right: 10,),
+            child: Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 14,),
+                  child: Text(
+                    editingToDoRecord.isDraft ? AppLocalizations.of(context).add : AppLocalizations.of(context).modify,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: toDo.text.length > 0 ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
+                    ),
+                  ),
+                ),
+                onTap: () => bloc.onToDoEditingDone(),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -923,7 +925,7 @@ class _ToDoEditorCategoryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 14, bottom: 10),
+      padding: const EdgeInsets.only(left: 24, top: 10, bottom: 10),
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () => bloc.onEditorCategoryButtonClicked(),
@@ -999,32 +1001,48 @@ class _CategoryEditorContainer extends StatelessWidget {
                       category: editingCategory,
                       focusNodeProvider: focusNodeProvider,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        children: <Widget>[
-                          _ChoosePhotoButton(
-                            bloc: bloc,
-                          ),
-                          Expanded(
-                            child: SizedBox(
-                              height: 28,
-                              child: ListView.builder(
-                                itemCount: categoryPickers.length,
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) {
-                                  final categoryPicker = categoryPickers[index];
-                                  return _CategoryPickerItem(
-                                    bloc: bloc,
-                                    item: categoryPicker,
-                                    isSelected: index == selectedPickerIndex,
-                                  );
-                                },
-                              ),
+                    SizedBox(height: 2,),
+                    Row(
+                      children: <Widget>[
+                        _ChoosePhotoButton(
+                          bloc: bloc,
+                        ),
+                        SizedBox(width: 10,),
+                        Expanded(
+                          child: SizedBox(
+                            height: 28,
+                            child: ListView.builder(
+                              itemCount: categoryPickers.length,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                final categoryPicker = categoryPickers[index];
+                                return _CategoryPickerItem(
+                                  bloc: bloc,
+                                  item: categoryPicker,
+                                  isSelected: index == selectedPickerIndex,
+                                );
+                              },
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        SizedBox(width: 3,),
+                        Material(
+                          child: InkWell(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 14,),
+                              child: Text(
+                                AppLocalizations.of(context).cancel,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.SECONDARY,
+                                ),
+                              ),
+                            ),
+                            onTap: () => { },
+                          ),
+                        ),
+                        SizedBox(width: 10,),
+                      ],
                     ),
                   ],
                 )
@@ -1092,7 +1110,7 @@ class _CategoryListItem extends StatelessWidget {
           onLongPress: () => bloc.onCategoryEditorCategoryLongClicked(context, category),
           child: Row(
             children: <Widget>[
-              SizedBox(width: 8,),
+              SizedBox(width: 18,),
               Padding(
                 padding: const EdgeInsets.all(6),
                 child: _CategoryThumbnail(
@@ -1112,12 +1130,13 @@ class _CategoryListItem extends StatelessWidget {
                     ),
                   ),
                 ),
-              )
+              ),
+              SizedBox(width: 24,),
             ],
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 18),
           child: Container(
             width: double.infinity,
             height: 1,
@@ -1155,67 +1174,68 @@ class _CategoryEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     final addButtonEnabled = category.name.length > 0;
     final modifyButtonEnabled = category.id != Category.ID_DEFAULT && category.name.length > 0;
-    return Material(
-      type: MaterialType.transparency,
-      child: Row(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-            child: _CategoryThumbnail(
+    return Padding(
+      padding: const EdgeInsets.only(left: 24, top: 10,),
+      child: Material(
+        type: MaterialType.transparency,
+        child: Row(
+          children: <Widget>[
+            _CategoryThumbnail(
               category: category,
               width: 24,
               height: 24,
               fontSize: 14
             ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              child: AppTextField(
-                focusNode: _focusNode,
-                text: category.name,
-                textSize: 14,
-                textColor: AppColors.TEXT_BLACK,
-                hintText: AppLocalizations.of(context).category,
-                hintTextSize: 14,
-                hintColor: AppColors.TEXT_BLACK_LIGHT,
-                onChanged: (s) => bloc.onEditingCategoryTextChanged(s),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: addButtonEnabled ? bloc.onCreateNewCategoryClicked : null,
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Text(
-                AppLocalizations.of(context).create,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: addButtonEnabled ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
-                ),
-                strutStyle: StrutStyle(
-                  fontSize: 14,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 14, top: 4, bottom: 4,),
+                child: AppTextField(
+                  focusNode: _focusNode,
+                  text: category.name,
+                  textSize: 14,
+                  textColor: AppColors.TEXT_BLACK,
+                  hintText: AppLocalizations.of(context).category,
+                  hintTextSize: 14,
+                  hintColor: AppColors.TEXT_BLACK_LIGHT,
+                  onChanged: (s) => bloc.onEditingCategoryTextChanged(s),
                 ),
               ),
             ),
-          ),
-          InkWell(
-            onTap: modifyButtonEnabled ? bloc.onModifyCategoryClicked : null,
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Text(
-                AppLocalizations.of(context).modify,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: modifyButtonEnabled ? AppColors.SECONDARY : AppColors.TEXT_BLACK_LIGHT,
-                ),
-                strutStyle: StrutStyle(
-                  fontSize: 14,
+            InkWell(
+              onTap: addButtonEnabled ? bloc.onCreateNewCategoryClicked : null,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 9,),
+                child: Text(
+                  AppLocalizations.of(context).create,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: addButtonEnabled ? AppColors.PRIMARY : AppColors.TEXT_BLACK_LIGHT,
+                  ),
+                  strutStyle: StrutStyle(
+                    fontSize: 14,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+            InkWell(
+              onTap: modifyButtonEnabled ? bloc.onModifyCategoryClicked : null,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 9,),
+                child: Text(
+                  AppLocalizations.of(context).modify,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: modifyButtonEnabled ? AppColors.SECONDARY : AppColors.TEXT_BLACK_LIGHT,
+                  ),
+                  strutStyle: StrutStyle(
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 15,),
+          ],
+        ),
       ),
     );
   }
@@ -1231,7 +1251,7 @@ class _ChoosePhotoButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 14, top: 2, right: 10, bottom: 2),
+      padding: const EdgeInsets.only(left: 24, top: 10, bottom: 10,),
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () => bloc.onChoosePhotoClicked(),
