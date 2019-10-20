@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/usecase/LockUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
-import 'package:todo_app/presentation/lock/LockScreen.dart';
 import 'package:todo_app/presentation/lock/LockState.dart';
+import 'package:todo_app/presentation/widgets/VirtualKeyboard.dart';
 
 class LockBloc {
   final _state = BehaviorSubject<LockState>.seeded(LockState());

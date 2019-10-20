@@ -28,7 +28,6 @@ dependencies:
   infinity_page_view: ^1.0.0
   sqflite: ^1.1.6
   path: ^1.6.2
-  virtual_keyboard: ^0.1.4
   image_picker: ^0.6.1+4
 
   flutter_localizations:

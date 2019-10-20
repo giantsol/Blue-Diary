@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/usecase/InputPasswordUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/inputpassword/InputPasswordState.dart';
-import 'package:virtual_keyboard/virtual_keyboard.dart';
+import 'package:todo_app/presentation/widgets/VirtualKeyboard.dart';
 
 class InputPasswordBloc {
   final _state = BehaviorSubject<InputPasswordState>.seeded(InputPasswordState());
@@ -24,7 +24,7 @@ class InputPasswordBloc {
   }
 
   void onVirtualKeyPressed(BuildContext context, VirtualKeyboardKey key, Function() onSuccess, Function() onFail) {
-    if (key.keyType == VirtualKeyboardKeyType.Action && key.action == VirtualKeyboardKeyAction.Backspace) {
+    if (key.type == VirtualKeyboardKeyType.BACKSPACE) {
       _onBackspacePressed();
     } else {
       _onKeyPressed(context, key.text, onSuccess, onFail);

@@ -11,7 +11,6 @@ import 'package:todo_app/domain/entity/ToDoRecord.dart';
 import 'package:todo_app/domain/usecase/DayUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
-import 'package:virtual_keyboard/virtual_keyboard.dart';
 
 class DayBloc {
   static const _oneDay = const Duration(days: 1);
@@ -305,34 +304,6 @@ class DayBloc {
       currentDayRecord: updatedDayRecord,
       allCategories: allCategories,
     ));
-  }
-
-  Future<void> onLockViewVirtualKeyPressed(VirtualKeyboardKey key) async {
-    if (key.keyType == VirtualKeyboardKeyType.Action && key.action == VirtualKeyboardKeyAction.Backspace) {
-      final currentPassword = _state.value.inputPassword;
-      if (currentPassword.length != 0) {
-        _state.add(_state.value.buildNew(
-          inputPassword: currentPassword.substring(0, currentPassword.length - 1),
-        ));
-      }
-    } else {
-      final updatedPassword = '${_state.value.inputPassword}${key.text}';
-      if (updatedPassword.length == 4) {
-        final savedPassword = await _usecases.getUserPassword();
-        if (updatedPassword == savedPassword) {
-          _state.add(_state.value.buildNew(
-            inputPassword: '',
-            isUnlockedAllByUser: true,
-          ));
-        } else {
-          _state.add(_state.value.buildNew(
-            inputPassword: '',
-          ));
-        }
-      } else {
-        _state.add(_state.value.buildNew(inputPassword: updatedPassword));
-      }
-    }
   }
 
   void dispose() {

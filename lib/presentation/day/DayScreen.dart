@@ -15,7 +15,6 @@ import 'package:todo_app/domain/entity/ToDoRecord.dart';
 import 'package:todo_app/presentation/day/DayBloc.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
 import 'package:todo_app/presentation/widgets/AppTextField.dart';
-import 'package:virtual_keyboard/virtual_keyboard.dart';
 
 class DayScreen extends StatefulWidget {
   static const MAX_DAY_PAGE = 100;

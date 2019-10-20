@@ -4,7 +4,7 @@ import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordBloc.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordState.dart';
-import 'package:virtual_keyboard/virtual_keyboard.dart';
+import 'package:todo_app/presentation/widgets/VirtualKeyboard.dart';
 
 class CreatePasswordScreen extends StatefulWidget {
   @override
@@ -38,68 +38,52 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   }
 
   Widget _buildUI(CreatePasswordState state) {
-    return Material(
-      color: AppColors.PRIMARY,
-      child: SafeArea(
-        child: Column(
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
           children: <Widget>[
-            Expanded(
-              child: Stack(
-                children: <Widget>[
-                  _CloseButton(
-                    bloc: _bloc,
-                  ),
-                  Container(
-                    alignment: Alignment.center,
+            Column(
+              children: <Widget>[
+                Expanded(
+                  child: Center(
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
                           state.phase == CreatePasswordPhase.FIRST ? AppLocalizations.of(context).newPassword
                             : AppLocalizations.of(context).confirmNewPassword,
                           style: TextStyle(
                             fontSize: 18,
-                            color: AppColors.TEXT_WHITE,
-                            decorationStyle: null,
+                            color: AppColors.TEXT_BLACK,
                           ),
                         ),
-                        state.errorMsg.isEmpty ? Column(
-                          children: <Widget>[
-                            SizedBox(height: 73,),
-                            _Passwords(
-                              passwordLength: state.passwordLength,
+                        SizedBox(height: 16,),
+                        SizedBox(
+                          height: 101,
+                          child: !state.errorMsg.isEmpty ? Text(
+                            state.errorMsg,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.RED,
                             ),
-                          ],
-                        ) : Column(
-                          children: <Widget>[
-                            SizedBox(height: 8,),
-                            Text(
-                              state.errorMsg,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.red,
-                              ),
-                            ),
-                            SizedBox(height: 48,),
-                            _Passwords(
-                              passwordLength: state.passwordLength,
-                            ),
-                          ],
+                          ) : const SizedBox.shrink(),
+                        ),
+                        _Passwords(
+                          passwordLength: state.password.length,
                         ),
                       ],
                     ),
-                  )
-                ],
-              ),
+                  ),
+                ),
+                VirtualKeyboard(
+                  onKeyPressed: (VirtualKeyboardKey key) => _bloc.onVirtualKeyPressed(context, key),
+                ),
+                SizedBox(height: 24,),
+              ],
             ),
-            Container(
-              color: AppColors.BACKGROUND_WHITE,
-              child: VirtualKeyboard(
-                fontSize: 18,
-                type: VirtualKeyboardType.Numeric,
-                onKeyPress: (key) => _bloc.onVirtualKeyPressed(context, key),
-              ),
-            )
+            _CloseButton(
+              bloc: _bloc,
+            ),
           ],
         ),
       ),

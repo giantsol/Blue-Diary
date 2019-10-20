@@ -5,7 +5,7 @@ import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/usecase/CreatePasswordUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordState.dart';
-import 'package:virtual_keyboard/virtual_keyboard.dart';
+import 'package:todo_app/presentation/widgets/VirtualKeyboard.dart';
 
 class CreatePasswordBloc {
   final _state = BehaviorSubject<CreatePasswordState>.seeded(CreatePasswordState());
@@ -25,7 +25,7 @@ class CreatePasswordBloc {
   }
 
   void onVirtualKeyPressed(BuildContext context, VirtualKeyboardKey key) {
-    if (key.keyType == VirtualKeyboardKeyType.Action && key.action == VirtualKeyboardKeyAction.Backspace) {
+    if (key.type == VirtualKeyboardKeyType.BACKSPACE) {
       _onBackspacePressed();
     } else {
       _onKeyPressed(context, key.text);

@@ -4,7 +4,7 @@ import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/presentation/inputpassword/InputPasswordBloc.dart';
 import 'package:todo_app/presentation/inputpassword/InputPasswordState.dart';
-import 'package:virtual_keyboard/virtual_keyboard.dart';
+import 'package:todo_app/presentation/widgets/VirtualKeyboard.dart';
 
 class InputPasswordScreen extends StatefulWidget {
   final void Function() onSuccess;
@@ -47,68 +47,64 @@ class _InputPasswordScreenState extends State<InputPasswordScreen> {
   }
 
   Widget _buildUI(InputPasswordState state) {
-    return Material(
-      color: AppColors.PRIMARY,
-      child: SafeArea(
-        child: Column(
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
           children: <Widget>[
-            Expanded(
-              child: Stack(
-                children: <Widget>[
-                  _CloseButton(
-                    bloc: _bloc,
-                  ),
-                  Container(
-                    alignment: Alignment.center,
+            Column(
+              children: <Widget>[
+                Expanded(
+                  child: Center(
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
                           state.showErrorMsg ? AppLocalizations.of(context).retryInputPassword : AppLocalizations.of(context).inputPassword,
                           style: TextStyle(
                             fontSize: 18,
-                            color: AppColors.TEXT_WHITE,
-                            decorationStyle: null,
+                            color: AppColors.TEXT_BLACK,
                           ),
                         ),
-                        !state.showErrorMsg ? Column(
-                          children: <Widget>[
-                            SizedBox(height: 73,),
-                            _Passwords(
-                              passwordLength: state.password.length,
+                        SizedBox(height: 16,),
+                        SizedBox(
+                          height: 101,
+                          child: state.showErrorMsg ? Text(
+                            '${AppLocalizations.of(context).confirmPasswordFail} (${state.failCount}/${InputPasswordState.MAX_FAIL_COUNT})',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.RED,
                             ),
-                          ],
-                        ) : Column(
-                          children: <Widget>[
-                            SizedBox(height: 8,),
-                            Text(
-                              '${AppLocalizations.of(context).confirmPasswordFail} (${state.failCount}/${InputPasswordState.MAX_FAIL_COUNT})',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.red,
-                              ),
-                            ),
-                            SizedBox(height: 48,),
-                            _Passwords(
-                              passwordLength: state.password.length,
-                            ),
-                          ],
+                          ) : const SizedBox.shrink(),
+                        ),
+                        _Passwords(
+                          passwordLength: state.password.length,
                         ),
                       ],
                     ),
                   ),
-                  state.isLoading ? Center(child: CircularProgressIndicator(),) : const SizedBox.shrink(),
-                ],
-              ),
+                ),
+                VirtualKeyboard(
+                  onKeyPressed: (VirtualKeyboardKey key) => _bloc.onVirtualKeyPressed(context, key, widget.onSuccess, widget.onFail),
+                ),
+                SizedBox(height: 4,),
+                Center(
+                  child: Text(
+                    AppLocalizations.of(context).forgotYourPassword,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.TEXT_BLACK_LIGHT,
+                      decoration: TextDecoration.underline,
+                      decorationColor: AppColors.TEXT_BLACK_LIGHT,
+                      decorationThickness: 2,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 24,),
+              ],
             ),
-            Container(
-              color: AppColors.BACKGROUND_WHITE,
-              child: VirtualKeyboard(
-                fontSize: 18,
-                type: VirtualKeyboardType.Numeric,
-                onKeyPress: (key) => _bloc.onVirtualKeyPressed(context, key, widget.onSuccess, widget.onFail),
-              ),
-            )
+            _CloseButton(
+              bloc: _bloc,
+            ),
           ],
         ),
       ),
@@ -131,7 +127,7 @@ class _CloseButton extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         child: Padding(
           padding: EdgeInsets.all(22),
-          child: Image.asset('assets/ic_close.png'),
+          child: Image.asset('assets/ic_close_black.png'),
         ),
         onTap: () => bloc.onCloseClicked(context),
       ),
@@ -154,16 +150,17 @@ class _Passwords extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: List.generate(4, (i) {
           return Padding(
-            padding: i > 0 ? const EdgeInsets.only(left: 12) : const EdgeInsets.all(0),
+            padding: i > 0 ? const EdgeInsets.only(left: 33) : const EdgeInsets.all(0),
             child: SizedBox(
               width: 19,
               child: Center(
-                child: i <= passwordLength - 1 ? Image.asset('assets/ic_circle_white.png') : Image.asset('assets/ic_underline.png'),
-              ),
-            ),
+                child: i <= passwordLength - 1 ? Image.asset('assets/ic_password.png') : Image.asset('assets/ic_password_blank.png'),
+              )
+            )
           );
         }),
       ),
     );
   }
 }
+
