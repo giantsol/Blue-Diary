@@ -15,6 +15,8 @@ import 'package:todo_app/presentation/inputpassword/InputPasswordScreen.dart';
 
 class SettingsBloc {
   static const _SENDGRID_SEND_API_ENDPOINT = 'https://api.sendgrid.com/v3/mail/send';
+  static final _EMAIL_VALIDATION_REGEX = RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
+
   final SettingsUsecases _usecases = dependencies.settingsUsecases;
 
   void Function() _needUpdateListener;
@@ -31,20 +33,20 @@ class SettingsBloc {
     this._needUpdateListener = listener;
   }
 
-  Future<void> onDefaultLockChanged(BuildContext context) async {
-    final isDefaultLocked = await _usecases.getDefaultLocked();
+  Future<void> onUseLockScreenChanged(BuildContext context) async {
+    final useLockScreen = await _usecases.getUseLockScreen();
     final userPassword = await _usecases.getUserPassword();
 
-    if (isDefaultLocked && userPassword.isEmpty) {
-      _usecases.setDefaultLocked(false);
+    if (useLockScreen && userPassword.isEmpty) {
+      _usecases.setUseLockScreen(false);
       _showCreatePasswordDialog(context);
-    } else if (!isDefaultLocked) {
+    } else if (!useLockScreen) {
       // set it to true forcefully instantly.
       // will set to false when user inputs password correctly
-      _usecases.setDefaultLocked(true);
+      _usecases.setUseLockScreen(true);
       delegator.showBottomSheet((context) =>
         InputPasswordScreen(onSuccess: () {
-          _usecases.setDefaultLocked(false);
+          _usecases.setUseLockScreen(false);
           if (_needUpdateListener != null) {
             _needUpdateListener();
           }
@@ -81,12 +83,16 @@ class SettingsBloc {
 
   Future<void> onSendTempPasswordClicked(BuildContext context) async {
     final recoveryEmail = await _usecases.getRecoveryEmail();
-    if (recoveryEmail.isEmpty) {
-      final message = AppLocalizations.of(context).noRecoveryEmail;
+    if (!_isEmail(recoveryEmail)) {
+      final message = AppLocalizations.of(context).invalidRecoveryEmail;
       delegator.showSnackBar(message, _snackBarDuration);
     } else {
       _showConfirmSendTempPasswordDialog(context);
     }
+  }
+
+  bool _isEmail(String s) {
+    return _EMAIL_VALIDATION_REGEX.hasMatch(s);
   }
 
   Future<void> _showConfirmSendTempPasswordDialog(BuildContext context) async {

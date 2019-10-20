@@ -38,9 +38,9 @@ class _LockScreenState extends State<LockScreen> {
         SystemNavigator.pop();
         return false;
       },
-      child: Scaffold(
-        body: SafeArea(
-          child: Column(
+      child: SafeArea(
+        child: Scaffold(
+          body: Column(
             children: <Widget>[
               Expanded(
                 child: Center(

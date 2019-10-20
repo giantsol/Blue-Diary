@@ -20,8 +20,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  static final _EMAIL_VALIDATION_REGEX = RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
-
   SettingsBloc _bloc;
 
   @override
@@ -43,46 +41,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: PreferencePage([
-        PreferenceTitle(AppLocalizations.of(context).settingsGeneral),
-        SwitchPreference(
-          AppLocalizations.of(context).settingsDefaultLock,
-          AppPreferences.KEY_DEFAULT_LOCK,
-          defaultVal: false,
-          onChange: () => _bloc.onDefaultLockChanged(context),
+    return PreferencePage([
+      PreferenceTitle(AppLocalizations.of(context).settingsGeneral),
+      SwitchPreference(
+        AppLocalizations.of(context).settingsUseLockScreen,
+        AppPreferences.KEY_USE_LOCK_SCREEN,
+        defaultVal: false,
+        onChange: () => _bloc.onUseLockScreenChanged(context),
+      ),
+      PreferenceTitle(AppLocalizations.of(context).settingsResetPassword),
+      TextFieldPreference(
+        AppLocalizations.of(context).settingsRecoveryEmail,
+        AppPreferences.KEY_RECOVERY_EMAIL,
+        keyboardType: TextInputType.emailAddress,
+      ),
+      Align(
+        alignment: Alignment.centerLeft,
+        child: FlatButton(
+          child: Text(AppLocalizations.of(context).sendTempPassword),
+          onPressed: () => _bloc.onSendTempPasswordClicked(context),
         ),
-        PreferenceTitle(AppLocalizations.of(context).settingsResetPassword),
-        TextFieldPreference(
-          AppLocalizations.of(context).settingsRecoveryEmail,
-          AppPreferences.KEY_RECOVERY_EMAIL,
-          keyboardType: TextInputType.emailAddress,
-          validator: (s) {
-            if (!_isEmail(s)) {
-              return AppLocalizations.of(context).invalidEmail;
-            }
-            return null;
-          },
+      ),
+      Align(
+        alignment: Alignment.centerLeft,
+        child: FlatButton(
+          child: Text(AppLocalizations.of(context).settingsResetPassword),
+          onPressed: () => _bloc.onResetPasswordClicked(context),
         ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: FlatButton(
-            child: Text(AppLocalizations.of(context).sendTempPassword),
-            onPressed: () => _bloc.onSendTempPasswordClicked(context),
-          ),
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: FlatButton(
-            child: Text(AppLocalizations.of(context).settingsResetPassword),
-            onPressed: () => _bloc.onResetPasswordClicked(context),
-          ),
-        )
-      ]),
-    );
-  }
-
-  bool _isEmail(String s) {
-    return _EMAIL_VALIDATION_REGEX.hasMatch(s);
+      )
+    ]);
   }
 }

@@ -22,7 +22,7 @@ class DayUsecases {
   Future<DayRecord> getDayRecord(DateTime date) async {
     final toDoRecords = await getToDoRecords(date);
     final dayMemo = await getDayMemo(date);
-    final defaultLocked = await _prefsRepository.getDefaultLocked();
+    final defaultLocked = await _prefsRepository.getUseLockScreen();
     final isLocked = await _lockRepository.getIsDayRecordLocked(date, defaultLocked);
     return DayRecord(
       toDoRecords: toDoRecords,

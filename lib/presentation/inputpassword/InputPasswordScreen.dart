@@ -41,67 +41,63 @@ class _InputPasswordScreenState extends State<InputPasswordScreen> {
   }
 
   Widget _buildUI(InputPasswordState state) {
-    return Scaffold(
-      body: SafeArea(
-        child: Stack(
+    return Stack(
+      children: <Widget>[
+        Column(
           children: <Widget>[
-            Column(
-              children: <Widget>[
-                Expanded(
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          state.showErrorMsg ? AppLocalizations.of(context).retryInputPassword : AppLocalizations.of(context).inputPassword,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: AppColors.TEXT_BLACK,
-                          ),
-                        ),
-                        SizedBox(height: 16,),
-                        SizedBox(
-                          height: 101,
-                          child: state.showErrorMsg ? Text(
-                            '${AppLocalizations.of(context).confirmPasswordFail} (${state.failCount}/${InputPasswordState.MAX_FAIL_COUNT})',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.RED,
-                            ),
-                          ) : const SizedBox.shrink(),
-                        ),
-                        _Passwords(
-                          passwordLength: state.password.length,
-                        ),
-                      ],
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      state.showErrorMsg ? AppLocalizations.of(context).retryInputPassword : AppLocalizations.of(context).inputPassword,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: AppColors.TEXT_BLACK,
+                      ),
                     ),
-                  ),
-                ),
-                VirtualKeyboard(
-                  onKeyPressed: (VirtualKeyboardKey key) => _bloc.onVirtualKeyPressed(context, key, widget.onSuccess, widget.onFail),
-                ),
-                SizedBox(height: 4,),
-                Center(
-                  child: Text(
-                    AppLocalizations.of(context).forgotYourPassword,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.TEXT_BLACK_LIGHT,
-                      decoration: TextDecoration.underline,
-                      decorationColor: AppColors.TEXT_BLACK_LIGHT,
-                      decorationThickness: 2,
+                    SizedBox(height: 16,),
+                    SizedBox(
+                      height: 101,
+                      child: state.showErrorMsg ? Text(
+                        '${AppLocalizations.of(context).confirmPasswordFail} (${state.failCount}/${InputPasswordState.MAX_FAIL_COUNT})',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.RED,
+                        ),
+                      ) : const SizedBox.shrink(),
                     ),
-                  ),
+                    _Passwords(
+                      passwordLength: state.password.length,
+                    ),
+                  ],
                 ),
-                SizedBox(height: 24,),
-              ],
+              ),
             ),
-            _CloseButton(
-              bloc: _bloc,
+            VirtualKeyboard(
+              onKeyPressed: (VirtualKeyboardKey key) => _bloc.onVirtualKeyPressed(context, key, widget.onSuccess, widget.onFail),
             ),
+            SizedBox(height: 4,),
+            Center(
+              child: Text(
+                AppLocalizations.of(context).forgotYourPassword,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.TEXT_BLACK_LIGHT,
+                  decoration: TextDecoration.underline,
+                  decorationColor: AppColors.TEXT_BLACK_LIGHT,
+                  decorationThickness: 2,
+                ),
+              ),
+            ),
+            SizedBox(height: 24,),
           ],
         ),
-      ),
+        _CloseButton(
+          bloc: _bloc,
+        ),
+      ],
     );
   }
 }

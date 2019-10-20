@@ -3,7 +3,7 @@ import 'package:preferences/preference_service.dart';
 
 class AppPreferences {
   static const String KEY_USER_PASSWORD = 'user.password';
-  static const String KEY_DEFAULT_LOCK = 'default.lock';
+  static const String KEY_USE_LOCK_SCREEN = 'use.lock.screen';
   static const String KEY_RECOVERY_EMAIL = 'recovery.email';
 
   AppPreferences() {
@@ -20,12 +20,12 @@ class AppPreferences {
     return PrefService.setString(KEY_USER_PASSWORD, password);
   }
 
-  Future<bool> getDefaultLocked() async {
-    return PrefService.getBool(KEY_DEFAULT_LOCK) ?? false;
+  Future<bool> getUseLockScreen() async {
+    return PrefService.getBool(KEY_USE_LOCK_SCREEN) ?? false;
   }
 
-  Future<void> setDefaultLocked(bool value) async {
-    return PrefService.setBool(KEY_DEFAULT_LOCK, value);
+  Future<void> setUseLockScreen(bool value) async {
+    return PrefService.setBool(KEY_USE_LOCK_SCREEN, value);
   }
 
   Future<String> getRecoveryEmail() async {

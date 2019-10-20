@@ -28,8 +28,8 @@ class HomeBloc {
       currentChildScreenKey: currentChildScreenKey,
     ));
 
-    final userPassword = await _usecases.getUserPassword();
-    if (userPassword.isNotEmpty) {
+    final useLockScreen = await _usecases.getUseLockScreen();
+    if (useLockScreen) {
       Navigator.push(
         context,
         SlideUpPageRoute(page: LockScreen())

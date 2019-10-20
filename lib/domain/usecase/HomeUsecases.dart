@@ -43,4 +43,8 @@ class HomeUsecases {
   Future<String> getUserPassword() async {
     return _prefsRepository.getUserPassword();
   }
+
+  Future<bool> getUseLockScreen() async {
+    return _prefsRepository.getUseLockScreen();
+  }
 }

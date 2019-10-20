@@ -32,9 +32,9 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   }
 
   Widget _buildUI(CreatePasswordState state) {
-    return Scaffold(
-      body: SafeArea(
-        child: Stack(
+    return SafeArea(
+      child: Scaffold(
+        body: Stack(
           children: <Widget>[
             Column(
               children: <Widget>[
@@ -54,7 +54,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                         SizedBox(height: 16,),
                         SizedBox(
                           height: 101,
-                          child: !state.errorMsg.isEmpty ? Text(
+                          child: state.errorMsg.isNotEmpty ? Text(
                             state.errorMsg,
                             style: TextStyle(
                               fontSize: 14,
@@ -63,7 +63,8 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                           ) : const SizedBox.shrink(),
                         ),
                         _Passwords(
-                          passwordLength: state.password.length,
+                          passwordLength: state.phase == CreatePasswordPhase.FIRST ? state.password.length
+                            : state.passwordConfirm.length,
                         ),
                       ],
                     ),
@@ -100,7 +101,7 @@ class _CloseButton extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         child: Padding(
           padding: EdgeInsets.all(22),
-          child: Image.asset('assets/ic_close.png'),
+          child: Image.asset('assets/ic_close_black.png'),
         ),
         onTap: () => bloc.onCloseClicked(context),
       ),
@@ -123,13 +124,13 @@ class _Passwords extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: List.generate(4, (i) {
           return Padding(
-            padding: i > 0 ? const EdgeInsets.only(left: 12) : const EdgeInsets.all(0),
+            padding: i > 0 ? const EdgeInsets.only(left: 33) : const EdgeInsets.all(0),
             child: SizedBox(
               width: 19,
               child: Center(
-                child: i <= passwordLength - 1 ? Image.asset('assets/ic_circle_white.png') : Image.asset('assets/ic_underline.png'),
-              ),
-            ),
+                child: i <= passwordLength - 1 ? Image.asset('assets/ic_password.png') : Image.asset('assets/ic_password_blank.png'),
+              )
+            )
           );
         }),
       ),

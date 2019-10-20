@@ -18,7 +18,8 @@ class HomeScreen extends StatefulWidget {
   }
 }
 
-class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
+class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator,
+  SettingsBlocDelegator {
   HomeBloc _bloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
@@ -40,39 +41,42 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
   }
 
   Widget _buildUI(HomeState state) {
-    return Scaffold(
-      key: _scaffoldKey,
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: Stack(
-              children: <Widget>[
-                _ChildScreen(
-                  childScreenKey: state.currentChildScreenKey,
-                  weekBlocDelegator: this,
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    width: double.infinity,
-                    height: 6,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [AppColors.DIVIDER, AppColors.DIVIDER.withAlpha(0)]
-                      )
+    return SafeArea(
+      child: Scaffold(
+        key: _scaffoldKey,
+        body: Column(
+          children: <Widget>[
+            Expanded(
+              child: Stack(
+                children: <Widget>[
+                  _ChildScreen(
+                    childScreenKey: state.currentChildScreenKey,
+                    weekBlocDelegator: this,
+                    settingsBlocDelegator: this,
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      width: double.infinity,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [AppColors.DIVIDER, AppColors.DIVIDER.withAlpha(0)]
+                        )
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          _BottomNavigationBar(
-            bloc: _bloc,
-            navigationItems: state.navigationItems,
-          ),
-        ],
+            _BottomNavigationBar(
+              bloc: _bloc,
+              navigationItems: state.navigationItems,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -93,10 +97,12 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
 class _ChildScreen extends StatelessWidget {
   final String childScreenKey;
   final WeekBlocDelegator weekBlocDelegator;
+  final SettingsBlocDelegator settingsBlocDelegator;
 
   _ChildScreen({
     @required this.childScreenKey,
     @required this.weekBlocDelegator,
+    @required this.settingsBlocDelegator,
   });
 
   @override
@@ -104,10 +110,12 @@ class _ChildScreen extends StatelessWidget {
     switch (childScreenKey) {
       case BottomNavigationItem.KEY_RECORD:
         return WeekScreen(
-          weekBlocDelegator: weekBlocDelegator
+          weekBlocDelegator: weekBlocDelegator,
         );
       case BottomNavigationItem.KEY_SETTINGS:
-        return SettingsScreen();
+        return SettingsScreen(
+          settingsBlocDelegator: settingsBlocDelegator,
+        );
       default:
         throw Exception('Not existing child sreen: $childScreenKey');
     }

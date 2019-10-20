@@ -6,12 +6,12 @@ class SettingsUsecases {
 
   const SettingsUsecases(this._prefsRepository);
 
-  Future<bool> getDefaultLocked() async {
-    return _prefsRepository.getDefaultLocked();
+  Future<bool> getUseLockScreen() async {
+    return _prefsRepository.getUseLockScreen();
   }
 
-  void setDefaultLocked(bool value) {
-    _prefsRepository.setDefaultLocked(value);
+  void setUseLockScreen(bool value) {
+    _prefsRepository.setUseLockScreen(value);
   }
 
   Future<String> getUserPassword() async {

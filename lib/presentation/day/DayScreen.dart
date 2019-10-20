@@ -92,11 +92,11 @@ class _DayScreenState extends State<DayScreen> {
       });
     }
 
-    return state.viewState == DayViewState.WHOLE_LOADING ? _WholeLoadingView()
-      : WillPopScope(
-      onWillPop: () async => !_bloc.handleBackPress() && !_unfocusTextFieldIfAny(),
+    return SafeArea(
       child: Scaffold(
-        body: SafeArea(
+        body: state.viewState == DayViewState.WHOLE_LOADING ? _WholeLoadingView()
+          : WillPopScope(
+          onWillPop: () async => !_bloc.handleBackPress() && !_unfocusTextFieldIfAny(),
           child: Stack(
             children: <Widget>[
               Column(
@@ -191,12 +191,10 @@ class _DayScreenState extends State<DayScreen> {
 class _WholeLoadingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        color: AppColors.BACKGROUND_WHITE,
-        alignment: Alignment.center,
-        child: CircularProgressIndicator(),
-      ),
+    return Container(
+      color: AppColors.BACKGROUND_WHITE,
+      alignment: Alignment.center,
+      child: CircularProgressIndicator(),
     );
   }
 }

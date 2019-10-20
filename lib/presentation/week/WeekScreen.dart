@@ -69,51 +69,49 @@ class _WeekScreenState extends State<WeekScreen> {
   }
 
   Widget _buildUI(WeekState state) {
-    return SafeArea(
-      child: state.viewState == WeekViewState.WHOLE_LOADING ? _WholeLoadingView()
-        : WillPopScope(
-        onWillPop: () async {
-          return !_unfocusTextFieldIfAny();
-        },
-        child: Column(
-          children: [
-            _Header(
-              bloc: _bloc,
-              displayYear: state.year.toString(),
-              displayMonthAndWeek: AppLocalizations.of(context).getMonthAndNthWeek(state.month, state.nthWeek),
+    return state.viewState == WeekViewState.WHOLE_LOADING ? _WholeLoadingView()
+      : WillPopScope(
+      onWillPop: () async {
+        return !_unfocusTextFieldIfAny();
+      },
+      child: Column(
+        children: [
+          _Header(
+            bloc: _bloc,
+            displayYear: state.year.toString(),
+            displayMonthAndWeek: AppLocalizations.of(context).getMonthAndNthWeek(state.month, state.nthWeek),
+          ),
+          Expanded(
+            child: Stack(
+              children: <Widget>[
+                InfinityPageView(
+                  controller: _weekRecordPageController,
+                  itemCount: state.weekRecords.length,
+                  itemBuilder: (context, index) {
+                    final weekRecords = state.weekRecords;
+                    if (weekRecords.isEmpty || weekRecords[index] == null) {
+                      return null;
+                    }
+                    return _WeekRecord(
+                      bloc: _bloc,
+                      weekRecord: weekRecords[index],
+                      focusNodeProvider: _getOrCreateFocusNode,
+                      scrollController: _scrollController,
+                    );
+                  },
+                  onPageChanged: (changedIndex) {
+                    _headerShadowKey.currentState.updateShadowVisibility(false);
+                    _bloc.onWeekRecordPageChanged(changedIndex);
+                  },
+                ),
+                _HeaderShadow(
+                  key: _headerShadowKey,
+                  scrollController: _scrollController,
+                ),
+              ],
             ),
-            Expanded(
-              child: Stack(
-                children: <Widget>[
-                  InfinityPageView(
-                    controller: _weekRecordPageController,
-                    itemCount: state.weekRecords.length,
-                    itemBuilder: (context, index) {
-                      final weekRecords = state.weekRecords;
-                      if (weekRecords.isEmpty || weekRecords[index] == null) {
-                        return null;
-                      }
-                      return _WeekRecord(
-                        bloc: _bloc,
-                        weekRecord: weekRecords[index],
-                        focusNodeProvider: _getOrCreateFocusNode,
-                        scrollController: _scrollController,
-                      );
-                    },
-                    onPageChanged: (changedIndex) {
-                      _headerShadowKey.currentState.updateShadowVisibility(false);
-                      _bloc.onWeekRecordPageChanged(changedIndex);
-                    },
-                  ),
-                  _HeaderShadow(
-                    key: _headerShadowKey,
-                    scrollController: _scrollController,
-                  ),
-                ],
-              ),
-            ),
-          ]
-        ),
+          ),
+        ]
       ),
     );
   }

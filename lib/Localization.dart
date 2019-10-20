@@ -28,13 +28,11 @@ class AppLocalizations {
   static const ADD_TASK = "addTask";
   static const MODIFY_TASK = "modifyTask";
   static const CHOOSE_PHOTO = "choosePhoto";
-  static const SETTINGS = "settings";
   static const SETTINGS_GENERAL = "settingsGeneral";
-  static const SETTINGS_DEFAULT_LOCK = "settingsDefaultLock";
+  static const SETTINGS_USE_LOCK_SCREEN = "settingsLockScreen";
   static const SETTINGS_RESET_PASSWORD = "settingsResetPassword";
   static const SETTINGS_RECOVERY_EMAIL = "settingsRecoveryEmail";
-  static const NO_RECOVERY_EMAIL = "noRecoveryEmail";
-  static const INVALID_EMAIL = "invalidEmail";
+  static const INVALID_RECOVERY_EMAIL = "invalidRecoveryEmail";
   static const SEND_TEMP_PASSWORD = "sendTempPassword";
   static const CONFIRM_SEND_TEMP_PASSWORD = "confirmSendTempPassword";
   static const CONFIRM_SEND_TEMP_PASSWORD_BODY = "confirmSendTempPasswordBody";
@@ -80,13 +78,11 @@ class AppLocalizations {
       ADD_TASK: 'Add Task',
       MODIFY_TASK: 'Modify Task',
       CHOOSE_PHOTO: 'Choose Photo',
-      SETTINGS: 'Settings',
       SETTINGS_GENERAL: 'General',
-      SETTINGS_DEFAULT_LOCK: 'Lock By Default',
+      SETTINGS_USE_LOCK_SCREEN: 'LockScreen',
       SETTINGS_RESET_PASSWORD: 'Reset Password',
       SETTINGS_RECOVERY_EMAIL: 'Recovery Email',
-      NO_RECOVERY_EMAIL: 'Please write your recovery email first',
-      INVALID_EMAIL: 'Invalid Email',
+      INVALID_RECOVERY_EMAIL: 'Recovery email is either empty or invalid',
       SEND_TEMP_PASSWORD: 'Send Temporary Password',
       CONFIRM_SEND_TEMP_PASSWORD: 'Send Temporary Password',
       CONFIRM_SEND_TEMP_PASSWORD_BODY: 'Your previous password will be overriden by temporary password, and will be sent to your recovery email.',
@@ -127,13 +123,11 @@ class AppLocalizations {
       ADD_TASK: '작업 추가',
       MODIFY_TASK: '작업 수정',
       CHOOSE_PHOTO: '사진 선택',
-      SETTINGS: '설정',
       SETTINGS_GENERAL: '일반',
-      SETTINGS_DEFAULT_LOCK: '디폴트로 잠금',
+      SETTINGS_USE_LOCK_SCREEN: '잠금화면',
       SETTINGS_RESET_PASSWORD: '비밀번호 재설정',
       SETTINGS_RECOVERY_EMAIL: '복원 이메일',
-      NO_RECOVERY_EMAIL: '복원 이메일을 먼저 작성해주세요',
-      INVALID_EMAIL: '올바른 이메일 형식이 아닙니다',
+      INVALID_RECOVERY_EMAIL: '복원 이메일이 비어있거나 이메일 형식이 아닙니다',
       SEND_TEMP_PASSWORD: '임시 비밀번호 발송',
       CONFIRM_SEND_TEMP_PASSWORD: '임시 비밀번호 발송',
       CONFIRM_SEND_TEMP_PASSWORD_BODY: '기존의 비밀번호가 임시 비밀번호로 바뀌고, 임시 비밀번호가 복원 이메일로 전송됩니다.',
@@ -179,13 +173,11 @@ class AppLocalizations {
   String get addTask => _localizedValues[locale.languageCode][ADD_TASK];
   String get modifyTask => _localizedValues[locale.languageCode][MODIFY_TASK];
   String get choosePhoto => _localizedValues[locale.languageCode][CHOOSE_PHOTO];
-  String get settings => _localizedValues[locale.languageCode][SETTINGS];
   String get settingsGeneral => _localizedValues[locale.languageCode][SETTINGS_GENERAL];
-  String get settingsDefaultLock => _localizedValues[locale.languageCode][SETTINGS_DEFAULT_LOCK];
+  String get settingsUseLockScreen => _localizedValues[locale.languageCode][SETTINGS_USE_LOCK_SCREEN];
   String get settingsResetPassword => _localizedValues[locale.languageCode][SETTINGS_RESET_PASSWORD];
   String get settingsRecoveryEmail => _localizedValues[locale.languageCode][SETTINGS_RECOVERY_EMAIL];
-  String get noRecoveryEmail => _localizedValues[locale.languageCode][NO_RECOVERY_EMAIL];
-  String get invalidEmail => _localizedValues[locale.languageCode][INVALID_EMAIL];
+  String get invalidRecoveryEmail => _localizedValues[locale.languageCode][INVALID_RECOVERY_EMAIL];
   String get sendTempPassword => _localizedValues[locale.languageCode][SEND_TEMP_PASSWORD];
   String get confirmSendTempPassword => _localizedValues[locale.languageCode][CONFIRM_SEND_TEMP_PASSWORD];
   String get confirmSendTempPasswordBody => _localizedValues[locale.languageCode][CONFIRM_SEND_TEMP_PASSWORD_BODY];

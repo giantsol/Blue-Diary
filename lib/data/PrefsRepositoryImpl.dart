@@ -18,13 +18,13 @@ class PrefsRepositoryImpl implements PrefsRepository {
   }
 
   @override
-  Future<bool> getDefaultLocked() async {
-    return _prefs.getDefaultLocked();
+  Future<bool> getUseLockScreen() async {
+    return _prefs.getUseLockScreen();
   }
 
   @override
-  Future<void> setDefaultLocked(bool value) async {
-    return _prefs.setDefaultLocked(value);
+  Future<void> setUseLockScreen(bool value) async {
+    return _prefs.setUseLockScreen(value);
   }
 
   @override
