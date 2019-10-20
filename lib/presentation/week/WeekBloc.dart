@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/Utils.dart';
@@ -28,12 +27,6 @@ class WeekBloc {
   final _snackBarDuration = const Duration(seconds: 2);
 
   WeekBloc({this.delegator}) {
-    _initState();
-
-    delegator.addSettingsChangedListener(_settingsChangedListener);
-  }
-
-  void _settingsChangedListener() {
     _initState();
   }
 
@@ -186,6 +179,5 @@ class WeekBloc {
 
   void dispose() {
     _state.close();
-    delegator.removeSettingsChangedListener(_settingsChangedListener);
   }
 }

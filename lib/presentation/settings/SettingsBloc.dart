@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/Secrets.dart';
 import 'package:todo_app/Utils.dart';
@@ -20,78 +21,84 @@ class SettingsBloc {
 
   final _snackBarDuration = const Duration(seconds: 2);
 
+  SettingsBlocDelegator delegator;
+
+  SettingsBloc({
+    @required this.delegator,
+  });
+
   void setNeedUpdateListener(void Function() listener) {
     this._needUpdateListener = listener;
   }
 
-  Future<void> onDefaultLockChanged(BuildContext context, ScaffoldState scaffoldState) async {
+  Future<void> onDefaultLockChanged(BuildContext context) async {
     final isDefaultLocked = await _usecases.getDefaultLocked();
     final userPassword = await _usecases.getUserPassword();
 
     if (isDefaultLocked && userPassword.isEmpty) {
       _usecases.setDefaultLocked(false);
-      _showCreatePasswordDialog(context, scaffoldState);
+      _showCreatePasswordDialog(context);
     } else if (!isDefaultLocked) {
       // set it to true forcefully instantly.
       // will set to false when user inputs password correctly
       _usecases.setDefaultLocked(true);
-      Utils.showBottomSheet(scaffoldState, (context) =>
+      delegator.showBottomSheet((context) =>
         InputPasswordScreen(onSuccess: () {
           _usecases.setDefaultLocked(false);
           if (_needUpdateListener != null) {
             _needUpdateListener();
           }
         }, onFail: () {
-          Utils.showSnackBar(scaffoldState, AppLocalizations.of(context).unlockFail, Duration(seconds: 2));
+          delegator.showSnackBar(AppLocalizations.of(context).unlockFail, Duration(seconds: 2));
         }),
       );
     }
   }
 
-  Future<void> _showCreatePasswordDialog(BuildContext context, ScaffoldState scaffoldState) async {
+  Future<void> _showCreatePasswordDialog(BuildContext context) async {
     return Utils.showAppDialog(context,
       AppLocalizations.of(context).createPassword,
       AppLocalizations.of(context).createPasswordBody,
       null,
-        () => _onCreatePasswordOkClicked(context, scaffoldState),
+        () => _onCreatePasswordOkClicked(context),
     );
   }
 
-  Future<void> _onCreatePasswordOkClicked(BuildContext context, ScaffoldState scaffoldState) async {
+  Future<void> _onCreatePasswordOkClicked(BuildContext context) async {
     final successMsg = AppLocalizations.of(context).createPasswordSuccess;
     final failMsg = AppLocalizations.of(context).createPasswordFail;
-    Utils.showBottomSheet(scaffoldState, (context) => CreatePasswordScreen(),
+    delegator.showBottomSheet((context) => CreatePasswordScreen(),
       onClosed: () async {
         final isPasswordSaved = await _usecases.getUserPassword().then((s) => s.length > 0);
         if (isPasswordSaved) {
-          Utils.showSnackBar(scaffoldState, successMsg, _snackBarDuration);
+          delegator.showSnackBar(successMsg, _snackBarDuration);
         } else {
-          Utils.showSnackBar(scaffoldState, failMsg, _snackBarDuration);
+          delegator.showSnackBar(failMsg, _snackBarDuration);
         }
       }
     );
   }
 
-  Future<void> onSendTempPasswordClicked(BuildContext context, ScaffoldState scaffoldState) async {
+  Future<void> onSendTempPasswordClicked(BuildContext context) async {
     final recoveryEmail = await _usecases.getRecoveryEmail();
     if (recoveryEmail.isEmpty) {
       final message = AppLocalizations.of(context).noRecoveryEmail;
-      Utils.showSnackBar(scaffoldState, message, _snackBarDuration);
+      delegator.showSnackBar(message, _snackBarDuration);
     } else {
-      _showConfirmSendTempPasswordDialog(context, scaffoldState);
+      _showConfirmSendTempPasswordDialog(context);
     }
   }
 
-  Future<void> _showConfirmSendTempPasswordDialog(BuildContext context, ScaffoldState scaffoldState) async {
+  Future<void> _showConfirmSendTempPasswordDialog(BuildContext context) async {
     return Utils.showAppDialog(context,
       AppLocalizations.of(context).confirmSendTempPassword,
       AppLocalizations.of(context).confirmSendTempPasswordBody,
       null,
-        () => _onConfirmSendTempPasswordOkClicked(context, scaffoldState),
+        () => _onConfirmSendTempPasswordOkClicked(context),
     );
   }
 
-  Future<void> _onConfirmSendTempPasswordOkClicked(BuildContext context, ScaffoldState scaffoldState) async {
+  Future<void> _onConfirmSendTempPasswordOkClicked(BuildContext context) async {
     final mailSentMsg = AppLocalizations.of(context).tempPasswordMailSent;
     final mailSendFailedMsg = AppLocalizations.of(context).tempPasswordMailSendFailed;
     final failedToSaveTempPasswordMsg = AppLocalizations.of(context).failedToSaveTempPasswordByUnknownError;
@@ -117,12 +124,12 @@ class SettingsBloc {
         body: body,
       );
       if (response.statusCode.toString().startsWith('2')) {
-        Utils.showSnackBar(scaffoldState, mailSentMsg, _snackBarDuration);
+        delegator.showSnackBar(mailSentMsg, _snackBarDuration);
       } else {
-        Utils.showSnackBar(scaffoldState, mailSendFailedMsg, _snackBarDuration);
+        delegator.showSnackBar(mailSendFailedMsg, _snackBarDuration);
       }
     } else {
-      Utils.showSnackBar(scaffoldState, failedToSaveTempPasswordMsg, _snackBarDuration);
+      delegator.showSnackBar(failedToSaveTempPasswordMsg, _snackBarDuration);
     }
   }
 
@@ -139,23 +146,23 @@ class SettingsBloc {
     return '{"personalizations":[{"to":[{"email":"$targetEmail"}],"subject":"$title"}],"content": [{"type": "text/plain", "value": "$body"}],"from":{"email":"giantsol64@gmail.com","name":"Blue Diary Developer"}}';
   }
 
-  Future<void> onResetPasswordClicked(BuildContext context, ScaffoldState scaffoldState) async {
+  Future<void> onResetPasswordClicked(BuildContext context) async {
     final prevPassword = await _usecases.getUserPassword();
     if (prevPassword.isEmpty) {
-      _showCreatePasswordDialog(context, scaffoldState);
+      _showCreatePasswordDialog(context);
     } else {
       final changedMsg = AppLocalizations.of(context).passwordChanged;
       final unchangedMsg = AppLocalizations.of(context).passwordUnchanged;
 
-      Utils.showBottomSheet(scaffoldState, (context) =>
+      delegator.showBottomSheet((context) =>
         InputPasswordScreen(onSuccess: () async {
-          Utils.showBottomSheet(scaffoldState, (context) => CreatePasswordScreen(),
+          delegator.showBottomSheet((context) => CreatePasswordScreen(),
             onClosed: () async {
               final changedPassword = await _usecases.getUserPassword();
               if (prevPassword != changedPassword) {
-                Utils.showSnackBar(scaffoldState, changedMsg, _snackBarDuration);
+                delegator.showSnackBar(changedMsg, _snackBarDuration);
               } else {
-                Utils.showSnackBar(scaffoldState, unchangedMsg, _snackBarDuration);
+                delegator.showSnackBar(unchangedMsg, _snackBarDuration);
               }
             }
           );

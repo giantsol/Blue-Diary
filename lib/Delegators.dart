@@ -11,12 +11,10 @@ abstract class ShowSnackBarDelegator {
   void showSnackBar(String text, Duration duration);
 }
 
-abstract class SettingsChangedListenerDelegator {
-  void addSettingsChangedListener(void Function() listener);
-  void removeSettingsChangedListener(void Function() listener);
-}
-
 abstract class WeekBlocDelegator implements
   ShowBottomSheetDelegator,
-  ShowSnackBarDelegator,
-  SettingsChangedListenerDelegator { }
+  ShowSnackBarDelegator { }
+
+abstract class SettingsBlocDelegator implements
+  ShowBottomSheetDelegator,
+  ShowSnackBarDelegator { }

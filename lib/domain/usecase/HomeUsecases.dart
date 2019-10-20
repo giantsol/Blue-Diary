@@ -29,6 +29,17 @@ class HomeUsecases {
       : BottomNavigationItem.KEY_SETTINGS;
   }
 
+  void setCurrentChildScreenKey(String key) {
+    switch (key) {
+      case BottomNavigationItem.KEY_RECORD:
+        _currentNavigationItemIndex = 0;
+        break;
+      case BottomNavigationItem.KEY_SETTINGS:
+        _currentNavigationItemIndex = 1;
+        break;
+    }
+  }
+
   Future<String> getUserPassword() async {
     return _prefsRepository.getUserPassword();
   }

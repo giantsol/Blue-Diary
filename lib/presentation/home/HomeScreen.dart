@@ -8,6 +8,7 @@ import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/BottomNavigationItem.dart';
 import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
+import 'package:todo_app/presentation/settings/SettingsScreen.dart';
 import 'package:todo_app/presentation/week/WeekScreen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -74,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
             ),
           ),
           _BottomNavigationBar(
+            bloc: _bloc,
             navigationItems: state.navigationItems,
           ),
         ],
@@ -91,16 +93,6 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
   @override
   void showSnackBar(String text, Duration duration) {
     Utils.showSnackBar(_scaffoldKey.currentState, text, duration);
-  }
-
-  @override
-  void addSettingsChangedListener(listener) {
-    _bloc.addSettingsChangedListener(listener);
-  }
-
-  @override
-  void removeSettingsChangedListener(listener) {
-    _bloc.removeSettingsChangedListener(listener);
   }
 }
 
@@ -120,6 +112,8 @@ class _ChildScreen extends StatelessWidget {
         return WeekScreen(
           weekBlocDelegator: weekBlocDelegator
         );
+      case BottomNavigationItem.KEY_SETTINGS:
+        return SettingsScreen();
       default:
         throw Exception('Not existing child sreen: $childScreenKey');
     }
@@ -127,9 +121,11 @@ class _ChildScreen extends StatelessWidget {
 }
 
 class _BottomNavigationBar extends StatelessWidget {
+  final HomeBloc bloc;
   final List<BottomNavigationItem> navigationItems;
 
   _BottomNavigationBar({
+    @required this.bloc,
     @required this.navigationItems,
   });
 
@@ -145,6 +141,7 @@ class _BottomNavigationBar extends StatelessWidget {
         child: Row(
           children: List.generate(navigationItems.length, (index) {
             return _BottomNavigationItem(
+              bloc: bloc,
               item: navigationItems[index],
             );
           }),
@@ -155,9 +152,11 @@ class _BottomNavigationBar extends StatelessWidget {
 }
 
 class _BottomNavigationItem extends StatelessWidget {
+  final HomeBloc bloc;
   final BottomNavigationItem item;
 
   _BottomNavigationItem({
+    @required this.bloc,
     @required this.item,
   });
 
@@ -168,7 +167,7 @@ class _BottomNavigationItem extends StatelessWidget {
     return Expanded(
       child: Material(
         child: InkWell(
-          onTap: () { },
+          onTap: () => bloc.onBottomNavigationItemClicked(item.key),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 6),
             child: Center(

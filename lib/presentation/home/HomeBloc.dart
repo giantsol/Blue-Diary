@@ -16,8 +16,6 @@ class HomeBloc {
 
   final _usecases = dependencies.homeUsecases;
 
-  final List<void Function()> _settingsChangedEventListeners = [];
-
   HomeBloc(BuildContext context) {
     _initState(context);
   }
@@ -39,25 +37,19 @@ class HomeBloc {
     }
   }
 
-  void _dispatchSettingsChangedEvent() {
-    for (final listener in _settingsChangedEventListeners) {
-      listener();
-    }
-  }
+  void onBottomNavigationItemClicked(String key) {
+    _usecases.setCurrentChildScreenKey(key);
 
-  void addSettingsChangedListener(void Function() listener) {
-    if (!_settingsChangedEventListeners.contains(listener)) {
-      _settingsChangedEventListeners.add(listener);
-    }
-  }
-
-  void removeSettingsChangedListener(void Function() listener) {
-    _settingsChangedEventListeners.remove(listener);
+    final navigationItems = _usecases.getNavigationItems();
+    final currentChildScreenKey = _usecases.getCurrentChildScreenKey();
+    _state.add(_state.value.buildNew(
+      navigationItems: navigationItems,
+      currentChildScreenKey: currentChildScreenKey,
+    ));
   }
 
   void dispose() {
     _state.close();
-    _settingsChangedEventListeners.clear();
   }
 
 }
