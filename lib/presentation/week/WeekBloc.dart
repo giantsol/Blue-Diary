@@ -4,6 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/Utils.dart';
+import 'package:todo_app/domain/entity/BottomNavigationItem.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
@@ -28,6 +29,15 @@ class WeekBloc {
 
   WeekBloc({this.delegator}) {
     _initState();
+    delegator.addBottomNavigationItemClickedListener(_bottomNavigationItemClickedListener);
+  }
+
+  void _bottomNavigationItemClickedListener(String key) {
+    if (key == BottomNavigationItem.KEY_RECORD) {
+      _state.add(_state.value.buildNew(
+        moveToTodayEvent: true,
+      ));
+    }
   }
 
   Future<void> _initState({int weekRecordPageIndex}) async {
@@ -53,6 +63,12 @@ class WeekBloc {
       weekRecords: weekRecords,
       weekRecordPageIndex: currentWeekRecordPageIndex,
     ));
+  }
+
+  void updateDelegator(WeekBlocDelegator delegator) {
+    this.delegator.removeBottomNavigationItemClickedListener(_bottomNavigationItemClickedListener);
+    this.delegator = delegator;
+    this.delegator.addBottomNavigationItemClickedListener(_bottomNavigationItemClickedListener);
   }
 
   void onWeekRecordPageChanged(int newIndex) {
@@ -175,5 +191,9 @@ class WeekBloc {
         }
       }
     );
+  }
+
+  void dispose() {
+    delegator.removeBottomNavigationItemClickedListener(_bottomNavigationItemClickedListener);
   }
 }

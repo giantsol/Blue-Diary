@@ -40,6 +40,12 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator,
     );
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _bloc.dispose();
+  }
+
   Widget _buildUI(HomeState state) {
     return SafeArea(
       child: Scaffold(
@@ -91,6 +97,16 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator,
   @override
   void showSnackBar(String text, Duration duration) {
     Utils.showSnackBar(_scaffoldKey.currentState, text, duration);
+  }
+
+  @override
+  void addBottomNavigationItemClickedListener(void Function(String key) listener) {
+    _bloc.addBottomNavigationItemClickedListener(listener);
+  }
+
+  @override
+  void removeBottomNavigationItemClickedListener(void Function(String key) listener) {
+    _bloc.removeBottomNavigationItemClickedListener(listener);
   }
 }
 

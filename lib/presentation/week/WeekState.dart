@@ -14,6 +14,8 @@ class WeekState {
   final List<WeekRecord> weekRecords;
   final int weekRecordPageIndex;
 
+  final bool moveToTodayEvent;
+
   const WeekState({
     this.viewState = WeekViewState.WHOLE_LOADING,
     this.year = 0,
@@ -21,6 +23,8 @@ class WeekState {
     this.nthWeek = 0,
     this.weekRecords = const [],
     this.weekRecordPageIndex = 0,
+
+    this.moveToTodayEvent = false,
   });
 
   WeekState buildNew({
@@ -30,6 +34,7 @@ class WeekState {
     int nthWeek,
     List<WeekRecord> weekRecords,
     int weekRecordPageIndex,
+    bool moveToTodayEvent,
   }) {
     return WeekState(
       viewState: viewState ?? this.viewState,
@@ -38,6 +43,8 @@ class WeekState {
       nthWeek: nthWeek ?? this.nthWeek,
       weekRecords: weekRecords ?? this.weekRecords,
       weekRecordPageIndex: weekRecordPageIndex ?? this.weekRecordPageIndex,
+
+      moveToTodayEvent: moveToTodayEvent ?? false,
     );
   }
 

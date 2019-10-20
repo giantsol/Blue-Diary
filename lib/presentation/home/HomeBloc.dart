@@ -16,6 +16,8 @@ class HomeBloc {
 
   final _usecases = dependencies.homeUsecases;
 
+  final List<void Function(String key)> _bottomNavigationItemClickedListeners = [];
+
   HomeBloc(BuildContext context) {
     _initState(context);
   }
@@ -46,5 +48,23 @@ class HomeBloc {
       navigationItems: navigationItems,
       currentChildScreenKey: currentChildScreenKey,
     ));
+
+    for (var listener in _bottomNavigationItemClickedListeners) {
+      listener(key);
+    }
+  }
+
+  void addBottomNavigationItemClickedListener(void Function(String key) listener) {
+    if (!_bottomNavigationItemClickedListeners.contains(listener)) {
+      _bottomNavigationItemClickedListeners.add(listener);
+    }
+  }
+
+  void removeBottomNavigationItemClickedListener(void Function(String key) listener) {
+    _bottomNavigationItemClickedListeners.remove(listener);
+  }
+
+  void dispose() {
+    _bottomNavigationItemClickedListeners.clear();
   }
 }

@@ -2,6 +2,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:infinity_page_view/infinity_page_view.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Delegators.dart';
@@ -44,12 +45,13 @@ class _WeekScreenState extends State<WeekScreen> {
   @override
   void didUpdateWidget(WeekScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _bloc.delegator = widget.weekBlocDelegator;
+    _bloc.updateDelegator(widget.weekBlocDelegator);
   }
 
   @override
   void dispose() {
     super.dispose();
+    _bloc.dispose();
     _weekRecordPageController.dispose();
     _scrollController.dispose();
 
@@ -69,6 +71,12 @@ class _WeekScreenState extends State<WeekScreen> {
   }
 
   Widget _buildUI(WeekState state) {
+    if (state.moveToTodayEvent) {
+      SchedulerBinding.instance.addPostFrameCallback((duration) {
+        _weekRecordPageController.jumpToPage(0);
+      });
+    }
+
     return state.viewState == WeekViewState.WHOLE_LOADING ? _WholeLoadingView()
       : WillPopScope(
       onWillPop: () async {
@@ -84,6 +92,7 @@ class _WeekScreenState extends State<WeekScreen> {
           Expanded(
             child: Stack(
               children: <Widget>[
+                //todo: change not to use infinitypageview
                 InfinityPageView(
                   controller: _weekRecordPageController,
                   itemCount: state.weekRecords.length,
