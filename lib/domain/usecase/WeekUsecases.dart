@@ -19,23 +19,11 @@ class WeekUsecases {
 
   const WeekUsecases(this._memoRepository, this._dateRepository, this._toDoRepository, this._lockRepository, this._prefsRepository);
 
-  DateTime getCurrentDate() {
-    return _dateRepository.getCurrentDate();
+  DateTime getToday() {
+    return _dateRepository.getToday();
   }
 
-  Future<WeekRecord> getCurrentWeekRecord() async {
-    return _getWeekRecord(_dateRepository.getCurrentDate());
-  }
-
-  Future<WeekRecord> getPrevWeekRecord() async {
-    return _getWeekRecord(_dateRepository.getCurrentDate().subtract(Duration(days: 7)));
-  }
-
-  Future<WeekRecord> getNextWeekRecord() async {
-    return _getWeekRecord(_dateRepository.getCurrentDate().add(Duration(days: 7)));
-  }
-
-  Future<WeekRecord> _getWeekRecord(DateTime date) async {
+  Future<WeekRecord> getWeekRecord(DateTime date) async {
     final today = _dateRepository.getToday();
     final dateInWeek = DateInWeek.fromDate(date);
     final defaultLocked = await _prefsRepository.getUseLockScreen();
@@ -96,24 +84,12 @@ class WeekUsecases {
     _memoRepository.setCheckPoint(checkPoint);
   }
 
-  void setCurrentDateToToday() {
-    _dateRepository.setCurrentDate(_dateRepository.getToday());
-  }
-
   void setCheckPointsLocked(DateInWeek dateInWeek, bool value) {
     _lockRepository.setIsCheckPointsLocked(dateInWeek, value);
   }
 
   void setDayRecordLocked(DateTime date, bool value) {
     _lockRepository.setIsDayRecordLocked(date, value);
-  }
-
-  void setCurrentDateToNextWeek() {
-    _dateRepository.setCurrentDate(_dateRepository.getCurrentDate().add(Duration(days: 7)));
-  }
-
-  void setCurrentDateToPrevWeek() {
-    _dateRepository.setCurrentDate(_dateRepository.getCurrentDate().subtract(Duration(days: 7)));
   }
 
   Future<String> getUserPassword() async {

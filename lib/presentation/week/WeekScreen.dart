@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:infinity_page_view/infinity_page_view.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
@@ -16,6 +15,9 @@ import 'package:todo_app/presentation/week/WeekState.dart';
 import 'package:todo_app/presentation/widgets/AppTextField.dart';
 
 class WeekScreen extends StatefulWidget {
+  static const MAX_WEEk_PAGE = 100;
+  static const INITIAL_WEEK_PAGE = 50;
+
   final WeekBlocDelegator weekBlocDelegator;
 
   WeekScreen({
@@ -29,7 +31,7 @@ class WeekScreen extends StatefulWidget {
 
 class _WeekScreenState extends State<WeekScreen> {
   WeekBloc _bloc;
-  InfinityPageController _weekRecordPageController;
+  PageController _pageController;
   final Map<String, FocusNode> _focusNodes = {};
   ScrollController _scrollController;
   final GlobalKey<_HeaderShadowState> _headerShadowKey = GlobalKey();
@@ -38,7 +40,7 @@ class _WeekScreenState extends State<WeekScreen> {
   void initState() {
     super.initState();
     _bloc = WeekBloc(delegator: widget.weekBlocDelegator);
-    _weekRecordPageController = InfinityPageController(initialPage: _bloc.getInitialState().weekRecordPageIndex);
+    _pageController = PageController(initialPage: _bloc.getInitialState().initialWeekRecordPageIndex);
     _scrollController = ScrollController();
   }
 
@@ -52,7 +54,7 @@ class _WeekScreenState extends State<WeekScreen> {
   void dispose() {
     super.dispose();
     _bloc.dispose();
-    _weekRecordPageController.dispose();
+    _pageController.dispose();
     _scrollController.dispose();
 
     _focusNodes.forEach((key, focusNode) => focusNode.dispose());
@@ -73,7 +75,7 @@ class _WeekScreenState extends State<WeekScreen> {
   Widget _buildUI(WeekState state) {
     if (state.moveToTodayEvent) {
       SchedulerBinding.instance.addPostFrameCallback((duration) {
-        _weekRecordPageController.jumpToPage(0);
+        _pageController.jumpToPage(_bloc.getInitialState().initialWeekRecordPageIndex);
       });
     }
 
@@ -92,25 +94,25 @@ class _WeekScreenState extends State<WeekScreen> {
           Expanded(
             child: Stack(
               children: <Widget>[
-                //todo: change not to use infinitypageview
-                InfinityPageView(
-                  controller: _weekRecordPageController,
-                  itemCount: state.weekRecords.length,
+                PageView.builder(
+                  controller: _pageController,
+                  itemCount: WeekScreen.MAX_WEEk_PAGE,
                   itemBuilder: (context, index) {
-                    final weekRecords = state.weekRecords;
-                    if (weekRecords.isEmpty || weekRecords[index] == null) {
-                      return null;
+                    final weekRecord = state.getWeekRecordForPageIndex(index);
+                    if (weekRecord == null) {
+                      return const SizedBox.shrink();
+                    } else {
+                      return _WeekRecord(
+                        bloc: _bloc,
+                        weekRecord: weekRecord,
+                        focusNodeProvider: _getOrCreateFocusNode,
+                        scrollController: _scrollController,
+                      );
                     }
-                    return _WeekRecord(
-                      bloc: _bloc,
-                      weekRecord: weekRecords[index],
-                      focusNodeProvider: _getOrCreateFocusNode,
-                      scrollController: _scrollController,
-                    );
                   },
                   onPageChanged: (changedIndex) {
                     _headerShadowKey.currentState.updateShadowVisibility(false);
-                    _bloc.onWeekRecordPageChanged(changedIndex);
+                    _bloc.onWeekRecordPageIndexChanged(changedIndex);
                   },
                 ),
                 _HeaderShadow(
@@ -361,7 +363,7 @@ class _CheckPointItem extends StatelessWidget {
                   hintText: checkPoint.hint,
                   hintTextSize: 12,
                   hintColor: AppColors.TEXT_WHITE_DARK,
-                  onChanged: (s) => bloc.onCheckPointTextChanged(weekRecord, checkPoint, s),
+                  onChanged: (s) => bloc.onCheckPointTextChanged(checkPoint, s),
                   maxLines: 2,
                 ),
               ),
@@ -766,22 +768,6 @@ class _DayPreviewItemTodayText extends StatelessWidget {
           fontSize: 8,
         ),
       ),
-    );
-  }
-}
-
-class _DayPreviewItemCompleteText extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Text(
-        'COMPLETE',
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          fontSize: 18,
-          color: AppColors.TERTIARY,
-        )
-      )
     );
   }
 }

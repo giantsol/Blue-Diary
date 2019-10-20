@@ -36,8 +36,10 @@ class WeekRecord {
     final updatedIndex = updatedCheckPoints.indexWhere((it) => it.key == updated.key);
     if (updatedIndex >= 0) {
       updatedCheckPoints[updatedIndex] = updated;
+      return buildNew(checkPoints: updatedCheckPoints);
+    } else {
+      return this;
     }
-    return buildNew(checkPoints: updatedCheckPoints);
   }
 
   WeekRecord buildNewDayPreviewUpdated(DayPreview updated) {
