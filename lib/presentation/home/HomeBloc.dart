@@ -47,9 +47,4 @@ class HomeBloc {
       currentChildScreenKey: currentChildScreenKey,
     ));
   }
-
-  void dispose() {
-    _state.close();
-  }
-
 }

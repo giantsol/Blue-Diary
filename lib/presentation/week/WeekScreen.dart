@@ -50,7 +50,6 @@ class _WeekScreenState extends State<WeekScreen> {
   @override
   void dispose() {
     super.dispose();
-    _bloc.dispose();
     _weekRecordPageController.dispose();
     _scrollController.dispose();
 

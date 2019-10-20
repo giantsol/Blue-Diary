@@ -29,12 +29,6 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    _bloc.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return StreamBuilder(
       initialData: _bloc.getInitialState(),

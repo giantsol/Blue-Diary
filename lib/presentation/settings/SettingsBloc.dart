@@ -170,8 +170,4 @@ class SettingsBloc {
       );
     }
   }
-
-  void dispose() {
-
-  }
 }

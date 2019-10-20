@@ -50,8 +50,4 @@ class LockBloc {
       }
     }
   }
-
-  void dispose() {
-
-  }
 }

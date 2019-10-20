@@ -22,12 +22,6 @@ class _LockScreenState extends State<LockScreen> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    _bloc.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return StreamBuilder(
       initialData: _bloc.getInitialState(),

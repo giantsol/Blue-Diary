@@ -72,8 +72,4 @@ class InputPasswordBloc {
       _state.add(_state.value.buildNew(password: updatedPassword));
     }
   }
-
-  void dispose() {
-    _state.close();
-  }
 }

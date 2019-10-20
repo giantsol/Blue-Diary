@@ -176,8 +176,4 @@ class WeekBloc {
       }
     );
   }
-
-  void dispose() {
-    _state.close();
-  }
 }

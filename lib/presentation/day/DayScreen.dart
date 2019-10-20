@@ -47,7 +47,6 @@ class _DayScreenState extends State<DayScreen> {
   @override
   void dispose() {
     super.dispose();
-    _bloc.dispose();
     _toDoScrollController.dispose();
     _pageController.dispose();
 

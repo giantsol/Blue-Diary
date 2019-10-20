@@ -42,12 +42,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    _bloc.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: PreferencePage([

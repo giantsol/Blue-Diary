@@ -305,8 +305,4 @@ class DayBloc {
       allCategories: allCategories,
     ));
   }
-
-  void dispose() {
-    _state.close();
-  }
 }

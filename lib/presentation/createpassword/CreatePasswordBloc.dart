@@ -79,8 +79,4 @@ class CreatePasswordBloc {
       }
     }
   }
-
-  void dispose() {
-    _state.close();
-  }
 }
