@@ -1,10 +1,13 @@
 
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
+import 'package:todo_app/presentation/lock/LockScreen.dart';
+import 'package:todo_app/presentation/widgets/SlideUpPageRoute.dart';
 
 class HomeBloc {
   final _state = BehaviorSubject<HomeState>.seeded(HomeState());
@@ -15,17 +18,25 @@ class HomeBloc {
 
   final List<void Function()> _settingsChangedEventListeners = [];
 
-  HomeBloc() {
-    _initState();
+  HomeBloc(BuildContext context) {
+    _initState(context);
   }
 
-  void _initState() {
+  Future<void> _initState(BuildContext context) async {
     final navigationItems = _usecases.getNavigationItems();
     final currentChildScreenKey = _usecases.getCurrentChildScreenKey();
     _state.add(_state.value.buildNew(
       navigationItems: navigationItems,
       currentChildScreenKey: currentChildScreenKey,
     ));
+
+    final userPassword = await _usecases.getUserPassword();
+    if (userPassword.isNotEmpty) {
+      Navigator.push(
+        context,
+        SlideUpPageRoute(page: LockScreen())
+      );
+    }
   }
 
   void _dispatchSettingsChangedEvent() {

@@ -1,9 +1,14 @@
 
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/domain/entity/BottomNavigationItem.dart';
+import 'package:todo_app/domain/repository/PrefRepository.dart';
 
 class HomeUsecases {
+  final PrefsRepository _prefsRepository;
+
   var _currentNavigationItemIndex = 0;
+
+  HomeUsecases(this._prefsRepository);
 
   List<BottomNavigationItem> getNavigationItems() {
     final recordNavigationItem = BottomNavigationItem(
@@ -22,5 +27,9 @@ class HomeUsecases {
   String getCurrentChildScreenKey() {
     return _currentNavigationItemIndex == 0 ? BottomNavigationItem.KEY_RECORD
       : BottomNavigationItem.KEY_SETTINGS;
+  }
+
+  Future<String> getUserPassword() async {
+    return _prefsRepository.getUserPassword();
   }
 }

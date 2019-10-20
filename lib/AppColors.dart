@@ -36,4 +36,6 @@ class AppColors {
   static const CATEGORY_COLOR_02 = Color(0xFFFE6B64);
   static const CATEGORY_COLOR_03 = Color(0xFF77DD77);
   static const CATEGORY_COLOR_04 = Color(0xFF779ECB);
+
+  static const RED = Color(0xFFFA0000);
 }

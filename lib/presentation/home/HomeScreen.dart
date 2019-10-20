@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator {
   @override
   void initState() {
     super.initState();
-    _bloc = HomeBloc();
+    _bloc = HomeBloc(context);
   }
 
   @override

@@ -7,6 +7,7 @@ import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Dependencies.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/presentation/home/HomeScreen.dart';
+import 'package:todo_app/presentation/lock/LockScreen.dart';
 
 // static dependency injection
 Dependencies _sharedDependencies;
