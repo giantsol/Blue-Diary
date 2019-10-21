@@ -16,7 +16,6 @@ class AppDatabase implements ToDoDataSource,
   CategoryDataSource {
   static const String TABLE_CHECK_POINTS = 'checkpoints';
   static const String TABLE_TODOS = 'todos';
-  static const String TABLE_LOCKS = 'locks';
   static const String TABLE_DAY_MEMOS = 'daymemos';
   static const String TABLE_CATEGORIES = 'categories';
 
@@ -30,8 +29,6 @@ class AppDatabase implements ToDoDataSource,
   static const String COLUMN_TEXT = 'text';
   static const String COLUMN_HINT = 'hint';
   static const String COLUMN_DONE = 'done';
-  static const String COLUMN_KEY = '_key';
-  static const String COLUMN_LOCKED = 'locked';
   static const String COLUMN_EXPANDED = 'expanded';
   static const String COLUMN_NAME = 'name';
   static const String COLUMN_FILL_COLOR = 'fill_color';
@@ -77,15 +74,6 @@ class AppDatabase implements ToDoDataSource,
           );
           """
         );
-        // todo: drop TABLE_LOCKS
-        await db.execute(
-          """
-          CREATE TABLE $TABLE_LOCKS(
-            $COLUMN_KEY TEXT NOT NULL PRIMARY KEY,
-            $COLUMN_LOCKED INTEGER NOT NULL
-          );
-          """
-        );
         await db.execute(
           """
           CREATE TABLE $TABLE_CATEGORIES(
@@ -111,7 +99,14 @@ class AppDatabase implements ToDoDataSource,
           """
         );
       },
-      version: 1,
+      onUpgrade: (db, oldVersion, newVersion) {
+        if (oldVersion == 1 && newVersion == 2) {
+          return db.execute('DROP TABLE IF EXISTS locks');
+        } else {
+          return null;
+        }
+      },
+      version: 2,
     );
   }
 
