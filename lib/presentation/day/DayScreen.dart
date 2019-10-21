@@ -136,6 +136,7 @@ class _DayScreenState extends State<DayScreen> {
                             }
                           },
                           onPageChanged: (changedIndex) {
+                            _unfocusTextFieldIfAny();
                             _headerShadowKey.currentState.updateShadowVisibility(false);
                             _bloc.onDayRecordPageIndexChanged(changedIndex);
                           },

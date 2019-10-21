@@ -120,6 +120,7 @@ class _WeekScreenState extends State<WeekScreen> {
                     }
                   },
                   onPageChanged: (changedIndex) {
+                    _unfocusTextFieldIfAny();
                     _headerShadowKey.currentState.updateShadowVisibility(false);
                     _bloc.onWeekRecordPageIndexChanged(changedIndex);
                   },
