@@ -317,10 +317,12 @@ class _CheckPointsBox extends StatelessWidget {
               padding: const EdgeInsets.only(left: 8, top: 4, right: 12, bottom: 12,),
               child: Column(
                 children: List.generate(checkPoints.length, (index) {
+                  final checkPoint = index == 0 && weekRecord.containsToday ? checkPoints[index].buildNew(hint: AppLocalizations.of(context).checkPointHint)
+                    : checkPoints[index];
                   return _CheckPointItem(
                     bloc: bloc,
                     weekRecord: weekRecord,
-                    checkPoint: checkPoints[index],
+                    checkPoint: checkPoint,
                     focusNodeProvider: focusNodeProvider,
                   );
                 }),

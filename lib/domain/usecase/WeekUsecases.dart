@@ -27,6 +27,7 @@ class WeekUsecases {
     final today = _dateRepository.getToday();
     final dateInWeek = DateInWeek.fromDate(date);
     final checkPoints = await _memoRepository.getCheckPoints(date);
+    bool containsToday = false;
 
     final datesInWeek = Utils.getDatesInWeek(date);
     List<DayPreview> dayPreviews = [];
@@ -52,6 +53,9 @@ class WeekUsecases {
 
       curDayCompleted = toDos.length > 0 && toDos.length == toDos.where((toDo) => toDo.isDone).length;
 
+      final isToday = Utils.isSameDay(date, today);
+      containsToday = containsToday || isToday;
+
       final dayPreview = DayPreview(
         year: date.year,
         month: date.month,
@@ -59,7 +63,7 @@ class WeekUsecases {
         weekday: date.weekday,
         totalToDosCount: toDos.length,
         doneToDosCount: toDos.where((it) => it.isDone).length,
-        isToday: Utils.isSameDay(date, today),
+        isToday: isToday,
         isLightColor: !curDayCompleted && today.compareTo(date) > 0,
         isTopLineVisible: (curDayCompleted && prevDayCompleted) || (date == today && prevDayCompleted),
         isTopLineLightColor: !curDayCompleted,
@@ -79,7 +83,12 @@ class WeekUsecases {
       prevDayCompleted = curDayCompleted;
     }
 
-    return WeekRecord(dateInWeek: dateInWeek, checkPoints: checkPoints, dayPreviews: dayPreviews);
+    return WeekRecord(
+      dateInWeek: dateInWeek,
+      checkPoints: checkPoints,
+      dayPreviews: dayPreviews,
+      containsToday: containsToday,
+    );
   }
 
   void setCheckPoint(CheckPoint checkPoint) {

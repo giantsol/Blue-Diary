@@ -17,7 +17,6 @@ class DayMemo {
       month: map[AppDatabase.COLUMN_MONTH] ?? 0,
       day: map[AppDatabase.COLUMN_DAY] ?? 0,
       text: map[AppDatabase.COLUMN_TEXT] ?? '',
-      hint: map[AppDatabase.COLUMN_HINT] ?? '',
       isExpanded: map[AppDatabase.COLUMN_EXPANDED] != 0,
     );
   }
@@ -64,7 +63,7 @@ class DayMemo {
       AppDatabase.COLUMN_MONTH: month,
       AppDatabase.COLUMN_DAY: day,
       AppDatabase.COLUMN_TEXT: text,
-      AppDatabase.COLUMN_HINT: hint,
+      AppDatabase.COLUMN_HINT: '',
       AppDatabase.COLUMN_EXPANDED: isExpanded ? 1 : 0,
     };
   }

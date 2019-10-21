@@ -227,14 +227,16 @@ class _DayRecord extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dayRecord = this.dayRecord;
+    final dayMemo = dayRecord.isToday ? dayRecord.dayMemo.buildNew(hint: AppLocalizations.of(context).dayMemoHint)
+      : dayRecord.dayMemo;
 
     return dayRecord.toDoRecords.length == 0 ? _EmptyToDoListView(
       bloc: bloc,
-      dayMemo: dayRecord.dayMemo,
+      dayMemo: dayMemo,
       focusNodeProvider: focusNodeProvider,
     ) : _ToDoListView(
       bloc: bloc,
-      dayMemo: dayRecord.dayMemo,
+      dayMemo: dayMemo,
       toDoRecords: dayRecord.toDoRecords,
       scrollController: scrollController,
       focusNodeProvider: focusNodeProvider,

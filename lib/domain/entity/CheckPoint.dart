@@ -56,7 +56,7 @@ class CheckPoint {
       AppDatabase.COLUMN_NTH_WEEK: nthWeek,
       AppDatabase.COLUMN_INDEX: index,
       AppDatabase.COLUMN_TEXT: text,
-      AppDatabase.COLUMN_HINT: hint,
+      AppDatabase.COLUMN_HINT: '',
     };
   }
 }

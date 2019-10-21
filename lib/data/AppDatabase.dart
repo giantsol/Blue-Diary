@@ -164,7 +164,7 @@ class AppDatabase implements ToDoDataSource,
     );
     maps.forEach((map) {
       final index = map[COLUMN_INDEX];
-      checkPoints[index] = checkPoints[index].buildNew(text: map[COLUMN_TEXT], hint: map[COLUMN_HINT]);
+      checkPoints[index] = checkPoints[index].buildNew(text: map[COLUMN_TEXT]);
     });
 
     return checkPoints;

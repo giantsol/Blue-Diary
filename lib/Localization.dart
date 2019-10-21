@@ -45,6 +45,8 @@ class AppLocalizations {
   static const REMOVE_TO_DO_BODY = "removeToDoBody";
   static const RECORD_NAVIGATION_TITLE = "recordNavigationTitle";
   static const SETTINGS_NAVIGATION_TITLE = "settingsNavigationTitle";
+  static const CHECK_POINT_HINT = "checkPointHint";
+  static const DAY_MEMO_HINT = "dayMemoHint";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -94,6 +96,8 @@ class AppLocalizations {
       REMOVE_TO_DO_BODY: 'Are you sure you want to remove this TODO?',
       RECORD_NAVIGATION_TITLE: 'Record',
       SETTINGS_NAVIGATION_TITLE: 'Settings',
+      CHECK_POINT_HINT: 'Anything to remind yourself?',
+      DAY_MEMO_HINT: 'Memo for today. Anything.',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -138,6 +142,8 @@ class AppLocalizations {
       REMOVE_TO_DO_BODY: '이 작업을 삭제하시겠습니까?',
       RECORD_NAVIGATION_TITLE: '기록',
       SETTINGS_NAVIGATION_TITLE: '설정',
+      CHECK_POINT_HINT: '이번주의 다짐을 적어보세요.',
+      DAY_MEMO_HINT: '오늘의 메모를 적어보세요.',
     },
   };
 
@@ -187,6 +193,8 @@ class AppLocalizations {
   String get removeToDoBody => _localizedValues[locale.languageCode][REMOVE_TO_DO_BODY];
   String get recordNavigationTitle => _localizedValues[locale.languageCode][RECORD_NAVIGATION_TITLE];
   String get settingsNavigationTitle => _localizedValues[locale.languageCode][SETTINGS_NAVIGATION_TITLE];
+  String get checkPointHint => _localizedValues[locale.languageCode][CHECK_POINT_HINT];
+  String get dayMemoHint => _localizedValues[locale.languageCode][DAY_MEMO_HINT];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {
