@@ -6,7 +6,7 @@ class AppLocalizations {
   static const NEW_PASSWORD = "newPassword";
   static const CONFIRM_NEW_PASSWORD = "confirmNewPassword";
   static const CONFIRM_PASSWORD_FAIL = "confirmPasswordFail";
-  static const INPUT_PASSWORD = "inputPassword";
+  static const CURRENT_PASSWORD = "currentPassword";
   static const RETRY_INPUT_PASSWORD = "retryInputPassword";
   static const CREATE_PASSWORD = "createPassword";
   static const CREATE_PASSWORD_BODY = "createPasswordBody";
@@ -55,7 +55,7 @@ class AppLocalizations {
       NEW_PASSWORD: 'New Password',
       CONFIRM_NEW_PASSWORD: 'Confirm New Password',
       CONFIRM_PASSWORD_FAIL: 'Incorrect',
-      INPUT_PASSWORD: 'Password',
+      CURRENT_PASSWORD: 'Current Password',
       RETRY_INPUT_PASSWORD: 'Retry Password',
       CREATE_PASSWORD: 'Create Password',
       CREATE_PASSWORD_BODY: 'You haven\'t set your password yet!\nGo create new password?',
@@ -99,7 +99,7 @@ class AppLocalizations {
       NEW_PASSWORD: '새 비밀번호 생성',
       CONFIRM_NEW_PASSWORD: '새 비밀번호 확인',
       CONFIRM_PASSWORD_FAIL: '일치하지 않습니다.',
-      INPUT_PASSWORD: '비밀번호 입력',
+      CURRENT_PASSWORD: '현재 비밀번호 입력',
       RETRY_INPUT_PASSWORD: '다시 입력해 주세요.',
       CREATE_PASSWORD: '비밀번호 설정',
       CREATE_PASSWORD_BODY: '아직 설정된 비밀번호가 없네요!\n비밀번호를 새로 만드시겠어요?',
@@ -148,7 +148,7 @@ class AppLocalizations {
   String get newPassword => _localizedValues[locale.languageCode][NEW_PASSWORD];
   String get confirmNewPassword => _localizedValues[locale.languageCode][CONFIRM_NEW_PASSWORD];
   String get confirmPasswordFail => _localizedValues[locale.languageCode][CONFIRM_PASSWORD_FAIL];
-  String get inputPassword => _localizedValues[locale.languageCode][INPUT_PASSWORD];
+  String get currentPassword => _localizedValues[locale.languageCode][CURRENT_PASSWORD];
   String get retryInputPassword => _localizedValues[locale.languageCode][RETRY_INPUT_PASSWORD];
   String get createPassword => _localizedValues[locale.languageCode][CREATE_PASSWORD];
   String get createPasswordBody => _localizedValues[locale.languageCode][CREATE_PASSWORD_BODY];
@@ -204,21 +204,36 @@ class AppLocalizations {
           return '$month월 다섯째주';
       }
     } else {
-      final monthName = _getMonthName(month);
+      final monthName = _getMonthNameShort(month);
       switch (nthWeek) {
         case 0:
-          return '$monthName, 1st Week';
+          return '1st Week of $monthName';
         case 1:
-          return '$monthName, 2nd Week';
+          return '2nd Week of $monthName';
         case 2:
-          return '$monthName, 3rd Week';
+          return '3rd Week of $monthName';
         case 3:
-          return '$monthName, 4th Week';
+          return '4th Week of $monthName';
         case 4:
         default:
-          return '$monthName, 5th Week';
+          return '5th Week of $monthName';
       }
     }
+  }
+
+  String _getMonthNameShort(int month) {
+    return month == DateTime.january ? 'Jan'
+      : month == DateTime.february ? 'Feb'
+      : month == DateTime.march ? 'Mar'
+      : month == DateTime.april ? 'Apr'
+      : month == DateTime.may ? 'May'
+      : month == DateTime.june ? 'Jun'
+      : month == DateTime.july ? 'Jul'
+      : month == DateTime.august ? 'Aug'
+      : month == DateTime.september ? 'Sep'
+      : month == DateTime.october ? 'Oct'
+      : month == DateTime.november ? 'Nov'
+      : 'Dec';
   }
 
   String _getMonthName(int month) {
@@ -230,7 +245,7 @@ class AppLocalizations {
       : month == DateTime.june ? 'June'
       : month == DateTime.july ? 'July'
       : month == DateTime.august ? 'August'
-      : month == DateTime.september ? 'September'
+      : month == DateTime.september ? 'Sepember'
       : month == DateTime.october ? 'October'
       : month == DateTime.november ? 'November'
       : 'December';
@@ -246,10 +261,11 @@ class AppLocalizations {
   }
 
   String getDayScreenTitle(int month, int day, int weekday) {
+    final weekdayString = _getWeekDayName(weekday);
     if (locale.languageCode == 'ko') {
-      return '$month월 $day일 ${_getWeekDayName(weekday)}';
+      return '$month월 $day일 $weekdayString';
     } else {
-      return '${_getWeekDayName(weekday)}, ${_getMonthName(month)} $day';
+      return '$weekdayString, ${_getMonthName(month)} $day';
     }
   }
 
@@ -272,19 +288,19 @@ class AppLocalizations {
       }
     } else {
       if (weekDay == DateTime.monday) {
-        return 'Monday';
+        return 'Mon';
       } else if (weekDay == DateTime.tuesday) {
-        return 'Tuesday';
+        return 'Tue';
       } else if (weekDay == DateTime.wednesday) {
-        return 'Wednesday';
+        return 'Wed';
       } else if (weekDay == DateTime.thursday) {
-        return 'Thursday';
+        return 'Thu';
       } else if (weekDay == DateTime.friday) {
-        return 'Friday';
+        return 'Fri';
       } else if (weekDay == DateTime.saturday) {
-        return 'Saturday';
+        return 'Sat';
       } else {
-        return 'Sunday';
+        return 'Sun';
       }
     }
   }

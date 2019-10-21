@@ -51,7 +51,7 @@ class _InputPasswordScreenState extends State<InputPasswordScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      errorMsg.isNotEmpty ? AppLocalizations.of(context).retryInputPassword : AppLocalizations.of(context).inputPassword,
+                      errorMsg.isNotEmpty ? AppLocalizations.of(context).retryInputPassword : AppLocalizations.of(context).currentPassword,
                       style: TextStyle(
                         fontSize: 18,
                         color: AppColors.TEXT_BLACK,
