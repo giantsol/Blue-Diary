@@ -307,9 +307,9 @@ class AppLocalizations {
 
   String getMoreToDos(int count) {
     if (locale.languageCode == 'ko') {
-      return '외 $count개';
+      return ' 외 $count개';
     } else {
-      return 'and $count more';
+      return ' and $count more';
     }
   }
 }
