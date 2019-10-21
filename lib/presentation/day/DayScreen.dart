@@ -163,7 +163,7 @@ class _DayScreenState extends State<DayScreen> {
                 selectedPickerIndex: state.selectedPickerIndex,
                 focusNodeProvider: _getOrCreateFocusNode,
               ),
-              state.isFabVisible ? _FAB(
+              state.isFabVisible ? _AddToDoFAB(
                 bloc: _bloc,
               ) : const SizedBox.shrink(),
               state.isFabVisible ? _BackFAB(
@@ -242,10 +242,10 @@ class _DayRecord extends StatelessWidget {
   }
 }
 
-class _FAB extends StatelessWidget {
+class _AddToDoFAB extends StatelessWidget {
   final DayBloc bloc;
 
-  _FAB({
+  _AddToDoFAB({
     @required this.bloc,
   });
 
@@ -280,6 +280,7 @@ class _BackFAB extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(left: 16, bottom: 16,),
         child: FloatingActionButton(
+          heroTag: null,
           child: Image.asset('assets/ic_back_arrow.png'),
           backgroundColor: AppColors.BACKGROUND_WHITE,
           onPressed: () => { },
