@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <a href=""><img src="https://user-images.githubusercontent.com/4879766/66365941-ba9c1400-e9c9-11e9-8d96-d161ff087035.png" alt="Blue Diary" width="200"></a>
+  <a href=""><img src="https://user-images.githubusercontent.com/4879766/67226792-c62f1680-f470-11e9-9609-7cd1f2410dd2.png" alt="Blue Diary" width="200"></a>
   <br>
   Blue Diary
   <br>
@@ -20,10 +20,10 @@
 ## Screenshots
 
 <p float="left">
-  <img src="https://user-images.githubusercontent.com/4879766/66365952-c8519980-e9c9-11e9-824d-fc4533b4d328.jpeg" width="200" />
-  <img src="https://user-images.githubusercontent.com/4879766/66365965-d0a9d480-e9c9-11e9-931f-a54e70308d27.jpeg" width="200" /> 
-  <img src="https://user-images.githubusercontent.com/4879766/66365968-d1db0180-e9c9-11e9-95cf-03ffd83490d2.jpeg" width="200" />
-  <img src="https://user-images.githubusercontent.com/4879766/66365969-d3a4c500-e9c9-11e9-9c4d-2082479cc7f7.jpeg" width="200" />
+  <img src="https://user-images.githubusercontent.com/4879766/67226803-cc24f780-f470-11e9-9578-343f1ad62516.jpeg" width="200" />
+  <img src="https://user-images.githubusercontent.com/4879766/67226805-ce875180-f470-11e9-9dba-82f330b9d6da.jpeg" width="200" /> 
+  <img src="https://user-images.githubusercontent.com/4879766/67226810-d0511500-f470-11e9-9855-26849cc5f00d.jpeg" width="200" />
+  <img src="https://user-images.githubusercontent.com/4879766/67226814-d21ad880-f470-11e9-8f5f-a54bdfc7f678.jpeg" width="200" />
 </p>
 
 ## Usage
