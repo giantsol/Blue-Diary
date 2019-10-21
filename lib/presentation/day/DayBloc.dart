@@ -321,4 +321,8 @@ class DayBloc {
       animateToPageEvent: newPageIndex,
     ));
   }
+
+  void onBackFABClicked(BuildContext context) {
+    Navigator.pop(context);
+  }
 }

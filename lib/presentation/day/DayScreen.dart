@@ -283,7 +283,7 @@ class _BackFAB extends StatelessWidget {
           heroTag: null,
           child: Image.asset('assets/ic_back_arrow.png'),
           backgroundColor: AppColors.BACKGROUND_WHITE,
-          onPressed: () => { },
+          onPressed: () => bloc.onBackFABClicked(context),
         ),
       ),
     );
