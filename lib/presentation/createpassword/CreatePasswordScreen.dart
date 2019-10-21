@@ -50,6 +50,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                             fontSize: 18,
                             color: AppColors.TEXT_BLACK,
                           ),
+                          textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 16,),
                         SizedBox(

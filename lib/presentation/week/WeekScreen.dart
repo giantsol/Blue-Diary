@@ -443,6 +443,7 @@ class _DayPreviewItem extends StatelessWidget {
                               fontSize: 18,
                               color: isLightColor ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
                             ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                           SizedBox(width: 8),
                           dayPreview.isToday == true ? _DayPreviewItemTodayText() : const SizedBox.shrink(),
@@ -504,7 +505,7 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
               alignment: Alignment.topCenter,
               heightFactor: 0.5,
               child: Container(
-                color: isTopLineLightColor ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
+                color: isTopLineLightColor ? AppColors.PRIMARY_LIGHT_LIGHT : AppColors.PRIMARY,
                 width: 2,
               ),
             ),
@@ -517,7 +518,7 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               heightFactor: 0.5,
               child: Container(
-                color: isBottomLineLightColor ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
+                color: isBottomLineLightColor ? AppColors.PRIMARY_LIGHT_LIGHT : AppColors.PRIMARY,
                 width: 2,
               ),
             ),
@@ -667,12 +668,16 @@ class _DayPreviewItemToDos extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    moreToDosCount > 0 ? Text(
-                      AppLocalizations.of(context).getMoreToDos(moreToDosCount),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.TEXT_BLACK_LIGHT,
-                      ),
+                    moreToDosCount > 0 ? Expanded(
+                      child: Text(
+                        AppLocalizations.of(context).getMoreToDos(moreToDosCount),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.TEXT_BLACK_LIGHT,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.start,
+                      )
                     ) : const SizedBox.shrink(),
                   ],
                 ),
