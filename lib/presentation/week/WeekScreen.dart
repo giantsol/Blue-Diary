@@ -100,7 +100,7 @@ class _WeekScreenState extends State<WeekScreen> {
                   itemBuilder: (context, index) {
                     final weekRecord = state.getWeekRecordForPageIndex(index);
                     if (weekRecord == null) {
-                      return const SizedBox.shrink();
+                      return Center(child: CircularProgressIndicator(),);
                     } else {
                       return _WeekRecord(
                         bloc: _bloc,
