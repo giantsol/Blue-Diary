@@ -330,4 +330,12 @@ class DayBloc {
   void onBackFABClicked(BuildContext context) {
     Navigator.pop(context);
   }
+
+  void onToDoEditorCancelClicked() {
+    handleBackPress();
+  }
+
+  void onCategoryEditorCancelClicked() {
+    handleBackPress();
+  }
 }
