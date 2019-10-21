@@ -50,12 +50,19 @@ class DayBloc {
 
   Future<void> onDayRecordPageIndexChanged(int newIndex) async {
     final currentDate = _state.value.initialDate.add(Duration(days: newIndex - _state.value.initialDayRecordPageIndex));
+
+    // update date text first for smoother UI
+    _state.add(_state.value.buildNew(
+      currentDate: currentDate,
+      currentDayRecordPageIndex: newIndex,
+    ));
+
     final currentDayRecord = await _usecases.getDayRecord(currentDate);
     final prevDayRecord = await _usecases.getDayRecord(currentDate.subtract(_oneDay));
     final nextDayRecord = await _usecases.getDayRecord(currentDate.add(_oneDay));
-
     final editingToDoRecord = _createDraftToDoRecord(currentDate, currentDayRecord.toDoRecords);
     final editingCategory = editingToDoRecord.category.buildNew();
+
     _state.add(_state.value.buildNew(
       viewState: DayViewState.NORMAL,
       currentDayRecord: currentDayRecord,
@@ -64,8 +71,6 @@ class DayBloc {
       editorState: EditorState.HIDDEN,
       editingToDoRecord: editingToDoRecord,
       editingCategory: editingCategory,
-      currentDayRecordPageIndex: newIndex,
-      currentDate: currentDate,
     ));
   }
 

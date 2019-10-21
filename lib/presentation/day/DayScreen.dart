@@ -80,7 +80,7 @@ class _DayScreenState extends State<DayScreen> {
       // 500.. magic number..
       Future.delayed(const Duration(milliseconds: 500), () {
         if (_toDoScrollController.hasClients) {
-          final double targetPixel = state.currentDayRecord.dayMemo.isExpanded ? 170 : 70;
+          final double targetPixel = 170;
           if (_toDoScrollController.position.pixels < targetPixel) {
             _toDoScrollController.position.animateTo(
               targetPixel,
@@ -123,7 +123,7 @@ class _DayScreenState extends State<DayScreen> {
                           itemBuilder: (context, index) {
                             final dayRecord = state.getDayRecordForPageIndex(index);
                             if (dayRecord == null) {
-                              return null;
+                              return Center(child: CircularProgressIndicator(),);
                             } else {
                               return _DayRecord(
                                 bloc: _bloc,

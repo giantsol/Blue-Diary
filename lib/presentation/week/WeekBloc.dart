@@ -78,6 +78,7 @@ class WeekBloc {
       year: dateInWeek.year,
       month: dateInWeek.month,
       nthWeek: dateInWeek.nthWeek,
+      currentWeekRecordPageIndex: newIndex,
     ));
 
     final currentWeekRecord = await _usecases.getWeekRecord(currentDate);
@@ -88,7 +89,6 @@ class WeekBloc {
       currentWeekRecord: currentWeekRecord,
       prevWeekRecord: prevWeekRecord,
       nextWeekRecord: nextWeekRecord,
-      currentWeekRecordPageIndex: newIndex,
     ));
   }
 

@@ -47,7 +47,7 @@ class DayState {
   int get month => currentDate?.month ?? 0;
   int get day => currentDate?.day ?? 0;
   int get weekday => currentDate?.weekday ?? 0;
-  bool get isFabVisible => editorState == EditorState.HIDDEN && (!currentDayRecord.isLocked || isUnlockedAllByUser);
+  bool get isFabVisible => editorState == EditorState.HIDDEN;
   DayRecord get currentDayRecord => pageIndexDayRecordMap[currentDayRecordPageIndex];
 
   const DayState({
