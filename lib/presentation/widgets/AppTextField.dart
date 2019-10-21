@@ -15,6 +15,7 @@ class AppTextField extends StatefulWidget {
   final int minLines;
   final int maxLines;
   final void Function() onEditingComplete;
+  final TextInputType keyboardType;
 
   AppTextField({
     Key key,
@@ -29,6 +30,7 @@ class AppTextField extends StatefulWidget {
     this.minLines = 1,
     this.maxLines = 1,
     this.onEditingComplete,
+    this.keyboardType,
   }): super(key: key);
 
   @override
@@ -73,6 +75,8 @@ class _AppTextFieldState extends State<AppTextField> {
         ),
         textAlign: TextAlign.left,
         onEditingComplete: widget.onEditingComplete,
+        keyboardType: widget.keyboardType,
+        textCapitalization: TextCapitalization.sentences,
       ),
     );
   }

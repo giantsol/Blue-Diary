@@ -374,6 +374,7 @@ class _CheckPointItem extends StatelessWidget {
                   hintColor: AppColors.TEXT_WHITE_DARK,
                   onChanged: (s) => bloc.onCheckPointTextChanged(checkPoint, s),
                   maxLines: 2,
+                  keyboardType: TextInputType.text,
                 ),
               ),
             ),
