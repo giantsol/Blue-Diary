@@ -5,7 +5,6 @@ import 'package:todo_app/domain/entity/DayPreview.dart';
 
 class WeekRecord {
   final DateInWeek dateInWeek;
-  final bool isCheckPointsLocked;
   final List<CheckPoint> checkPoints;
   final List<DayPreview> dayPreviews;
 
@@ -13,19 +12,16 @@ class WeekRecord {
 
   const WeekRecord({
     this.dateInWeek = const DateInWeek(),
-    this.isCheckPointsLocked = false,
     this.checkPoints = const [],
     this.dayPreviews = const [],
   });
 
   WeekRecord buildNew({
-    bool isCheckPointsLocked,
     List<CheckPoint> checkPoints,
     List<DayPreview> dayPreviews,
   }) {
     return WeekRecord(
       dateInWeek: this.dateInWeek,
-      isCheckPointsLocked: isCheckPointsLocked ?? this.isCheckPointsLocked,
       checkPoints: checkPoints ?? this.checkPoints,
       dayPreviews: dayPreviews ?? this.dayPreviews,
     );

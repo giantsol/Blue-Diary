@@ -5,7 +5,6 @@ import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
-import 'package:todo_app/domain/repository/LockRepository.dart';
 import 'package:todo_app/domain/repository/MemoRepository.dart';
 import 'package:todo_app/domain/repository/PrefRepository.dart';
 import 'package:todo_app/domain/repository/ToDoRepository.dart';
@@ -14,10 +13,9 @@ class WeekUsecases {
   final MemoRepository _memoRepository;
   final DateRepository _dateRepository;
   final ToDoRepository _toDoRepository;
-  final LockRepository _lockRepository;
   final PrefsRepository _prefsRepository;
 
-  const WeekUsecases(this._memoRepository, this._dateRepository, this._toDoRepository, this._lockRepository, this._prefsRepository);
+  const WeekUsecases(this._memoRepository, this._dateRepository, this._toDoRepository, this._prefsRepository);
 
   DateTime getToday() {
     return _dateRepository.getToday();
@@ -26,8 +24,6 @@ class WeekUsecases {
   Future<WeekRecord> getWeekRecord(DateTime date) async {
     final today = _dateRepository.getToday();
     final dateInWeek = DateInWeek.fromDate(date);
-    final defaultLocked = await _prefsRepository.getUseLockScreen();
-    final isCheckPointsLocked = await _lockRepository.getIsCheckPointsLocked(date, defaultLocked);
     final checkPoints = await _memoRepository.getCheckPoints(date);
 
     final datesInWeek = Utils.getDatesInWeek(date);
@@ -75,19 +71,11 @@ class WeekUsecases {
       prevDayCompleted = curDayCompleted;
     }
 
-    return WeekRecord(dateInWeek: dateInWeek, isCheckPointsLocked: isCheckPointsLocked, checkPoints: checkPoints, dayPreviews: dayPreviews);
+    return WeekRecord(dateInWeek: dateInWeek, checkPoints: checkPoints, dayPreviews: dayPreviews);
   }
 
   void setCheckPoint(CheckPoint checkPoint) {
     _memoRepository.setCheckPoint(checkPoint);
-  }
-
-  void setCheckPointsLocked(DateInWeek dateInWeek, bool value) {
-    _lockRepository.setIsCheckPointsLocked(dateInWeek, value);
-  }
-
-  void setDayRecordLocked(DateTime date, bool value) {
-    _lockRepository.setIsDayRecordLocked(date, value);
   }
 
   Future<String> getUserPassword() async {

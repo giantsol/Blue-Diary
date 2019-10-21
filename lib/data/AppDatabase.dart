@@ -3,19 +3,16 @@ import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:todo_app/data/datasource/CategoryDataSource.dart';
-import 'package:todo_app/data/datasource/LockDataSource.dart';
 import 'package:todo_app/data/datasource/MemoDataSource.dart';
 import 'package:todo_app/data/datasource/ToDoDataSource.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
-import 'package:todo_app/domain/entity/Lock.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 
 class AppDatabase implements ToDoDataSource,
   MemoDataSource,
-  LockDataSource,
   CategoryDataSource {
   static const String TABLE_CHECK_POINTS = 'checkpoints';
   static const String TABLE_TODOS = 'todos';
@@ -80,6 +77,7 @@ class AppDatabase implements ToDoDataSource,
           );
           """
         );
+        // todo: drop TABLE_LOCKS
         await db.execute(
           """
           CREATE TABLE $TABLE_LOCKS(
@@ -206,56 +204,6 @@ class AppDatabase implements ToDoDataSource,
       dayMemo.toDatabase(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-  }
-
-  @override
-  Future<bool> getIsCheckPointsLocked(DateTime date, bool defaultValue) async {
-    final db = await _database.first;
-    final Map<String, dynamic> map = await db.query(
-      TABLE_LOCKS,
-      where: Lock.createWhereQuery(),
-      whereArgs: Lock.createWhereArgsForCheckPoints(DateInWeek.fromDate(date)),
-    ).then((l) => l.isEmpty ? null : l[0]);
-    return map != null ? Lock.fromDatabase(map).isLocked : defaultValue;
-  }
-
-  @override
-  Future<void> setIsCheckPointsLocked(DateInWeek dateInWeek, bool value) async {
-    final db = await _database.first;
-    final map = {
-      COLUMN_KEY: Lock.createKeyForCheckPoints(dateInWeek),
-      COLUMN_LOCKED: value ? 1 : 0,
-    };
-    await db.insert(
-      TABLE_LOCKS,
-      map,
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  @override
-  Future<void> setIsDayRecordLocked(DateTime date, bool value) async {
-    final db = await _database.first;
-    final map = {
-      COLUMN_KEY: Lock.createKeyForDayRecord(date),
-      COLUMN_LOCKED: value ? 1 : 0,
-    };
-    await db.insert(
-      TABLE_LOCKS,
-      map,
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  @override
-  Future<bool> getIsDayRecordLocked(DateTime date, bool defaultValue) async {
-    final db = await _database.first;
-    final Map<String, dynamic> map = await db.query(
-      TABLE_LOCKS,
-      where: Lock.createWhereQuery(),
-      whereArgs: Lock.createWhereArgsForDayRecord(date),
-    ).then((l) => l.isEmpty ? null : l[0]);
-    return map != null ? Lock.fromDatabase(map).isLocked : defaultValue;
   }
 
   @override

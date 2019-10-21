@@ -131,7 +131,6 @@ class _DayScreenState extends State<DayScreen> {
                                 focusNodeProvider: _getOrCreateFocusNode,
                                 scrollController: _toDoScrollController,
                                 inputPasswordLength: state.inputPassword.length,
-                                isUnlockedAllByUser: state.isUnlockedAllByUser,
                               );
                             }
                           },
@@ -215,7 +214,6 @@ class _DayRecord extends StatelessWidget {
   final FocusNode Function(String key) focusNodeProvider;
   final ScrollController scrollController;
   final int inputPasswordLength;
-  final bool isUnlockedAllByUser;
 
   _DayRecord({
     @required this.bloc,
@@ -223,7 +221,6 @@ class _DayRecord extends StatelessWidget {
     @required this.focusNodeProvider,
     @required this.scrollController,
     @required this.inputPasswordLength,
-    @required this.isUnlockedAllByUser,
   });
 
   @override
@@ -335,35 +332,6 @@ class _Header extends StatelessWidget {
         ),
         SizedBox(width: 4,),
       ],
-    );
-  }
-}
-
-class _Passwords extends StatelessWidget {
-  final int passwordLength;
-
-  _Passwords({
-    @required this.passwordLength,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 16,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: List.generate(4, (i) {
-          return Padding(
-            padding: i > 0 ? const EdgeInsets.only(left: 12) : const EdgeInsets.all(0),
-            child: SizedBox(
-              width: 19,
-              child: Center(
-                child: i <= passwordLength - 1 ? Image.asset('assets/ic_circle_white.png') : Image.asset('assets/ic_underline.png'),
-              ),
-            ),
-          );
-        }),
-      ),
     );
   }
 }

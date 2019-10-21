@@ -37,7 +37,6 @@ class DayState {
   final DateTime currentDate;
   final int currentDayRecordPageIndex;
   final String inputPassword;
-  final bool isUnlockedAllByUser;
 
   final bool scrollToBottomEvent;
   final bool scrollToToDoListEvent;
@@ -64,7 +63,6 @@ class DayState {
     this.currentDate,
     this.currentDayRecordPageIndex = DayScreen.INITIAL_DAY_PAGE,
     this.inputPassword = '',
-    this.isUnlockedAllByUser = false,
 
     this.scrollToBottomEvent = false,
     this.scrollToToDoListEvent = false,
@@ -89,7 +87,6 @@ class DayState {
     int currentDayRecordPageIndex,
     DateTime currentDate,
     String inputPassword,
-    bool isUnlockedAllByUser,
 
     bool scrollToBottomEvent,
     bool scrollToToDoListEvent,
@@ -114,7 +111,6 @@ class DayState {
       currentDayRecordPageIndex: currentDayRecordPageIndex ?? this.currentDayRecordPageIndex,
       currentDate: currentDate ?? this.currentDate,
       inputPassword: inputPassword ?? this.inputPassword,
-      isUnlockedAllByUser: isUnlockedAllByUser ?? this.isUnlockedAllByUser,
 
       // these are one-time events, so default to false if not given to "true" as parameter
       scrollToBottomEvent: scrollToBottomEvent ?? false,
