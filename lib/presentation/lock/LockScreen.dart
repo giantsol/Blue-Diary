@@ -70,19 +70,6 @@ class _LockScreenState extends State<LockScreen> {
               VirtualKeyboard(
                 onKeyPressed: (VirtualKeyboardKey key) => _bloc.onVirtualKeyPressed(context, key),
               ),
-              SizedBox(height: 4,),
-              Center(
-                child: Text(
-                  AppLocalizations.of(context).forgotYourPassword,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.TEXT_BLACK_LIGHT,
-                    decoration: TextDecoration.underline,
-                    decorationColor: AppColors.TEXT_BLACK_LIGHT,
-                    decorationThickness: 2,
-                  ),
-                ),
-              ),
               SizedBox(height: 24,),
             ],
           ),

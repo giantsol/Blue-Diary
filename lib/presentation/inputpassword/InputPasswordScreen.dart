@@ -78,19 +78,6 @@ class _InputPasswordScreenState extends State<InputPasswordScreen> {
             VirtualKeyboard(
               onKeyPressed: (VirtualKeyboardKey key) => _bloc.onVirtualKeyPressed(context, key, widget.onSuccess, widget.onFail),
             ),
-            SizedBox(height: 4,),
-            Center(
-              child: Text(
-                AppLocalizations.of(context).forgotYourPassword,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.TEXT_BLACK_LIGHT,
-                  decoration: TextDecoration.underline,
-                  decorationColor: AppColors.TEXT_BLACK_LIGHT,
-                  decorationThickness: 2,
-                ),
-              ),
-            ),
             SizedBox(height: 24,),
           ],
         ),
