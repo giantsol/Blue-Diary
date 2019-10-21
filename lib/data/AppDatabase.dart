@@ -36,6 +36,7 @@ class AppDatabase implements ToDoDataSource,
   static const String COLUMN_IMAGE_PATH = 'image_path';
   static const String COLUMN_CATEGORY_ID = 'category_id';
 
+  // ignore: close_sinks
   final _database = BehaviorSubject<Database>();
 
   AppDatabase() {

@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
-import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 
 class DayPreview {

@@ -15,6 +15,7 @@ import 'package:todo_app/presentation/inputpassword/InputPasswordScreen.dart';
 
 class SettingsBloc {
   static const _SENDGRID_SEND_API_ENDPOINT = 'https://api.sendgrid.com/v3/mail/send';
+  // ignore: non_constant_identifier_names
   static final _EMAIL_VALIDATION_REGEX = RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
 
   final SettingsUsecases _usecases = dependencies.settingsUsecases;
