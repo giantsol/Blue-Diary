@@ -92,6 +92,15 @@ class _DayScreenState extends State<DayScreen> {
       });
     }
 
+    if (state.animateToPageEvent != -1) {
+      SchedulerBinding.instance.addPostFrameCallback((duration) {
+        _pageController.animateToPage(state.animateToPageEvent,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.ease,
+        );
+      });
+    }
+
     return SafeArea(
       child: Scaffold(
         body: state.viewState == DayViewState.WHOLE_LOADING ? _WholeLoadingView()
@@ -295,7 +304,7 @@ class _Header extends StatelessWidget {
       children: <Widget>[
         SizedBox(width: 4,),
         InkWell(
-          onTap: () { },
+          onTap: () => bloc.onPrevArrowClicked(),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Image.asset('assets/ic_prev.png'),
@@ -316,7 +325,7 @@ class _Header extends StatelessWidget {
           ),
         ),
         InkWell(
-          onTap: () { },
+          onTap: () => bloc.onNextArrowClicked(),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Image.asset('assets/ic_next.png'),

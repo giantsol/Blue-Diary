@@ -305,4 +305,20 @@ class DayBloc {
       allCategories: allCategories,
     ));
   }
+
+  void onNextArrowClicked() {
+    final newPageIndex = _state.value.currentDayRecordPageIndex + 1;
+    _state.add(_state.value.buildNew(
+      currentDayRecordPageIndex: newPageIndex,
+      animateToPageEvent: newPageIndex,
+    ));
+  }
+
+  void onPrevArrowClicked() {
+    final newPageIndex = _state.value.currentDayRecordPageIndex - 1;
+    _state.add(_state.value.buildNew(
+      currentDayRecordPageIndex: newPageIndex,
+      animateToPageEvent: newPageIndex,
+    ));
+  }
 }

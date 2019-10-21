@@ -41,6 +41,7 @@ class DayState {
 
   final bool scrollToBottomEvent;
   final bool scrollToToDoListEvent;
+  final int animateToPageEvent;
 
   int get year => currentDate?.year ?? 0;
   int get month => currentDate?.month ?? 0;
@@ -67,6 +68,7 @@ class DayState {
 
     this.scrollToBottomEvent = false,
     this.scrollToToDoListEvent = false,
+    this.animateToPageEvent = -1,
   });
 
   DayRecord getDayRecordForPageIndex(int index) {
@@ -91,6 +93,7 @@ class DayState {
 
     bool scrollToBottomEvent,
     bool scrollToToDoListEvent,
+    int animateToPageEvent,
   }) {
     final prevMap = this.pageIndexDayRecordMap;
     final currentPageIndex = currentDayRecordPageIndex ?? this.currentDayRecordPageIndex;
@@ -116,6 +119,7 @@ class DayState {
       // these are one-time events, so default to false if not given to "true" as parameter
       scrollToBottomEvent: scrollToBottomEvent ?? false,
       scrollToToDoListEvent: scrollToToDoListEvent ?? false,
+      animateToPageEvent: animateToPageEvent ?? -1,
     );
   }
 
