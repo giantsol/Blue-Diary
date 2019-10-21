@@ -1,3 +1,4 @@
+
 class InputPasswordState {
   static const MAX_FAIL_COUNT = 5;
 

@@ -13,12 +13,6 @@ class InputPasswordBloc {
 
   final InputPasswordUsecases _usecases = dependencies.inputPasswordUsecases;
 
-  InputPasswordBloc() {
-    _initState();
-  }
-
-  void _initState() { }
-
   void onCloseClicked(BuildContext context) {
     Navigator.pop(context);
   }

@@ -22,13 +22,17 @@ class SettingsBloc {
 
   void Function() _needUpdateListener;
 
-  final _snackBarDuration = const Duration(seconds: 2);
+  final _twoSeconds = const Duration(seconds: 2);
 
   SettingsBlocDelegator delegator;
 
   SettingsBloc({
     @required this.delegator,
   });
+
+  void updateDelegator(SettingsBlocDelegator delegator) {
+    this.delegator = delegator;
+  }
 
   void setNeedUpdateListener(void Function() listener) {
     this._needUpdateListener = listener;
@@ -52,7 +56,7 @@ class SettingsBloc {
             _needUpdateListener();
           }
         }, onFail: () {
-          delegator.showSnackBar(AppLocalizations.of(context).unlockFail, Duration(seconds: 2));
+          delegator.showSnackBar(AppLocalizations.of(context).unlockFail, _twoSeconds);
         }),
       );
     }
@@ -70,13 +74,14 @@ class SettingsBloc {
   Future<void> _onCreatePasswordOkClicked(BuildContext context) async {
     final successMsg = AppLocalizations.of(context).createPasswordSuccess;
     final failMsg = AppLocalizations.of(context).createPasswordFail;
+
     delegator.showBottomSheet((context) => CreatePasswordScreen(),
       onClosed: () async {
         final isPasswordSaved = await _usecases.getUserPassword().then((s) => s.length > 0);
         if (isPasswordSaved) {
-          delegator.showSnackBar(successMsg, _snackBarDuration);
+          delegator.showSnackBar(successMsg, _twoSeconds);
         } else {
-          delegator.showSnackBar(failMsg, _snackBarDuration);
+          delegator.showSnackBar(failMsg, _twoSeconds);
         }
       }
     );
@@ -84,16 +89,12 @@ class SettingsBloc {
 
   Future<void> onSendTempPasswordClicked(BuildContext context) async {
     final recoveryEmail = await _usecases.getRecoveryEmail();
-    if (!_isEmail(recoveryEmail)) {
+    if (!_EMAIL_VALIDATION_REGEX.hasMatch(recoveryEmail)) {
       final message = AppLocalizations.of(context).invalidRecoveryEmail;
-      delegator.showSnackBar(message, _snackBarDuration);
+      delegator.showSnackBar(message, _twoSeconds);
     } else {
       _showConfirmSendTempPasswordDialog(context);
     }
-  }
-
-  bool _isEmail(String s) {
-    return _EMAIL_VALIDATION_REGEX.hasMatch(s);
   }
 
   Future<void> _showConfirmSendTempPasswordDialog(BuildContext context) async {
@@ -131,12 +132,12 @@ class SettingsBloc {
         body: body,
       );
       if (response.statusCode.toString().startsWith('2')) {
-        delegator.showSnackBar(mailSentMsg, _snackBarDuration);
+        delegator.showSnackBar(mailSentMsg, _twoSeconds);
       } else {
-        delegator.showSnackBar(mailSendFailedMsg, _snackBarDuration);
+        delegator.showSnackBar(mailSendFailedMsg, _twoSeconds);
       }
     } else {
-      delegator.showSnackBar(failedToSaveTempPasswordMsg, _snackBarDuration);
+      delegator.showSnackBar(failedToSaveTempPasswordMsg, _twoSeconds);
     }
   }
 
@@ -155,6 +156,7 @@ class SettingsBloc {
 
   Future<void> onResetPasswordClicked(BuildContext context) async {
     final prevPassword = await _usecases.getUserPassword();
+
     if (prevPassword.isEmpty) {
       _showCreatePasswordDialog(context);
     } else {
@@ -162,18 +164,20 @@ class SettingsBloc {
       final unchangedMsg = AppLocalizations.of(context).passwordUnchanged;
 
       delegator.showBottomSheet((context) =>
-        InputPasswordScreen(onSuccess: () async {
-          delegator.showBottomSheet((context) => CreatePasswordScreen(),
-            onClosed: () async {
-              final changedPassword = await _usecases.getUserPassword();
-              if (prevPassword != changedPassword) {
-                delegator.showSnackBar(changedMsg, _snackBarDuration);
-              } else {
-                delegator.showSnackBar(unchangedMsg, _snackBarDuration);
+        InputPasswordScreen(
+          onSuccess: () async {
+            delegator.showBottomSheet((context) => CreatePasswordScreen(),
+              onClosed: () async {
+                final changedPassword = await _usecases.getUserPassword();
+                if (prevPassword != changedPassword) {
+                  delegator.showSnackBar(changedMsg, _twoSeconds);
+                } else {
+                  delegator.showSnackBar(unchangedMsg, _twoSeconds);
+                }
               }
-            }
-          );
-        })
+            );
+          }
+        )
       );
     }
   }

@@ -11,10 +11,9 @@ class InputPasswordScreen extends StatefulWidget {
   final void Function() onFail;
 
   InputPasswordScreen({
-    Key key,
     this.onSuccess,
     this.onFail,
-}): super(key: key);
+  });
 
   @override
   State createState() => _InputPasswordScreenState();
@@ -41,6 +40,7 @@ class _InputPasswordScreenState extends State<InputPasswordScreen> {
   }
 
   Widget _buildUI(InputPasswordState state) {
+    final errorMsg = state.showErrorMsg ? '${AppLocalizations.of(context).confirmPasswordFail} (${state.failCount}/${InputPasswordState.MAX_FAIL_COUNT})' : '';
     return Stack(
       children: <Widget>[
         Column(
@@ -51,7 +51,7 @@ class _InputPasswordScreenState extends State<InputPasswordScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      state.showErrorMsg ? AppLocalizations.of(context).retryInputPassword : AppLocalizations.of(context).inputPassword,
+                      errorMsg.isNotEmpty ? AppLocalizations.of(context).retryInputPassword : AppLocalizations.of(context).inputPassword,
                       style: TextStyle(
                         fontSize: 18,
                         color: AppColors.TEXT_BLACK,
@@ -60,8 +60,8 @@ class _InputPasswordScreenState extends State<InputPasswordScreen> {
                     SizedBox(height: 16,),
                     SizedBox(
                       height: 101,
-                      child: state.showErrorMsg ? Text(
-                        '${AppLocalizations.of(context).confirmPasswordFail} (${state.failCount}/${InputPasswordState.MAX_FAIL_COUNT})',
+                      child: errorMsg.isNotEmpty ? Text(
+                        errorMsg,
                         style: TextStyle(
                           fontSize: 14,
                           color: AppColors.RED,

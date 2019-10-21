@@ -37,12 +37,12 @@ class DayBloc {
     final editingCategory = editingToDoRecord.category.buildNew();
     _state.add(_state.value.buildNew(
       viewState: DayViewState.NORMAL,
-      currentDayRecord: currentDayRecord,
-      prevDayRecord: prevDayRecord,
-      nextDayRecord: nextDayRecord,
       editingToDoRecord: editingToDoRecord,
       editingCategory: editingCategory,
       allCategories: allCategories,
+      currentDayRecord: currentDayRecord,
+      prevDayRecord: prevDayRecord,
+      nextDayRecord: nextDayRecord,
       initialDate: initialDate,
       currentDate: currentDate,
     ));
@@ -65,12 +65,12 @@ class DayBloc {
 
     _state.add(_state.value.buildNew(
       viewState: DayViewState.NORMAL,
-      currentDayRecord: currentDayRecord,
-      prevDayRecord: prevDayRecord,
-      nextDayRecord: nextDayRecord,
       editorState: EditorState.HIDDEN,
       editingToDoRecord: editingToDoRecord,
       editingCategory: editingCategory,
+      currentDayRecord: currentDayRecord,
+      prevDayRecord: prevDayRecord,
+      nextDayRecord: nextDayRecord,
     ));
   }
 
@@ -177,9 +177,9 @@ class DayBloc {
     final editingCategory = editingToDoRecord.category.buildNew();
 
     _state.add(_state.value.buildNew(
-      currentDayRecord: updatedDayRecord,
       editingToDoRecord: editingToDoRecord,
       editingCategory: editingCategory,
+      currentDayRecord: updatedDayRecord,
       scrollToBottomEvent: true,
     ));
   }
@@ -282,8 +282,8 @@ class DayBloc {
     _state.add(_state.value.buildNew(
       editingToDoRecord: recordWithNewCategory,
       editorState: EditorState.SHOWN_TODO,
-      currentDayRecord: updatedDayRecord,
       allCategories: allCategories,
+      currentDayRecord: updatedDayRecord,
     ));
   }
 
@@ -306,8 +306,8 @@ class DayBloc {
     final updatedDayRecord = currentDayRecord.buildNew(toDoRecords: toDoRecords);
     final allCategories = await _usecases.getAllCategories();
     _state.add(_state.value.buildNew(
-      currentDayRecord: updatedDayRecord,
       allCategories: allCategories,
+      currentDayRecord: updatedDayRecord,
     ));
   }
 

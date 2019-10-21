@@ -36,7 +36,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void didUpdateWidget(SettingsScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _bloc.delegator = widget.settingsBlocDelegator;
+    _bloc.updateDelegator(widget.settingsBlocDelegator);
   }
 
   @override

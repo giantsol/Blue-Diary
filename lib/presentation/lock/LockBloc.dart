@@ -14,12 +14,6 @@ class LockBloc {
 
   final LockUsecases _usecases = dependencies.lockUsecases;
 
-  LockBloc() {
-    _initState();
-  }
-
-  void _initState() { }
-
   Future<void> onVirtualKeyPressed(BuildContext context, VirtualKeyboardKey key) async {
     if (key.type == VirtualKeyboardKeyType.BACKSPACE) {
       final currentPassword = _state.value.password;

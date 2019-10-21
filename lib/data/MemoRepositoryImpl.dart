@@ -28,5 +28,4 @@ class MemoRepositoryImpl implements MemoRepository {
   void setCheckPoint(CheckPoint checkPoint) {
     _dataSource.setCheckPoint(checkPoint);
   }
-
 }

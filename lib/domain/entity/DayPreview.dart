@@ -11,6 +11,7 @@ class DayPreview {
   final int totalToDosCount;
   final int doneToDosCount;
   final bool isToday;
+  // whether its color should be weakened(i.e. light)
   final bool isLightColor;
   final bool isTopLineVisible;
   final bool isTopLineLightColor;

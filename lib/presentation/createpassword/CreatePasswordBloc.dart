@@ -14,12 +14,6 @@ class CreatePasswordBloc {
 
   final CreatePasswordUsecases _usecases = dependencies.createPasswordUsecases;
 
-  CreatePasswordBloc() {
-    _initState();
-  }
-
-  void _initState() { }
-
   void onCloseClicked(BuildContext context) {
     Navigator.pop(context);
   }

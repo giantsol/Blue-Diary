@@ -31,7 +31,6 @@ class DayScreen extends StatefulWidget {
 class _DayScreenState extends State<DayScreen> {
   DayBloc _bloc;
   ScrollController _toDoScrollController;
-  // todo: is this the right way to use focusnodes?
   final Map<String, FocusNode> _focusNodes = {};
   PageController _pageController;
   final GlobalKey<_HeaderShadowState> _headerShadowKey = GlobalKey();
@@ -123,7 +122,9 @@ class _DayScreenState extends State<DayScreen> {
                           itemBuilder: (context, index) {
                             final dayRecord = state.getDayRecordForPageIndex(index);
                             if (dayRecord == null) {
-                              return Center(child: CircularProgressIndicator(),);
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
                             } else {
                               return _DayRecord(
                                 bloc: _bloc,
@@ -226,6 +227,7 @@ class _DayRecord extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dayRecord = this.dayRecord;
+
     return dayRecord.toDoRecords.length == 0 ? _EmptyToDoListView(
       bloc: bloc,
       dayMemo: dayRecord.dayMemo,
@@ -855,7 +857,7 @@ class _ToDoEditor extends StatelessWidget {
                 text: toDo.text,
                 textSize: 14,
                 textColor: AppColors.TEXT_BLACK,
-                hintText: editingToDoRecord.isDraft ? AppLocalizations.of(context).addTask : AppLocalizations.of(context).modifyTask ,
+                hintText: editingToDoRecord.isDraft ? AppLocalizations.of(context).addTask : AppLocalizations.of(context).modifyTask,
                 hintTextSize: 14,
                 hintColor: AppColors.TEXT_BLACK_LIGHT,
                 onChanged: (s) => bloc.onEditingToDoTextChanged(s),

@@ -22,5 +22,4 @@ class ToDoRepositoryImpl implements ToDoRepository {
   void removeToDo(ToDo toDo) {
     _dataSource.removeToDo(toDo);
   }
-
 }

@@ -25,13 +25,13 @@ class DayState {
   ];
 
   final DayViewState viewState;
-  final Map<int, DayRecord> pageIndexDayRecordMap;
   final EditorState editorState;
   final ToDoRecord editingToDoRecord;
   final Category editingCategory;
   final List<Category> allCategories;
   final List<CategoryPicker> categoryPickers;
   final int selectedPickerIndex;
+  final Map<int, DayRecord> pageIndexDayRecordMap;
   final DateTime initialDate;
   final int initialDayRecordPageIndex;
   final DateTime currentDate;
@@ -51,13 +51,13 @@ class DayState {
 
   const DayState({
     this.viewState = DayViewState.WHOLE_LOADING,
-    this.pageIndexDayRecordMap = const {},
     this.editorState = EditorState.HIDDEN,
     this.editingToDoRecord = const ToDoRecord(),
     this.editingCategory = const Category(),
     this.allCategories = const [],
     this.categoryPickers = CATEGORY_PICKERS,
     this.selectedPickerIndex = -1,
+    this.pageIndexDayRecordMap = const {},
     this.initialDate,
     this.initialDayRecordPageIndex = DayScreen.INITIAL_DAY_PAGE,
     this.currentDate,
@@ -75,14 +75,14 @@ class DayState {
 
   DayState buildNew({
     DayViewState viewState,
-    DayRecord currentDayRecord,
-    DayRecord prevDayRecord,
-    DayRecord nextDayRecord,
     EditorState editorState,
     ToDoRecord editingToDoRecord,
     Category editingCategory,
     List<Category> allCategories,
     int selectedPickerIndex,
+    DayRecord currentDayRecord,
+    DayRecord prevDayRecord,
+    DayRecord nextDayRecord,
     DateTime initialDate,
     int currentDayRecordPageIndex,
     DateTime currentDate,
@@ -101,12 +101,12 @@ class DayState {
     };
     return DayState(
       viewState: viewState ?? this.viewState,
-      pageIndexDayRecordMap: pageIndexDayRecordMap,
       editorState: editorState ?? this.editorState,
       editingToDoRecord: editingToDoRecord ?? this.editingToDoRecord,
       editingCategory: editingCategory ?? this.editingCategory,
       allCategories: allCategories ?? this.allCategories,
       selectedPickerIndex: selectedPickerIndex ?? this.selectedPickerIndex,
+      pageIndexDayRecordMap: pageIndexDayRecordMap,
       initialDate: initialDate ?? this.initialDate,
       currentDayRecordPageIndex: currentDayRecordPageIndex ?? this.currentDayRecordPageIndex,
       currentDate: currentDate ?? this.currentDate,

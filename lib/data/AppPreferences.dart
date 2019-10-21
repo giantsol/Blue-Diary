@@ -3,7 +3,7 @@ import 'package:preferences/preference_service.dart';
 
 class AppPreferences {
   static const String KEY_USER_PASSWORD = 'user.password';
-  // should keep using 'default.lock' to be compatible with users' previous settings
+  // should keep using 'default.lock' key to be compatible with users' previous settings
   static const String KEY_USE_LOCK_SCREEN = 'default.lock';
   static const String KEY_RECOVERY_EMAIL = 'recovery.email';
 

@@ -15,15 +15,14 @@ import 'package:todo_app/presentation/week/WeekState.dart';
 import 'package:todo_app/presentation/widgets/AppTextField.dart';
 
 class WeekScreen extends StatefulWidget {
-  static const MAX_WEEk_PAGE = 100;
+  static const MAX_WEEK_PAGE = 100;
   static const INITIAL_WEEK_PAGE = 50;
 
   final WeekBlocDelegator weekBlocDelegator;
 
   WeekScreen({
-    Key key,
     this.weekBlocDelegator,
-  }): super(key: key);
+  });
 
   @override
   State createState() => _WeekScreenState();
@@ -105,11 +104,13 @@ class _WeekScreenState extends State<WeekScreen> {
               children: <Widget>[
                 PageView.builder(
                   controller: _pageController,
-                  itemCount: WeekScreen.MAX_WEEk_PAGE,
+                  itemCount: WeekScreen.MAX_WEEK_PAGE,
                   itemBuilder: (context, index) {
                     final weekRecord = state.getWeekRecordForPageIndex(index);
                     if (weekRecord == null) {
-                      return Center(child: CircularProgressIndicator(),);
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
                     } else {
                       return _WeekRecord(
                         bloc: _bloc,
@@ -248,6 +249,8 @@ class _WeekRecord extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dayPreviews = weekRecord.dayPreviews;
+
     return SingleChildScrollView(
       controller: scrollController,
       child: Column(
@@ -260,11 +263,11 @@ class _WeekRecord extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 12,),
             child: Column(
-              children: List.generate(weekRecord.dayPreviews.length, (index) {
+              children: List.generate(dayPreviews.length, (index) {
                 return _DayPreviewItem(
                   bloc: bloc,
                   weekRecord: weekRecord,
-                  dayPreview: weekRecord.dayPreviews[index]
+                  dayPreview: dayPreviews[index]
                 );
               })
             ),
@@ -288,6 +291,8 @@ class _CheckPointsBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final checkPoints = weekRecord.checkPoints;
+
     return Padding(
       padding: const EdgeInsets.only(left: 24, top: 12, right: 24),
       child: Container(
@@ -311,11 +316,11 @@ class _CheckPointsBox extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 8, top: 4, right: 12, bottom: 12,),
               child: Column(
-                children: List.generate(weekRecord.checkPoints.length, (index) {
+                children: List.generate(checkPoints.length, (index) {
                   return _CheckPointItem(
                     bloc: bloc,
                     weekRecord: weekRecord,
-                    checkPoint: weekRecord.checkPoints[index],
+                    checkPoint: checkPoints[index],
                     focusNodeProvider: focusNodeProvider,
                   );
                 }),
@@ -399,10 +404,12 @@ class _DayPreviewItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final toDoPreviews = dayPreview.toDoPreviews;
     final isLightColor = dayPreview.isLightColor;
     final hasAnyToDo = dayPreview.totalToDosCount > 0;
-    final firstToDo = dayPreview.toDoPreviews.length >= 1 ? dayPreview.toDoPreviews[0] : null;
-    final secondToDo = dayPreview.toDoPreviews.length >= 2 ? dayPreview.toDoPreviews[1] : null;
+    final firstToDo = toDoPreviews.length >= 1 ? toDoPreviews[0] : null;
+    final secondToDo = toDoPreviews.length >= 2 ? toDoPreviews[1] : null;
+
     return InkWell(
       onTap: () => bloc.onDayPreviewClicked(context, dayPreview),
       child: Padding(
@@ -448,7 +455,7 @@ class _DayPreviewItem extends StatelessWidget {
                         isLightColor: isLightColor,
                         firstToDo: firstToDo,
                         secondToDo: secondToDo,
-                        moreToDosCount: dayPreview.totalToDosCount - dayPreview.toDoPreviews.length,
+                        moreToDosCount: dayPreview.totalToDosCount - toDoPreviews.length,
                       ),
                     ],
                   ),
@@ -518,10 +525,10 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
           color: bgColor,
           ratio: 1.0,
         ),
-        _ThumbnailCircle(
+        ratio > 0 ? _ThumbnailCircle(
           color: fgColor,
           ratio: ratio,
-        ),
+        ) : const SizedBox.shrink(),
         Center(
           child: Text(
             text,
@@ -590,6 +597,7 @@ class _DayPreviewItemToDos extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasNoToDos = firstToDo == null && secondToDo == null;
     final hasOneToDo = firstToDo != null && secondToDo == null;
+
     return Row(
       children: <Widget>[
         Image.asset(isLightColor ? 'assets/ic_preview_todo_light.png' : 'assets/ic_preview_todo.png'),
@@ -605,8 +613,7 @@ class _DayPreviewItemToDos extends StatelessWidget {
             firstToDo.text,
             style: TextStyle(
               fontSize: 12,
-              color: isLightColor || firstToDo.isDone ? AppColors.TEXT_BLACK_LIGHT
-                : AppColors.TEXT_BLACK,
+              color: isLightColor || firstToDo.isDone ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
               decoration: firstToDo.isDone ? TextDecoration.lineThrough : null,
               decorationColor: AppColors.TEXT_BLACK_LIGHT,
               decorationThickness: 2,
@@ -624,8 +631,7 @@ class _DayPreviewItemToDos extends StatelessWidget {
                   firstToDo.text,
                   style: TextStyle(
                     fontSize: 12,
-                    color: isLightColor || firstToDo.isDone ? AppColors.TEXT_BLACK_LIGHT
-                      : AppColors.TEXT_BLACK,
+                    color: isLightColor || firstToDo.isDone ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
                     decoration: firstToDo.isDone ? TextDecoration.lineThrough : null,
                     decorationColor: AppColors.TEXT_BLACK_LIGHT,
                     decorationThickness: 2,
@@ -637,8 +643,7 @@ class _DayPreviewItemToDos extends StatelessWidget {
                 ', ',
                 style: TextStyle(
                   fontSize: 12,
-                  color: isLightColor ? AppColors.TEXT_BLACK_LIGHT
-                    : AppColors.TEXT_BLACK,
+                  color: isLightColor ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
                 ),
               ),
               Expanded(
@@ -652,8 +657,7 @@ class _DayPreviewItemToDos extends StatelessWidget {
                         secondToDo.text,
                         style: TextStyle(
                           fontSize: 12,
-                          color: isLightColor || secondToDo.isDone ? AppColors.TEXT_BLACK_LIGHT
-                            : AppColors.TEXT_BLACK,
+                          color: isLightColor || secondToDo.isDone ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
                           decoration: secondToDo.isDone ? TextDecoration.lineThrough : null,
                           decorationColor: AppColors.TEXT_BLACK_LIGHT,
                           decorationThickness: 2,
@@ -694,9 +698,7 @@ class _ThumbnailCircle extends StatelessWidget {
       width: 48,
       height: 48,
       child: ClipPath(
-        clipper: ratio < 1 ? _ThumbnailCircleClipper(
-          ratio: ratio,
-        ) : null,
+        clipper: ratio >= 0 && ratio < 1 ? _ThumbnailCircleClipper(ratio: ratio) : null,
         child: Stack(
           children: <Widget>[
             Positioned.fill(
@@ -760,7 +762,6 @@ class _ThumbnailCircleClipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => true;
-
 }
 
 class _DayPreviewItemTodayText extends StatelessWidget {

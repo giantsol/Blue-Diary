@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/Delegators.dart';
-import 'package:todo_app/domain/entity/BottomNavigationItem.dart';
+import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
@@ -14,21 +14,23 @@ import 'package:todo_app/presentation/week/WeekState.dart';
 class WeekBloc {
   static const _sevenDays = const Duration(days: 7);
 
-  WeekBlocDelegator delegator;
-
   final _state = BehaviorSubject<WeekState>.seeded(WeekState());
   WeekState getInitialState() => _state.value;
   Stream<WeekState> observeState() => _state.distinct();
 
   final WeekUsecases _usecases = dependencies.weekUsecases;
 
-  WeekBloc({this.delegator}) {
+  WeekBlocDelegator delegator;
+
+  WeekBloc({
+    @required this.delegator
+  }) {
     _initState();
     delegator.addBottomNavigationItemClickedListener(_bottomNavigationItemClickedListener);
   }
 
   void _bottomNavigationItemClickedListener(String key) {
-    if (key == BottomNavigationItem.KEY_RECORD) {
+    if (key == HomeChildScreenItem.KEY_RECORD) {
       _state.add(_state.value.buildNew(
         moveToTodayEvent: true,
       ));
@@ -37,11 +39,10 @@ class WeekBloc {
 
   Future<void> _initState() async {
     final initialDate = _usecases.getToday();
+    final dateInWeek = DateInWeek.fromDate(initialDate);
     final currentWeekRecord = await _usecases.getWeekRecord(initialDate);
     final prevWeekRecord = await _usecases.getWeekRecord(initialDate.subtract(_sevenDays));
     final nextWeekRecord = await _usecases.getWeekRecord(initialDate.add(_sevenDays));
-
-    final dateInWeek = DateInWeek.fromDate(initialDate);
 
     _state.add(_state.value.buildNew(
       viewState: WeekViewState.NORMAL,

@@ -1,24 +1,23 @@
 
-import 'package:todo_app/domain/entity/BottomNavigationItem.dart';
+import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
 
 class HomeState {
-  final List<BottomNavigationItem> navigationItems;
+  final List<HomeChildScreenItem> childScreenItems;
   final String currentChildScreenKey;
 
   const HomeState({
-    this.navigationItems = const [],
-    this.currentChildScreenKey,
+    this.childScreenItems = const [],
+    this.currentChildScreenKey = HomeChildScreenItem.KEY_RECORD,
   });
 
   HomeState buildNew({
-    List<BottomNavigationItem> navigationItems,
+    List<HomeChildScreenItem> childScreenItems,
     String currentChildScreenKey,
   }) {
     return HomeState(
-      navigationItems: navigationItems ?? this.navigationItems,
+      childScreenItems: childScreenItems ?? this.childScreenItems,
       currentChildScreenKey: currentChildScreenKey ?? this.currentChildScreenKey,
     );
   }
-
 }
 

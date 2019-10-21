@@ -5,7 +5,7 @@ import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/Utils.dart';
-import 'package:todo_app/domain/entity/BottomNavigationItem.dart';
+import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
 import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
 import 'package:todo_app/presentation/settings/SettingsScreen.dart';
@@ -79,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator,
             ),
             _BottomNavigationBar(
               bloc: _bloc,
-              navigationItems: state.navigationItems,
+              childScreenItems: state.childScreenItems,
             ),
           ],
         ),
@@ -124,27 +124,27 @@ class _ChildScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     switch (childScreenKey) {
-      case BottomNavigationItem.KEY_RECORD:
+      case HomeChildScreenItem.KEY_RECORD:
         return WeekScreen(
           weekBlocDelegator: weekBlocDelegator,
         );
-      case BottomNavigationItem.KEY_SETTINGS:
+      case HomeChildScreenItem.KEY_SETTINGS:
         return SettingsScreen(
           settingsBlocDelegator: settingsBlocDelegator,
         );
       default:
-        throw Exception('Not existing child sreen: $childScreenKey');
+        return Container();
     }
   }
 }
 
 class _BottomNavigationBar extends StatelessWidget {
   final HomeBloc bloc;
-  final List<BottomNavigationItem> navigationItems;
+  final List<HomeChildScreenItem> childScreenItems;
 
   _BottomNavigationBar({
     @required this.bloc,
-    @required this.navigationItems,
+    @required this.childScreenItems,
   });
 
   @override
@@ -157,10 +157,10 @@ class _BottomNavigationBar extends StatelessWidget {
         ),
         color: AppColors.BACKGROUND_WHITE,
         child: Row(
-          children: List.generate(navigationItems.length, (index) {
+          children: List.generate(childScreenItems.length, (index) {
             return _BottomNavigationItem(
               bloc: bloc,
-              item: navigationItems[index],
+              item: childScreenItems[index],
             );
           }),
         ),
@@ -171,7 +171,7 @@ class _BottomNavigationBar extends StatelessWidget {
 
 class _BottomNavigationItem extends StatelessWidget {
   final HomeBloc bloc;
-  final BottomNavigationItem item;
+  final HomeChildScreenItem item;
 
   _BottomNavigationItem({
     @required this.bloc,
@@ -180,7 +180,7 @@ class _BottomNavigationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = item.key == BottomNavigationItem.KEY_RECORD ? AppLocalizations.of(context).recordNavigationTitle
+    final title = item.key == HomeChildScreenItem.KEY_RECORD ? AppLocalizations.of(context).recordNavigationTitle
       : AppLocalizations.of(context).settingsNavigationTitle;
     return Expanded(
       child: Material(

@@ -33,6 +33,7 @@ class _LockScreenState extends State<LockScreen> {
   }
 
   Widget _buildUI(LockState state) {
+    final errorMsg = state.failCount > 0 ? '${AppLocalizations.of(context).confirmPasswordFail} (${state.failCount}/${LockState.MAX_FAIL_COUNT})' : '';
     return WillPopScope(
       onWillPop: () async {
         SystemNavigator.pop();
@@ -51,8 +52,8 @@ class _LockScreenState extends State<LockScreen> {
                       SizedBox(height: 16,),
                       SizedBox(
                         height: 64,
-                        child: state.failCount > 0 ? Text(
-                          '${AppLocalizations.of(context).confirmPasswordFail} (${state.failCount}/${LockState.MAX_FAIL_COUNT})',
+                        child: errorMsg.isNotEmpty ? Text(
+                          errorMsg,
                           style: TextStyle(
                             fontSize: 14,
                             color: AppColors.RED,
@@ -85,7 +86,6 @@ class _LockScreenState extends State<LockScreen> {
               SizedBox(height: 24,),
             ],
           ),
-
         ),
       ),
     );
@@ -120,4 +120,3 @@ class _Passwords extends StatelessWidget {
     );
   }
 }
-

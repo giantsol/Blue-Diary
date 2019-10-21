@@ -10,6 +10,8 @@ import 'package:todo_app/domain/repository/PrefRepository.dart';
 import 'package:todo_app/domain/repository/ToDoRepository.dart';
 
 class WeekUsecases {
+  static final _enterRegex = RegExp(r'\n');
+
   final MemoRepository _memoRepository;
   final DateRepository _dateRepository;
   final ToDoRepository _toDoRepository;
@@ -28,13 +30,16 @@ class WeekUsecases {
 
     final datesInWeek = Utils.getDatesInWeek(date);
     List<DayPreview> dayPreviews = [];
+    // used for calculating whether to draw lines above/below the circle
     bool prevDayCompleted = false;
     bool curDayCompleted = false;
+
     for (int i = 0; i < datesInWeek.length; i++) {
       final date = datesInWeek[i];
       final toDos = await _toDoRepository.getToDos(date);
       final memo = await _memoRepository.getDayMemo(date);
 
+      // bring undone todos to front
       toDos.sort((t1, t2) {
         if (t1.isDone && !t2.isDone) {
           return 1;
@@ -44,7 +49,9 @@ class WeekUsecases {
           return t1.order - t2.order;
         }
       });
+
       curDayCompleted = toDos.length > 0 && toDos.length == toDos.where((toDo) => toDo.isDone).length;
+
       final dayPreview = DayPreview(
         year: date.year,
         month: date.month,
@@ -56,9 +63,10 @@ class WeekUsecases {
         isLightColor: !curDayCompleted && today.compareTo(date) > 0,
         isTopLineVisible: (curDayCompleted && prevDayCompleted) || (date == today && prevDayCompleted),
         isTopLineLightColor: !curDayCompleted,
-        memoPreview: memo.text.length > 0 ? memo.text.replaceAll(RegExp(r'\n'), ', ') : '-',
+        memoPreview: memo.text.length > 0 ? memo.text.replaceAll(_enterRegex, ', ') : '-',
         toDoPreviews: toDos.length > 2 ? toDos.sublist(0, 2) : toDos,
       );
+
       dayPreviews.add(dayPreview);
 
       if (i > 0) {
