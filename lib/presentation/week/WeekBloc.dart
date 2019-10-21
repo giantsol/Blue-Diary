@@ -27,8 +27,6 @@ class WeekBloc {
 
   final WeekUsecases _usecases = dependencies.weekUsecases;
 
-  final _snackBarDuration = const Duration(seconds: 2);
-
   WeekBloc({this.delegator}) {
     _initState();
     delegator.addBottomNavigationItemClickedListener(_bottomNavigationItemClickedListener);
@@ -60,6 +58,7 @@ class WeekBloc {
       nextWeekRecord: nextWeekRecord,
       initialDate: initialDate,
       currentWeekRecordPageIndex: _state.value.initialWeekRecordPageIndex,
+      currentDate: initialDate,
     ));
   }
 
@@ -79,6 +78,7 @@ class WeekBloc {
       month: dateInWeek.month,
       nthWeek: dateInWeek.nthWeek,
       currentWeekRecordPageIndex: newIndex,
+      currentDate: currentDate,
     ));
 
     final currentWeekRecord = await _usecases.getWeekRecord(currentDate);
@@ -99,29 +99,17 @@ class WeekBloc {
   }
 
   Future<void> onDayPreviewClicked(BuildContext context, DayPreview dayPreview) async {
-    if (dayPreview.isLocked) {
-      delegator.showBottomSheet((context) =>
-        InputPasswordScreen(onSuccess: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DayScreen(dayPreview.date),
-            ),
-          );
-          _initState();
-        }, onFail: () {
-          delegator.showSnackBar(AppLocalizations.of(context).unlockFail, _snackBarDuration);
-        }),
-      );
-    } else {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => DayScreen(dayPreview.date),
-        ),
-      );
-      _initState();
-    }
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DayScreen(dayPreview.date),
+      ),
+    );
+
+    final currentWeekRecord = await _usecases.getWeekRecord(_state.value.currentDate);
+    _state.add(_state.value.buildNew(
+      currentWeekRecord: currentWeekRecord,
+    ));
   }
 
   void onNextArrowClicked() {

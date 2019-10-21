@@ -37,7 +37,6 @@ class WeekUsecases {
     for (int i = 0; i < datesInWeek.length; i++) {
       final date = datesInWeek[i];
       final toDos = await _toDoRepository.getToDos(date);
-      final isLocked = await _lockRepository.getIsDayRecordLocked(date, defaultLocked);
       final memo = await _memoRepository.getDayMemo(date);
 
       toDos.sort((t1, t2) {
@@ -57,7 +56,6 @@ class WeekUsecases {
         weekday: date.weekday,
         totalToDosCount: toDos.length,
         doneToDosCount: toDos.where((it) => it.isDone).length,
-        isLocked: isLocked,
         isToday: Utils.isSameDay(date, today),
         isLightColor: !curDayCompleted && today.compareTo(date) > 0,
         isTopLineVisible: (curDayCompleted && prevDayCompleted) || (date == today && prevDayCompleted),

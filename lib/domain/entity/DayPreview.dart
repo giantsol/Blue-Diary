@@ -11,7 +11,6 @@ class DayPreview {
   final int weekday;
   final int totalToDosCount;
   final int doneToDosCount;
-  final bool isLocked;
   final bool isToday;
   final bool isLightColor;
   final bool isTopLineVisible;
@@ -45,7 +44,6 @@ class DayPreview {
     this.weekday = 0,
     this.totalToDosCount = 0,
     this.doneToDosCount = 0,
-    this.isLocked = false,
     this.isToday = false,
     this.isLightColor = false,
     this.isTopLineVisible = false,
@@ -57,7 +55,6 @@ class DayPreview {
   });
 
   DayPreview buildNew({
-    bool isLocked,
     bool isBottomLineVisible,
     bool isBottomLineLightColor,
   }) {
@@ -68,7 +65,6 @@ class DayPreview {
       weekday: this.weekday,
       totalToDosCount: this.totalToDosCount,
       doneToDosCount: this.doneToDosCount,
-      isLocked: isLocked ?? this.isLocked,
       isToday: this.isToday,
       isLightColor: this.isLightColor,
       isTopLineVisible: this.isTopLineVisible,
