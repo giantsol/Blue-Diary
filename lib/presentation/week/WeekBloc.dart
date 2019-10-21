@@ -122,19 +122,20 @@ class WeekBloc {
     }
   }
 
-  void _onCreatePasswordOkClicked(BuildContext context) {
-    final successMsg = AppLocalizations.of(context).createPasswordSuccess;
-    final failMsg = AppLocalizations.of(context).createPasswordFail;
-    delegator.showBottomSheet((context) => CreatePasswordScreen(),
-      onClosed: () async {
-        final isPasswordSaved = await _usecases.getUserPassword().then((s) => s.length == 4);
-        if (isPasswordSaved) {
-          delegator.showSnackBar(successMsg, _snackBarDuration);
-        } else {
-          delegator.showSnackBar(failMsg, _snackBarDuration);
-        }
-      }
-    );
+  void onNextArrowClicked() {
+    final newPageIndex = _state.value.currentWeekRecordPageIndex + 1;
+    _state.add(_state.value.buildNew(
+      currentWeekRecordPageIndex: newPageIndex,
+      animateToPageEvent: newPageIndex,
+    ));
+  }
+
+  void onPrevArrowClicked() {
+    final newPageIndex = _state.value.currentWeekRecordPageIndex - 1;
+    _state.add(_state.value.buildNew(
+      currentWeekRecordPageIndex: newPageIndex,
+      animateToPageEvent: newPageIndex,
+    ));
   }
 
   void dispose() {

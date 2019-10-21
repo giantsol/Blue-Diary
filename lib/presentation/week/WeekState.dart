@@ -20,6 +20,7 @@ class WeekState {
   final int currentWeekRecordPageIndex;
 
   final bool moveToTodayEvent;
+  final int animateToPageEvent;
 
   WeekRecord get currentWeekRecord => pageIndexWeekRecordMap[currentWeekRecordPageIndex];
 
@@ -35,6 +36,7 @@ class WeekState {
     this.currentWeekRecordPageIndex = WeekScreen.INITIAL_WEEK_PAGE,
 
     this.moveToTodayEvent = false,
+    this.animateToPageEvent = -1,
   });
 
   WeekRecord getWeekRecordForPageIndex(int index) {
@@ -54,6 +56,7 @@ class WeekState {
     DateTime currentDate,
 
     bool moveToTodayEvent,
+    int animateToPageEvent,
   }) {
     final prevMap = this.pageIndexWeekRecordMap;
     final currentPageIndex = currentWeekRecordPageIndex ?? this.currentWeekRecordPageIndex;
@@ -73,6 +76,7 @@ class WeekState {
       currentDate: currentDate ?? this.currentDate,
 
       moveToTodayEvent: moveToTodayEvent ?? false,
+      animateToPageEvent: animateToPageEvent ?? -1,
     );
   }
 
