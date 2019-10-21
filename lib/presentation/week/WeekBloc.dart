@@ -43,12 +43,12 @@ class WeekBloc {
   }
 
   Future<void> _initState() async {
-    final currentDate = _usecases.getToday();
-    final currentWeekRecord = await _usecases.getWeekRecord(currentDate);
-    final prevWeekRecord = await _usecases.getWeekRecord(currentDate.subtract(_sevenDays));
-    final nextWeekRecord = await _usecases.getWeekRecord(currentDate.add(_sevenDays));
+    final initialDate = _usecases.getToday();
+    final currentWeekRecord = await _usecases.getWeekRecord(initialDate);
+    final prevWeekRecord = await _usecases.getWeekRecord(initialDate.subtract(_sevenDays));
+    final nextWeekRecord = await _usecases.getWeekRecord(initialDate.add(_sevenDays));
 
-    final dateInWeek = DateInWeek.fromDate(currentDate);
+    final dateInWeek = DateInWeek.fromDate(initialDate);
 
     _state.add(_state.value.buildNew(
       viewState: WeekViewState.NORMAL,
@@ -58,9 +58,8 @@ class WeekBloc {
       currentWeekRecord: currentWeekRecord,
       prevWeekRecord: prevWeekRecord,
       nextWeekRecord: nextWeekRecord,
-      initialDate: currentDate,
+      initialDate: initialDate,
       currentWeekRecordPageIndex: _state.value.initialWeekRecordPageIndex,
-      currentDate: currentDate,
     ));
   }
 
@@ -72,21 +71,24 @@ class WeekBloc {
 
   Future<void> onWeekRecordPageIndexChanged(int newIndex) async {
     final currentDate = _state.value.initialDate.add(Duration(days: 7 * (newIndex - _state.value.initialWeekRecordPageIndex)));
-    final currentWeekRecord = await _usecases.getWeekRecord(currentDate);
-    final prevWeekRecord = await _usecases.getWeekRecord(currentDate.subtract(_sevenDays));
-    final nextWeekRecord = await _usecases.getWeekRecord(currentDate.add(_sevenDays));
-
     final dateInWeek = DateInWeek.fromDate(currentDate);
 
+    // update date text first for smoother UI
     _state.add(_state.value.buildNew(
       year: dateInWeek.year,
       month: dateInWeek.month,
       nthWeek: dateInWeek.nthWeek,
+    ));
+
+    final currentWeekRecord = await _usecases.getWeekRecord(currentDate);
+    final prevWeekRecord = await _usecases.getWeekRecord(currentDate.subtract(_sevenDays));
+    final nextWeekRecord = await _usecases.getWeekRecord(currentDate.add(_sevenDays));
+
+    _state.add(_state.value.buildNew(
       currentWeekRecord: currentWeekRecord,
       prevWeekRecord: prevWeekRecord,
       nextWeekRecord: nextWeekRecord,
       currentWeekRecordPageIndex: newIndex,
-      currentDate: currentDate,
     ));
   }
 
