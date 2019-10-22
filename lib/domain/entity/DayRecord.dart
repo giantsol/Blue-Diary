@@ -24,4 +24,12 @@ class DayRecord {
       isToday: isToday ?? this.isToday,
     );
   }
+
+  DayRecord buildNewDayMemoUpdated(DayMemo updated) {
+    if (dayMemo.key == updated.key) {
+      return buildNew(dayMemo: updated);
+    } else {
+      return this;
+    }
+  }
 }

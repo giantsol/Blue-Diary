@@ -6,6 +6,7 @@ import 'package:todo_app/Localization.dart';
 import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/CategoryPicker.dart';
+import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
 import 'package:todo_app/domain/usecase/DayUsecases.dart';
@@ -123,14 +124,9 @@ class DayBloc {
     _usecases.setDayMemo(updatedDayMemo);
   }
 
-  void onDayMemoTextChanged(String changed) {
-    final currentDayRecord = _state.value.currentDayRecord;
-    final currentDayMemo = currentDayRecord.dayMemo;
-    final updatedDayMemo = currentDayMemo.buildNew(text: changed);
-    final updatedDayRecord = currentDayRecord.buildNew(dayMemo: updatedDayMemo);
-    _state.add(_state.value.buildNew(
-      currentDayRecord: updatedDayRecord,
-    ));
+  void onDayMemoTextChanged(DayMemo dayMemo, String changed) {
+    final updatedDayMemo = dayMemo.buildNew(text: changed);
+    _state.add(_state.value.buildNewDayMemoUpdated(updatedDayMemo));
     _usecases.setDayMemo(updatedDayMemo);
   }
 

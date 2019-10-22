@@ -2,6 +2,7 @@
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/CategoryPicker.dart';
+import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
@@ -129,6 +130,10 @@ class DayState {
     } else {
       return this;
     }
+  }
+
+  DayState buildNewDayMemoUpdated(DayMemo updated) {
+    return buildNew(currentDayRecord: currentDayRecord.buildNewDayMemoUpdated(updated));
   }
 }
 

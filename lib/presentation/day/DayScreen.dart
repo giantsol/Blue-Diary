@@ -433,7 +433,7 @@ class _DayMemo extends StatelessWidget {
                   hintText: dayMemo.hint,
                   hintTextSize: 12,
                   hintColor: AppColors.TEXT_WHITE_DARK,
-                  onChanged: (s) => bloc.onDayMemoTextChanged(s),
+                  onChanged: (s) => bloc.onDayMemoTextChanged(dayMemo, s),
                   maxLines: null,
                 ),
               ),
