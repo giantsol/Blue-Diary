@@ -28,7 +28,7 @@
 
 ## Usage
 
-You can build and run this app by yourself. You'll need [Git](https://git-scm.com) and [Flutter](https://flutter.dev/docs/get-started/install),and [Android Studio](https://developer.android.com/studio) installed first. After that, clone this project by running command:
+You can build and run this app by yourself. You'll need [Git](https://git-scm.com), [Flutter](https://flutter.dev/docs/get-started/install),and [Android Studio](https://developer.android.com/studio) installed first. After that, clone this project by running command:
 
 ```
 $ git clone https://github.com/giantsol/Blue-Diary.git
@@ -92,7 +92,7 @@ Besides these directories are flat Dart files inside [lib](https://github.com/gi
 3. [Dependencies.dart](https://github.com/giantsol/Blue-Diary/blob/master/lib/Dependencies.dart): contains singleton objects such as repositories and usecases. Basically, it enables a very simple injection pattern like `dependencies.weekUsecases` as in [WeekBloc.dart](https://github.com/giantsol/Blue-Diary/blob/master/lib/presentation/week/WeekBloc.dart).
 4. [Localization.dart](https://github.com/giantsol/Blue-Diary/blob/master/lib/Localization.dart): where localization texts are declared.
 5. [Main.dart](https://github.com/giantsol/Blue-Diary/blob/master/lib/Main.dart): the main entry point of this app.
-6. [Utils.dart](https://github.com/giantsol/Blue-Diary/blob/master/lib/Utils.dart): well, yeah.. Utils.
+6. [Utils.dart](https://github.com/giantsol/Blue-Diary/blob/master/lib/Utils.dart): Utils (duh).
 
 If you have any questions on why the heck I've done something strange, or have any suggestions to make this app better, please do contact me as shown in <a href="#feedback">Feedback</a>. Thank you!
 
