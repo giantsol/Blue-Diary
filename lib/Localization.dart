@@ -47,6 +47,8 @@ class AppLocalizations {
   static const SETTINGS_NAVIGATION_TITLE = "settingsNavigationTitle";
   static const CHECK_POINT_HINT = "checkPointHint";
   static const DAY_MEMO_HINT = "dayMemoHint";
+  static const FIRST_TO_DO_CHECK_TITLE = "firstToDoCheckTitle";
+  static const FIRST_TO_DO_CHECK_BODY = "firstToDoCheckBody";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -98,6 +100,8 @@ class AppLocalizations {
       SETTINGS_NAVIGATION_TITLE: 'Settings',
       CHECK_POINT_HINT: 'Anything to remind yourself?',
       DAY_MEMO_HINT: 'Memo for today. Anything.',
+      FIRST_TO_DO_CHECK_TITLE: 'Irreversible action',
+      FIRST_TO_DO_CHECK_BODY: 'We treat completing task a very valuable action. Therefore, it\'s impossible to undo completing task unless deleting it.\n(This message is shown only once.)',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -144,6 +148,8 @@ class AppLocalizations {
       SETTINGS_NAVIGATION_TITLE: '설정',
       CHECK_POINT_HINT: '이번주의 다짐을 적어보세요.',
       DAY_MEMO_HINT: '오늘의 메모를 적어보세요.',
+      FIRST_TO_DO_CHECK_TITLE: '취소 불가능한 행위',
+      FIRST_TO_DO_CHECK_BODY: '저희는 작업을 완료하는 행위에 큰 의미를 두고자 합니다. 따라서 한 번 완료한 작업은 지우지 않는 한 취소할 수 없습니다.\n(이 메세지는 최초 한 번만 노출됩니다.)',
     },
   };
 
@@ -195,6 +201,9 @@ class AppLocalizations {
   String get settingsNavigationTitle => _localizedValues[locale.languageCode][SETTINGS_NAVIGATION_TITLE];
   String get checkPointHint => _localizedValues[locale.languageCode][CHECK_POINT_HINT];
   String get dayMemoHint => _localizedValues[locale.languageCode][DAY_MEMO_HINT];
+  String get firstToDoCheckTitle => _localizedValues[locale.languageCode][FIRST_TO_DO_CHECK_TITLE];
+  String get firstToDoCheckBody => _localizedValues[locale.languageCode][FIRST_TO_DO_CHECK_BODY];
+
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {

@@ -596,7 +596,7 @@ class _ToDoItem extends StatelessWidget {
                     ),
                   ),
                   customBorder: CircleBorder(),
-                  onTap: () => bloc.onToDoCheckBoxClicked(toDo),
+                  onTap: () => bloc.onToDoCheckBoxClicked(context, toDo),
                 ),
               ),
             ],

@@ -80,4 +80,12 @@ class DayUsecases {
   Future<String> getUserPassword() async {
     return await _prefsRepository.getUserPassword();
   }
+
+  Future<bool> getUserCheckedToDoBefore() async {
+    return await _prefsRepository.getUserCheckedToDoBefore();
+  }
+
+  void setUserCheckedToDoBefore() {
+    _prefsRepository.setUserCheckedToDoBefore();
+  }
 }

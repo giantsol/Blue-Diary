@@ -8,27 +8,37 @@ class PrefsRepositoryImpl implements PrefsRepository {
   const PrefsRepositoryImpl(this._prefs);
 
   @override
-  Future<String> getUserPassword() async {
+  Future<String> getUserPassword() {
     return _prefs.getUserPassword();
   }
 
   @override
-  Future<void> setUserPassword(String password) async {
+  Future<void> setUserPassword(String password) {
     return _prefs.setUserPassword(password);
   }
 
   @override
-  Future<bool> getUseLockScreen() async {
+  Future<bool> getUseLockScreen() {
     return _prefs.getUseLockScreen();
   }
 
   @override
-  Future<void> setUseLockScreen(bool value) async {
+  Future<void> setUseLockScreen(bool value) {
     return _prefs.setUseLockScreen(value);
   }
 
   @override
-  Future<String> getRecoveryEmail() async {
+  Future<String> getRecoveryEmail() {
     return _prefs.getRecoveryEmail();
+  }
+
+  @override
+  Future<bool> getUserCheckedToDoBefore() {
+    return _prefs.getUserCheckedToDoBefore();
+  }
+
+  @override
+  void setUserCheckedToDoBefore() {
+    _prefs.setUserCheckedToDoBefore();
   }
 }

@@ -9,22 +9,22 @@ class CategoryRepositoryImpl implements CategoryRepository {
   const CategoryRepositoryImpl(this._dataSource);
 
   @override
-  Future<Category> getCategory(int id) async {
+  Future<Category> getCategory(int id) {
     return _dataSource.getCategory(id);
   }
 
   @override
-  Future<int> setCategory(Category category) async {
+  Future<int> setCategory(Category category) {
     return _dataSource.setCategory(category);
   }
 
   @override
-  Future<List<Category>> getAllCategories() async {
+  Future<List<Category>> getAllCategories() {
     return _dataSource.getAllCategories();
   }
 
   @override
-  Future<void> removeCategory(Category category) async {
+  Future<void> removeCategory(Category category) {
     return _dataSource.removeCategory(category);
   }
 }

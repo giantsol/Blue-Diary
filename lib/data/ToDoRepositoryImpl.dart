@@ -9,8 +9,8 @@ class ToDoRepositoryImpl implements ToDoRepository {
   const ToDoRepositoryImpl(this._dataSource);
 
   @override
-  Future<List<ToDo>> getToDos(DateTime date) async {
-    return await _dataSource.getToDos(date);
+  Future<List<ToDo>> getToDos(DateTime date) {
+    return _dataSource.getToDos(date);
   }
 
   @override

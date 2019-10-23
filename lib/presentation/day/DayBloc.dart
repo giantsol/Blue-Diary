@@ -130,10 +130,27 @@ class DayBloc {
     _usecases.setDayMemo(updatedDayMemo);
   }
 
-  void onToDoCheckBoxClicked(ToDo toDo) {
-    final updated = toDo.buildNew(isDone: true);
-    _state.add(_state.value.buildNewToDoUpdated(updated));
-    _usecases.setToDo(updated);
+  Future<void> onToDoCheckBoxClicked(BuildContext context, ToDo toDo) async {
+    final userCheckedToDoBefore = await _usecases.getUserCheckedToDoBefore();
+    if (!userCheckedToDoBefore) {
+      final title = AppLocalizations.of(context).firstToDoCheckTitle;
+      final body = AppLocalizations.of(context).firstToDoCheckBody;
+      Utils.showAppDialog(context,
+        title,
+        body,
+        null,
+          () {
+          final updated = toDo.buildNew(isDone: true);
+          _state.add(_state.value.buildNewToDoUpdated(updated));
+          _usecases.setToDo(updated);
+          _usecases.setUserCheckedToDoBefore();
+        }
+      );
+    } else {
+      final updated = toDo.buildNew(isDone: true);
+      _state.add(_state.value.buildNewToDoUpdated(updated));
+      _usecases.setToDo(updated);
+    }
   }
 
   void onEditingCategoryTextChanged(String changed) {
@@ -192,7 +209,7 @@ class DayBloc {
     Utils.showAppDialog(context,
       AppLocalizations.of(context).removeToDo,
       AppLocalizations.of(context).removeToDoBody,
-        null,
+      null,
         () => _onRemoveToDoOkClicked(toDoRecord.toDo));
   }
 
@@ -291,7 +308,7 @@ class DayBloc {
     Utils.showAppDialog(context,
       AppLocalizations.of(context).removeCategory,
       AppLocalizations.of(context).removeCategoryBody,
-        null,
+      null,
         () => _onRemoveCategoryOkClicked(context, category));
   }
 

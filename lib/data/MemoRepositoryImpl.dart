@@ -10,13 +10,13 @@ class MemoRepositoryImpl implements MemoRepository {
   const MemoRepositoryImpl(this._dataSource);
 
   @override
-  Future<List<CheckPoint>> getCheckPoints(DateTime date) async {
-    return await _dataSource.getCheckPoints(date);
+  Future<List<CheckPoint>> getCheckPoints(DateTime date) {
+    return _dataSource.getCheckPoints(date);
   }
 
   @override
-  Future<DayMemo> getDayMemo(DateTime date) async {
-    return await _dataSource.getDayMemo(date);
+  Future<DayMemo> getDayMemo(DateTime date) {
+    return _dataSource.getDayMemo(date);
   }
 
   @override
