@@ -383,6 +383,7 @@ class _CheckPointItem extends StatelessWidget {
                   onChanged: (s) => bloc.onCheckPointTextChanged(checkPoint, s),
                   maxLines: 2,
                   keyboardType: TextInputType.text,
+                  cursorColor: AppColors.TEXT_WHITE,
                 ),
               ),
             ),

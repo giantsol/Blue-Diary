@@ -435,6 +435,7 @@ class _DayMemo extends StatelessWidget {
                   hintColor: AppColors.TEXT_WHITE_DARK,
                   onChanged: (s) => bloc.onDayMemoTextChanged(dayMemo, s),
                   maxLines: null,
+                  cursorColor: AppColors.TEXT_WHITE,
                 ),
               ),
             ) : const SizedBox.shrink(),

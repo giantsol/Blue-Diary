@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:todo_app/AppColors.dart';
 
 // Wraps framework's TextField because it itself doesn't work very well with Bloc and State pattern.
 // Specifically, we keep track of TextEditingController here.
@@ -16,6 +17,7 @@ class AppTextField extends StatefulWidget {
   final int maxLines;
   final void Function() onEditingComplete;
   final TextInputType keyboardType;
+  final Color cursorColor;
 
   AppTextField({
     Key key,
@@ -31,6 +33,7 @@ class AppTextField extends StatefulWidget {
     this.maxLines = 1,
     this.onEditingComplete,
     this.keyboardType,
+    this.cursorColor = AppColors.PRIMARY,
   }): super(key: key);
 
   @override
@@ -77,6 +80,7 @@ class _AppTextFieldState extends State<AppTextField> {
         onEditingComplete: widget.onEditingComplete,
         keyboardType: widget.keyboardType,
         textCapitalization: TextCapitalization.sentences,
+        cursorColor: widget.cursorColor,
       ),
     );
   }
