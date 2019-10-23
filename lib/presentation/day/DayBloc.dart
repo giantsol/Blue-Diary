@@ -186,7 +186,8 @@ class DayBloc {
     final toDoRecords = await _usecases.getToDoRecords(_state.value.currentDate);
     final updatedDayRecord = currentDayRecord.buildNew(toDoRecords: toDoRecords);
 
-    final editingToDoRecord = _createDraftToDoRecord(_state.value.currentDate, toDoRecords);
+    final editingToDoRecord = _createDraftToDoRecord(_state.value.currentDate, toDoRecords)
+      .buildNew(category: editedRecord.category);
     final editingCategory = editingToDoRecord.category.buildNew();
 
     _state.add(_state.value.buildNew(
