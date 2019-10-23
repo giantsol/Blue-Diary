@@ -787,6 +787,7 @@ class _DayPreviewItemTodayText extends StatelessWidget {
           color: AppColors.TEXT_WHITE,
           fontSize: 8,
         ),
+        textAlign: TextAlign.center,
       ),
     );
   }
