@@ -23,14 +23,6 @@ class HomeBloc {
   }
 
   Future<void> _initState(BuildContext context) async {
-    final useLockScreen = await _usecases.getUseLockScreen();
-    if (useLockScreen) {
-      Navigator.push(
-        context,
-        SlideUpPageRoute(page: LockScreen())
-      );
-    }
-
     final navigationItems = _usecases.getNavigationItems();
     final currentChildScreenKey = _usecases.getCurrentChildScreenKey();
     _state.add(_state.value.buildNew(
@@ -38,6 +30,16 @@ class HomeBloc {
       currentChildScreenKey: currentChildScreenKey,
     ));
 
+    final useLockScreen = await _usecases.getUseLockScreen();
+    if (useLockScreen) {
+      Navigator.push(
+        context,
+        SlideUpPageRoute(
+          page: LockScreen(),
+          duration: const Duration(milliseconds: 500),
+        ),
+      );
+    }
   }
 
   void onBottomNavigationItemClicked(String key) {
