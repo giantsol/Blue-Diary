@@ -369,16 +369,16 @@ class _CheckPointItem extends StatelessWidget {
           SizedBox(width: 4,),
           Expanded(
             child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: 30,),
+              constraints: BoxConstraints(minHeight: 38,),
               child: Container(
                 alignment: Alignment.center,
                 child: AppTextField(
                   focusNode: focusNodeProvider(checkPoint.key),
                   text: checkPoint.text,
-                  textSize: 12,
+                  textSize: 14,
                   textColor: AppColors.TEXT_WHITE,
                   hintText: checkPoint.hint,
-                  hintTextSize: 12,
+                  hintTextSize: 14,
                   hintColor: AppColors.TEXT_WHITE_DARK,
                   onChanged: (s) => bloc.onCheckPointTextChanged(checkPoint, s),
                   maxLines: 2,

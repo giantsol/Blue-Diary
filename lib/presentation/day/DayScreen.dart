@@ -428,10 +428,10 @@ class _DayMemo extends StatelessWidget {
                 child: AppTextField(
                   focusNode: focusNodeProvider(dayMemo.key),
                   text: dayMemo.text,
-                  textSize: 12,
+                  textSize: 14,
                   textColor: AppColors.TEXT_WHITE,
                   hintText: dayMemo.hint,
-                  hintTextSize: 12,
+                  hintTextSize: 14,
                   hintColor: AppColors.TEXT_WHITE_DARK,
                   onChanged: (s) => bloc.onDayMemoTextChanged(dayMemo, s),
                   maxLines: null,
