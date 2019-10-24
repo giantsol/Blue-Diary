@@ -10,12 +10,15 @@ PODS:
   - sqflite (0.0.1):
     - Flutter
     - FMDB (~> 2.7.2)
+  - vibration (1.2.2):
+    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `.symlinks/flutter/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
+  - vibration (from `.symlinks/plugins/vibration/ios`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -30,6 +33,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences/ios"
   sqflite:
     :path: ".symlinks/plugins/sqflite/ios"
+  vibration:
+    :path: ".symlinks/plugins/vibration/ios"
 
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
@@ -37,7 +42,8 @@ SPEC CHECKSUMS:
   image_picker: 16e5fec1fbc87fd3b297c53e4048521eaf17cd06
   shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523
   sqflite: ff1d9da63c06588cc8d1faf7256d741f16989d5a
+  vibration: 24e320bdb1c808ae8fd4f9d8793f9aac2a0ea538
 
-PODFILE CHECKSUM: 7fb83752f59ead6285236625b82473f90b1cb932
+PODFILE CHECKSUM: fb9c640745d369c357b1f0db8d1151344d45fe11
 
 COCOAPODS: 1.6.1
