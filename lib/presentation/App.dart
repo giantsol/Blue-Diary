@@ -6,7 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Dependencies.dart';
 import 'package:todo_app/Localization.dart';
-import 'package:todo_app/presentation/splash/SplashScreen.dart';
+import 'package:todo_app/presentation/home/HomeScreen.dart';
 
 // static dependency injection
 Dependencies _sharedDependencies;
@@ -56,7 +56,7 @@ class App extends StatelessWidget {
         }
         return widget;
       },
-      home: SplashScreen(),
+      home: HomeScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
