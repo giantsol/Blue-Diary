@@ -204,7 +204,6 @@ class AppLocalizations {
   String get firstToDoCheckTitle => _localizedValues[locale.languageCode][FIRST_TO_DO_CHECK_TITLE];
   String get firstToDoCheckBody => _localizedValues[locale.languageCode][FIRST_TO_DO_CHECK_BODY];
 
-
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {
       switch (nthWeek) {

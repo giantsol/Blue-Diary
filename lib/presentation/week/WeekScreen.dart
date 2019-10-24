@@ -434,6 +434,7 @@ class _DayPreviewItem extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 14, top: 8, bottom: 8,),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Row(
@@ -455,6 +456,7 @@ class _DayPreviewItem extends StatelessWidget {
                         isLightColor: isLightColor,
                         memo: dayPreview.memoPreview,
                       ),
+                      SizedBox(height: 4,),
                       _DayPreviewItemToDos(
                         isLightColor: isLightColor,
                         firstToDo: firstToDo,
@@ -559,27 +561,26 @@ class _DayPreviewItemMemo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 1,),
-      child: Row(
-        children: <Widget>[
-          Image.asset(isLightColor ? 'assets/ic_preview_memo_light.png' : 'assets/ic_preview_memo.png'),
-          SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              memo,
-              style: TextStyle(
-                fontSize: 12,
-                color: isLightColor ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
-              ),
-              strutStyle: StrutStyle(
-                fontSize: 12,
-              ),
-              overflow: TextOverflow.ellipsis,
+    final isMemoEmpty = memo.length == 0;
+
+    return Row(
+      children: <Widget>[
+        Image.asset(isLightColor ? 'assets/ic_preview_memo_light.png' : 'assets/ic_preview_memo.png'),
+        SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            isMemoEmpty ? '-' : memo,
+            style: TextStyle(
+              fontSize: 12,
+              color: isLightColor || isMemoEmpty ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
             ),
-          )
-        ],
-      ),
+            strutStyle: StrutStyle(
+              fontSize: 12,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        )
+      ],
     );
   }
 }
@@ -610,9 +611,9 @@ class _DayPreviewItemToDos extends StatelessWidget {
           '-',
           style: TextStyle(
             fontSize: 12,
-            color: isLightColor ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
+            color: isLightColor || hasNoToDos ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
           ),
-        ) : hasOneToDo ? Expanded(
+        ): hasOneToDo ? Expanded(
           child: Text(
             firstToDo.text,
             style: TextStyle(

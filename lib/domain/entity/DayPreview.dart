@@ -50,7 +50,7 @@ class DayPreview {
     this.isTopLineLightColor = false,
     this.isBottomLineVisible = false,
     this.isBottomLineLightColor = false,
-    this.memoPreview = '-',
+    this.memoPreview = '',
     this.toDoPreviews = const [],
   });
 

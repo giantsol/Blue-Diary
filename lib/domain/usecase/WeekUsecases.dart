@@ -67,7 +67,7 @@ class WeekUsecases {
         isLightColor: !curDayCompleted && today.compareTo(date) > 0,
         isTopLineVisible: (curDayCompleted && prevDayCompleted) || (date == today && prevDayCompleted),
         isTopLineLightColor: !curDayCompleted,
-        memoPreview: memo.text.length > 0 ? memo.text.replaceAll(_enterRegex, ', ') : '-',
+        memoPreview: memo.text.length > 0 ? memo.text.replaceAll(_enterRegex, ', ') : '',
         toDoPreviews: toDos.length > 2 ? toDos.sublist(0, 2) : toDos,
       );
 
