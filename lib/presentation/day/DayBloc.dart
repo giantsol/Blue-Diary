@@ -81,6 +81,15 @@ class DayBloc {
   }
 
   bool handleBackPress() {
+    final viewState = _state.value.viewState;
+    if (viewState == DayViewState.SELECTION) {
+      _state.add(_state.value.buildNew(
+        viewState: DayViewState.NORMAL,
+        selectedToDoKeys: const [],
+      ));
+      return true;
+    }
+
     final editorState = _state.value.editorState;
     if (editorState == EditorState.SHOWN_CATEGORY) {
       _state.add(_state.value.buildNew(
@@ -166,12 +175,30 @@ class DayBloc {
   }
 
   void onToDoRecordItemClicked(ToDoRecord toDoRecord) {
-    _state.add(_state.value.buildNew(
-      editingToDoRecord: toDoRecord.buildNew(),
-      editingCategory: toDoRecord.category.buildNew(),
-      editorState: EditorState.SHOWN_TODO,
-      scrollToToDoListEvent: true,
-    ));
+    if (_state.value.viewState == DayViewState.SELECTION) {
+      final selectedKey = toDoRecord.toDo.key;
+      final current = _state.value.selectedToDoKeys;
+      if (current.contains(selectedKey)) {
+        final newKeys = List.of(current)
+          ..remove(selectedKey);
+        _state.add(_state.value.buildNew(
+          selectedToDoKeys: newKeys,
+        ));
+      } else {
+        final newKeys = List.of(current)
+          ..add(selectedKey);
+        _state.add(_state.value.buildNew(
+          selectedToDoKeys: newKeys,
+        ));
+      }
+    } else {
+      _state.add(_state.value.buildNew(
+        editingToDoRecord: toDoRecord.buildNew(),
+        editingCategory: toDoRecord.category.buildNew(),
+        editorState: EditorState.SHOWN_TODO,
+        scrollToToDoListEvent: true,
+      ));
+    }
   }
 
   Future<void> onToDoEditingDone() async {
@@ -207,26 +234,111 @@ class DayBloc {
   }
 
   void onToDoRecordItemLongClicked(BuildContext context, ToDoRecord toDoRecord) {
-    Utils.showAppDialog(context,
-      AppLocalizations.of(context).removeToDo,
-      AppLocalizations.of(context).removeToDoBody,
-      null,
-        () => _onRemoveToDoOkClicked(toDoRecord.toDo));
-  }
-
-  void _onRemoveToDoOkClicked(ToDo toDo) {
-    final currentDayRecord = _state.value.currentDayRecord;
-    final toDoRecords = currentDayRecord.toDoRecords;
-    final removedIndex = toDoRecords.indexWhere((it) => it.toDo.key == toDo.key);
-    if (removedIndex >= 0) {
-      final newRecords = List.of(toDoRecords);
-      newRecords.removeAt(removedIndex);
-      final updatedDayRecord = currentDayRecord.buildNew(toDoRecords: newRecords);
+    if (_state.value.viewState != DayViewState.SELECTION) {
       _state.add(_state.value.buildNew(
-        currentDayRecord: updatedDayRecord,
+        viewState: DayViewState.SELECTION,
+        selectedToDoKeys: [toDoRecord.toDo.key],
       ));
     }
-    _usecases.removeToDo(toDo);
+  }
+
+  void onCloseSelectionModeClicked() {
+    handleBackPress();
+  }
+
+  void onRemoveSelectedToDosClicked(BuildContext context) {
+    final selectedCount = _state.value.selectedToDoKeys.length;
+    if (selectedCount > 0) {
+      Utils.showAppDialog(context,
+        AppLocalizations.of(context).removeSelectedToDosTitle,
+        AppLocalizations.of(context).getRemoveSelectedToDosBody(selectedCount),
+        null,
+          () => _onRemoveSelectedToDosOkClicked());
+    }
+  }
+
+  void onMoveUpSelectedToDosClicked() {
+    final currentDayRecord = _state.value.currentDayRecord;
+    final newToDoRecords = List.of(currentDayRecord.toDoRecords);
+    final newSelectedToDoKeys = List.of(_state.value.selectedToDoKeys);
+    if (newToDoRecords.length > 1 && newSelectedToDoKeys.length > 0) {
+      for (int i = 0; i < newToDoRecords.length - 1; i++) {
+        final currentRecord = newToDoRecords[i];
+        final nextRecord = newToDoRecords[i + 1];
+        final currentToDoKey = currentRecord.toDo.key;
+        final nextToDoKey = nextRecord.toDo.key;
+        if (!newSelectedToDoKeys.contains(currentToDoKey) && newSelectedToDoKeys.contains(nextToDoKey)) {
+          final changedCurrentRecord = currentRecord.buildNew(toDo: currentRecord.toDo.buildNew(order: nextRecord.toDo.order));
+          final changedNextRecord = nextRecord.buildNew(toDo: nextRecord.toDo.buildNew(order: currentRecord.toDo.order));
+
+          newToDoRecords[i] = changedNextRecord;
+          newToDoRecords[i + 1] = changedCurrentRecord;
+
+          newSelectedToDoKeys.remove(nextToDoKey);
+          newSelectedToDoKeys.add(changedNextRecord.toDo.key);
+        }
+      }
+
+      _state.add(_state.value.buildNew(
+        currentDayRecord: currentDayRecord.buildNew(toDoRecords: newToDoRecords),
+        selectedToDoKeys: newSelectedToDoKeys,
+      ));
+
+      for (ToDoRecord record in newToDoRecords) {
+        _usecases.setToDoRecord(record);
+      }
+    }
+  }
+
+  void onMoveDownSelectedToDosClicked() {
+    final currentDayRecord = _state.value.currentDayRecord;
+    final newToDoRecords = List.of(currentDayRecord.toDoRecords);
+    final newSelectedToDoKeys = List.of(_state.value.selectedToDoKeys);
+    if (newToDoRecords.length > 1 && newSelectedToDoKeys.length > 0) {
+      for (int i = newToDoRecords.length - 1; i > 0; i--) {
+        final currentRecord = newToDoRecords[i];
+        final prevRecord = newToDoRecords[i - 1];
+        final currentToDoKey = currentRecord.toDo.key;
+        final prevToDoKey = prevRecord.toDo.key;
+        if (!newSelectedToDoKeys.contains(currentToDoKey) && newSelectedToDoKeys.contains(prevToDoKey)) {
+          final changedCurrentRecord = currentRecord.buildNew(toDo: currentRecord.toDo.buildNew(order: prevRecord.toDo.order));
+          final changedPrevRecord = prevRecord.buildNew(toDo: prevRecord.toDo.buildNew(order: currentRecord.toDo.order));
+
+          newToDoRecords[i] = changedPrevRecord;
+          newToDoRecords[i - 1] = changedCurrentRecord;
+
+          newSelectedToDoKeys.remove(prevToDoKey);
+          newSelectedToDoKeys.add(changedPrevRecord.toDo.key);
+        }
+      }
+
+      _state.add(_state.value.buildNew(
+        currentDayRecord: currentDayRecord.buildNew(toDoRecords: newToDoRecords),
+        selectedToDoKeys: newSelectedToDoKeys,
+      ));
+
+      for (ToDoRecord record in newToDoRecords) {
+        _usecases.setToDoRecord(record);
+      }
+    }
+  }
+
+  void _onRemoveSelectedToDosOkClicked() {
+    final keys = _state.value.selectedToDoKeys;
+    final currentDayRecord = _state.value.currentDayRecord;
+    final toDoRecords = currentDayRecord.toDoRecords;
+    final removingRecords = toDoRecords.where((it) => keys.contains(it.toDo.key));
+
+    final newRecords = List.of(toDoRecords);
+    for (ToDoRecord removingRecord in removingRecords) {
+      newRecords.remove(removingRecord);
+      _usecases.removeToDo(removingRecord.toDo);
+    }
+
+    _state.add(_state.value.buildNew(
+      selectedToDoKeys: const [],
+      currentDayRecord: currentDayRecord.buildNew(toDoRecords: newRecords),
+    ));
   }
 
   void onCategoryEditorCategoryClicked(Category category) {

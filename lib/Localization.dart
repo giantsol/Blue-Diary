@@ -41,8 +41,7 @@ class AppLocalizations {
   static const TEMP_PASSWORD_MAIL_BODY = "tempPasswordMailBody";
   static const TEMP_PASSWORD_MAIL_SENT = "tempPasswordMailSent";
   static const TEMP_PASSWORD_MAIL_SEND_FAILED = "tempPasswordMailSendFailed";
-  static const REMOVE_TO_DO = "removeToDo";
-  static const REMOVE_TO_DO_BODY = "removeToDoBody";
+  static const REMOVE_SELECTED_TO_DOS_TITLE = "removeSelectedToDosTitle";
   static const RECORD_NAVIGATION_TITLE = "recordNavigationTitle";
   static const SETTINGS_NAVIGATION_TITLE = "settingsNavigationTitle";
   static const CHECK_POINT_HINT = "checkPointHint";
@@ -94,8 +93,7 @@ class AppLocalizations {
       TEMP_PASSWORD_MAIL_BODY: 'Your password has been set: ',
       TEMP_PASSWORD_MAIL_SENT: 'Mail has been sent! Check your recovery email.',
       TEMP_PASSWORD_MAIL_SEND_FAILED: 'Mail has not been sent. Please check your recovery email again.',
-      REMOVE_TO_DO: 'Remove TODO',
-      REMOVE_TO_DO_BODY: 'Are you sure you want to remove this TODO?',
+      REMOVE_SELECTED_TO_DOS_TITLE: 'Remove TODO',
       RECORD_NAVIGATION_TITLE: 'Record',
       SETTINGS_NAVIGATION_TITLE: 'Settings',
       CHECK_POINT_HINT: 'Anything to remind yourself?',
@@ -142,8 +140,7 @@ class AppLocalizations {
       TEMP_PASSWORD_MAIL_BODY: '비밀번호가 다음과 같이 설정되었습니다: ',
       TEMP_PASSWORD_MAIL_SENT: '메일이 발송되었습니다! 이메일을 확인해주세요.',
       TEMP_PASSWORD_MAIL_SEND_FAILED: '메일 발송에 실패하였습니다. 복원 이메일을 확인해주세요.',
-      REMOVE_TO_DO: '작업 삭제',
-      REMOVE_TO_DO_BODY: '이 작업을 삭제하시겠습니까?',
+      REMOVE_SELECTED_TO_DOS_TITLE: '작업 삭제',
       RECORD_NAVIGATION_TITLE: '기록',
       SETTINGS_NAVIGATION_TITLE: '설정',
       CHECK_POINT_HINT: '이번주의 다짐을 적어보세요.',
@@ -195,8 +192,7 @@ class AppLocalizations {
   String get tempPasswordMailBody => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_BODY];
   String get tempPasswordMailSent => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_SENT];
   String get tempPasswordMailSendFailed => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_SEND_FAILED];
-  String get removeToDo => _localizedValues[locale.languageCode][REMOVE_TO_DO];
-  String get removeToDoBody => _localizedValues[locale.languageCode][REMOVE_TO_DO_BODY];
+  String get removeSelectedToDosTitle => _localizedValues[locale.languageCode][REMOVE_SELECTED_TO_DOS_TITLE];
   String get recordNavigationTitle => _localizedValues[locale.languageCode][RECORD_NAVIGATION_TITLE];
   String get settingsNavigationTitle => _localizedValues[locale.languageCode][SETTINGS_NAVIGATION_TITLE];
   String get checkPointHint => _localizedValues[locale.languageCode][CHECK_POINT_HINT];
@@ -326,6 +322,14 @@ class AppLocalizations {
       return ' 외 $count개';
     } else {
       return ' and $count more';
+    }
+  }
+
+  String getRemoveSelectedToDosBody(int count) {
+    if (locale.languageCode == 'ko') {
+      return '$count개의 작업을 삭제하시겠습니까?';
+    } else {
+      return 'Are you sure you want to remove $count tasks?';
     }
   }
 }

@@ -100,6 +100,8 @@ class _DayScreenState extends State<DayScreen> {
       });
     }
 
+    final isSelectionMode = state.viewState == DayViewState.SELECTION;
+
     return SafeArea(
       child: Scaffold(
         body: state.viewState == DayViewState.WHOLE_LOADING ? _WholeLoadingView()
@@ -111,7 +113,9 @@ class _DayScreenState extends State<DayScreen> {
                 children: <Widget>[
                   _Header(
                     bloc: _bloc,
-                    title: AppLocalizations.of(context).getDayScreenTitle(state.month, state.day, state.weekday),
+                    title: isSelectionMode ? state.selectedToDoKeys.length.toString()
+                      : AppLocalizations.of(context).getDayScreenTitle(state.month, state.day, state.weekday),
+                    isSelectionMode: isSelectionMode,
                   ),
                   Expanded(
                     child: Stack(
@@ -131,7 +135,8 @@ class _DayScreenState extends State<DayScreen> {
                                 dayRecord: dayRecord,
                                 focusNodeProvider: _getOrCreateFocusNode,
                                 scrollController: _toDoScrollController,
-                                inputPasswordLength: state.inputPassword.length,
+                                isSelectionMode: isSelectionMode,
+                                selectedToDoKeys: state.selectedToDoKeys,
                               );
                             }
                           },
@@ -214,14 +219,16 @@ class _DayRecord extends StatelessWidget {
   final DayRecord dayRecord;
   final FocusNode Function(String key) focusNodeProvider;
   final ScrollController scrollController;
-  final int inputPasswordLength;
+  final bool isSelectionMode;
+  final List<String> selectedToDoKeys;
 
   _DayRecord({
     @required this.bloc,
     @required this.dayRecord,
     @required this.focusNodeProvider,
     @required this.scrollController,
-    @required this.inputPasswordLength,
+    @required this.isSelectionMode,
+    @required this.selectedToDoKeys,
   });
 
   @override
@@ -240,6 +247,8 @@ class _DayRecord extends StatelessWidget {
       toDoRecords: dayRecord.toDoRecords,
       scrollController: scrollController,
       focusNodeProvider: focusNodeProvider,
+      isSelectionMode: isSelectionMode,
+      selectedToDoKeys: selectedToDoKeys,
     );
   }
 }
@@ -295,15 +304,69 @@ class _BackFAB extends StatelessWidget {
 class _Header extends StatelessWidget {
   final DayBloc bloc;
   final String title;
+  final bool isSelectionMode;
 
   _Header({
     @required this.bloc,
     @required this.title,
+    @required this.isSelectionMode,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return isSelectionMode ? Row(
+      children: <Widget>[
+        SizedBox(width: 4,),
+        InkWell(
+          onTap: () => bloc.onCloseSelectionModeClicked(),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Image.asset('assets/ic_close_black.png'),
+          ),
+        ),
+        SizedBox(width: 2,),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 14,),
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 24,
+                color: AppColors.TEXT_BLACK,
+              ),
+              strutStyle: StrutStyle(
+                fontSize: 24,
+              ),
+              overflow: TextOverflow.ellipsis,
+              textAlign: isSelectionMode ? TextAlign.start : TextAlign.center,
+            ),
+          ),
+        ),
+        Spacer(),
+        InkWell(
+          onTap: () => bloc.onMoveUpSelectedToDosClicked(),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Image.asset('assets/ic_up.png'),
+          ),
+        ),
+        InkWell(
+          onTap: () => bloc.onMoveDownSelectedToDosClicked(),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Image.asset('assets/ic_down.png'),
+          ),
+        ),
+        InkWell(
+          onTap: () => bloc.onRemoveSelectedToDosClicked(context),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Image.asset('assets/ic_trash.png'),
+          ),
+        ),
+        SizedBox(width: 12,),
+      ],
+    ): Row(
       children: <Widget>[
         SizedBox(width: 4,),
         InkWell(
@@ -321,6 +384,9 @@ class _Header extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24,
                 color: AppColors.TEXT_BLACK,
+              ),
+              strutStyle: StrutStyle(
+                fontSize: 24,
               ),
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
@@ -452,6 +518,8 @@ class _ToDoListView extends StatelessWidget {
   final List<ToDoRecord> toDoRecords;
   final ScrollController scrollController;
   final FocusNode Function(String key) focusNodeProvider;
+  final bool isSelectionMode;
+  final List<String> selectedToDoKeys;
 
   _ToDoListView({
     @required this.bloc,
@@ -459,6 +527,8 @@ class _ToDoListView extends StatelessWidget {
     @required this.toDoRecords,
     @required this.scrollController,
     @required this.focusNodeProvider,
+    @required this.isSelectionMode,
+    @required this.selectedToDoKeys,
   });
 
   @override
@@ -490,6 +560,8 @@ class _ToDoListView extends StatelessWidget {
             bloc: bloc,
             toDoRecord: toDoRecords[realIndex],
             isLast: realIndex == toDoRecords.length - 1,
+            isSelectionMode: isSelectionMode,
+            isSelectedInSelectionMode: selectedToDoKeys.contains(toDoRecords[realIndex].toDo.key),
           );
         }
       },
@@ -501,11 +573,15 @@ class _ToDoItem extends StatelessWidget {
   final DayBloc bloc;
   final ToDoRecord toDoRecord;
   final bool isLast;
+  final bool isSelectionMode;
+  final bool isSelectedInSelectionMode;
 
   _ToDoItem({
     @required this.bloc,
     @required this.toDoRecord,
     @required this.isLast,
+    @required this.isSelectionMode,
+    @required this.isSelectedInSelectionMode,
   });
 
   @override
@@ -575,7 +651,33 @@ class _ToDoItem extends StatelessWidget {
                   ),
                 ),
               ),
-              toDo.isDone ? Padding(
+              isSelectionMode ? Padding(
+                padding: const EdgeInsets.only(right: 24),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 14, top: 14, right: 14, bottom: 14),
+                  child: Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppColors.TEXT_BLACK_LIGHT,
+                        width: 2,
+                      ),
+                    ),
+                    child: Center(
+                      child: isSelectedInSelectionMode ? Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.PRIMARY,
+                        ),
+                      ): const SizedBox.shrink(),
+                    ),
+                  ),
+                ),
+              ) : toDo.isDone ? Padding(
                 padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 39),
                 child: Image.asset('assets/ic_check.png'),
               ) : Padding(

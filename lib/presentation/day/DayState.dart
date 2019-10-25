@@ -11,6 +11,7 @@ import 'package:todo_app/presentation/day/DayScreen.dart';
 enum DayViewState {
   WHOLE_LOADING,
   NORMAL,
+  SELECTION,
 }
 
 class DayState {
@@ -38,6 +39,7 @@ class DayState {
   final DateTime currentDate;
   final int currentDayRecordPageIndex;
   final String inputPassword;
+  final List<String> selectedToDoKeys;
 
   final bool scrollToBottomEvent;
   final bool scrollToToDoListEvent;
@@ -47,7 +49,7 @@ class DayState {
   int get month => currentDate?.month ?? 0;
   int get day => currentDate?.day ?? 0;
   int get weekday => currentDate?.weekday ?? 0;
-  bool get isFabVisible => editorState == EditorState.HIDDEN;
+  bool get isFabVisible => editorState == EditorState.HIDDEN && viewState == DayViewState.NORMAL;
   DayRecord get currentDayRecord => pageIndexDayRecordMap[currentDayRecordPageIndex];
 
   const DayState({
@@ -64,6 +66,7 @@ class DayState {
     this.currentDate,
     this.currentDayRecordPageIndex = DayScreen.INITIAL_DAY_PAGE,
     this.inputPassword = '',
+    this.selectedToDoKeys = const [],
 
     this.scrollToBottomEvent = false,
     this.scrollToToDoListEvent = false,
@@ -88,6 +91,7 @@ class DayState {
     int currentDayRecordPageIndex,
     DateTime currentDate,
     String inputPassword,
+    List<String> selectedToDoKeys,
 
     bool scrollToBottomEvent,
     bool scrollToToDoListEvent,
@@ -112,6 +116,7 @@ class DayState {
       currentDayRecordPageIndex: currentDayRecordPageIndex ?? this.currentDayRecordPageIndex,
       currentDate: currentDate ?? this.currentDate,
       inputPassword: inputPassword ?? this.inputPassword,
+      selectedToDoKeys: selectedToDoKeys ?? this.selectedToDoKeys,
 
       // these are one-time events, so default to false if not given to "true" as parameter
       scrollToBottomEvent: scrollToBottomEvent ?? false,
