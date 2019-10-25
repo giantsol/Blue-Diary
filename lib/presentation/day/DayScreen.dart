@@ -596,42 +596,28 @@ class _ToDoItem extends StatelessWidget {
     return Column(
       children: <Widget>[
         _ToDoItemDivider(),
-        InkWell(
-          child: Row(
-            children: <Widget>[
-              SizedBox(width: 36,),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: _CategoryThumbnail(
-                  category: category,
-                  width: 36,
-                  height: 36,
-                  fontSize: 18,
-                ),
-              ),
-              SizedBox(width: 36),
-              Expanded(
-                child: category.id == Category.ID_DEFAULT ? Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  child: Text(
-                    toDo.text,
-                    style: toDo.isDone ? TextStyle(
-                      fontSize: 14,
-                      color: AppColors.TEXT_BLACK_LIGHT,
-                      decoration: TextDecoration.lineThrough,
-                      decorationColor: AppColors.TEXT_BLACK_LIGHT,
-                      decorationThickness: 2,
-                    ) : TextStyle(
-                      fontSize: 14,
-                      color: AppColors.TEXT_BLACK,
+        Container(
+          color: isSelectedInSelectionMode ? AppColors.BACKGROUND_GREY_LIGHT : Colors.transparent,
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              child: Row(
+                children: <Widget>[
+                  SizedBox(width: 36,),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: _CategoryThumbnail(
+                      category: category,
+                      width: 36,
+                      height: 36,
+                      fontSize: 18,
                     ),
                   ),
-                ) : Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 7),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
+                  SizedBox(width: 36),
+                  Expanded(
+                    child: category.id == Category.ID_DEFAULT ? Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Text(
                         toDo.text,
                         style: toDo.isDone ? TextStyle(
                           fontSize: 14,
@@ -644,72 +630,92 @@ class _ToDoItem extends StatelessWidget {
                           color: AppColors.TEXT_BLACK,
                         ),
                       ),
-                      SizedBox(height: 2,),
-                      Text(
-                        category.name,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.TEXT_BLACK_LIGHT,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              isSelectionMode ? Padding(
-                padding: const EdgeInsets.only(right: 24),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 14, top: 14, right: 14, bottom: 14),
-                  child: Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppColors.TEXT_BLACK_LIGHT,
-                        width: 2,
+                    ) : Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 7),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            toDo.text,
+                            style: toDo.isDone ? TextStyle(
+                              fontSize: 14,
+                              color: AppColors.TEXT_BLACK_LIGHT,
+                              decoration: TextDecoration.lineThrough,
+                              decorationColor: AppColors.TEXT_BLACK_LIGHT,
+                              decorationThickness: 2,
+                            ) : TextStyle(
+                              fontSize: 14,
+                              color: AppColors.TEXT_BLACK,
+                            ),
+                          ),
+                          SizedBox(height: 2,),
+                          Text(
+                            category.name,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.TEXT_BLACK_LIGHT,
+                            ),
+                          )
+                        ],
                       ),
                     ),
-                    child: Center(
-                      child: isSelectedInSelectionMode ? Container(
-                        width: 6,
-                        height: 6,
+                  ),
+                  isSelectionMode ? Padding(
+                    padding: const EdgeInsets.only(right: 24),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 14, top: 14, right: 14, bottom: 14),
+                      child: Container(
+                        width: 20,
+                        height: 20,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColors.PRIMARY,
+                          border: Border.all(
+                            color: AppColors.TEXT_BLACK_LIGHT,
+                            width: 2,
+                          ),
                         ),
-                      ): const SizedBox.shrink(),
-                    ),
-                  ),
-                ),
-              ) : toDo.isDone ? Padding(
-                padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 39),
-                child: Image.asset('assets/ic_check.png'),
-              ) : Padding(
-                padding: const EdgeInsets.only(right: 24),
-                child: InkWell(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 14, top: 14, right: 14, bottom: 14),
-                    child: Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: AppColors.TEXT_BLACK_LIGHT,
-                          width: 2,
+                        child: Center(
+                          child: isSelectedInSelectionMode ? Container(
+                            width: 6,
+                            height: 6,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.PRIMARY,
+                            ),
+                          ): const SizedBox.shrink(),
                         ),
-                        borderRadius: BorderRadius.all(Radius.circular(2)),
                       ),
                     ),
+                  ) : toDo.isDone ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 39),
+                    child: Image.asset('assets/ic_check.png'),
+                  ) : Padding(
+                    padding: const EdgeInsets.only(right: 24),
+                    child: InkWell(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 14, top: 14, right: 14, bottom: 14),
+                        child: Container(
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: AppColors.TEXT_BLACK_LIGHT,
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.all(Radius.circular(2)),
+                          ),
+                        ),
+                      ),
+                      customBorder: CircleBorder(),
+                      onTap: () => bloc.onToDoCheckBoxClicked(context, toDo),
+                    ),
                   ),
-                  customBorder: CircleBorder(),
-                  onTap: () => bloc.onToDoCheckBoxClicked(context, toDo),
-                ),
+                ],
               ),
-            ],
+              onTap: () => bloc.onToDoRecordItemClicked(toDoRecord),
+              onLongPress: () => bloc.onToDoRecordItemLongClicked(context, toDoRecord),
+            ),
           ),
-          onTap: () => bloc.onToDoRecordItemClicked(toDoRecord),
-          onLongPress: () => bloc.onToDoRecordItemLongClicked(context, toDoRecord),
         ),
         isLast ? _ToDoItemDivider() : const SizedBox.shrink(),
         isLast ? const SizedBox(height: 96) : const SizedBox.shrink(),

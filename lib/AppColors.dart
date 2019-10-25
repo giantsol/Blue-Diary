@@ -23,6 +23,7 @@ class AppColors {
   // same value as Colors.grey[50], which is the default of MaterialApp Theme's canvasColor
   static const BACKGROUND_WHITE = Color(0xFFFAFAFA);
   static const BACKGROUND_GREY = Color(0xFFD4D4D4);
+  static const BACKGROUND_GREY_LIGHT = Color(0xFFE5E5E5);
   static const BACKGROUND_GREY_DARK = Color(0xFFABABAB);
 
   static const DIVIDER = Color(0xFFEEEEEE);
