@@ -217,7 +217,7 @@ class VirtualKeyboard extends StatelessWidget {
     if (await Vibration.hasVibrator()) {
       Vibration.vibrate(
         duration: 50,
-        amplitude: 32,
+        amplitude: 64,
       );
     }
   }
