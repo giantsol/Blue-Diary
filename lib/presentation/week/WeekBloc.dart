@@ -38,6 +38,8 @@ class WeekBloc {
   }
 
   Future<void> _initState() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+
     final initialDate = _usecases.getToday();
     final dateInWeek = DateInWeek.fromDate(initialDate);
     final currentWeekRecord = await _usecases.getWeekRecord(initialDate);
