@@ -426,6 +426,7 @@ class _EmptyToDoListView extends StatelessWidget {
           bloc: bloc,
           dayMemo: dayMemo,
           focusNodeProvider: focusNodeProvider,
+          isInSelectionMode: false,
         ),
         Padding(
           padding: EdgeInsets.only(left: 36, top: 20),
@@ -457,11 +458,13 @@ class _DayMemo extends StatelessWidget {
   final DayBloc bloc;
   final DayMemo dayMemo;
   final FocusNode Function(String key) focusNodeProvider;
+  final bool isInSelectionMode;
 
   _DayMemo({
     @required this.bloc,
     @required this.dayMemo,
     @required this.focusNodeProvider,
+    @required this.isInSelectionMode,
   });
 
   @override
@@ -502,6 +505,7 @@ class _DayMemo extends StatelessWidget {
                   onChanged: (s) => bloc.onDayMemoTextChanged(dayMemo, s),
                   maxLines: null,
                   cursorColor: AppColors.TEXT_WHITE,
+                  enabled: !isInSelectionMode,
                 ),
               ),
             ) : const SizedBox.shrink(),
@@ -542,6 +546,7 @@ class _ToDoListView extends StatelessWidget {
             bloc: bloc,
             dayMemo: dayMemo,
             focusNodeProvider: focusNodeProvider,
+            isInSelectionMode: isSelectionMode,
           );
         } else if (index == 1) {
           return Padding(

@@ -238,6 +238,7 @@ class DayBloc {
       _state.add(_state.value.buildNew(
         viewState: DayViewState.SELECTION,
         selectedToDoKeys: [toDoRecord.toDo.key],
+        editorState: EditorState.HIDDEN,
       ));
     }
   }
