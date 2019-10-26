@@ -102,9 +102,9 @@ class _DayScreenState extends State<DayScreen> {
 
     final isSelectionMode = state.viewState == DayViewState.SELECTION;
 
-    return SafeArea(
-      child: Scaffold(
-        body: state.viewState == DayViewState.WHOLE_LOADING ? _WholeLoadingView()
+    return Scaffold(
+      body: SafeArea(
+        child: state.viewState == DayViewState.WHOLE_LOADING ? _WholeLoadingView()
           : WillPopScope(
           onWillPop: () async => !_bloc.handleBackPress() && !_unfocusTextFieldIfAny(),
           child: Stack(

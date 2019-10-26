@@ -34,14 +34,14 @@ class _LockScreenState extends State<LockScreen> {
 
   Widget _buildUI(LockState state) {
     final errorMsg = state.failCount > 0 ? '${AppLocalizations.of(context).confirmPasswordFail} (${state.failCount}/${LockState.MAX_FAIL_COUNT})' : '';
-    return WillPopScope(
-      onWillPop: () async {
-        SystemNavigator.pop();
-        return false;
-      },
-      child: SafeArea(
-        child: Scaffold(
-          body: Column(
+    return Scaffold(
+      body: WillPopScope(
+        onWillPop: () async {
+          SystemNavigator.pop();
+          return false;
+        },
+        child: SafeArea(
+          child: Column(
             children: <Widget>[
               Expanded(
                 child: Center(

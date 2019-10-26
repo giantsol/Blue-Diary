@@ -56,7 +56,7 @@ class App extends StatelessWidget {
         }
         return widget;
       },
-      home: HomeScreen(),
+      home: Scaffold(body: HomeScreen()),
       debugShowCheckedModeBanner: false,
     );
   }
