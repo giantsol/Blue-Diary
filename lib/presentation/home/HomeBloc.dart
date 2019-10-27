@@ -23,22 +23,27 @@ class HomeBloc {
   }
 
   Future<void> _initState(BuildContext context) async {
+    final useLockScreen = await _usecases.getUseLockScreen();
     final navigationItems = _usecases.getNavigationItems();
     final currentChildScreenKey = _usecases.getCurrentChildScreenKey();
-    _state.add(_state.value.buildNew(
-      childScreenItems: navigationItems,
-      currentChildScreenKey: currentChildScreenKey,
-    ));
 
-    final useLockScreen = await _usecases.getUseLockScreen();
     if (useLockScreen) {
-      Navigator.push(
+      await Navigator.push(
         context,
         SlideUpPageRoute(
           page: LockScreen(),
           duration: const Duration(milliseconds: 500),
         ),
       );
+      _state.add(_state.value.buildNew(
+        childScreenItems: navigationItems,
+        currentChildScreenKey: currentChildScreenKey,
+      ));
+    } else {
+      _state.add(_state.value.buildNew(
+        childScreenItems: navigationItems,
+        currentChildScreenKey: currentChildScreenKey,
+      ));
     }
   }
 

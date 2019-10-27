@@ -7,6 +7,7 @@ class AppPreferences {
   static const String KEY_USE_LOCK_SCREEN = 'default.lock';
   static const String KEY_RECOVERY_EMAIL = 'recovery.email';
   static const String KEY_USER_CHECKED_TO_DO_BEFORE = 'user.checked.to.do.before';
+  static const String KEY_SHOWN_WEEK_SCREEN_TUTORIAL = 'shown.week.screen.tutorial';
 
   Future<String> getUserPassword() async {
     return PrefService.getString(KEY_USER_PASSWORD) ?? '';
@@ -34,5 +35,9 @@ class AppPreferences {
 
   void setUserCheckedToDoBefore() {
     PrefService.setBool(KEY_USER_CHECKED_TO_DO_BEFORE, true);
+  }
+
+  Future<bool> hasShownWeekScreenTutorial() async {
+    return PrefService.getBool(KEY_SHOWN_WEEK_SCREEN_TUTORIAL) ?? false;
   }
 }

@@ -7,7 +7,7 @@ class HomeState {
 
   const HomeState({
     this.childScreenItems = const [],
-    this.currentChildScreenKey = HomeChildScreenItem.KEY_RECORD,
+    this.currentChildScreenKey = '',
   });
 
   HomeState buildNew({

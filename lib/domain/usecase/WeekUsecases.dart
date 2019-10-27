@@ -98,4 +98,8 @@ class WeekUsecases {
   Future<String> getUserPassword() async {
     return _prefsRepository.getUserPassword();
   }
+
+  Future<bool> hasShownWeekScreenTutorial() async {
+    return _prefsRepository.hasShownWeekScreenTutorial();
+  }
 }

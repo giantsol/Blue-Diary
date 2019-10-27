@@ -2,13 +2,15 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/Delegators.dart';
-import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
+import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
+import 'package:todo_app/domain/entity/ViewLayoutInfo.dart';
 import 'package:todo_app/domain/usecase/WeekUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/day/DayScreen.dart';
+import 'package:todo_app/presentation/week/WeekScreenTutorial.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
 
 class WeekBloc {
@@ -38,13 +40,12 @@ class WeekBloc {
   }
 
   Future<void> _initState() async {
-    await Future.delayed(const Duration(milliseconds: 300));
-
     final initialDate = _usecases.getToday();
     final dateInWeek = DateInWeek.fromDate(initialDate);
     final currentWeekRecord = await _usecases.getWeekRecord(initialDate);
     final prevWeekRecord = await _usecases.getWeekRecord(initialDate.subtract(_sevenDays));
     final nextWeekRecord = await _usecases.getWeekRecord(initialDate.add(_sevenDays));
+    final startTutorial = !(await _usecases.hasShownWeekScreenTutorial());
 
     _state.add(_state.value.buildNew(
       viewState: WeekViewState.NORMAL,
@@ -57,6 +58,8 @@ class WeekBloc {
       initialDate: initialDate,
       currentWeekRecordPageIndex: _state.value.initialWeekRecordPageIndex,
       currentDate: initialDate,
+
+      startTutorialEvent: startTutorial,
     ));
   }
 
@@ -123,6 +126,15 @@ class WeekBloc {
     _state.add(_state.value.buildNew(
       currentWeekRecordPageIndex: newPageIndex,
       animateToPageEvent: newPageIndex,
+    ));
+  }
+
+  void startTutorial(BuildContext context, ViewLayoutInfo memoPosition) {
+    Navigator.push(context, PageRouteBuilder(
+      opaque: false,
+      pageBuilder: (context, _, __) => WeekScreenTutorial(
+        memoViewInfo: memoPosition,
+      ),
     ));
   }
 

@@ -7,4 +7,5 @@ abstract class PrefsRepository {
   Future<String> getRecoveryEmail();
   Future<bool> getUserCheckedToDoBefore();
   void setUserCheckedToDoBefore();
+  Future<bool> hasShownWeekScreenTutorial();
 }

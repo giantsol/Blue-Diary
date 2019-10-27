@@ -41,4 +41,9 @@ class PrefsRepositoryImpl implements PrefsRepository {
   void setUserCheckedToDoBefore() {
     _prefs.setUserCheckedToDoBefore();
   }
+
+  @override
+  Future<bool> hasShownWeekScreenTutorial() {
+    return _prefs.hasShownWeekScreenTutorial();
+  }
 }

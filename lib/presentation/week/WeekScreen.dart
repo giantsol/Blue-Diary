@@ -9,6 +9,7 @@ import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
+import 'package:todo_app/domain/entity/ViewLayoutInfo.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/presentation/week/WeekBloc.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
@@ -34,6 +35,11 @@ class _WeekScreenState extends State<WeekScreen> {
   final Map<String, FocusNode> _focusNodes = {};
   ScrollController _scrollController;
   final GlobalKey<_HeaderShadowState> _headerShadowKey = GlobalKey();
+
+  // variables related with tutorial
+  bool _startedTutorial = false;
+  final GlobalKey _currentMemoKey = GlobalKey();
+  final GlobalKey _currentDayPreviewsKey = GlobalKey();
 
   @override
   void initState() {
@@ -87,6 +93,11 @@ class _WeekScreenState extends State<WeekScreen> {
       });
     }
 
+    if (state.startTutorialEvent && !_startedTutorial) {
+      _startedTutorial = true;
+      SchedulerBinding.instance.addPostFrameCallback(_lookForViewToStartTutorial);
+    }
+
     return state.viewState == WeekViewState.WHOLE_LOADING ? _WholeLoadingView()
       : WillPopScope(
       onWillPop: () async {
@@ -117,6 +128,8 @@ class _WeekScreenState extends State<WeekScreen> {
                         weekRecord: weekRecord,
                         focusNodeProvider: _getOrCreateFocusNode,
                         scrollController: _scrollController,
+                        memoKey: index == WeekScreen.INITIAL_WEEK_PAGE ? _currentMemoKey : null,
+                        dayPreviewsKey: index == WeekScreen.INITIAL_WEEK_PAGE ? _currentDayPreviewsKey : null,
                       );
                     }
                   },
@@ -136,6 +149,17 @@ class _WeekScreenState extends State<WeekScreen> {
         ]
       ),
     );
+  }
+
+  void _lookForViewToStartTutorial(Duration _) {
+    final RenderBox memoRenderBox = _currentMemoKey.currentContext?.findRenderObject();
+    if (memoRenderBox == null || memoRenderBox.debugNeedsLayout) {
+      SchedulerBinding.instance.addPostFrameCallback(_lookForViewToStartTutorial);
+      return;
+    }
+
+    final memoViewLayoutInfo = ViewLayoutInfo.create(memoRenderBox.size, memoRenderBox.localToGlobal(Offset.zero));
+    _bloc.startTutorial(context, memoViewLayoutInfo);
   }
 
   FocusNode _getOrCreateFocusNode(String key) {
@@ -239,12 +263,16 @@ class _WeekRecord extends StatelessWidget {
   final WeekRecord weekRecord;
   final FocusNode Function(String key) focusNodeProvider;
   final ScrollController scrollController;
+  final Key memoKey;
+  final Key dayPreviewsKey;
 
   _WeekRecord({
     @required this.bloc,
     @required this.weekRecord,
     @required this.focusNodeProvider,
     @required this.scrollController,
+    @required this.memoKey,
+    @required this.dayPreviewsKey,
   });
 
   @override
@@ -256,6 +284,7 @@ class _WeekRecord extends StatelessWidget {
       child: Column(
         children: [
           _CheckPointsBox(
+            key: memoKey,
             bloc: bloc,
             weekRecord: weekRecord,
             focusNodeProvider: focusNodeProvider,
@@ -284,10 +313,11 @@ class _CheckPointsBox extends StatelessWidget {
   final FocusNode Function(String key) focusNodeProvider;
 
   _CheckPointsBox({
+    Key key,
     @required this.bloc,
     @required this.weekRecord,
     @required this.focusNodeProvider,
-  });
+  }): super(key: key);
 
   @override
   Widget build(BuildContext context) {
