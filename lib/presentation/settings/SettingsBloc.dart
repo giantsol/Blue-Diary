@@ -44,7 +44,14 @@ class SettingsBloc {
 
     if (useLockScreen && userPassword.isEmpty) {
       _usecases.setUseLockScreen(false);
-      _showCreatePasswordDialog(context);
+      _showCreatePasswordDialog(context,
+        onCreated: () {
+          _usecases.setUseLockScreen(true);
+          if (_needUpdateListener != null) {
+            _needUpdateListener();
+          }
+        }
+      );
     } else if (!useLockScreen) {
       // set it to true forcefully instantly.
       // will set to false when user inputs password correctly
@@ -62,16 +69,20 @@ class SettingsBloc {
     }
   }
 
-  Future<void> _showCreatePasswordDialog(BuildContext context) async {
+  Future<void> _showCreatePasswordDialog(BuildContext context, {
+    void Function() onCreated,
+  }) async {
     return Utils.showAppDialog(context,
       AppLocalizations.of(context).createPassword,
       AppLocalizations.of(context).createPasswordBody,
       null,
-        () => _onCreatePasswordOkClicked(context),
+        () => _onCreatePasswordOkClicked(context, onCreated: onCreated),
     );
   }
 
-  Future<void> _onCreatePasswordOkClicked(BuildContext context) async {
+  Future<void> _onCreatePasswordOkClicked(BuildContext context, {
+    void Function() onCreated,
+  }) async {
     final successMsg = AppLocalizations.of(context).createPasswordSuccess;
     final failMsg = AppLocalizations.of(context).createPasswordFail;
 
@@ -80,6 +91,9 @@ class SettingsBloc {
         final isPasswordSaved = await _usecases.getUserPassword().then((s) => s.length > 0);
         if (isPasswordSaved) {
           delegator.showSnackBar(successMsg, _twoSeconds);
+          if (onCreated != null) {
+            onCreated();
+          }
         } else {
           delegator.showSnackBar(failMsg, _twoSeconds);
         }
