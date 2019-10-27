@@ -15,8 +15,9 @@ class LockBloc {
   final LockUsecases _usecases = dependencies.lockUsecases;
 
   Future<void> onVirtualKeyPressed(BuildContext context, VirtualKeyboardKey key) async {
+    final currentPassword = _state.value.password;
+
     if (key.type == VirtualKeyboardKeyType.BACKSPACE) {
-      final currentPassword = _state.value.password;
       if (currentPassword.length != 0) {
         final currentLength = currentPassword.length;
 
@@ -34,8 +35,8 @@ class LockBloc {
           animationName: animationName,
         ));
       }
-    } else {
-      final updatedPassword = '${_state.value.password}${key.text}';
+    } else if (currentPassword.length < 4) {
+      final updatedPassword = '$currentPassword${key.text}';
       final updatedLength = updatedPassword.length;
 
       var animationName;
@@ -55,6 +56,8 @@ class LockBloc {
       ));
 
       if (updatedLength == 4) {
+        await Future.delayed(const Duration(milliseconds: 300));
+
         final savedPassword = await _usecases.getUserPassword();
         if (updatedPassword == savedPassword) {
           Navigator.pop(context);
