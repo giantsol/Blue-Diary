@@ -37,6 +37,8 @@ dependencies:
 
   vibration: 1.2.2
 
+  flare_flutter: ^1.6.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

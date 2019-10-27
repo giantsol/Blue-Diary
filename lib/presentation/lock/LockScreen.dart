@@ -1,4 +1,6 @@
 
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:todo_app/AppColors.dart';
@@ -14,11 +16,13 @@ class LockScreen extends StatefulWidget {
 
 class _LockScreenState extends State<LockScreen> {
   LockBloc _bloc;
+  FlareControls _flareControls;
 
   @override
   void initState() {
     super.initState();
     _bloc = LockBloc();
+    _flareControls = FlareControls();
   }
 
   @override
@@ -33,6 +37,7 @@ class _LockScreenState extends State<LockScreen> {
   }
 
   Widget _buildUI(LockState state) {
+    _flareControls.play(state.animationName, mix: 0);
     final errorMsg = state.failCount > 0 ? '${AppLocalizations.of(context).confirmPasswordFail} (${state.failCount}/${LockState.MAX_FAIL_COUNT})' : '';
     return Scaffold(
       body: WillPopScope(
@@ -48,7 +53,14 @@ class _LockScreenState extends State<LockScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Image.asset('assets/ic_lock_logo.png'),
+                      SizedBox(
+                        width: 96,
+                        height: 96,
+                        child: FlareActor(
+                          'assets/lock_screen_logo.flr',
+                          controller: _flareControls,
+                        ),
+                      ),
                       SizedBox(height: 16,),
                       SizedBox(
                         height: 64,

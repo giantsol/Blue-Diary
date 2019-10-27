@@ -18,13 +18,43 @@ class LockBloc {
     if (key.type == VirtualKeyboardKeyType.BACKSPACE) {
       final currentPassword = _state.value.password;
       if (currentPassword.length != 0) {
+        final currentLength = currentPassword.length;
+
+        var animationName;
+        if (currentLength == 3) {
+          animationName = '3_to_2';
+        } else if (currentLength == 2) {
+          animationName = '2_to_1';
+        } else {
+          animationName = '1_to_0';
+        }
+
         _state.add(_state.value.buildNew(
           password: currentPassword.substring(0, currentPassword.length - 1),
+          animationName: animationName,
         ));
       }
     } else {
       final updatedPassword = '${_state.value.password}${key.text}';
-      if (updatedPassword.length == 4) {
+      final updatedLength = updatedPassword.length;
+
+      var animationName;
+      if (updatedLength == 1) {
+        animationName = '0_to_1';
+      } else if (updatedLength == 2) {
+        animationName = '1_to_2';
+      } else if (updatedLength == 3) {
+        animationName = '2_to_3';
+      } else {
+        animationName = '3_to_4';
+      }
+      
+      _state.add(_state.value.buildNew(
+        animationName: animationName,
+        password: updatedPassword,
+      ));
+
+      if (updatedLength == 4) {
         final savedPassword = await _usecases.getUserPassword();
         if (updatedPassword == savedPassword) {
           Navigator.pop(context);
@@ -36,11 +66,10 @@ class LockBloc {
             _state.add(_state.value.buildNew(
               password: '',
               failCount: updatedFailCount,
+              animationName: '4_to_0',
             ));
           }
         }
-      } else {
-        _state.add(_state.value.buildNew(password: updatedPassword));
       }
     }
   }
