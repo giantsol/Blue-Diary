@@ -6,11 +6,11 @@ import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
-import 'package:todo_app/domain/entity/ViewLayoutInfo.dart';
 import 'package:todo_app/domain/usecase/WeekUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/day/DayScreen.dart';
 import 'package:todo_app/presentation/week/WeekScreenTutorial.dart';
+import 'package:todo_app/presentation/week/WeekScreenViewFinders.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
 
 class WeekBloc {
@@ -129,11 +129,11 @@ class WeekBloc {
     ));
   }
 
-  void startTutorial(BuildContext context, ViewLayoutInfo memoPosition) {
+  void startTutorial(BuildContext context, WeekScreenViewFinders finders) {
     Navigator.push(context, PageRouteBuilder(
       opaque: false,
       pageBuilder: (context, _, __) => WeekScreenTutorial(
-        memoViewInfo: memoPosition,
+        weekScreenViewFinders: finders,
       ),
     ));
   }

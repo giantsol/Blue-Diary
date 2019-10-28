@@ -48,6 +48,10 @@ class AppLocalizations {
   static const DAY_MEMO_HINT = "dayMemoHint";
   static const FIRST_TO_DO_CHECK_TITLE = "firstToDoCheckTitle";
   static const FIRST_TO_DO_CHECK_BODY = "firstToDoCheckBody";
+  static const WEEK_TUTORIAL_HI = "weekTutorialHi";
+  static const WEEK_TUTORIAL_FIRST_TIME = "weekTutorialFirstTime";
+  static const WEEK_TUTORIAL_EXPLAIN = "weekTutorialExplain";
+  static const START = "start";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -100,6 +104,10 @@ class AppLocalizations {
       DAY_MEMO_HINT: 'Memo for today. Anything.',
       FIRST_TO_DO_CHECK_TITLE: 'Irreversible action',
       FIRST_TO_DO_CHECK_BODY: 'We treat completing task a very valuable action. Therefore, it\'s impossible to undo completing task unless deleting it.\n(This message is shown only once.)',
+      WEEK_TUTORIAL_HI: 'Hi,',
+      WEEK_TUTORIAL_FIRST_TIME: 'It must be your first time here.',
+      WEEK_TUTORIAL_EXPLAIN: 'Let me explain real quick.',
+      START: 'start',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -147,6 +155,10 @@ class AppLocalizations {
       DAY_MEMO_HINT: '오늘의 메모를 적어보세요.',
       FIRST_TO_DO_CHECK_TITLE: '취소 불가능한 행위',
       FIRST_TO_DO_CHECK_BODY: '저희는 작업을 완료하는 행위에 큰 의미를 두고자 합니다. 따라서 한 번 완료한 작업은 지우지 않는 한 취소할 수 없습니다.\n(이 메세지는 최초 한 번만 노출됩니다.)',
+      WEEK_TUTORIAL_HI: '안녕하세요!',
+      WEEK_TUTORIAL_FIRST_TIME: '이 화면을 처음 보시는군요.',
+      WEEK_TUTORIAL_EXPLAIN: '간단히 소개해드릴게요.',
+      START: '시작',
     },
   };
 
@@ -199,6 +211,10 @@ class AppLocalizations {
   String get dayMemoHint => _localizedValues[locale.languageCode][DAY_MEMO_HINT];
   String get firstToDoCheckTitle => _localizedValues[locale.languageCode][FIRST_TO_DO_CHECK_TITLE];
   String get firstToDoCheckBody => _localizedValues[locale.languageCode][FIRST_TO_DO_CHECK_BODY];
+  String get weekTutorialHi => _localizedValues[locale.languageCode][WEEK_TUTORIAL_HI];
+  String get weekTutorialFirstTime => _localizedValues[locale.languageCode][WEEK_TUTORIAL_FIRST_TIME];
+  String get weekTutorialExplain => _localizedValues[locale.languageCode][WEEK_TUTORIAL_EXPLAIN];
+  String get start => _localizedValues[locale.languageCode][START];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {

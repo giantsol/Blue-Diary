@@ -12,6 +12,7 @@ import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/ViewLayoutInfo.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/presentation/week/WeekBloc.dart';
+import 'package:todo_app/presentation/week/WeekScreenViewFinders.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
 import 'package:todo_app/presentation/widgets/AppTextField.dart';
 
@@ -29,17 +30,20 @@ class WeekScreen extends StatefulWidget {
   State createState() => _WeekScreenState();
 }
 
-class _WeekScreenState extends State<WeekScreen> {
+class _WeekScreenState extends State<WeekScreen> implements WeekScreenViewFinders {
   WeekBloc _bloc;
   PageController _pageController;
   final Map<String, FocusNode> _focusNodes = {};
   ScrollController _scrollController;
   final GlobalKey<_HeaderShadowState> _headerShadowKey = GlobalKey();
+  final GlobalKey _firstWeekRecordKey = GlobalKey();
 
   // variables related with tutorial
   bool _startedTutorial = false;
-  final GlobalKey _currentMemoKey = GlobalKey();
-  final GlobalKey _currentDayPreviewsKey = GlobalKey();
+  final GlobalKey _nextIconKey = GlobalKey();
+  final GlobalKey _prevIconKey = GlobalKey();
+  final GlobalKey _firstCheckPointsKey = GlobalKey();
+  final GlobalKey _todayPreviewKey = GlobalKey();
 
   @override
   void initState() {
@@ -47,6 +51,33 @@ class _WeekScreenState extends State<WeekScreen> {
     _bloc = WeekBloc(delegator: widget.weekBlocDelegator);
     _pageController = PageController(initialPage: _bloc.getInitialState().initialWeekRecordPageIndex);
     _scrollController = ScrollController();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToShowTodayPreview());
+  }
+
+  void _scrollToShowTodayPreview() {
+    final RenderBox weekRecordRenderBox = _firstWeekRecordKey.currentContext?.findRenderObject();
+    final RenderBox todayPreviewRenderBox = _todayPreviewKey.currentContext?.findRenderObject();
+    if (weekRecordRenderBox?.debugNeedsLayout != false
+      || todayPreviewRenderBox?.debugNeedsLayout != false
+      || !_scrollController.hasClients) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToShowTodayPreview());
+      return;
+    }
+
+    final weekRecordTop = weekRecordRenderBox.localToGlobal(Offset.zero).dy;
+    final weekRecordHeight = weekRecordRenderBox.size.height;
+    final todayPreviewTop = todayPreviewRenderBox.localToGlobal(Offset.zero).dy;
+    final todayPreviewHeight = todayPreviewRenderBox.size.height;
+    final currentScrollOffset = _scrollController.offset;
+    final targetScrollOffset = todayPreviewTop + todayPreviewHeight - weekRecordTop - weekRecordHeight - currentScrollOffset;
+    if (targetScrollOffset > 0) {
+      _scrollController.animateTo(
+        targetScrollOffset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.ease,
+      );
+    }
   }
 
   @override
@@ -95,7 +126,7 @@ class _WeekScreenState extends State<WeekScreen> {
 
     if (state.startTutorialEvent && !_startedTutorial) {
       _startedTutorial = true;
-      SchedulerBinding.instance.addPostFrameCallback(_lookForViewToStartTutorial);
+      SchedulerBinding.instance.addPostFrameCallback((_) => _checkViewsBuiltToStartTutorial());
     }
 
     return state.viewState == WeekViewState.WHOLE_LOADING ? _WholeLoadingView()
@@ -109,6 +140,8 @@ class _WeekScreenState extends State<WeekScreen> {
             bloc: _bloc,
             displayYear: state.year.toString(),
             displayMonthAndWeek: AppLocalizations.of(context).getMonthAndNthWeek(state.month, state.nthWeek),
+            nextIconKey: _nextIconKey,
+            prevIconKey: _prevIconKey,
           ),
           Expanded(
             child: Stack(
@@ -124,12 +157,13 @@ class _WeekScreenState extends State<WeekScreen> {
                       );
                     } else {
                       return _WeekRecord(
+                        key: index == WeekScreen.INITIAL_WEEK_PAGE ? _firstWeekRecordKey : null,
                         bloc: _bloc,
                         weekRecord: weekRecord,
                         focusNodeProvider: _getOrCreateFocusNode,
                         scrollController: _scrollController,
-                        memoKey: index == WeekScreen.INITIAL_WEEK_PAGE ? _currentMemoKey : null,
-                        dayPreviewsKey: index == WeekScreen.INITIAL_WEEK_PAGE ? _currentDayPreviewsKey : null,
+                        memoKey: index == WeekScreen.INITIAL_WEEK_PAGE ? _firstCheckPointsKey : null,
+                        todayPreviewKey: _todayPreviewKey,
                       );
                     }
                   },
@@ -151,15 +185,14 @@ class _WeekScreenState extends State<WeekScreen> {
     );
   }
 
-  void _lookForViewToStartTutorial(Duration _) {
-    final RenderBox memoRenderBox = _currentMemoKey.currentContext?.findRenderObject();
-    if (memoRenderBox == null || memoRenderBox.debugNeedsLayout) {
-      SchedulerBinding.instance.addPostFrameCallback(_lookForViewToStartTutorial);
+  void _checkViewsBuiltToStartTutorial() {
+    // check for one element. Simple checking.
+    if (_firstCheckPointsKey.currentContext?.findRenderObject()?.debugNeedsLayout != false) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => _checkViewsBuiltToStartTutorial());
       return;
     }
 
-    final memoViewLayoutInfo = ViewLayoutInfo.create(memoRenderBox.size, memoRenderBox.localToGlobal(Offset.zero));
-    _bloc.startTutorial(context, memoViewLayoutInfo);
+    _bloc.startTutorial(context, this);
   }
 
   FocusNode _getOrCreateFocusNode(String key) {
@@ -181,6 +214,38 @@ class _WeekScreenState extends State<WeekScreen> {
     }
     return false;
   }
+
+  @override
+  ViewLayoutInfo Function() getPrevIconFinder() {
+    return () {
+      final RenderBox box = _prevIconKey.currentContext.findRenderObject();
+      return ViewLayoutInfo.create(box);
+    };
+  }
+
+  @override
+  ViewLayoutInfo Function() getNextIconFinder() {
+    return () {
+      final RenderBox box = _nextIconKey.currentContext.findRenderObject();
+      return ViewLayoutInfo.create(box);
+    };
+  }
+
+  @override
+  ViewLayoutInfo Function() getCheckPointsFinder() {
+    return () {
+      final RenderBox box = _firstCheckPointsKey.currentContext.findRenderObject();
+      return ViewLayoutInfo.create(box);
+    };
+  }
+
+  @override
+  ViewLayoutInfo Function() getTodayPreviewFinder() {
+    return () {
+      final RenderBox box = _todayPreviewKey.currentContext.findRenderObject();
+      return ViewLayoutInfo.create(box);
+    };
+  }
 }
 
 class _WholeLoadingView extends StatelessWidget {
@@ -198,11 +263,15 @@ class _Header extends StatelessWidget {
   final WeekBloc bloc;
   final String displayYear;
   final String displayMonthAndWeek;
+  final Key nextIconKey;
+  final Key prevIconKey;
 
   _Header({
     @required this.bloc,
     @required this.displayYear,
     @required this.displayMonthAndWeek,
+    @required this.nextIconKey,
+    @required this.prevIconKey,
   });
 
   @override
@@ -211,6 +280,7 @@ class _Header extends StatelessWidget {
       children: <Widget>[
         SizedBox(width: 4,),
         InkWell(
+          key: prevIconKey,
           onTap: () => bloc.onPrevArrowClicked(),
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -248,6 +318,7 @@ class _Header extends StatelessWidget {
         InkWell(
           onTap: () => bloc.onNextArrowClicked(),
           child: Padding(
+            key: nextIconKey,
             padding: const EdgeInsets.all(20),
             child: Image.asset('assets/ic_next.png'),
           ),
@@ -264,16 +335,17 @@ class _WeekRecord extends StatelessWidget {
   final FocusNode Function(String key) focusNodeProvider;
   final ScrollController scrollController;
   final Key memoKey;
-  final Key dayPreviewsKey;
+  final Key todayPreviewKey;
 
   _WeekRecord({
+    Key key,
     @required this.bloc,
     @required this.weekRecord,
     @required this.focusNodeProvider,
     @required this.scrollController,
     @required this.memoKey,
-    @required this.dayPreviewsKey,
-  });
+    @required this.todayPreviewKey,
+  }): super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -293,10 +365,12 @@ class _WeekRecord extends StatelessWidget {
             padding: const EdgeInsets.only(top: 12,),
             child: Column(
               children: List.generate(dayPreviews.length, (index) {
+                final item = dayPreviews[index];
                 return _DayPreviewItem(
+                  key: item.isToday ? todayPreviewKey : null,
                   bloc: bloc,
                   weekRecord: weekRecord,
-                  dayPreview: dayPreviews[index]
+                  dayPreview: item,
                 );
               })
             ),
@@ -430,10 +504,11 @@ class _DayPreviewItem extends StatelessWidget {
   final DayPreview dayPreview;
 
   _DayPreviewItem({
+    Key key,
     @required this.bloc,
     @required this.weekRecord,
     @required this.dayPreview,
-  });
+  }): super(key: key);
 
   @override
   Widget build(BuildContext context) {

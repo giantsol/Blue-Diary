@@ -32,6 +32,7 @@ class AppColors {
   static const RIPPLE = Color(0x1C000000);
 
   static const SCRIM = Color(0x7F000000);
+  static const SCRIM_TUTORIAL = Color(0xBF000000);
 
   static const CATEGORY_COLOR_01 = Color(0xFFB29DD9);
   static const CATEGORY_COLOR_02 = Color(0xFFFE6B64);

@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 
 class ViewLayoutInfo {
-  static ViewLayoutInfo create(Size size, Offset position) {
+  static ViewLayoutInfo create(RenderBox renderBox) {
+    final position = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
     return ViewLayoutInfo(
       left: position.dx,
       top: position.dy,
