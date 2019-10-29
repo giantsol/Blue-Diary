@@ -9,6 +9,9 @@ import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/ViewLayoutInfo.dart';
 import 'package:todo_app/presentation/day/DayScreenTutorialCallback.dart';
 
+// Not using bloc pattern here since it's just a tutorial screen..
+// Quite complex though :(
+
 class DayScreenTutorial extends StatefulWidget {
   final DayScreenTutorialCallback dayScreenTutorialCallback;
 
