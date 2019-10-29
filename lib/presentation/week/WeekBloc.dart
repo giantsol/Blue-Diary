@@ -130,6 +130,9 @@ class WeekBloc {
   }
 
   void startTutorial(BuildContext context, WeekScreenViewFinders finders) {
+    // just rebuild to clear startTutorialEvent flag
+    _state.add(_state.value.buildNew());
+
     Navigator.push(context, PageRouteBuilder(
       opaque: false,
       pageBuilder: (context, _, __) => WeekScreenTutorial(

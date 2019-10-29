@@ -39,9 +39,7 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenViewFinder
   final GlobalKey _firstWeekRecordKey = GlobalKey();
 
   // variables related with tutorial
-  bool _startedTutorial = false;
-  final GlobalKey _nextIconKey = GlobalKey();
-  final GlobalKey _prevIconKey = GlobalKey();
+  final GlobalKey _headerKey = GlobalKey();
   final GlobalKey _firstCheckPointsKey = GlobalKey();
   final GlobalKey _todayPreviewKey = GlobalKey();
 
@@ -124,8 +122,7 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenViewFinder
       });
     }
 
-    if (state.startTutorialEvent && !_startedTutorial) {
-      _startedTutorial = true;
+    if (state.startTutorialEvent) {
       SchedulerBinding.instance.addPostFrameCallback((_) => _checkViewsBuiltToStartTutorial());
     }
 
@@ -137,11 +134,10 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenViewFinder
       child: Column(
         children: [
           _Header(
+            key: _headerKey,
             bloc: _bloc,
             displayYear: state.year.toString(),
             displayMonthAndWeek: AppLocalizations.of(context).getMonthAndNthWeek(state.month, state.nthWeek),
-            nextIconKey: _nextIconKey,
-            prevIconKey: _prevIconKey,
           ),
           Expanded(
             child: Stack(
@@ -216,17 +212,9 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenViewFinder
   }
 
   @override
-  ViewLayoutInfo Function() getPrevIconFinder() {
+  ViewLayoutInfo Function() getHeaderFinder() {
     return () {
-      final RenderBox box = _prevIconKey.currentContext.findRenderObject();
-      return ViewLayoutInfo.create(box);
-    };
-  }
-
-  @override
-  ViewLayoutInfo Function() getNextIconFinder() {
-    return () {
-      final RenderBox box = _nextIconKey.currentContext.findRenderObject();
+      final RenderBox box = _headerKey.currentContext.findRenderObject();
       return ViewLayoutInfo.create(box);
     };
   }
@@ -263,16 +251,13 @@ class _Header extends StatelessWidget {
   final WeekBloc bloc;
   final String displayYear;
   final String displayMonthAndWeek;
-  final Key nextIconKey;
-  final Key prevIconKey;
 
   _Header({
+    Key key,
     @required this.bloc,
     @required this.displayYear,
     @required this.displayMonthAndWeek,
-    @required this.nextIconKey,
-    @required this.prevIconKey,
-  });
+  }): super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -280,7 +265,6 @@ class _Header extends StatelessWidget {
       children: <Widget>[
         SizedBox(width: 4,),
         InkWell(
-          key: prevIconKey,
           onTap: () => bloc.onPrevArrowClicked(),
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -318,7 +302,6 @@ class _Header extends StatelessWidget {
         InkWell(
           onTap: () => bloc.onNextArrowClicked(),
           child: Padding(
-            key: nextIconKey,
             padding: const EdgeInsets.all(20),
             child: Image.asset('assets/ic_next.png'),
           ),
@@ -356,10 +339,10 @@ class _WeekRecord extends StatelessWidget {
       child: Column(
         children: [
           _CheckPointsBox(
-            key: memoKey,
             bloc: bloc,
             weekRecord: weekRecord,
             focusNodeProvider: focusNodeProvider,
+            memoKey: memoKey,
           ),
           Padding(
             padding: const EdgeInsets.only(top: 12,),
@@ -385,13 +368,14 @@ class _CheckPointsBox extends StatelessWidget {
   final WeekBloc bloc;
   final WeekRecord weekRecord;
   final FocusNode Function(String key) focusNodeProvider;
+  final Key memoKey;
 
   _CheckPointsBox({
-    Key key,
     @required this.bloc,
     @required this.weekRecord,
     @required this.focusNodeProvider,
-  }): super(key: key);
+    @required this.memoKey,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -400,6 +384,7 @@ class _CheckPointsBox extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 24, top: 12, right: 24),
       child: Container(
+        key: memoKey,
         decoration: BoxDecoration(
           color: AppColors.PRIMARY,
           borderRadius: BorderRadius.all(Radius.circular(6)),

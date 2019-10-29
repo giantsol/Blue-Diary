@@ -3,6 +3,8 @@ import 'dart:math';
 
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/ViewLayoutInfo.dart';
@@ -27,8 +29,11 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
 
   AnimationController _firstPhaseController;
   AnimationController _secondPhaseController;
+  AnimationController _thirdPhaseController;
 
   _FirstPhase _firstPhase;
+  _SecondPhase _secondPhase;
+  _ThirdPhase _thirdPhase;
 
   int _currentPhase = -1;
 
@@ -45,21 +50,26 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
 
     _introEnterController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 4000),
+      duration: const Duration(milliseconds: 2000),
     );
     _introExitController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 300),
     );
 
     _firstPhaseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 300),
     );
 
     _secondPhaseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 300),
+    );
+
+    _thirdPhaseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
     );
   }
 
@@ -72,8 +82,6 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
 
   @override
   void dispose() {
-    super.dispose();
-
     _tutorialFadeInController.dispose();
 
     _introEnterController.dispose();
@@ -81,6 +89,9 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
 
     _firstPhaseController.dispose();
     _secondPhaseController.dispose();
+    _thirdPhaseController.dispose();
+
+    super.dispose();
   }
 
   void _updatePhase(int phase) {
@@ -92,48 +103,67 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
         _secondPhaseController.reverse();
         _firstPhaseController.forward();
       }
-      _firstPhaseController.addStatusListener(_firstPhaseStatusListener);
+    } else if (phase == 1) {
+      if (_currentPhase == 0) {
+        _firstPhaseController.reverse();
+        _secondPhaseController.forward();
+      } else {
+        _thirdPhaseController.reverse();
+        _secondPhaseController.forward();
+      }
+    } else if (phase == 2) {
+      _secondPhaseController.reverse();
+      _thirdPhaseController.forward();
+    } else {
+      Navigator.pop(context);
+      return;
     }
-  }
 
-  void _firstPhaseStatusListener(AnimationStatus status) {
-    if (status == AnimationStatus.completed) {
-      _firstPhaseController.removeStatusListener(_firstPhaseStatusListener);
-      // set state after animation has finished for more fluent UI
-      setState(() {
-        _currentPhase = 0;
-      });
-    }
+    setState(() {
+      _currentPhase = phase;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     _firstPhase = _FirstPhase(
       controller: _firstPhaseController,
-      prevIconFinder: widget.weekScreenViewFinders.getPrevIconFinder(),
-      nextIconFinder: widget.weekScreenViewFinders.getNextIconFinder(),
-      onNextClicked: () => _updatePhase(1),
+      headerFinder: widget.weekScreenViewFinders.getHeaderFinder(),
+    );
+
+    _secondPhase = _SecondPhase(
+      controller: _secondPhaseController,
+      checkPointsFinder: widget.weekScreenViewFinders.getCheckPointsFinder(),
+    );
+
+    _thirdPhase = _ThirdPhase(
+      controller: _thirdPhaseController,
+      todayPreviewFinder: widget.weekScreenViewFinders.getTodayPreviewFinder(),
     );
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: FadeTransition(
-        opacity: Tween<double>(
-          begin: 0.0,
-          end: 1.0,
-        ).animate(CurvedAnimation(
-          parent: _tutorialFadeInController,
-          curve: Curves.ease,
-        )),
-        child: ClipPath(
-          clipper: _getClipper(),
-          child: Container(
-            color: AppColors.SCRIM_TUTORIAL,
-            child: Stack(
-              children: <Widget>[
-                FadeTransition(
-                  opacity: Tween<double>(begin: 0, end: 1).animate(_secondPhaseController),
-                  child: Align(
+      body: WillPopScope(
+        onWillPop: () async {
+          SystemNavigator.pop();
+          return false;
+        },
+        child: FadeTransition(
+          opacity: Tween<double>(
+            begin: 0.0,
+            end: 1.0,
+          ).animate(CurvedAnimation(
+            parent: _tutorialFadeInController,
+            curve: Curves.ease,
+          )),
+          child: ClipPath(
+            clipper: _getClipper(),
+            child: Container(
+              color: AppColors.SCRIM_TUTORIAL,
+              child: Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  _currentPhase >= 1 ? Align(
                     alignment: Alignment.bottomLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 12),
@@ -152,11 +182,8 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
                         ),
                       ),
                     ),
-                  ),
-                ),
-                FadeTransition(
-                  opacity: Tween<double>(begin: 0, end: 1).animate(_firstPhaseController),
-                  child: Align(
+                  ): const SizedBox.shrink(),
+                  _currentPhase >= 0 ? Align(
                     alignment: Alignment.bottomCenter,
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 30),
@@ -164,39 +191,44 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
                         currentPhase: _currentPhase,
                       ),
                     ),
-                  ),
-                ),
-                FadeTransition(
-                  opacity: Tween<double>(begin: 0, end: 1).animate(_firstPhaseController),
-                  child: Align(
+                  ): const SizedBox.shrink(),
+                  Align(
                     alignment: Alignment.bottomRight,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: _onNextClicked,
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Text(
-                            AppLocalizations.of(context).next,
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
+                    child: FadeTransition(
+                      opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+                        parent: _introEnterController,
+                        curve: Interval(0.9, 1.0),
+                      )),
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.translucent,
+                          onTap: _onNextClicked,
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Text(
+                              _currentPhase == -1 ? AppLocalizations.of(context).start
+                                : _currentPhase < 2 ? AppLocalizations.of(context).next
+                                : AppLocalizations.of(context).done,
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                _Intro(
-                  enterController: _introEnterController,
-                  exitController: _introExitController,
-                  onStartClicked: () => _updatePhase(0),
-                ),
-                _firstPhase,
-
-              ],
+                  _Intro(
+                    enterController: _introEnterController,
+                    exitController: _introExitController,
+                  ),
+                  _firstPhase,
+                  _secondPhase,
+                  _thirdPhase,
+                ],
+              ),
             ),
           ),
         ),
@@ -207,118 +239,116 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
   CustomClipper _getClipper() {
     if (_currentPhase == 0) {
       return _firstPhase.clipper;
+    } else if (_currentPhase == 1) {
+      return _secondPhase.clipper;
+    } else if (_currentPhase == 2) {
+      return _thirdPhase.clipper;
     } else {
       return null;
     }
   }
 
   void _onPrevClicked() {
-
+    _updatePhase(_currentPhase - 1);
   }
 
   void _onNextClicked() {
-
+    _updatePhase(_currentPhase + 1);
   }
 }
 
 class _Intro extends StatelessWidget {
   final AnimationController enterController;
   final AnimationController exitController;
-  final void Function() onStartClicked;
 
   _Intro({
     @required this.enterController,
     @required this.exitController,
-    @required this.onStartClicked,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        FadeTransition(
-          opacity: Tween<double>(begin: 1, end: 0).animate(exitController),
-          child: SlideTransition(
-            position: Tween<Offset>(begin: Offset(0, 0), end: Offset(0, 0.2)).animate(exitController),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                FadeTransition(
-                  opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-                    parent: enterController,
-                    curve: Interval(0, 0.1, curve: Curves.ease),
-                  )),
-                  child: Center(
-                    child: Text(
-                      AppLocalizations.of(context).weekTutorialHi,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-                FadeTransition(
-                  opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-                    parent: enterController,
-                    curve: Interval(0.3, 0.4, curve: Curves.ease),
-                  )),
-                  child: Center(
-                    child: Text(
-                      AppLocalizations.of(context).weekTutorialFirstTime,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-                FadeTransition(
-                  opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-                    parent: enterController,
-                    curve: Interval(0.6, 0.7, curve: Curves.ease),
-                  )),
-                  child: Center(
-                    child: Text(
-                      AppLocalizations.of(context).weekTutorialExplain,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        FadeTransition(
-          opacity: Tween<double>(begin: 1, end: 0).animate(exitController),
-          child: FadeTransition(
-            opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-              parent: enterController,
-              curve: Interval(0.9, 1.0, curve: Curves.ease),
-            )),
-            child: Align(
-              alignment: Alignment.bottomRight,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: onStartClicked,
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(
-                      AppLocalizations.of(context).start,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                      ),
-                    ),
+    return FadeTransition(
+      opacity: Tween<double>(begin: 1, end: 0).animate(exitController),
+      child: SlideTransition(
+        position: Tween<Offset>(begin: Offset(0, 0), end: Offset(0, 0.1)).animate(exitController),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            FadeTransition(
+              opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+                parent: enterController,
+                curve: Interval(0, 0.15, curve: Curves.ease),
+              )),
+              child: Center(
+                child: Text(
+                  AppLocalizations.of(context).weekTutorialHi,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
                   ),
                 ),
               ),
             ),
+            FadeTransition(
+              opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+                parent: enterController,
+                curve: Interval(0.5, 0.65, curve: Curves.ease),
+              )),
+              child: Center(
+                child: Text(
+                  AppLocalizations.of(context).weekTutorialExplain,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Dots extends StatelessWidget {
+  final int currentPhase;
+
+  _Dots({
+    @required this.currentPhase,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: currentPhase == 0 ? Colors.white : AppColors.TUTORIAL_PROGRESS_INACTIVE,
+          ),
+        ),
+        SizedBox(width: 8,),
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: currentPhase == 1 ? Colors.white : AppColors.TUTORIAL_PROGRESS_INACTIVE,
+          ),
+        ),
+        SizedBox(width: 8,),
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: currentPhase == 2 ? Colors.white : AppColors.TUTORIAL_PROGRESS_INACTIVE,
           ),
         ),
       ],
@@ -328,31 +358,25 @@ class _Intro extends StatelessWidget {
 
 class _FirstPhase extends StatelessWidget {
   final AnimationController controller;
-  final ViewLayoutInfo Function() prevIconFinder;
-  final ViewLayoutInfo Function() nextIconFinder;
-  final void Function() onNextClicked;
+  final ViewLayoutInfo Function() headerFinder;
   final _FirstPhaseClipper clipper;
 
   _FirstPhase({
-    Key key,
     @required this.controller,
-    @required this.prevIconFinder,
-    @required this.nextIconFinder,
-    @required this.onNextClicked,
+    @required this.headerFinder,
   }): clipper = _FirstPhaseClipper(
-    prevIconFinder: prevIconFinder,
-    nextIconFinder: nextIconFinder,
-  ), super(key: key);
+    headerFinder: headerFinder,
+  );
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        FadeTransition(
-          opacity: Tween<double>(begin: 0, end: 1).animate(controller),
-          child: SlideTransition(
-            position: Tween<Offset>(begin: Offset(0, 0.2), end: Offset(0, 0)).animate(controller),
-            child: Center(
+        Center(
+          child: FadeTransition(
+            opacity: Tween<double>(begin: 0, end: 1).animate(controller),
+            child: SlideTransition(
+              position: Tween<Offset>(begin: Offset(0, 0.1), end: Offset(0, 0)).animate(controller),
               child: Text(
                 AppLocalizations.of(context).weekTutorialClickOrSwipe,
                 style: TextStyle(
@@ -407,21 +431,17 @@ class _FirstPhase extends StatelessWidget {
 }
 
 class _FirstPhaseClipper extends CustomClipper<Path> {
-  final ViewLayoutInfo Function() prevIconFinder;
-  final ViewLayoutInfo Function() nextIconFinder;
+  final ViewLayoutInfo Function() headerFinder;
 
   _FirstPhaseClipper({
-    @required this.prevIconFinder,
-    @required this.nextIconFinder,
+    @required this.headerFinder,
   });
 
   @override
   Path getClip(Size size) {
-    final prevIcon = prevIconFinder();
-    final nextIcon = nextIconFinder();
+    final header = headerFinder();
     final path = Path()
-      ..addOval(Rect.fromLTWH(prevIcon.left, prevIcon.top, prevIcon.width, prevIcon.height))
-      ..addOval(Rect.fromLTWH(nextIcon.left, nextIcon.top, nextIcon.width, nextIcon.height))
+      ..addRect(Rect.fromLTWH(header.left, header.top, header.width, header.height))
       ..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
     path.fillType = PathFillType.evenOdd;
     return path;
@@ -431,45 +451,137 @@ class _FirstPhaseClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper<Path> oldClipper) => true;
 }
 
-class _Dots extends StatelessWidget {
-  final int currentPhase;
+class _SecondPhase extends StatelessWidget {
+  final AnimationController controller;
+  final ViewLayoutInfo Function() checkPointsFinder;
+  final _SecondPhaseClipper clipper;
 
-  _Dots({
-    @required this.currentPhase,
-  });
+  _SecondPhase({
+    @required this.controller,
+    @required this.checkPointsFinder,
+  }): clipper = _SecondPhaseClipper(
+    checkPointsFinder: checkPointsFinder,
+  );
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Container(
-          width: 6,
-          height: 6,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: currentPhase == 0 ? Colors.white : AppColors.TUTORIAL_PROGRESS_INACTIVE,
+    final checkPoints = checkPointsFinder();
+    final checkPointsBottom = checkPoints.top + checkPoints.height;
+    return Positioned(
+      top: checkPointsBottom + 8,
+      child: FadeTransition(
+        opacity: Tween<double>(begin: 0, end: 1).animate(controller),
+        child: SlideTransition(
+          position: Tween<Offset>(begin: Offset(0, 0.1), end: Offset(0, 0)).animate(controller),
+          child: Text(
+            AppLocalizations.of(context).weekTutorialCheckPoints,
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white,
+            ),
+            textAlign: TextAlign.center,
           ),
         ),
-        SizedBox(width: 8,),
-        Container(
-          width: 6,
-          height: 6,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: currentPhase == 1 ? Colors.white : AppColors.TUTORIAL_PROGRESS_INACTIVE,
-          ),
-        ),
-        SizedBox(width: 8,),
-        Container(
-          width: 6,
-          height: 6,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: currentPhase == 2 ? Colors.white : AppColors.TUTORIAL_PROGRESS_INACTIVE,
-          ),
-        ),
-      ],
+      ),
     );
   }
+}
+
+class _SecondPhaseClipper extends CustomClipper<Path> {
+  final ViewLayoutInfo Function() checkPointsFinder;
+
+  _SecondPhaseClipper({
+    @required this.checkPointsFinder,
+  });
+
+  @override
+  Path getClip(Size size) {
+    final checkPoints = checkPointsFinder();
+    final path = Path()
+      ..addRRect(RRect.fromRectAndRadius(
+        Rect.fromLTWH(checkPoints.left, checkPoints.top, checkPoints.width, checkPoints.height),
+        const Radius.circular(6)),
+      )
+      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+    path.fillType = PathFillType.evenOdd;
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => true;
+}
+
+class _ThirdPhase extends StatefulWidget {
+  final AnimationController controller;
+  final ViewLayoutInfo Function() todayPreviewFinder;
+  final _ThirdPhaseClipper clipper;
+
+  _ThirdPhase({
+    @required this.controller,
+    @required this.todayPreviewFinder,
+  }): clipper = _ThirdPhaseClipper(
+    todayPreviewFinder: todayPreviewFinder,
+  );
+
+  @override
+  State createState() => _ThirdPhaseState();
+}
+
+class _ThirdPhaseState extends State<_ThirdPhase> {
+  double _myHeight = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    SchedulerBinding.instance.addPostFrameCallback(_updateMyHeight);
+
+    final todayPreview = widget.todayPreviewFinder();
+    return Positioned(
+      top: todayPreview.top - _myHeight - 8,
+      child: FadeTransition(
+        opacity: Tween<double>(begin: 0, end: 1).animate(widget.controller),
+        child: SlideTransition(
+          position: Tween<Offset>(begin: Offset(0, 0.1), end: Offset(0, 0))
+            .animate(widget.controller),
+          child: Text(
+            AppLocalizations.of(context).weekTutorialDayPreview,
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _updateMyHeight(Duration _) {
+    final measuredHeight = context.size?.height ?? 0;
+    if (_myHeight != measuredHeight) {
+      setState(() {
+        _myHeight = measuredHeight;
+      });
+    }
+  }
+}
+
+class _ThirdPhaseClipper extends CustomClipper<Path> {
+  final ViewLayoutInfo Function() todayPreviewFinder;
+
+  _ThirdPhaseClipper({
+    @required this.todayPreviewFinder,
+  });
+
+  @override
+  Path getClip(Size size) {
+    final todayPreview = todayPreviewFinder();
+    final path = Path()
+      ..addRect(Rect.fromLTWH(todayPreview.left, todayPreview.top, todayPreview.width, todayPreview.height))
+      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+    path.fillType = PathFillType.evenOdd;
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => true;
 }

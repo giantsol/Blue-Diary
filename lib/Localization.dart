@@ -49,12 +49,14 @@ class AppLocalizations {
   static const FIRST_TO_DO_CHECK_TITLE = "firstToDoCheckTitle";
   static const FIRST_TO_DO_CHECK_BODY = "firstToDoCheckBody";
   static const WEEK_TUTORIAL_HI = "weekTutorialHi";
-  static const WEEK_TUTORIAL_FIRST_TIME = "weekTutorialFirstTime";
   static const WEEK_TUTORIAL_EXPLAIN = "weekTutorialExplain";
-  static const START = "start";
   static const WEEK_TUTORIAL_CLICK_OR_SWIPE = "weekTutorialClickOrSwipe";
   static const PREV = "prev";
   static const NEXT = "next";
+  static const START = "start";
+  static const DONE = "done";
+  static const WEEK_TUTORIAL_CHECK_POINTS = "weekTutorialCheckPoints";
+  static const WEEK_TUTORIAL_DAY_PREVIEW = "weekTutorialDayPreview";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -107,13 +109,15 @@ class AppLocalizations {
       DAY_MEMO_HINT: 'Memo for today. Anything.',
       FIRST_TO_DO_CHECK_TITLE: 'Irreversible action',
       FIRST_TO_DO_CHECK_BODY: 'We treat completing task a very valuable action. Therefore, it\'s impossible to undo completing task unless deleting it.\n(This message is shown only once.)',
-      WEEK_TUTORIAL_HI: 'Hi,',
-      WEEK_TUTORIAL_FIRST_TIME: 'It must be your first time here.',
-      WEEK_TUTORIAL_EXPLAIN: 'Let me explain real quick.',
-      START: 'Start',
-      WEEK_TUTORIAL_CLICK_OR_SWIPE: 'Click or swipe\nto change week.',
+      WEEK_TUTORIAL_HI: 'Welcome!',
+      WEEK_TUTORIAL_EXPLAIN: 'A little tutorial for you ‘◡’',
+      WEEK_TUTORIAL_CLICK_OR_SWIPE: 'Swipe the screen\nto change week.',
       PREV: 'Prev',
       NEXT: 'Next',
+      START: 'Start',
+      DONE: 'Done',
+      WEEK_TUTORIAL_CHECK_POINTS: 'Write and focus on your\nthree most important points.',
+      WEEK_TUTORIAL_DAY_PREVIEW: 'Click and start writing for today!\nWish you a great day :)'
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -161,13 +165,15 @@ class AppLocalizations {
       DAY_MEMO_HINT: '오늘의 메모를 적어보세요.',
       FIRST_TO_DO_CHECK_TITLE: '취소 불가능한 행위',
       FIRST_TO_DO_CHECK_BODY: '저희는 작업을 완료하는 행위에 큰 의미를 두고자 합니다. 따라서 한 번 완료한 작업은 지우지 않는 한 취소할 수 없습니다.\n(이 메세지는 최초 한 번만 노출됩니다.)',
-      WEEK_TUTORIAL_HI: '안녕하세요!',
-      WEEK_TUTORIAL_FIRST_TIME: '이 화면을 처음 보시는군요.',
-      WEEK_TUTORIAL_EXPLAIN: '간단히 소개해드릴게요.',
-      START: '시작',
-      WEEK_TUTORIAL_CLICK_OR_SWIPE: '클릭 또는 스와이프로\n주를 변경하세요.',
+      WEEK_TUTORIAL_HI: '반갑습니다!',
+      WEEK_TUTORIAL_EXPLAIN: '간략한 설명을 준비해보았어요 ‘◡’',
+      WEEK_TUTORIAL_CLICK_OR_SWIPE: '화면을 스와이프하여\n이전, 다음 주로 이동할 수 있습니다.',
       PREV: '이전',
       NEXT: '다음',
+      START: '시작',
+      DONE: '완료',
+      WEEK_TUTORIAL_CHECK_POINTS: '이번 주의 가장 중요한\n세 가지 포인트를 적어보세요.',
+      WEEK_TUTORIAL_DAY_PREVIEW: '오늘부터 시작하세요!\n좋은 하루가 되길 바랍니다 :)'
     },
   };
 
@@ -221,12 +227,14 @@ class AppLocalizations {
   String get firstToDoCheckTitle => _localizedValues[locale.languageCode][FIRST_TO_DO_CHECK_TITLE];
   String get firstToDoCheckBody => _localizedValues[locale.languageCode][FIRST_TO_DO_CHECK_BODY];
   String get weekTutorialHi => _localizedValues[locale.languageCode][WEEK_TUTORIAL_HI];
-  String get weekTutorialFirstTime => _localizedValues[locale.languageCode][WEEK_TUTORIAL_FIRST_TIME];
   String get weekTutorialExplain => _localizedValues[locale.languageCode][WEEK_TUTORIAL_EXPLAIN];
-  String get start => _localizedValues[locale.languageCode][START];
   String get weekTutorialClickOrSwipe => _localizedValues[locale.languageCode][WEEK_TUTORIAL_CLICK_OR_SWIPE];
   String get prev => _localizedValues[locale.languageCode][PREV];
   String get next => _localizedValues[locale.languageCode][NEXT];
+  String get start => _localizedValues[locale.languageCode][START];
+  String get done => _localizedValues[locale.languageCode][DONE];
+  String get weekTutorialCheckPoints => _localizedValues[locale.languageCode][WEEK_TUTORIAL_CHECK_POINTS];
+  String get weekTutorialDayPreview => _localizedValues[locale.languageCode][WEEK_TUTORIAL_DAY_PREVIEW];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {
