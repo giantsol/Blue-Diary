@@ -1,4 +1,7 @@
 
+import 'dart:math';
+
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
@@ -18,7 +21,10 @@ class WeekScreenTutorial extends StatefulWidget {
 
 class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProviderStateMixin {
   AnimationController _tutorialFadeInController;
-  AnimationController _introController;
+
+  AnimationController _introEnterController;
+  AnimationController _introExitController;
+
   AnimationController _firstPhaseController;
   AnimationController _secondPhaseController;
 
@@ -37,15 +43,18 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
     _tutorialFadeInController.forward();
     _tutorialFadeInController.addStatusListener(_tutorialFadeInListener);
 
-    _introController = AnimationController(
+    _introEnterController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 4000),
     );
-    _introController.reverseDuration = const Duration(milliseconds: 500);
+    _introExitController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
 
     _firstPhaseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 2000),
     );
 
     _secondPhaseController = AnimationController(
@@ -57,7 +66,7 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
   void _tutorialFadeInListener(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
       _tutorialFadeInController.removeStatusListener(_tutorialFadeInListener);
-      _introController.forward();
+      _introEnterController.forward();
     }
   }
 
@@ -66,7 +75,10 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
     super.dispose();
 
     _tutorialFadeInController.dispose();
-    _introController.dispose();
+
+    _introEnterController.dispose();
+    _introExitController.dispose();
+
     _firstPhaseController.dispose();
     _secondPhaseController.dispose();
   }
@@ -74,17 +86,24 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
   void _updatePhase(int phase) {
     if (phase == 0) {
       if (_currentPhase == -1) {
-        _introController.reverse();
+        _introExitController.forward();
         _firstPhaseController.forward();
       } else {
         _secondPhaseController.reverse();
         _firstPhaseController.forward();
       }
+      _firstPhaseController.addStatusListener(_firstPhaseStatusListener);
     }
+  }
 
-    setState(() {
-      _currentPhase = phase;
-    });
+  void _firstPhaseStatusListener(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      _firstPhaseController.removeStatusListener(_firstPhaseStatusListener);
+      // set state after animation has finished for more fluent UI
+      setState(() {
+        _currentPhase = 0;
+      });
+    }
   }
 
   @override
@@ -112,11 +131,71 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
             color: AppColors.SCRIM_TUTORIAL,
             child: Stack(
               children: <Widget>[
+                FadeTransition(
+                  opacity: Tween<double>(begin: 0, end: 1).animate(_secondPhaseController),
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: _onPrevClicked,
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Text(
+                            AppLocalizations.of(context).prev,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                FadeTransition(
+                  opacity: Tween<double>(begin: 0, end: 1).animate(_firstPhaseController),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 30),
+                      child: _Dots(
+                        currentPhase: _currentPhase,
+                      ),
+                    ),
+                  ),
+                ),
+                FadeTransition(
+                  opacity: Tween<double>(begin: 0, end: 1).animate(_firstPhaseController),
+                  child: Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: _onNextClicked,
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Text(
+                            AppLocalizations.of(context).next,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 _Intro(
-                  controller: _introController,
+                  enterController: _introEnterController,
+                  exitController: _introExitController,
                   onStartClicked: () => _updatePhase(0),
                 ),
                 _firstPhase,
+
               ],
             ),
           ),
@@ -132,14 +211,24 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
       return null;
     }
   }
+
+  void _onPrevClicked() {
+
+  }
+
+  void _onNextClicked() {
+
+  }
 }
 
 class _Intro extends StatelessWidget {
-  final AnimationController controller;
+  final AnimationController enterController;
+  final AnimationController exitController;
   final void Function() onStartClicked;
 
   _Intro({
-    @required this.controller,
+    @required this.enterController,
+    @required this.exitController,
     @required this.onStartClicked,
   });
 
@@ -147,75 +236,84 @@ class _Intro extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            FadeTransition(
-              opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-                parent: controller,
-                curve: Interval(0, 0.1, curve: Curves.ease),
-              )),
-              child: Center(
-                child: Text(
-                  AppLocalizations.of(context).weekTutorialHi,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
+        FadeTransition(
+          opacity: Tween<double>(begin: 1, end: 0).animate(exitController),
+          child: SlideTransition(
+            position: Tween<Offset>(begin: Offset(0, 0), end: Offset(0, 0.2)).animate(exitController),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                FadeTransition(
+                  opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+                    parent: enterController,
+                    curve: Interval(0, 0.1, curve: Curves.ease),
+                  )),
+                  child: Center(
+                    child: Text(
+                      AppLocalizations.of(context).weekTutorialHi,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            FadeTransition(
-              opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-                parent: controller,
-                curve: Interval(0.3, 0.4, curve: Curves.ease),
-              )),
-              child: Center(
-                child: Text(
-                  AppLocalizations.of(context).weekTutorialFirstTime,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
+                FadeTransition(
+                  opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+                    parent: enterController,
+                    curve: Interval(0.3, 0.4, curve: Curves.ease),
+                  )),
+                  child: Center(
+                    child: Text(
+                      AppLocalizations.of(context).weekTutorialFirstTime,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            FadeTransition(
-              opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-                parent: controller,
-                curve: Interval(0.6, 0.7, curve: Curves.ease),
-              )),
-              child: Center(
-                child: Text(
-                  AppLocalizations.of(context).weekTutorialExplain,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
+                FadeTransition(
+                  opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+                    parent: enterController,
+                    curve: Interval(0.6, 0.7, curve: Curves.ease),
+                  )),
+                  child: Center(
+                    child: Text(
+                      AppLocalizations.of(context).weekTutorialExplain,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
         FadeTransition(
-          opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-            parent: controller,
-            curve: Interval(0.9, 1.0, curve: Curves.ease),
-          )),
-          child: Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: onStartClicked,
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(
-                    AppLocalizations.of(context).start,
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
+          opacity: Tween<double>(begin: 1, end: 0).animate(exitController),
+          child: FadeTransition(
+            opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+              parent: enterController,
+              curve: Interval(0.9, 1.0, curve: Curves.ease),
+            )),
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: onStartClicked,
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      AppLocalizations.of(context).start,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -248,7 +346,63 @@ class _FirstPhase extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Stack(
+      children: <Widget>[
+        FadeTransition(
+          opacity: Tween<double>(begin: 0, end: 1).animate(controller),
+          child: SlideTransition(
+            position: Tween<Offset>(begin: Offset(0, 0.2), end: Offset(0, 0)).animate(controller),
+            child: Center(
+              child: Text(
+                AppLocalizations.of(context).weekTutorialClickOrSwipe,
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: SlideTransition(
+            position: Tween<Offset>(begin: Offset(-1, 0), end: Offset(0, 0)).animate(controller),
+            child: Container(
+              padding: const EdgeInsets.only(left: 19),
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: Transform.rotate(
+                  angle: pi,
+                  child: FlareActor(
+                    'assets/ic_swipe_indicator.flr',
+                    animation: 'idle',
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: SlideTransition(
+            position: Tween<Offset>(begin: Offset(1, 0), end: Offset(0, 0)).animate(controller),
+            child: Container(
+              padding: const EdgeInsets.only(right: 19),
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: FlareActor(
+                  'assets/ic_swipe_indicator.flr',
+                  animation: 'idle',
+                ),
+              ),
+            ),
+          ),
+        )
+      ],
+    );
   }
 }
 
@@ -275,4 +429,47 @@ class _FirstPhaseClipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => true;
+}
+
+class _Dots extends StatelessWidget {
+  final int currentPhase;
+
+  _Dots({
+    @required this.currentPhase,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: currentPhase == 0 ? Colors.white : AppColors.TUTORIAL_PROGRESS_INACTIVE,
+          ),
+        ),
+        SizedBox(width: 8,),
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: currentPhase == 1 ? Colors.white : AppColors.TUTORIAL_PROGRESS_INACTIVE,
+          ),
+        ),
+        SizedBox(width: 8,),
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: currentPhase == 2 ? Colors.white : AppColors.TUTORIAL_PROGRESS_INACTIVE,
+          ),
+        ),
+      ],
+    );
+  }
 }

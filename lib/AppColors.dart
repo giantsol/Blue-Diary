@@ -40,4 +40,6 @@ class AppColors {
   static const CATEGORY_COLOR_04 = Color(0xFF779ECB);
 
   static const RED = Color(0xFFFA0000);
+
+  static const TUTORIAL_PROGRESS_INACTIVE = Color(0xFF5A5A5A);
 }

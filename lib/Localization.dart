@@ -52,6 +52,9 @@ class AppLocalizations {
   static const WEEK_TUTORIAL_FIRST_TIME = "weekTutorialFirstTime";
   static const WEEK_TUTORIAL_EXPLAIN = "weekTutorialExplain";
   static const START = "start";
+  static const WEEK_TUTORIAL_CLICK_OR_SWIPE = "weekTutorialClickOrSwipe";
+  static const PREV = "prev";
+  static const NEXT = "next";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -107,7 +110,10 @@ class AppLocalizations {
       WEEK_TUTORIAL_HI: 'Hi,',
       WEEK_TUTORIAL_FIRST_TIME: 'It must be your first time here.',
       WEEK_TUTORIAL_EXPLAIN: 'Let me explain real quick.',
-      START: 'start',
+      START: 'Start',
+      WEEK_TUTORIAL_CLICK_OR_SWIPE: 'Click or swipe\nto change week.',
+      PREV: 'Prev',
+      NEXT: 'Next',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -159,6 +165,9 @@ class AppLocalizations {
       WEEK_TUTORIAL_FIRST_TIME: '이 화면을 처음 보시는군요.',
       WEEK_TUTORIAL_EXPLAIN: '간단히 소개해드릴게요.',
       START: '시작',
+      WEEK_TUTORIAL_CLICK_OR_SWIPE: '클릭 또는 스와이프로\n주를 변경하세요.',
+      PREV: '이전',
+      NEXT: '다음',
     },
   };
 
@@ -215,6 +224,9 @@ class AppLocalizations {
   String get weekTutorialFirstTime => _localizedValues[locale.languageCode][WEEK_TUTORIAL_FIRST_TIME];
   String get weekTutorialExplain => _localizedValues[locale.languageCode][WEEK_TUTORIAL_EXPLAIN];
   String get start => _localizedValues[locale.languageCode][START];
+  String get weekTutorialClickOrSwipe => _localizedValues[locale.languageCode][WEEK_TUTORIAL_CLICK_OR_SWIPE];
+  String get prev => _localizedValues[locale.languageCode][PREV];
+  String get next => _localizedValues[locale.languageCode][NEXT];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {
