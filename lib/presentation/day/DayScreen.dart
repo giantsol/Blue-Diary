@@ -216,7 +216,6 @@ class _DayScreenState extends State<DayScreen> with SingleTickerProviderStateMix
   }
 
   void _checkViewsBuiltToStartTutorial() {
-    debugPrint('checktostarttutorial');
     // check for one element. Simple checking.
     if (_firstMemoKey.currentContext?.findRenderObject() == null) {
       SchedulerBinding.instance.addPostFrameCallback((_) => _checkViewsBuiltToStartTutorial());

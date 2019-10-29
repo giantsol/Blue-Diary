@@ -81,7 +81,6 @@
 				8F17C09F5A4D1C588BF72B8B /* Pods-Runner.release.xcconfig */,
 				6648B24EF5514B0E9CE6876F /* Pods-Runner.profile.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -193,6 +192,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -394,6 +394,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = lee.hansol.todoApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Profile;
@@ -519,6 +520,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = lee.hansol.todoApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -542,6 +544,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = lee.hansol.todoApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

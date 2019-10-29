@@ -165,7 +165,6 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
   }
 
   void _checkViewsBuiltToStartTutorial() {
-    debugPrint('checktostarttutorial');
     // check for one element. Simple checking.
     if (_firstCheckPointsKey.currentContext?.findRenderObject() == null) {
       SchedulerBinding.instance.addPostFrameCallback((_) => _checkViewsBuiltToStartTutorial());
@@ -176,7 +175,6 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
   }
 
   Future<void> _scrollToTodayPreview() async {
-    debugPrint('scrolltotodaypreview');
     final RenderBox weekRecordRenderBox = _firstWeekRecordKey.currentContext?.findRenderObject();
     final RenderBox todayPreviewRenderBox = _todayPreviewKey.currentContext?.findRenderObject();
     if (weekRecordRenderBox == null || todayPreviewRenderBox == null || !_scrollController.hasClients) {
