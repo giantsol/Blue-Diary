@@ -42,7 +42,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return PreferencePage([
-      PreferenceTitle(AppLocalizations.of(context).settingsGeneral),
+      PreferenceTitle(AppLocalizations.of(context).settingsLock),
       SwitchPreference(
         AppLocalizations.of(context).settingsUseLockScreen,
         AppPreferences.KEY_USE_LOCK_SCREEN,
@@ -55,19 +55,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
         AppPreferences.KEY_RECOVERY_EMAIL,
         keyboardType: TextInputType.emailAddress,
       ),
-      Align(
-        alignment: Alignment.centerLeft,
-        child: FlatButton(
-          child: Text(AppLocalizations.of(context).sendTempPassword),
-          onPressed: () => _bloc.onSendTempPasswordClicked(context),
+      FlatButton(
+        padding: const EdgeInsets.all(16),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Text(AppLocalizations.of(context).sendTempPassword)
         ),
+        onPressed: () => _bloc.onSendTempPasswordClicked(context),
       ),
-      Align(
-        alignment: Alignment.centerLeft,
-        child: FlatButton(
+      FlatButton(
+        padding: const EdgeInsets.all(16),
+        child: Align(
+          alignment: Alignment.centerLeft,
           child: Text(AppLocalizations.of(context).settingsResetPassword),
-          onPressed: () => _bloc.onResetPasswordClicked(context),
         ),
+        onPressed: () => _bloc.onResetPasswordClicked(context),
+      ),
+      PreferenceTitle(AppLocalizations.of(context).settingsEtc),
+      FlatButton(
+        padding: const EdgeInsets.all(16),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Text(AppLocalizations.of(context).settingsFeedback),
+        ),
+        onPressed: () => _bloc.onFeedbackClicked(context),
       )
     ]);
   }

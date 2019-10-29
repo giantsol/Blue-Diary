@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:open_appstore/open_appstore.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/Secrets.dart';
@@ -194,5 +195,14 @@ class SettingsBloc {
         )
       );
     }
+  }
+
+  void onFeedbackClicked(context) {
+    Utils.showAppDialog(context,
+      AppLocalizations.of(context).leaveFeedbackTitle,
+      AppLocalizations.of(context).leaveFeedbackBody,
+      null,
+        () => OpenAppstore.launch(androidAppId: 'com.giantsol.blue_diary'),
+    );
   }
 }

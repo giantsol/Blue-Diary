@@ -39,6 +39,8 @@ dependencies:
 
   flare_flutter: ^1.6.2
 
+  open_appstore: ^1.0.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

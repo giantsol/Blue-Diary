@@ -28,7 +28,7 @@ class AppLocalizations {
   static const ADD_TASK = "addTask";
   static const MODIFY_TASK = "modifyTask";
   static const CHOOSE_PHOTO = "choosePhoto";
-  static const SETTINGS_GENERAL = "settingsGeneral";
+  static const SETTINGS_LOCK = "settingsLock";
   static const SETTINGS_USE_LOCK_SCREEN = "settingsLockScreen";
   static const SETTINGS_RESET_PASSWORD = "settingsResetPassword";
   static const SETTINGS_RECOVERY_EMAIL = "settingsRecoveryEmail";
@@ -60,6 +60,10 @@ class AppLocalizations {
   static const DAY_TUTORIAL_SWIPE = "dayTutorialSwipe";
   static const DAY_TUTORIAL_MEMO = "dayTutorialMemo";
   static const DAY_TUTORIAL_ADD_TO_DO = "dayTutorialAddToDo";
+  static const SETTINGS_ETC = "settingsEtc";
+  static const SETTINGS_FEEDBACK = "settingsFeedback";
+  static const LEAVE_FEEDBACK_TITLE = "leaveFeedbackTitle";
+  static const LEAVE_FEEDBACK_BODY = "leaveFeedbackBody";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -92,7 +96,7 @@ class AppLocalizations {
       ADD_TASK: 'Add Task',
       MODIFY_TASK: 'Modify Task',
       CHOOSE_PHOTO: 'Choose Photo',
-      SETTINGS_GENERAL: 'General',
+      SETTINGS_LOCK: 'Lock',
       SETTINGS_USE_LOCK_SCREEN: 'LockScreen',
       SETTINGS_RESET_PASSWORD: 'Reset Password',
       SETTINGS_RECOVERY_EMAIL: 'Recovery Email',
@@ -124,6 +128,10 @@ class AppLocalizations {
       DAY_TUTORIAL_SWIPE: 'Swipe the screen\nto change date.',
       DAY_TUTORIAL_MEMO: 'Write daily memo\nand keep up with your goals.',
       DAY_TUTORIAL_ADD_TO_DO: 'Click and add your first task!\nI\'ll help you stick to it.',
+      SETTINGS_ETC: 'Etc',
+      SETTINGS_FEEDBACK: 'Leave Feedback :)',
+      LEAVE_FEEDBACK_TITLE: 'Oh sweet...',
+      LEAVE_FEEDBACK_BODY: 'It would be lovely to get your feedback. Write review in app store?',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -151,7 +159,7 @@ class AppLocalizations {
       ADD_TASK: '작업 추가',
       MODIFY_TASK: '작업 수정',
       CHOOSE_PHOTO: '사진 선택',
-      SETTINGS_GENERAL: '일반',
+      SETTINGS_LOCK: '잠금',
       SETTINGS_USE_LOCK_SCREEN: '잠금화면',
       SETTINGS_RESET_PASSWORD: '비밀번호 재설정',
       SETTINGS_RECOVERY_EMAIL: '복원 이메일',
@@ -183,6 +191,10 @@ class AppLocalizations {
       DAY_TUTORIAL_SWIPE: '화면을 스와이프해서\n날짜를 바꿔보세요.',
       DAY_TUTORIAL_MEMO: '매일 메모를 작성하며\n자신의 목표를 되새겨보세요.',
       DAY_TUTORIAL_ADD_TO_DO: '첫번째 작업을 추가해보세요!\n해낼 수 있게 도와드리겠습니다.',
+      SETTINGS_ETC: '기타',
+      SETTINGS_FEEDBACK: '의견 남기기 :)',
+      LEAVE_FEEDBACK_TITLE: '우왕...',
+      LEAVE_FEEDBACK_BODY: '의견을 주신다면 영광입니다. 앱스토어에 리뷰를 작성하시겠습니까?',
     },
   };
 
@@ -215,7 +227,7 @@ class AppLocalizations {
   String get addTask => _localizedValues[locale.languageCode][ADD_TASK];
   String get modifyTask => _localizedValues[locale.languageCode][MODIFY_TASK];
   String get choosePhoto => _localizedValues[locale.languageCode][CHOOSE_PHOTO];
-  String get settingsGeneral => _localizedValues[locale.languageCode][SETTINGS_GENERAL];
+  String get settingsLock => _localizedValues[locale.languageCode][SETTINGS_LOCK];
   String get settingsUseLockScreen => _localizedValues[locale.languageCode][SETTINGS_USE_LOCK_SCREEN];
   String get settingsResetPassword => _localizedValues[locale.languageCode][SETTINGS_RESET_PASSWORD];
   String get settingsRecoveryEmail => _localizedValues[locale.languageCode][SETTINGS_RECOVERY_EMAIL];
@@ -247,6 +259,10 @@ class AppLocalizations {
   String get dayTutorialSwipe => _localizedValues[locale.languageCode][DAY_TUTORIAL_SWIPE];
   String get dayTutorialMemo => _localizedValues[locale.languageCode][DAY_TUTORIAL_MEMO];
   String get dayTutorialAddToDo => _localizedValues[locale.languageCode][DAY_TUTORIAL_ADD_TO_DO];
+  String get settingsEtc => _localizedValues[locale.languageCode][SETTINGS_ETC];
+  String get settingsFeedback => _localizedValues[locale.languageCode][SETTINGS_FEEDBACK];
+  String get leaveFeedbackTitle => _localizedValues[locale.languageCode][LEAVE_FEEDBACK_TITLE];
+  String get leaveFeedbackBody => _localizedValues[locale.languageCode][LEAVE_FEEDBACK_BODY];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {
