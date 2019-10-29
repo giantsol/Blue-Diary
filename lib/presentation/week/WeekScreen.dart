@@ -753,6 +753,9 @@ class _DayPreviewItemToDos extends StatelessWidget {
             fontSize: 12,
             color: isLightColor || hasNoToDos ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
           ),
+          strutStyle: StrutStyle(
+            fontSize: 12,
+          ),
         ): hasOneToDo ? Expanded(
           child: Text(
             firstToDo.text,
@@ -762,6 +765,9 @@ class _DayPreviewItemToDos extends StatelessWidget {
               decoration: firstToDo.isDone ? TextDecoration.lineThrough : null,
               decorationColor: AppColors.TEXT_BLACK_LIGHT,
               decorationThickness: 2,
+            ),
+            strutStyle: StrutStyle(
+              fontSize: 12,
             ),
             overflow: TextOverflow.ellipsis,
           ),
@@ -781,6 +787,9 @@ class _DayPreviewItemToDos extends StatelessWidget {
                     decorationColor: AppColors.TEXT_BLACK_LIGHT,
                     decorationThickness: 2,
                   ),
+                  strutStyle: StrutStyle(
+                    fontSize: 12,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -789,6 +798,9 @@ class _DayPreviewItemToDos extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   color: isLightColor ? AppColors.TEXT_BLACK_LIGHT : AppColors.TEXT_BLACK,
+                ),
+                strutStyle: StrutStyle(
+                  fontSize: 12,
                 ),
               ),
               Expanded(
@@ -807,6 +819,9 @@ class _DayPreviewItemToDos extends StatelessWidget {
                           decorationColor: AppColors.TEXT_BLACK_LIGHT,
                           decorationThickness: 2,
                         ),
+                        strutStyle: StrutStyle(
+                          fontSize: 12,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -816,6 +831,9 @@ class _DayPreviewItemToDos extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           color: AppColors.TEXT_BLACK_LIGHT,
+                        ),
+                        strutStyle: StrutStyle(
+                          fontSize: 12,
                         ),
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.start,
