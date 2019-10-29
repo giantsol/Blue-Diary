@@ -10,7 +10,7 @@ import 'package:todo_app/domain/usecase/WeekUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/day/DayScreen.dart';
 import 'package:todo_app/presentation/week/WeekScreenTutorial.dart';
-import 'package:todo_app/presentation/week/WeekScreenViewFinders.dart';
+import 'package:todo_app/presentation/week/WeekScreenTutorialCallback.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
 
 class WeekBloc {
@@ -60,6 +60,7 @@ class WeekBloc {
       currentDate: initialDate,
 
       startTutorialEvent: startTutorial,
+      scrollToTodayPreviewEvent: !startTutorial,
     ));
   }
 
@@ -129,16 +130,18 @@ class WeekBloc {
     ));
   }
 
-  void startTutorial(BuildContext context, WeekScreenViewFinders finders) {
+  Future<void> startTutorial(BuildContext context, WeekScreenTutorialCallback callback) async {
     // just rebuild to clear startTutorialEvent flag
     _state.add(_state.value.buildNew());
 
-    Navigator.push(context, PageRouteBuilder(
+    await Navigator.push(context, PageRouteBuilder(
       opaque: false,
       pageBuilder: (context, _, __) => WeekScreenTutorial(
-        weekScreenViewFinders: finders,
+        weekScreenTutorialCallback: callback,
       ),
     ));
+
+    _usecases.setShownWeekScreenTutorial();
   }
 
   void dispose() {

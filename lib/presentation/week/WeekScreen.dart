@@ -12,7 +12,7 @@ import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/ViewLayoutInfo.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/presentation/week/WeekBloc.dart';
-import 'package:todo_app/presentation/week/WeekScreenViewFinders.dart';
+import 'package:todo_app/presentation/week/WeekScreenTutorialCallback.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
 import 'package:todo_app/presentation/widgets/AppTextField.dart';
 
@@ -30,7 +30,7 @@ class WeekScreen extends StatefulWidget {
   State createState() => _WeekScreenState();
 }
 
-class _WeekScreenState extends State<WeekScreen> implements WeekScreenViewFinders {
+class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCallback {
   WeekBloc _bloc;
   PageController _pageController;
   final Map<String, FocusNode> _focusNodes = {};
@@ -49,33 +49,6 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenViewFinder
     _bloc = WeekBloc(delegator: widget.weekBlocDelegator);
     _pageController = PageController(initialPage: _bloc.getInitialState().initialWeekRecordPageIndex);
     _scrollController = ScrollController();
-
-    SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToShowTodayPreview());
-  }
-
-  void _scrollToShowTodayPreview() {
-    final RenderBox weekRecordRenderBox = _firstWeekRecordKey.currentContext?.findRenderObject();
-    final RenderBox todayPreviewRenderBox = _todayPreviewKey.currentContext?.findRenderObject();
-    if (weekRecordRenderBox?.debugNeedsLayout != false
-      || todayPreviewRenderBox?.debugNeedsLayout != false
-      || !_scrollController.hasClients) {
-      SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToShowTodayPreview());
-      return;
-    }
-
-    final weekRecordTop = weekRecordRenderBox.localToGlobal(Offset.zero).dy;
-    final weekRecordHeight = weekRecordRenderBox.size.height;
-    final todayPreviewTop = todayPreviewRenderBox.localToGlobal(Offset.zero).dy;
-    final todayPreviewHeight = todayPreviewRenderBox.size.height;
-    final currentScrollOffset = _scrollController.offset;
-    final targetScrollOffset = todayPreviewTop + todayPreviewHeight - weekRecordTop - weekRecordHeight - currentScrollOffset;
-    if (targetScrollOffset > 0) {
-      _scrollController.animateTo(
-        targetScrollOffset,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.ease,
-      );
-    }
   }
 
   @override
@@ -124,6 +97,10 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenViewFinder
 
     if (state.startTutorialEvent) {
       SchedulerBinding.instance.addPostFrameCallback((_) => _checkViewsBuiltToStartTutorial());
+    }
+
+    if (state.scrollToTodayPreviewEvent) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToTodayPreview());
     }
 
     return state.viewState == WeekViewState.WHOLE_LOADING ? _WholeLoadingView()
@@ -191,6 +168,63 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenViewFinder
     _bloc.startTutorial(context, this);
   }
 
+  Future<void> _scrollToTodayPreview() async {
+    final RenderBox weekRecordRenderBox = _firstWeekRecordKey.currentContext?.findRenderObject();
+    final RenderBox todayPreviewRenderBox = _todayPreviewKey.currentContext?.findRenderObject();
+    if (weekRecordRenderBox?.debugNeedsLayout != false
+      || todayPreviewRenderBox?.debugNeedsLayout != false
+      || !_scrollController.hasClients) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToTodayPreview());
+      return;
+    }
+
+    final weekRecordTop = weekRecordRenderBox.localToGlobal(Offset.zero).dy;
+    final weekRecordHeight = weekRecordRenderBox.size.height;
+    final todayPreviewTop = todayPreviewRenderBox.localToGlobal(Offset.zero).dy;
+    final todayPreviewHeight = todayPreviewRenderBox.size.height;
+
+    if (todayPreviewTop < weekRecordTop || todayPreviewTop + todayPreviewHeight > weekRecordTop + weekRecordHeight) {
+      final currentScrollOffset = _scrollController.offset;
+      final targetScrollOffset = max<double>(todayPreviewTop + todayPreviewHeight - weekRecordTop - weekRecordHeight, 0);
+      // min 300, max 700
+      final duration = Duration(milliseconds: max<int>(300, min<int>(700, ((targetScrollOffset - currentScrollOffset).abs() * 10).toInt())));
+
+      return await _scrollController.animateTo(
+        targetScrollOffset,
+        duration: duration,
+        curve: Curves.ease,
+      );
+    }
+  }
+
+  Future<void> _scrollToFirstCheckPoints() async {
+    final RenderBox weekRecordRenderBox = _firstWeekRecordKey.currentContext?.findRenderObject();
+    final RenderBox checkPointsRenderBox = _firstCheckPointsKey.currentContext?.findRenderObject();
+    if (weekRecordRenderBox?.debugNeedsLayout != false
+      || checkPointsRenderBox?.debugNeedsLayout != false
+      || !_scrollController.hasClients) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToFirstCheckPoints());
+      return;
+    }
+
+    final weekRecordTop = weekRecordRenderBox.localToGlobal(Offset.zero).dy;
+    final weekRecordHeight = weekRecordRenderBox.size.height;
+    final checkPointsTop = checkPointsRenderBox.localToGlobal(Offset.zero).dy;
+    final checkPointsHeight = checkPointsRenderBox.size.height;
+
+    if (checkPointsTop < weekRecordTop || checkPointsTop + checkPointsHeight > weekRecordTop + weekRecordHeight) {
+      final currentScrollOffset = _scrollController.offset;
+      final targetScrollOffset = max<double>(checkPointsTop + checkPointsHeight - weekRecordTop - weekRecordHeight, 0);
+      final duration = Duration(milliseconds: max<int>(300, min<int>(700, ((targetScrollOffset - currentScrollOffset).abs() * 10).toInt())));
+
+      return await _scrollController.animateTo(
+        targetScrollOffset,
+        duration: duration,
+        curve: Curves.ease,
+      );
+    }
+  }
+
   FocusNode _getOrCreateFocusNode(String key) {
     if (_focusNodes.containsKey(key)) {
       return _focusNodes[key];
@@ -225,6 +259,16 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenViewFinder
       final RenderBox box = _firstCheckPointsKey.currentContext.findRenderObject();
       return ViewLayoutInfo.create(box);
     };
+  }
+
+  @override
+  Future<void> scrollToTodayPreview() async {
+    return _scrollToTodayPreview();
+  }
+
+  @override
+  Future<void> scrollToCheckPoints() async {
+    return _scrollToFirstCheckPoints();
   }
 
   @override

@@ -102,4 +102,8 @@ class WeekUsecases {
   Future<bool> hasShownWeekScreenTutorial() async {
     return _prefsRepository.hasShownWeekScreenTutorial();
   }
+
+  void setShownWeekScreenTutorial() {
+    _prefsRepository.setShownWeekScreenTutorial();
+  }
 }

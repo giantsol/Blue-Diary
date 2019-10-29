@@ -40,4 +40,8 @@ class AppPreferences {
   Future<bool> hasShownWeekScreenTutorial() async {
     return PrefService.getBool(KEY_SHOWN_WEEK_SCREEN_TUTORIAL) ?? false;
   }
+
+  void setShownWeekScreenTutorial() {
+    PrefService.setBool(KEY_SHOWN_WEEK_SCREEN_TUTORIAL, true);
+  }
 }

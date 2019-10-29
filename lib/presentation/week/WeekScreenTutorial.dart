@@ -8,13 +8,16 @@ import 'package:flutter/services.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/ViewLayoutInfo.dart';
-import 'package:todo_app/presentation/week/WeekScreenViewFinders.dart';
+import 'package:todo_app/presentation/week/WeekScreenTutorialCallback.dart';
+
+// Not using bloc pattern here since it's just a tutorial screen..
+// Quite complex though :(
 
 class WeekScreenTutorial extends StatefulWidget {
-  final WeekScreenViewFinders weekScreenViewFinders;
+  final WeekScreenTutorialCallback weekScreenTutorialCallback;
 
   WeekScreenTutorial({
-    @required this.weekScreenViewFinders,
+    @required this.weekScreenTutorialCallback,
   });
 
   @override
@@ -36,6 +39,8 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
   _ThirdPhase _thirdPhase;
 
   int _currentPhase = -1;
+  bool _allowClipper = true;
+  bool _allowButtonClick = true;
 
   @override
   void initState() {
@@ -50,26 +55,26 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
 
     _introEnterController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 1800),
     );
     _introExitController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 400),
     );
 
     _firstPhaseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 400),
     );
 
     _secondPhaseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 400),
     );
 
     _thirdPhaseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 400),
     );
   }
 
@@ -94,7 +99,7 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
     super.dispose();
   }
 
-  void _updatePhase(int phase) {
+  Future<void> _updatePhase(int phase) async {
     if (phase == 0) {
       if (_currentPhase == -1) {
         _introExitController.forward();
@@ -103,42 +108,74 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
         _secondPhaseController.reverse();
         _firstPhaseController.forward();
       }
+
+      setState(() {
+        _currentPhase = phase;
+      });
     } else if (phase == 1) {
       if (_currentPhase == 0) {
         _firstPhaseController.reverse();
+        setState(() {
+          _allowClipper = false;
+          _allowButtonClick = false;
+        });
+        await widget.weekScreenTutorialCallback.scrollToCheckPoints();
         _secondPhaseController.forward();
+
+        setState(() {
+          _allowClipper = true;
+          _allowButtonClick = true;
+          _currentPhase = phase;
+        });
       } else {
         _thirdPhaseController.reverse();
+        setState(() {
+          _allowClipper = false;
+          _allowButtonClick = false;
+        });
+        await widget.weekScreenTutorialCallback.scrollToCheckPoints();
         _secondPhaseController.forward();
+
+        setState(() {
+          _allowClipper = true;
+          _allowButtonClick = true;
+          _currentPhase = phase;
+        });
       }
     } else if (phase == 2) {
       _secondPhaseController.reverse();
+      setState(() {
+        _allowClipper = false;
+        _allowButtonClick = false;
+      });
+      await widget.weekScreenTutorialCallback.scrollToTodayPreview();
       _thirdPhaseController.forward();
+
+      setState(() {
+        _allowClipper = true;
+        _allowButtonClick = true;
+        _currentPhase = phase;
+      });
     } else {
       Navigator.pop(context);
-      return;
     }
-
-    setState(() {
-      _currentPhase = phase;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     _firstPhase = _FirstPhase(
       controller: _firstPhaseController,
-      headerFinder: widget.weekScreenViewFinders.getHeaderFinder(),
+      headerFinder: widget.weekScreenTutorialCallback.getHeaderFinder(),
     );
 
     _secondPhase = _SecondPhase(
       controller: _secondPhaseController,
-      checkPointsFinder: widget.weekScreenViewFinders.getCheckPointsFinder(),
+      checkPointsFinder: widget.weekScreenTutorialCallback.getCheckPointsFinder(),
     );
 
     _thirdPhase = _ThirdPhase(
       controller: _thirdPhaseController,
-      todayPreviewFinder: widget.weekScreenViewFinders.getTodayPreviewFinder(),
+      todayPreviewFinder: widget.weekScreenTutorialCallback.getTodayPreviewFinder(),
     );
 
     return Scaffold(
@@ -237,7 +274,9 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
   }
 
   CustomClipper _getClipper() {
-    if (_currentPhase == 0) {
+    if (!_allowClipper) {
+      return null;
+    } else if (_currentPhase == 0) {
       return _firstPhase.clipper;
     } else if (_currentPhase == 1) {
       return _secondPhase.clipper;
@@ -249,11 +288,15 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
   }
 
   void _onPrevClicked() {
-    _updatePhase(_currentPhase - 1);
+    if (_allowButtonClick) {
+      _updatePhase(_currentPhase - 1);
+    }
   }
 
   void _onNextClicked() {
-    _updatePhase(_currentPhase + 1);
+    if (_allowButtonClick) {
+      _updatePhase(_currentPhase + 1);
+    }
   }
 }
 
@@ -279,7 +322,7 @@ class _Intro extends StatelessWidget {
             FadeTransition(
               opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
                 parent: enterController,
-                curve: Interval(0, 0.15, curve: Curves.ease),
+                curve: Interval(0, 0.2, curve: Curves.ease),
               )),
               child: Center(
                 child: Text(
@@ -294,7 +337,7 @@ class _Intro extends StatelessWidget {
             FadeTransition(
               opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
                 parent: enterController,
-                curve: Interval(0.5, 0.65, curve: Curves.ease),
+                curve: Interval(0.5, 0.7, curve: Curves.ease),
               )),
               child: Center(
                 child: Text(

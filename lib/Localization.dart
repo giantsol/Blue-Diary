@@ -110,7 +110,7 @@ class AppLocalizations {
       FIRST_TO_DO_CHECK_TITLE: 'Irreversible action',
       FIRST_TO_DO_CHECK_BODY: 'We treat completing task a very valuable action. Therefore, it\'s impossible to undo completing task unless deleting it.\n(This message is shown only once.)',
       WEEK_TUTORIAL_HI: 'Welcome!',
-      WEEK_TUTORIAL_EXPLAIN: 'A little tutorial for you ‘◡’',
+      WEEK_TUTORIAL_EXPLAIN: 'Ready to start?',
       WEEK_TUTORIAL_CLICK_OR_SWIPE: 'Swipe the screen\nto change week.',
       PREV: 'Prev',
       NEXT: 'Next',
@@ -166,14 +166,14 @@ class AppLocalizations {
       FIRST_TO_DO_CHECK_TITLE: '취소 불가능한 행위',
       FIRST_TO_DO_CHECK_BODY: '저희는 작업을 완료하는 행위에 큰 의미를 두고자 합니다. 따라서 한 번 완료한 작업은 지우지 않는 한 취소할 수 없습니다.\n(이 메세지는 최초 한 번만 노출됩니다.)',
       WEEK_TUTORIAL_HI: '반갑습니다!',
-      WEEK_TUTORIAL_EXPLAIN: '간략한 설명을 준비해보았어요 ‘◡’',
-      WEEK_TUTORIAL_CLICK_OR_SWIPE: '화면을 스와이프하여\n이전, 다음 주로 이동할 수 있습니다.',
+      WEEK_TUTORIAL_EXPLAIN: '시작해볼까요?',
+      WEEK_TUTORIAL_CLICK_OR_SWIPE: '화면을 스와이프하여\n이전, 다음 주로 이동하세요.',
       PREV: '이전',
       NEXT: '다음',
       START: '시작',
       DONE: '완료',
       WEEK_TUTORIAL_CHECK_POINTS: '이번 주의 가장 중요한\n세 가지 포인트를 적어보세요.',
-      WEEK_TUTORIAL_DAY_PREVIEW: '오늘부터 시작하세요!\n좋은 하루가 되길 바랍니다 :)'
+      WEEK_TUTORIAL_DAY_PREVIEW: '오늘부터 시작해보세요!\n좋은 하루가 되길 바랍니다 :)'
     },
   };
 

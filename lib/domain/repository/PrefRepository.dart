@@ -8,4 +8,5 @@ abstract class PrefsRepository {
   Future<bool> getUserCheckedToDoBefore();
   void setUserCheckedToDoBefore();
   Future<bool> hasShownWeekScreenTutorial();
+  void setShownWeekScreenTutorial();
 }
