@@ -4,31 +4,24 @@ import 'dart:math';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/ViewLayoutInfo.dart';
-import 'package:todo_app/presentation/week/WeekScreenTutorialCallback.dart';
+import 'package:todo_app/presentation/day/DayScreenTutorialCallback.dart';
 
-// Not using bloc pattern here since it's just a tutorial screen..
-// Quite complex though :(
+class DayScreenTutorial extends StatefulWidget {
+  final DayScreenTutorialCallback dayScreenTutorialCallback;
 
-class WeekScreenTutorial extends StatefulWidget {
-  final WeekScreenTutorialCallback weekScreenTutorialCallback;
-
-  WeekScreenTutorial({
-    @required this.weekScreenTutorialCallback,
+  DayScreenTutorial({
+    @required this.dayScreenTutorialCallback,
   });
 
   @override
-  State createState() => _WeekScreenTutorialState();
+  State createState() => _DayScreenTutorialState();
 }
 
-class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProviderStateMixin {
+class _DayScreenTutorialState extends State<DayScreenTutorial> with TickerProviderStateMixin {
   AnimationController _tutorialFadeInController;
-
-  AnimationController _introEnterController;
-  AnimationController _introExitController;
 
   AnimationController _firstPhaseController;
   AnimationController _secondPhaseController;
@@ -39,8 +32,6 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
   _ThirdPhase _thirdPhase;
 
   int _currentPhase = -1;
-  bool _allowClipper = true;
-  bool _allowButtonClick = true;
 
   @override
   void initState() {
@@ -52,15 +43,6 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
     );
     _tutorialFadeInController.forward();
     _tutorialFadeInController.addStatusListener(_tutorialFadeInListener);
-
-    _introEnterController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1800),
-    );
-    _introExitController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 400),
-    );
 
     _firstPhaseController = AnimationController(
       vsync: this,
@@ -82,9 +64,6 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
   void dispose() {
     _tutorialFadeInController.dispose();
 
-    _introEnterController.dispose();
-    _introExitController.dispose();
-
     _firstPhaseController.dispose();
     _secondPhaseController.dispose();
     _thirdPhaseController.dispose();
@@ -95,94 +74,61 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
   void _tutorialFadeInListener(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
       _tutorialFadeInController.removeStatusListener(_tutorialFadeInListener);
-      _introEnterController.forward();
+      _updatePhase(0);
     }
   }
 
-  Future<void> _updatePhase(int phase) async {
+  void _updatePhase(int phase) {
     if (phase == 0) {
       if (_currentPhase == -1) {
-        _introExitController.forward();
         _firstPhaseController.forward();
       } else {
         _secondPhaseController.reverse();
         _firstPhaseController.forward();
       }
-
-      setState(() {
-        _currentPhase = phase;
-      });
     } else if (phase == 1) {
       if (_currentPhase == 0) {
         _firstPhaseController.reverse();
-        setState(() {
-          _allowClipper = false;
-          _allowButtonClick = false;
-        });
-        await widget.weekScreenTutorialCallback.scrollToCheckPoints();
         _secondPhaseController.forward();
-
-        setState(() {
-          _allowClipper = true;
-          _allowButtonClick = true;
-          _currentPhase = phase;
-        });
       } else {
         _thirdPhaseController.reverse();
-        setState(() {
-          _allowClipper = false;
-          _allowButtonClick = false;
-        });
-        await widget.weekScreenTutorialCallback.scrollToCheckPoints();
         _secondPhaseController.forward();
-
-        setState(() {
-          _allowClipper = true;
-          _allowButtonClick = true;
-          _currentPhase = phase;
-        });
       }
     } else if (phase == 2) {
       _secondPhaseController.reverse();
-      setState(() {
-        _allowClipper = false;
-        _allowButtonClick = false;
-      });
-      await widget.weekScreenTutorialCallback.scrollToTodayPreview();
       _thirdPhaseController.forward();
-
-      setState(() {
-        _allowClipper = true;
-        _allowButtonClick = true;
-        _currentPhase = phase;
-      });
     } else {
       Navigator.pop(context);
+      return;
     }
+
+    setState(() {
+      _currentPhase = phase;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     _firstPhase = _FirstPhase(
       controller: _firstPhaseController,
-      headerFinder: widget.weekScreenTutorialCallback.getHeaderFinder(),
+      headerFinder: widget.dayScreenTutorialCallback.getHeaderFinder(),
     );
 
     _secondPhase = _SecondPhase(
       controller: _secondPhaseController,
-      checkPointsFinder: widget.weekScreenTutorialCallback.getCheckPointsFinder(),
+      memoFinder: widget.dayScreenTutorialCallback.getMemoFinder(),
     );
 
     _thirdPhase = _ThirdPhase(
       controller: _thirdPhaseController,
-      todayPreviewFinder: widget.weekScreenTutorialCallback.getTodayPreviewFinder(),
+      addToDoFinder: widget.dayScreenTutorialCallback.getAddToDoFinder(),
     );
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: WillPopScope(
         onWillPop: () async {
-          SystemNavigator.pop();
+          Navigator.pop(context, -1);
           return false;
         },
         child: FadeTransition(
@@ -229,38 +175,27 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
                       ),
                     ),
                   ): const SizedBox.shrink(),
-                  Align(
+                  _currentPhase >= 0 ? Align(
                     alignment: Alignment.bottomRight,
-                    child: FadeTransition(
-                      opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-                        parent: _introEnterController,
-                        curve: Interval(0.9, 1.0),
-                      )),
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.translucent,
-                          onTap: _onNextClicked,
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Text(
-                              _currentPhase == -1 ? AppLocalizations.of(context).start
-                                : _currentPhase < 2 ? AppLocalizations.of(context).next
-                                : AppLocalizations.of(context).done,
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.white,
-                              ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: _onNextClicked,
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Text(
+                            _currentPhase < 2 ? AppLocalizations.of(context).next
+                              : AppLocalizations.of(context).done,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  _Intro(
-                    enterController: _introEnterController,
-                    exitController: _introExitController,
-                  ),
+                  ): const SizedBox.shrink(),
                   _firstPhase,
                   _secondPhase,
                   _thirdPhase,
@@ -274,9 +209,7 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
   }
 
   CustomClipper _getClipper() {
-    if (!_allowClipper) {
-      return null;
-    } else if (_currentPhase == 0) {
+    if (_currentPhase == 0) {
       return _firstPhase.clipper;
     } else if (_currentPhase == 1) {
       return _secondPhase.clipper;
@@ -288,71 +221,11 @@ class _WeekScreenTutorialState extends State<WeekScreenTutorial> with TickerProv
   }
 
   void _onPrevClicked() {
-    if (_allowButtonClick) {
-      _updatePhase(_currentPhase - 1);
-    }
+    _updatePhase(_currentPhase - 1);
   }
 
   void _onNextClicked() {
-    if (_allowButtonClick) {
-      _updatePhase(_currentPhase + 1);
-    }
-  }
-}
-
-class _Intro extends StatelessWidget {
-  final AnimationController enterController;
-  final AnimationController exitController;
-
-  _Intro({
-    @required this.enterController,
-    @required this.exitController,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: Tween<double>(begin: 1, end: 0).animate(exitController),
-      child: SlideTransition(
-        position: Tween<Offset>(begin: Offset(0, 0), end: Offset(0, 0.1)).animate(exitController),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            FadeTransition(
-              opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-                parent: enterController,
-                curve: Interval(0, 0.2, curve: Curves.ease),
-              )),
-              child: Center(
-                child: Text(
-                  AppLocalizations.of(context).weekTutorialHi,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            FadeTransition(
-              opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-                parent: enterController,
-                curve: Interval(0.5, 0.7, curve: Curves.ease),
-              )),
-              child: Center(
-                child: Text(
-                  AppLocalizations.of(context).weekTutorialExplain,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    _updatePhase(_currentPhase + 1);
   }
 }
 
@@ -421,7 +294,7 @@ class _FirstPhase extends StatelessWidget {
             child: SlideTransition(
               position: Tween<Offset>(begin: Offset(0, 0.1), end: Offset(0, 0)).animate(controller),
               child: Text(
-                AppLocalizations.of(context).weekTutorialClickOrSwipe,
+                AppLocalizations.of(context).dayTutorialSwipe,
                 style: TextStyle(
                   fontSize: 18,
                   color: Colors.white,
@@ -496,19 +369,19 @@ class _FirstPhaseClipper extends CustomClipper<Path> {
 
 class _SecondPhase extends StatelessWidget {
   final AnimationController controller;
-  final ViewLayoutInfo Function() checkPointsFinder;
+  final ViewLayoutInfo Function() memoFinder;
   final _SecondPhaseClipper clipper;
 
   _SecondPhase({
     @required this.controller,
-    @required this.checkPointsFinder,
+    @required this.memoFinder,
   }): clipper = _SecondPhaseClipper(
-    checkPointsFinder: checkPointsFinder,
+    memoFinder: memoFinder,
   );
 
   @override
   Widget build(BuildContext context) {
-    final checkPoints = checkPointsFinder();
+    final checkPoints = memoFinder();
     final checkPointsBottom = checkPoints.top + checkPoints.height;
     return Positioned(
       top: checkPointsBottom + 8,
@@ -517,7 +390,7 @@ class _SecondPhase extends StatelessWidget {
         child: SlideTransition(
           position: Tween<Offset>(begin: Offset(0, 0.1), end: Offset(0, 0)).animate(controller),
           child: Text(
-            AppLocalizations.of(context).weekTutorialCheckPoints,
+            AppLocalizations.of(context).dayTutorialMemo,
             style: TextStyle(
               fontSize: 18,
               color: Colors.white,
@@ -531,18 +404,18 @@ class _SecondPhase extends StatelessWidget {
 }
 
 class _SecondPhaseClipper extends CustomClipper<Path> {
-  final ViewLayoutInfo Function() checkPointsFinder;
+  final ViewLayoutInfo Function() memoFinder;
 
   _SecondPhaseClipper({
-    @required this.checkPointsFinder,
+    @required this.memoFinder,
   });
 
   @override
   Path getClip(Size size) {
-    final checkPoints = checkPointsFinder();
+    final memo = memoFinder();
     final path = Path()
       ..addRRect(RRect.fromRectAndRadius(
-        Rect.fromLTWH(checkPoints.left, checkPoints.top, checkPoints.width, checkPoints.height),
+        Rect.fromLTWH(memo.left, memo.top, memo.width, memo.height),
         const Radius.circular(6)),
       )
       ..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
@@ -556,14 +429,14 @@ class _SecondPhaseClipper extends CustomClipper<Path> {
 
 class _ThirdPhase extends StatefulWidget {
   final AnimationController controller;
-  final ViewLayoutInfo Function() todayPreviewFinder;
+  final ViewLayoutInfo Function() addToDoFinder;
   final _ThirdPhaseClipper clipper;
 
   _ThirdPhase({
     @required this.controller,
-    @required this.todayPreviewFinder,
+    @required this.addToDoFinder,
   }): clipper = _ThirdPhaseClipper(
-    todayPreviewFinder: todayPreviewFinder,
+    addToDoFinder: addToDoFinder,
   );
 
   @override
@@ -577,7 +450,7 @@ class _ThirdPhaseState extends State<_ThirdPhase> {
   Widget build(BuildContext context) {
     SchedulerBinding.instance.addPostFrameCallback(_updateMyHeight);
 
-    final todayPreview = widget.todayPreviewFinder();
+    final todayPreview = widget.addToDoFinder();
     return Positioned(
       top: todayPreview.top - _myHeight - 8,
       child: FadeTransition(
@@ -586,7 +459,7 @@ class _ThirdPhaseState extends State<_ThirdPhase> {
           position: Tween<Offset>(begin: Offset(0, 0.1), end: Offset(0, 0))
             .animate(widget.controller),
           child: Text(
-            AppLocalizations.of(context).weekTutorialDayPreview,
+            AppLocalizations.of(context).dayTutorialAddToDo,
             style: TextStyle(
               fontSize: 18,
               color: Colors.white,
@@ -609,17 +482,17 @@ class _ThirdPhaseState extends State<_ThirdPhase> {
 }
 
 class _ThirdPhaseClipper extends CustomClipper<Path> {
-  final ViewLayoutInfo Function() todayPreviewFinder;
+  final ViewLayoutInfo Function() addToDoFinder;
 
   _ThirdPhaseClipper({
-    @required this.todayPreviewFinder,
+    @required this.addToDoFinder,
   });
 
   @override
   Path getClip(Size size) {
-    final todayPreview = todayPreviewFinder();
+    final addToDo = addToDoFinder();
     final path = Path()
-      ..addRect(Rect.fromLTWH(todayPreview.left, todayPreview.top, todayPreview.width, todayPreview.height))
+      ..addOval(Rect.fromLTWH(addToDo.left, addToDo.top, addToDo.width, addToDo.height))
       ..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
     path.fillType = PathFillType.evenOdd;
     return path;

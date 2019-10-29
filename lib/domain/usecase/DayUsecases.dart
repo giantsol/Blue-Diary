@@ -88,4 +88,12 @@ class DayUsecases {
   void setUserCheckedToDoBefore() {
     _prefsRepository.setUserCheckedToDoBefore();
   }
+
+  Future<bool> hasShownDayScreenTutorial() async {
+    return _prefsRepository.hasShownDayScreenTutorial();
+  }
+
+  void setShownDayScreenTutorial() {
+    _prefsRepository.setShownDayScreenTutorial();
+  }
 }

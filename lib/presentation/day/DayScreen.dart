@@ -12,7 +12,9 @@ import 'package:todo_app/domain/entity/CategoryPicker.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
+import 'package:todo_app/domain/entity/ViewLayoutInfo.dart';
 import 'package:todo_app/presentation/day/DayBloc.dart';
+import 'package:todo_app/presentation/day/DayScreenTutorialCallback.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
 import 'package:todo_app/presentation/widgets/AppTextField.dart';
 
@@ -28,12 +30,18 @@ class DayScreen extends StatefulWidget {
   State createState() => _DayScreenState();
 }
 
-class _DayScreenState extends State<DayScreen> {
+class _DayScreenState extends State<DayScreen> with SingleTickerProviderStateMixin implements DayScreenTutorialCallback {
   DayBloc _bloc;
   ScrollController _toDoScrollController;
   final Map<String, FocusNode> _focusNodes = {};
   PageController _pageController;
   final GlobalKey<_HeaderShadowState> _headerShadowKey = GlobalKey();
+
+  // variables related with tutorial
+  AnimationController _fabsSlideUpController;
+  final GlobalKey _headerKey = GlobalKey();
+  final GlobalKey _firstMemoKey = GlobalKey();
+  final GlobalKey _addToDoKey = GlobalKey();
 
   @override
   void initState() {
@@ -41,6 +49,11 @@ class _DayScreenState extends State<DayScreen> {
     _bloc = DayBloc(widget.date);
     _toDoScrollController = ScrollController();
     _pageController = PageController(initialPage: _bloc.getInitialState().initialDayRecordPageIndex);
+
+    _fabsSlideUpController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
   }
 
   @override
@@ -51,6 +64,8 @@ class _DayScreenState extends State<DayScreen> {
 
     _focusNodes.forEach((key, focusNode) => focusNode.dispose());
     _focusNodes.clear();
+
+    _fabsSlideUpController.dispose();
   }
 
   @override
@@ -93,15 +108,26 @@ class _DayScreenState extends State<DayScreen> {
 
     if (state.animateToPageEvent != -1) {
       SchedulerBinding.instance.addPostFrameCallback((duration) {
-        _pageController.animateToPage(state.animateToPageEvent,
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.ease,
-        );
+        if (_pageController.hasClients) {
+          _pageController.animateToPage(state.animateToPageEvent,
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.ease,
+          );
+        }
       });
     }
 
-    final isSelectionMode = state.viewState == DayViewState.SELECTION;
+    if (state.startTutorialEvent) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => _checkViewsBuiltToStartTutorial());
+    }
 
+    if (state.fabsSlideAnimationEvent == DayState.FABS_SLIDE_ANIMTION_UP) {
+      _fabsSlideUpController.forward();
+    } else if (state.fabsSlideAnimationEvent == DayState.FABS_SLIDE_ANIMTION_DOWN) {
+      _fabsSlideUpController.reverse();
+    }
+
+    final isSelectionMode = state.viewState == DayViewState.SELECTION;
     return Scaffold(
       body: SafeArea(
         child: state.viewState == DayViewState.WHOLE_LOADING ? _WholeLoadingView()
@@ -112,15 +138,18 @@ class _DayScreenState extends State<DayScreen> {
               Column(
                 children: <Widget>[
                   _Header(
+                    key: _headerKey,
                     bloc: _bloc,
                     title: isSelectionMode ? state.selectedToDoKeys.length.toString()
                       : AppLocalizations.of(context).getDayScreenTitle(state.month, state.day, state.weekday),
                     isSelectionMode: isSelectionMode,
+                    pageViewScrollEnabled: state.pageViewScrollEnabled,
                   ),
                   Expanded(
                     child: Stack(
                       children: <Widget>[
                         PageView.builder(
+                          physics: state.pageViewScrollEnabled ? PageScrollPhysics() : NeverScrollableScrollPhysics(),
                           controller: _pageController,
                           itemCount: DayScreen.MAX_DAY_PAGE,
                           itemBuilder: (context, index) {
@@ -137,6 +166,7 @@ class _DayScreenState extends State<DayScreen> {
                                 scrollController: _toDoScrollController,
                                 isSelectionMode: isSelectionMode,
                                 selectedToDoKeys: state.selectedToDoKeys,
+                                memoKey: index == DayScreen.INITIAL_DAY_PAGE ? _firstMemoKey : null,
                               );
                             }
                           },
@@ -171,15 +201,29 @@ class _DayScreenState extends State<DayScreen> {
               ),
               state.isFabVisible ? _AddToDoFAB(
                 bloc: _bloc,
+                fabKey: _addToDoKey,
+                slideUpController: _fabsSlideUpController,
               ) : const SizedBox.shrink(),
               state.isFabVisible ? _BackFAB(
                 bloc: _bloc,
+                slideUpController: _fabsSlideUpController,
               ) : const SizedBox.shrink(),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _checkViewsBuiltToStartTutorial() {
+    debugPrint('checktostarttutorial');
+    // check for one element. Simple checking.
+    if (_firstMemoKey.currentContext?.findRenderObject() == null) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => _checkViewsBuiltToStartTutorial());
+      return;
+    }
+
+    _bloc.startTutorial(context, this);
   }
 
   FocusNode _getOrCreateFocusNode(String key) {
@@ -201,6 +245,30 @@ class _DayScreenState extends State<DayScreen> {
     }
     return false;
   }
+
+  @override
+  ViewLayoutInfo Function() getHeaderFinder() {
+    return () {
+      final RenderBox box = _headerKey.currentContext?.findRenderObject();
+      return ViewLayoutInfo.create(box);
+    };
+  }
+
+  @override
+ ViewLayoutInfo Function() getMemoFinder() {
+    return () {
+      final RenderBox box = _firstMemoKey.currentContext?.findRenderObject();
+      return ViewLayoutInfo.create(box);
+    };
+  }
+
+  @override
+  ViewLayoutInfo Function() getAddToDoFinder() {
+    return () {
+      final RenderBox box = _addToDoKey.currentContext?.findRenderObject();
+      return ViewLayoutInfo.create(box);
+    };
+  }
 }
 
 class _WholeLoadingView extends StatelessWidget {
@@ -221,6 +289,7 @@ class _DayRecord extends StatelessWidget {
   final ScrollController scrollController;
   final bool isSelectionMode;
   final List<String> selectedToDoKeys;
+  final Key memoKey;
 
   _DayRecord({
     @required this.bloc,
@@ -229,6 +298,7 @@ class _DayRecord extends StatelessWidget {
     @required this.scrollController,
     @required this.isSelectionMode,
     @required this.selectedToDoKeys,
+    @required this.memoKey,
   });
 
   @override
@@ -236,14 +306,21 @@ class _DayRecord extends StatelessWidget {
     final dayRecord = this.dayRecord;
     final dayMemo = dayRecord.isToday ? dayRecord.dayMemo.buildNew(hint: AppLocalizations.of(context).dayMemoHint)
       : dayRecord.dayMemo;
-
-    return dayRecord.toDoRecords.length == 0 ? _EmptyToDoListView(
+    final dayMemoWidget = _DayMemo(
       bloc: bloc,
       dayMemo: dayMemo,
       focusNodeProvider: focusNodeProvider,
+      isInSelectionMode: isSelectionMode,
+      memoKey: memoKey,
+    );
+
+    return dayRecord.toDoRecords.length == 0 ? _EmptyToDoListView(
+      bloc: bloc,
+      dayMemoWidget: dayMemoWidget,
+      focusNodeProvider: focusNodeProvider,
     ) : _ToDoListView(
       bloc: bloc,
-      dayMemo: dayMemo,
+      dayMemoWidget: dayMemoWidget,
       toDoRecords: dayRecord.toDoRecords,
       scrollController: scrollController,
       focusNodeProvider: focusNodeProvider,
@@ -255,9 +332,13 @@ class _DayRecord extends StatelessWidget {
 
 class _AddToDoFAB extends StatelessWidget {
   final DayBloc bloc;
+  final Key fabKey;
+  final Animation slideUpController;
 
   _AddToDoFAB({
     @required this.bloc,
+    @required this.fabKey,
+    @required this.slideUpController,
   });
 
   @override
@@ -266,11 +347,18 @@ class _AddToDoFAB extends StatelessWidget {
       alignment: Alignment.bottomRight,
       child: Padding(
         padding: const EdgeInsets.only(right: 16, bottom: 16,),
-        child: FloatingActionButton(
-          child: Image.asset('assets/ic_plus.png'),
-          backgroundColor: AppColors.PRIMARY,
-          splashColor: AppColors.PRIMARY_DARK,
-          onPressed: () => bloc.onAddToDoClicked(context),
+        child: SlideTransition(
+          position: Tween<Offset>(begin: Offset(0, 0), end: Offset(0, -1)).animate(CurvedAnimation(
+            parent: slideUpController,
+            curve: Curves.ease,
+          )),
+          child: FloatingActionButton(
+            key: fabKey,
+            child: Image.asset('assets/ic_plus.png'),
+            backgroundColor: AppColors.PRIMARY,
+            splashColor: AppColors.PRIMARY_DARK,
+            onPressed: () => bloc.onAddToDoClicked(context),
+          ),
         ),
       ),
     );
@@ -279,9 +367,11 @@ class _AddToDoFAB extends StatelessWidget {
 
 class _BackFAB extends StatelessWidget {
   final DayBloc bloc;
+  final Animation slideUpController;
 
   _BackFAB({
     @required this.bloc,
+    @required this.slideUpController,
   });
 
   @override
@@ -290,11 +380,17 @@ class _BackFAB extends StatelessWidget {
       alignment: Alignment.bottomLeft,
       child: Padding(
         padding: const EdgeInsets.only(left: 16, bottom: 16,),
-        child: FloatingActionButton(
-          heroTag: null,
-          child: Image.asset('assets/ic_back_arrow.png'),
-          backgroundColor: AppColors.BACKGROUND_WHITE,
-          onPressed: () => bloc.onBackFABClicked(context),
+        child: SlideTransition(
+          position: Tween<Offset>(begin: Offset(0, 0), end: Offset(0, -1)).animate(CurvedAnimation(
+            parent: slideUpController,
+            curve: Curves.ease,
+          )),
+          child: FloatingActionButton(
+            heroTag: null,
+            child: Image.asset('assets/ic_back_arrow.png'),
+            backgroundColor: AppColors.BACKGROUND_WHITE,
+            onPressed: () => bloc.onBackFABClicked(context),
+          ),
         ),
       ),
     );
@@ -305,12 +401,15 @@ class _Header extends StatelessWidget {
   final DayBloc bloc;
   final String title;
   final bool isSelectionMode;
+  final bool pageViewScrollEnabled;
 
   _Header({
+    Key key,
     @required this.bloc,
     @required this.title,
     @required this.isSelectionMode,
-  });
+    @required this.pageViewScrollEnabled,
+  }): super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -370,7 +469,7 @@ class _Header extends StatelessWidget {
       children: <Widget>[
         SizedBox(width: 4,),
         InkWell(
-          onTap: () => bloc.onPrevArrowClicked(),
+          onTap: pageViewScrollEnabled ? () => bloc.onPrevArrowClicked() : null,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Image.asset('assets/ic_prev.png'),
@@ -394,7 +493,7 @@ class _Header extends StatelessWidget {
           ),
         ),
         InkWell(
-          onTap: () => bloc.onNextArrowClicked(),
+          onTap: pageViewScrollEnabled ? () => bloc.onNextArrowClicked() : null,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Image.asset('assets/ic_next.png'),
@@ -408,12 +507,12 @@ class _Header extends StatelessWidget {
 
 class _EmptyToDoListView extends StatelessWidget {
   final DayBloc bloc;
-  final DayMemo dayMemo;
+  final Widget dayMemoWidget;
   final FocusNode Function(String key) focusNodeProvider;
 
   _EmptyToDoListView({
     @required this.bloc,
-    @required this.dayMemo,
+    @required this.dayMemoWidget,
     @required this.focusNodeProvider,
   });
 
@@ -422,12 +521,7 @@ class _EmptyToDoListView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        _DayMemo(
-          bloc: bloc,
-          dayMemo: dayMemo,
-          focusNodeProvider: focusNodeProvider,
-          isInSelectionMode: false,
-        ),
+        dayMemoWidget,
         Padding(
           padding: EdgeInsets.only(left: 36, top: 20),
           child: Text(
@@ -459,12 +553,14 @@ class _DayMemo extends StatelessWidget {
   final DayMemo dayMemo;
   final FocusNode Function(String key) focusNodeProvider;
   final bool isInSelectionMode;
+  final Key memoKey;
 
   _DayMemo({
     @required this.bloc,
     @required this.dayMemo,
     @required this.focusNodeProvider,
     @required this.isInSelectionMode,
+    @required this.memoKey,
   });
 
   @override
@@ -473,6 +569,7 @@ class _DayMemo extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(left: 24, top: 12, right: 24),
       child: DecoratedBox(
+        key: memoKey,
         decoration: BoxDecoration(
           color: AppColors.PRIMARY,
           borderRadius: BorderRadius.all(Radius.circular(6)),
@@ -518,7 +615,7 @@ class _DayMemo extends StatelessWidget {
 
 class _ToDoListView extends StatelessWidget {
   final DayBloc bloc;
-  final DayMemo dayMemo;
+  final Widget dayMemoWidget;
   final List<ToDoRecord> toDoRecords;
   final ScrollController scrollController;
   final FocusNode Function(String key) focusNodeProvider;
@@ -527,7 +624,7 @@ class _ToDoListView extends StatelessWidget {
 
   _ToDoListView({
     @required this.bloc,
-    @required this.dayMemo,
+    @required this.dayMemoWidget,
     @required this.toDoRecords,
     @required this.scrollController,
     @required this.focusNodeProvider,
@@ -542,12 +639,7 @@ class _ToDoListView extends StatelessWidget {
       itemCount: toDoRecords.length + 2,
       itemBuilder: (context, index) {
         if (index == 0) {
-          return _DayMemo(
-            bloc: bloc,
-            dayMemo: dayMemo,
-            focusNodeProvider: focusNodeProvider,
-            isInSelectionMode: isSelectionMode,
-          );
+          return dayMemoWidget;
         } else if (index == 1) {
           return Padding(
             padding: EdgeInsets.only(left: 36, top: 20, bottom: 12),

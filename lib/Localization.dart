@@ -57,6 +57,9 @@ class AppLocalizations {
   static const DONE = "done";
   static const WEEK_TUTORIAL_CHECK_POINTS = "weekTutorialCheckPoints";
   static const WEEK_TUTORIAL_DAY_PREVIEW = "weekTutorialDayPreview";
+  static const DAY_TUTORIAL_SWIPE = "dayTutorialSwipe";
+  static const DAY_TUTORIAL_MEMO = "dayTutorialMemo";
+  static const DAY_TUTORIAL_ADD_TO_DO = "dayTutorialAddToDo";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -117,7 +120,10 @@ class AppLocalizations {
       START: 'Start',
       DONE: 'Done',
       WEEK_TUTORIAL_CHECK_POINTS: 'Write and focus on your\nthree most important points.',
-      WEEK_TUTORIAL_DAY_PREVIEW: 'Click and start writing for today!\nWish you a great day :)'
+      WEEK_TUTORIAL_DAY_PREVIEW: 'Click and start writing for today!\nYour days will get better :)',
+      DAY_TUTORIAL_SWIPE: 'Swipe the screen\nto change date.',
+      DAY_TUTORIAL_MEMO: 'Write daily memo\nand keep up with your goals.',
+      DAY_TUTORIAL_ADD_TO_DO: 'Click and add your first task!\nI\'ll help you stick to it.',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -165,15 +171,18 @@ class AppLocalizations {
       DAY_MEMO_HINT: '오늘의 메모를 적어보세요.',
       FIRST_TO_DO_CHECK_TITLE: '취소 불가능한 행위',
       FIRST_TO_DO_CHECK_BODY: '저희는 작업을 완료하는 행위에 큰 의미를 두고자 합니다. 따라서 한 번 완료한 작업은 지우지 않는 한 취소할 수 없습니다.\n(이 메세지는 최초 한 번만 노출됩니다.)',
-      WEEK_TUTORIAL_HI: '반갑습니다!',
-      WEEK_TUTORIAL_EXPLAIN: '시작해볼까요?',
-      WEEK_TUTORIAL_CLICK_OR_SWIPE: '화면을 스와이프하여\n이전, 다음 주로 이동하세요.',
+      WEEK_TUTORIAL_HI: '환영합니다!',
+      WEEK_TUTORIAL_EXPLAIN: '준비되셨나요?',
+      WEEK_TUTORIAL_CLICK_OR_SWIPE: '화면을 스와이프해서\n이전, 다음 주로 이동해보세요.',
       PREV: '이전',
       NEXT: '다음',
       START: '시작',
       DONE: '완료',
       WEEK_TUTORIAL_CHECK_POINTS: '이번 주의 가장 중요한\n세 가지 포인트를 적어보세요.',
-      WEEK_TUTORIAL_DAY_PREVIEW: '오늘부터 시작해보세요!\n좋은 하루가 되길 바랍니다 :)'
+      WEEK_TUTORIAL_DAY_PREVIEW: '오늘부터 시작해보세요!\n하루 하루가 달라질거에요 :)',
+      DAY_TUTORIAL_SWIPE: '화면을 스와이프해서\n날짜를 바꿔보세요.',
+      DAY_TUTORIAL_MEMO: '매일 메모를 작성하며\n자신의 목표를 되새겨보세요.',
+      DAY_TUTORIAL_ADD_TO_DO: '첫번째 작업을 추가해보세요!\n해낼 수 있게 도와드리겠습니다.',
     },
   };
 
@@ -235,6 +244,9 @@ class AppLocalizations {
   String get done => _localizedValues[locale.languageCode][DONE];
   String get weekTutorialCheckPoints => _localizedValues[locale.languageCode][WEEK_TUTORIAL_CHECK_POINTS];
   String get weekTutorialDayPreview => _localizedValues[locale.languageCode][WEEK_TUTORIAL_DAY_PREVIEW];
+  String get dayTutorialSwipe => _localizedValues[locale.languageCode][DAY_TUTORIAL_SWIPE];
+  String get dayTutorialMemo => _localizedValues[locale.languageCode][DAY_TUTORIAL_MEMO];
+  String get dayTutorialAddToDo => _localizedValues[locale.languageCode][DAY_TUTORIAL_ADD_TO_DO];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {

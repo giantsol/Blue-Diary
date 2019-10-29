@@ -51,4 +51,14 @@ class PrefsRepositoryImpl implements PrefsRepository {
   void setShownWeekScreenTutorial() {
     _prefs.setShownWeekScreenTutorial();
   }
+
+  @override
+  Future<bool> hasShownDayScreenTutorial() {
+    return _prefs.hasShownDayScreenTutorial();
+  }
+
+  @override
+  void setShownDayScreenTutorial() {
+    _prefs.setShownDayScreenTutorial();
+  }
 }

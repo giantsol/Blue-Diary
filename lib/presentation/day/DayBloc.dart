@@ -11,6 +11,8 @@ import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
 import 'package:todo_app/domain/usecase/DayUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
+import 'package:todo_app/presentation/day/DayScreenTutorial.dart';
+import 'package:todo_app/presentation/day/DayScreenTutorialCallback.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
 
 class DayBloc {
@@ -33,6 +35,7 @@ class DayBloc {
     final prevDayRecord = await _usecases.getDayRecord(currentDate.subtract(_oneDay));
     final nextDayRecord = await _usecases.getDayRecord(currentDate.add(_oneDay));
     final allCategories = await _usecases.getAllCategories();
+    final startTutorial = !(await _usecases.hasShownDayScreenTutorial());
 
     final editingToDoRecord = _createDraftToDoRecord(currentDate, currentDayRecord.toDoRecords);
     final editingCategory = editingToDoRecord.category.buildNew();
@@ -46,6 +49,9 @@ class DayBloc {
       nextDayRecord: nextDayRecord,
       initialDate: initialDate,
       currentDate: currentDate,
+      pageViewScrollEnabled: !startTutorial,
+
+      startTutorialEvent: startTutorial,
     ));
   }
 
@@ -460,6 +466,28 @@ class DayBloc {
 
   void onToDoEditorCancelClicked() {
     handleBackPress();
+  }
+
+  Future<void> startTutorial(BuildContext context, DayScreenTutorialCallback callback) async {
+    _state.add(_state.value.buildNew(
+      fabsSlideAnimationEvent: DayState.FABS_SLIDE_ANIMTION_UP,
+    ));
+
+    final result = await Navigator.push(context, PageRouteBuilder(
+      opaque: false,
+      pageBuilder: (context, _, __) => DayScreenTutorial(
+        dayScreenTutorialCallback: callback,
+      ),
+    ));
+    if (result == -1) {
+      Navigator.pop(context);
+    } else {
+      _usecases.setShownDayScreenTutorial();
+      _state.add(_state.value.buildNew(
+        pageViewScrollEnabled: true,
+        fabsSlideAnimationEvent: DayState.FABS_SLIDE_ANIMTION_DOWN,
+      ));
+    }
   }
 
   void onCategoryEditorCancelClicked() {

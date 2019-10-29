@@ -35,6 +35,7 @@ class WeekBloc {
     if (key == HomeChildScreenItem.KEY_RECORD) {
       _state.add(_state.value.buildNew(
         moveToTodayEvent: true,
+        scrollToTodayPreviewEvent: true,
       ));
     }
   }
@@ -58,6 +59,7 @@ class WeekBloc {
       initialDate: initialDate,
       currentWeekRecordPageIndex: _state.value.initialWeekRecordPageIndex,
       currentDate: initialDate,
+      pageViewScrollEnabled: !startTutorial,
 
       startTutorialEvent: startTutorial,
       scrollToTodayPreviewEvent: !startTutorial,
@@ -142,6 +144,10 @@ class WeekBloc {
     ));
 
     _usecases.setShownWeekScreenTutorial();
+
+    _state.add(_state.value.buildNew(
+      pageViewScrollEnabled: true,
+    ));
   }
 
   void dispose() {

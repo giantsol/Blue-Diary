@@ -18,6 +18,7 @@ class WeekState {
   final int initialWeekRecordPageIndex;
   final DateTime currentDate;
   final int currentWeekRecordPageIndex;
+  final bool pageViewScrollEnabled;
 
   final bool moveToTodayEvent;
   final int animateToPageEvent;
@@ -36,6 +37,7 @@ class WeekState {
     this.initialWeekRecordPageIndex = WeekScreen.INITIAL_WEEK_PAGE,
     this.currentDate,
     this.currentWeekRecordPageIndex = WeekScreen.INITIAL_WEEK_PAGE,
+    this.pageViewScrollEnabled = false,
 
     this.moveToTodayEvent = false,
     this.animateToPageEvent = -1,
@@ -58,6 +60,7 @@ class WeekState {
     DateTime initialDate,
     int currentWeekRecordPageIndex,
     DateTime currentDate,
+    bool pageViewScrollEnabled,
 
     bool moveToTodayEvent,
     int animateToPageEvent,
@@ -80,6 +83,7 @@ class WeekState {
       initialDate: initialDate ?? this.initialDate,
       currentWeekRecordPageIndex: currentWeekRecordPageIndex ?? this.currentWeekRecordPageIndex,
       currentDate: currentDate ?? this.currentDate,
+      pageViewScrollEnabled: pageViewScrollEnabled ?? this.pageViewScrollEnabled,
 
       moveToTodayEvent: moveToTodayEvent ?? false,
       animateToPageEvent: animateToPageEvent ?? -1,

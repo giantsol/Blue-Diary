@@ -8,6 +8,7 @@ class AppPreferences {
   static const String KEY_RECOVERY_EMAIL = 'recovery.email';
   static const String KEY_USER_CHECKED_TO_DO_BEFORE = 'user.checked.to.do.before';
   static const String KEY_SHOWN_WEEK_SCREEN_TUTORIAL = 'shown.week.screen.tutorial';
+  static const String KEY_SHOWN_DAY_SCREEN_TUTORIAL = 'shown.day.screen.tutorial';
 
   Future<String> getUserPassword() async {
     return PrefService.getString(KEY_USER_PASSWORD) ?? '';
@@ -43,5 +44,13 @@ class AppPreferences {
 
   void setShownWeekScreenTutorial() {
     PrefService.setBool(KEY_SHOWN_WEEK_SCREEN_TUTORIAL, true);
+  }
+
+  Future<bool> hasShownDayScreenTutorial() async {
+    return PrefService.getBool(KEY_SHOWN_DAY_SCREEN_TUTORIAL) ?? false;
+  }
+
+  void setShownDayScreenTutorial() {
+    PrefService.setBool(KEY_SHOWN_DAY_SCREEN_TUTORIAL, true);
   }
 }

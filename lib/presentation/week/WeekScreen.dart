@@ -82,16 +82,20 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
   Widget _buildUI(WeekState state) {
     if (state.moveToTodayEvent) {
       SchedulerBinding.instance.addPostFrameCallback((duration) {
-        _pageController.jumpToPage(_bloc.getInitialState().initialWeekRecordPageIndex);
+        if (_pageController.hasClients) {
+          _pageController.jumpToPage(_bloc.getInitialState().initialWeekRecordPageIndex);
+        }
       });
     }
 
     if (state.animateToPageEvent != -1) {
       SchedulerBinding.instance.addPostFrameCallback((duration) {
-        _pageController.animateToPage(state.animateToPageEvent,
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.ease,
-        );
+        if (_pageController.hasClients) {
+          _pageController.animateToPage(state.animateToPageEvent,
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.ease,
+          );
+        }
       });
     }
 
@@ -115,11 +119,13 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
             bloc: _bloc,
             displayYear: state.year.toString(),
             displayMonthAndWeek: AppLocalizations.of(context).getMonthAndNthWeek(state.month, state.nthWeek),
+            pageViewScrollEnabled: state.pageViewScrollEnabled,
           ),
           Expanded(
             child: Stack(
               children: <Widget>[
                 PageView.builder(
+                  physics: state.pageViewScrollEnabled ? PageScrollPhysics() : NeverScrollableScrollPhysics(),
                   controller: _pageController,
                   itemCount: WeekScreen.MAX_WEEK_PAGE,
                   itemBuilder: (context, index) {
@@ -159,8 +165,9 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
   }
 
   void _checkViewsBuiltToStartTutorial() {
+    debugPrint('checktostarttutorial');
     // check for one element. Simple checking.
-    if (_firstCheckPointsKey.currentContext?.findRenderObject()?.debugNeedsLayout != false) {
+    if (_firstCheckPointsKey.currentContext?.findRenderObject() == null) {
       SchedulerBinding.instance.addPostFrameCallback((_) => _checkViewsBuiltToStartTutorial());
       return;
     }
@@ -169,11 +176,10 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
   }
 
   Future<void> _scrollToTodayPreview() async {
+    debugPrint('scrolltotodaypreview');
     final RenderBox weekRecordRenderBox = _firstWeekRecordKey.currentContext?.findRenderObject();
     final RenderBox todayPreviewRenderBox = _todayPreviewKey.currentContext?.findRenderObject();
-    if (weekRecordRenderBox?.debugNeedsLayout != false
-      || todayPreviewRenderBox?.debugNeedsLayout != false
-      || !_scrollController.hasClients) {
+    if (weekRecordRenderBox == null || todayPreviewRenderBox == null || !_scrollController.hasClients) {
       SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToTodayPreview());
       return;
     }
@@ -200,9 +206,7 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
   Future<void> _scrollToFirstCheckPoints() async {
     final RenderBox weekRecordRenderBox = _firstWeekRecordKey.currentContext?.findRenderObject();
     final RenderBox checkPointsRenderBox = _firstCheckPointsKey.currentContext?.findRenderObject();
-    if (weekRecordRenderBox?.debugNeedsLayout != false
-      || checkPointsRenderBox?.debugNeedsLayout != false
-      || !_scrollController.hasClients) {
+    if (weekRecordRenderBox == null || checkPointsRenderBox == null || !_scrollController.hasClients) {
       SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToFirstCheckPoints());
       return;
     }
@@ -248,7 +252,7 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
   @override
   ViewLayoutInfo Function() getHeaderFinder() {
     return () {
-      final RenderBox box = _headerKey.currentContext.findRenderObject();
+      final RenderBox box = _headerKey.currentContext?.findRenderObject();
       return ViewLayoutInfo.create(box);
     };
   }
@@ -256,7 +260,7 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
   @override
   ViewLayoutInfo Function() getCheckPointsFinder() {
     return () {
-      final RenderBox box = _firstCheckPointsKey.currentContext.findRenderObject();
+      final RenderBox box = _firstCheckPointsKey.currentContext?.findRenderObject();
       return ViewLayoutInfo.create(box);
     };
   }
@@ -274,7 +278,7 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
   @override
   ViewLayoutInfo Function() getTodayPreviewFinder() {
     return () {
-      final RenderBox box = _todayPreviewKey.currentContext.findRenderObject();
+      final RenderBox box = _todayPreviewKey.currentContext?.findRenderObject();
       return ViewLayoutInfo.create(box);
     };
   }
@@ -295,12 +299,14 @@ class _Header extends StatelessWidget {
   final WeekBloc bloc;
   final String displayYear;
   final String displayMonthAndWeek;
+  final bool pageViewScrollEnabled;
 
   _Header({
     Key key,
     @required this.bloc,
     @required this.displayYear,
     @required this.displayMonthAndWeek,
+    @required this.pageViewScrollEnabled,
   }): super(key: key);
 
   @override
@@ -309,7 +315,7 @@ class _Header extends StatelessWidget {
       children: <Widget>[
         SizedBox(width: 4,),
         InkWell(
-          onTap: () => bloc.onPrevArrowClicked(),
+          onTap: pageViewScrollEnabled ? () => bloc.onPrevArrowClicked() : null,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Image.asset('assets/ic_prev.png'),
@@ -344,7 +350,7 @@ class _Header extends StatelessWidget {
           ),
         ),
         InkWell(
-          onTap: () => bloc.onNextArrowClicked(),
+          onTap: pageViewScrollEnabled ? () => bloc.onNextArrowClicked() : null,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Image.asset('assets/ic_next.png'),

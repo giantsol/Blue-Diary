@@ -26,6 +26,9 @@ class DayState {
     CategoryPicker(false, AppColors.CATEGORY_COLOR_04),
   ];
 
+  static const FABS_SLIDE_ANIMTION_UP = 1;
+  static const FABS_SLIDE_ANIMTION_DOWN = -1;
+
   final DayViewState viewState;
   final EditorState editorState;
   final ToDoRecord editingToDoRecord;
@@ -40,10 +43,13 @@ class DayState {
   final int currentDayRecordPageIndex;
   final String inputPassword;
   final List<String> selectedToDoKeys;
+  final bool pageViewScrollEnabled;
 
   final bool scrollToBottomEvent;
   final bool scrollToToDoListEvent;
   final int animateToPageEvent;
+  final bool startTutorialEvent;
+  final int fabsSlideAnimationEvent;
 
   int get year => currentDate?.year ?? 0;
   int get month => currentDate?.month ?? 0;
@@ -67,10 +73,13 @@ class DayState {
     this.currentDayRecordPageIndex = DayScreen.INITIAL_DAY_PAGE,
     this.inputPassword = '',
     this.selectedToDoKeys = const [],
+    this.pageViewScrollEnabled = false,
 
     this.scrollToBottomEvent = false,
     this.scrollToToDoListEvent = false,
     this.animateToPageEvent = -1,
+    this.startTutorialEvent = false,
+    this.fabsSlideAnimationEvent = 0,
   });
 
   DayRecord getDayRecordForPageIndex(int index) {
@@ -92,10 +101,13 @@ class DayState {
     DateTime currentDate,
     String inputPassword,
     List<String> selectedToDoKeys,
+    bool pageViewScrollEnabled,
 
     bool scrollToBottomEvent,
     bool scrollToToDoListEvent,
     int animateToPageEvent,
+    bool startTutorialEvent,
+    int fabsSlideAnimationEvent,
   }) {
     final prevMap = this.pageIndexDayRecordMap;
     final currentPageIndex = currentDayRecordPageIndex ?? this.currentDayRecordPageIndex;
@@ -117,11 +129,14 @@ class DayState {
       currentDate: currentDate ?? this.currentDate,
       inputPassword: inputPassword ?? this.inputPassword,
       selectedToDoKeys: selectedToDoKeys ?? this.selectedToDoKeys,
+      pageViewScrollEnabled: pageViewScrollEnabled ?? this.pageViewScrollEnabled,
 
       // these are one-time events, so default to false if not given to "true" as parameter
       scrollToBottomEvent: scrollToBottomEvent ?? false,
       scrollToToDoListEvent: scrollToToDoListEvent ?? false,
       animateToPageEvent: animateToPageEvent ?? -1,
+      startTutorialEvent: startTutorialEvent ?? false,
+      fabsSlideAnimationEvent: fabsSlideAnimationEvent ?? 0,
     );
   }
 
