@@ -1,6 +1,8 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
+import 'package:todo_app/domain/entity/World.dart';
 
 class AppLocalizations {
   static const NEW_PASSWORD = "newPassword";
@@ -43,6 +45,7 @@ class AppLocalizations {
   static const TEMP_PASSWORD_MAIL_SEND_FAILED = "tempPasswordMailSendFailed";
   static const REMOVE_SELECTED_TO_DOS_TITLE = "removeSelectedToDosTitle";
   static const RECORD_NAVIGATION_TITLE = "recordNavigationTitle";
+  static const JOURNEY_NAVIGATION_TITLE = "journeyNavigationTitle";
   static const SETTINGS_NAVIGATION_TITLE = "settingsNavigationTitle";
   static const CHECK_POINT_HINT = "checkPointHint";
   static const DAY_MEMO_HINT = "dayMemoHint";
@@ -64,6 +67,9 @@ class AppLocalizations {
   static const SETTINGS_FEEDBACK = "settingsFeedback";
   static const LEAVE_FEEDBACK_TITLE = "leaveFeedbackTitle";
   static const LEAVE_FEEDBACK_BODY = "leaveFeedbackBody";
+  static const JOURNEY_TITLE = "journeyTitle";
+  static const WORLD_BEGINNING = "worldBeginning";
+  static const WORLD_GRASSLAND = "worldGrassland";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -111,6 +117,7 @@ class AppLocalizations {
       TEMP_PASSWORD_MAIL_SEND_FAILED: 'Mail has not been sent. Please check your recovery email again.',
       REMOVE_SELECTED_TO_DOS_TITLE: 'Remove TODO',
       RECORD_NAVIGATION_TITLE: 'Record',
+      JOURNEY_NAVIGATION_TITLE: 'Journey',
       SETTINGS_NAVIGATION_TITLE: 'Settings',
       CHECK_POINT_HINT: 'Anything to remind yourself?',
       DAY_MEMO_HINT: 'Memo for today. Anything.',
@@ -132,6 +139,9 @@ class AppLocalizations {
       SETTINGS_FEEDBACK: 'Leave Feedback :)',
       LEAVE_FEEDBACK_TITLE: 'Oh sweet...',
       LEAVE_FEEDBACK_BODY: 'It would be lovely to get your feedback. Write review in app store?',
+      JOURNEY_TITLE: 'Journey',
+      WORLD_BEGINNING: 'The Beginning',
+      WORLD_GRASSLAND: 'Grassland',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -174,6 +184,7 @@ class AppLocalizations {
       TEMP_PASSWORD_MAIL_SEND_FAILED: '메일 발송에 실패하였습니다. 복원 이메일을 확인해주세요.',
       REMOVE_SELECTED_TO_DOS_TITLE: '작업 삭제',
       RECORD_NAVIGATION_TITLE: '기록',
+      JOURNEY_NAVIGATION_TITLE: '여행',
       SETTINGS_NAVIGATION_TITLE: '설정',
       CHECK_POINT_HINT: '이번주의 다짐을 적어보세요.',
       DAY_MEMO_HINT: '오늘의 메모를 적어보세요.',
@@ -195,6 +206,9 @@ class AppLocalizations {
       SETTINGS_FEEDBACK: '의견 남기기 :)',
       LEAVE_FEEDBACK_TITLE: '우왕...',
       LEAVE_FEEDBACK_BODY: '의견을 주신다면 영광입니다. 앱스토어에 리뷰를 작성하시겠습니까?',
+      JOURNEY_TITLE: '여행',
+      WORLD_BEGINNING: '태초',
+      WORLD_GRASSLAND: '초원',
     },
   };
 
@@ -241,8 +255,6 @@ class AppLocalizations {
   String get tempPasswordMailSent => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_SENT];
   String get tempPasswordMailSendFailed => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_SEND_FAILED];
   String get removeSelectedToDosTitle => _localizedValues[locale.languageCode][REMOVE_SELECTED_TO_DOS_TITLE];
-  String get recordNavigationTitle => _localizedValues[locale.languageCode][RECORD_NAVIGATION_TITLE];
-  String get settingsNavigationTitle => _localizedValues[locale.languageCode][SETTINGS_NAVIGATION_TITLE];
   String get checkPointHint => _localizedValues[locale.languageCode][CHECK_POINT_HINT];
   String get dayMemoHint => _localizedValues[locale.languageCode][DAY_MEMO_HINT];
   String get firstToDoCheckTitle => _localizedValues[locale.languageCode][FIRST_TO_DO_CHECK_TITLE];
@@ -263,6 +275,7 @@ class AppLocalizations {
   String get settingsFeedback => _localizedValues[locale.languageCode][SETTINGS_FEEDBACK];
   String get leaveFeedbackTitle => _localizedValues[locale.languageCode][LEAVE_FEEDBACK_TITLE];
   String get leaveFeedbackBody => _localizedValues[locale.languageCode][LEAVE_FEEDBACK_BODY];
+  String get journeyTitle => _localizedValues[locale.languageCode][JOURNEY_TITLE];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {
@@ -394,6 +407,30 @@ class AppLocalizations {
       return '$count개의 작업을 삭제하시겠습니까?';
     } else {
       return 'Are you sure you want to remove $count tasks?';
+    }
+  }
+
+  String getBottomNavigationTitle(String key) {
+    switch (key) {
+      case HomeChildScreenItem.KEY_RECORD:
+        return _localizedValues[locale.languageCode][RECORD_NAVIGATION_TITLE];
+      case HomeChildScreenItem.KEY_JOURNEY:
+        return _localizedValues[locale.languageCode][JOURNEY_NAVIGATION_TITLE];
+      case HomeChildScreenItem.KEY_SETTINGS:
+        return _localizedValues[locale.languageCode][SETTINGS_NAVIGATION_TITLE];
+      default:
+        return '';
+    }
+  }
+
+  String getWorldTitle(String key) {
+    switch (key) {
+      case World.KEY_BEGINNING:
+        return _localizedValues[locale.languageCode][WORLD_BEGINNING];
+      case World.KEY_GRASSLAND:
+        return _localizedValues[locale.languageCode][WORLD_GRASSLAND];
+      default:
+        return '';
     }
   }
 }

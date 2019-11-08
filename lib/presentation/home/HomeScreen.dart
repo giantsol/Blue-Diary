@@ -8,6 +8,7 @@ import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
 import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
+import 'package:todo_app/presentation/journey/JourneyScreen.dart';
 import 'package:todo_app/presentation/settings/SettingsScreen.dart';
 import 'package:todo_app/presentation/week/WeekScreen.dart';
 
@@ -128,6 +129,8 @@ class _ChildScreen extends StatelessWidget {
         return WeekScreen(
           weekBlocDelegator: weekBlocDelegator,
         );
+      case HomeChildScreenItem.KEY_JOURNEY:
+        return JourneyScreen();
       case HomeChildScreenItem.KEY_SETTINGS:
         return SettingsScreen(
           settingsBlocDelegator: settingsBlocDelegator,
@@ -180,8 +183,7 @@ class _BottomNavigationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = item.key == HomeChildScreenItem.KEY_RECORD ? AppLocalizations.of(context).recordNavigationTitle
-      : AppLocalizations.of(context).settingsNavigationTitle;
+    final title = AppLocalizations.of(context).getBottomNavigationTitle(item.key);
     return Expanded(
       child: Material(
         child: InkWell(
