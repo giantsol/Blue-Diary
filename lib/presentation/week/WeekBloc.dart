@@ -1,4 +1,5 @@
 
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/Delegators.dart';
@@ -124,12 +125,17 @@ class WeekBloc {
     ));
   }
 
-  void onPrevArrowClicked() {
-    final newPageIndex = _state.value.currentWeekRecordPageIndex - 1;
-    _state.add(_state.value.buildNew(
-      currentWeekRecordPageIndex: newPageIndex,
-      animateToPageEvent: newPageIndex,
-    ));
+  Future<void> onPrevArrowClicked() async {
+    // todo: remove this test code
+    final callable = CloudFunctions.instance.getHttpsCallable(functionName: 'getTodayInMillis');
+    final millis = (await callable.call()).data;
+    final today = DateTime.fromMillisecondsSinceEpoch(millis);
+    debugPrint('year: ${today.year} month: ${today.month} day: ${today.day} hour: ${today.hour} minutes: ${today.minute}');
+//    final newPageIndex = _state.value.currentWeekRecordPageIndex - 1;
+//    _state.add(_state.value.buildNew(
+//      currentWeekRecordPageIndex: newPageIndex,
+//      animateToPageEvent: newPageIndex,
+//    ));
   }
 
   Future<void> startTutorial(BuildContext context, WeekScreenTutorialCallback callback) async {
