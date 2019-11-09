@@ -28,6 +28,8 @@
 
 ## Usage
 
+**Note**: Use *master* branch to build for yourself. *develop* branch may not build in your environment.
+
 You can build and run this app by yourself. You'll need [Git](https://git-scm.com), [Flutter](https://flutter.dev/docs/get-started/install),and [Android Studio](https://developer.android.com/studio) installed first. After that, clone this project by running command:
 
 ```
