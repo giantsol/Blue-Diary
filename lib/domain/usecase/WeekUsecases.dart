@@ -56,6 +56,9 @@ class WeekUsecases {
       final isToday = Utils.isSameDay(date, today);
       containsToday = containsToday || isToday;
 
+      final firstLaunchDate = DateTime.parse(await _prefsRepository.getFirstLaunchDateString());
+      final hasBeenMarkedCompleted = await _toDoRepository.hasDayBeenMarkedCompleted(date);
+
       final dayPreview = DayPreview(
         year: date.year,
         month: date.month,
@@ -69,6 +72,7 @@ class WeekUsecases {
         isTopLineLightColor: !curDayCompleted,
         memoPreview: memo.text.length > 0 ? memo.text.replaceAll(_enterRegex, ', ') : '',
         toDoPreviews: toDos.length > 2 ? toDos.sublist(0, 2) : toDos,
+        canBeMarkedCompleted: curDayCompleted && !hasBeenMarkedCompleted && date.compareTo(firstLaunchDate) >= 0 && date.compareTo(today) <= 0,
       );
 
       dayPreviews.add(dayPreview);
@@ -114,12 +118,7 @@ class WeekUsecases {
     }
   }
 
-  Future<DateTime> getFirstLaunchDate() async {
-    final useReal = await _prefsRepository.getUseRealFirstLaunchDate();
-    if (useReal) {
-      return DateTime.parse(await _prefsRepository.getRealFirstLaunchDateString());
-    } else {
-      return DateTime.parse(await _prefsRepository.getCustomFirstLaunchDateString());
-    }
+  void setDayMarkedCompleted(DateTime date) {
+    _toDoRepository.setDayMarkedCompleted(date);
   }
 }

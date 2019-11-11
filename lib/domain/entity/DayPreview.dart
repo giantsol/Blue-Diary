@@ -13,12 +13,14 @@ class DayPreview {
   final bool isToday;
   // whether its color should be weakened(i.e. light)
   final bool isLightColor;
+  //todo: change line visibility logic
   final bool isTopLineVisible;
   final bool isTopLineLightColor;
   final bool isBottomLineVisible;
   final bool isBottomLineLightColor;
   final String memoPreview;
   final List<ToDo> toDoPreviews;
+  final bool canBeMarkedCompleted;
 
   bool get hasTrailingDots => weekday != DateTime.sunday;
   String get key => '$year-$month-$day';
@@ -52,6 +54,7 @@ class DayPreview {
     this.isBottomLineLightColor = false,
     this.memoPreview = '',
     this.toDoPreviews = const [],
+    this.canBeMarkedCompleted = false,
   });
 
   DayPreview buildNew({
@@ -73,6 +76,7 @@ class DayPreview {
       isBottomLineLightColor: isBottomLineLightColor ?? this.isBottomLineLightColor,
       memoPreview: this.memoPreview,
       toDoPreviews: this.toDoPreviews,
+      canBeMarkedCompleted: this.canBeMarkedCompleted,
     );
   }
 }

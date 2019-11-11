@@ -591,6 +591,7 @@ class _DayPreviewItem extends StatelessWidget {
           child: Row(
             children: [
               _DayPreviewItemThumbnail(
+                bloc: bloc,
                 text: dayPreview.thumbnailString,
                 ratio: dayPreview.ratio,
                 bgColor: !hasAnyToDo ? AppColors.BACKGROUND_GREY : AppColors.PRIMARY_LIGHT_LIGHT,
@@ -599,6 +600,8 @@ class _DayPreviewItem extends StatelessWidget {
                 isTopLineLightColor: dayPreview.isTopLineLightColor,
                 isBottomLineVisible: dayPreview.isBottomLineVisible,
                 isBottomLineLightColor: dayPreview.isBottomLineLightColor,
+                canBeMarkedCompleted: dayPreview.canBeMarkedCompleted,
+                date: dayPreview.date,
               ),
               Expanded(
                 child: Padding(
@@ -646,6 +649,7 @@ class _DayPreviewItem extends StatelessWidget {
 }
 
 class _DayPreviewItemThumbnail extends StatelessWidget {
+  final WeekBloc bloc;
   final String text;
   final double ratio;
   final Color bgColor;
@@ -654,8 +658,11 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
   final bool isTopLineLightColor;
   final bool isBottomLineVisible;
   final bool isBottomLineLightColor;
+  final bool canBeMarkedCompleted;
+  final DateTime date;
 
   _DayPreviewItemThumbnail({
+    @required this.bloc,
     @required this.text,
     @required this.ratio,
     @required this.bgColor,
@@ -664,6 +671,8 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
     @required this.isTopLineLightColor,
     @required this.isBottomLineVisible,
     @required this.isBottomLineLightColor,
+    @required this.canBeMarkedCompleted,
+    @required this.date,
   });
 
   @override
@@ -715,6 +724,12 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
             textScaleFactor: 1.0,
           ),
         ),
+        canBeMarkedCompleted ? Center(
+          child: GestureDetector(
+            child: Image.asset('assets/ic_check.png'),
+            onTap: () => bloc.onMarkDayCompletedClicked(date),
+          )
+        ): const SizedBox.shrink(),
       ],
     );
   }

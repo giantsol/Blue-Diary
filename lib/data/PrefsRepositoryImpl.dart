@@ -70,7 +70,8 @@ class PrefsRepositoryImpl implements PrefsRepository {
 
   @override
   void setRealFirstLaunchDate(DateTime date) {
-    _prefs.setRealFirstLaunchDateString(date.toIso8601String());
+    final trimmed = DateTime(date.year, date.month, date.day);
+    _prefs.setRealFirstLaunchDateString(trimmed.toIso8601String());
   }
 
   @override
@@ -85,6 +86,17 @@ class PrefsRepositoryImpl implements PrefsRepository {
 
   @override
   void setCustomFirstLaunchDate(DateTime date) {
-    _prefs.setCustomFirstLaunchDateString(date.toIso8601String());
+    final trimmed = DateTime(date.year, date.month, date.day);
+    _prefs.setCustomFirstLaunchDateString(trimmed.toIso8601String());
+  }
+
+  @override
+  Future<String> getFirstLaunchDateString() async {
+    final useReal = await getUseRealFirstLaunchDate();
+    if (useReal) {
+      return getRealFirstLaunchDateString();
+    } else {
+      return getCustomFirstLaunchDateString();
+    }
   }
 }

@@ -155,17 +155,19 @@ class DayBloc {
         body,
         null,
           () {
-          final updated = toDo.buildNew(isDone: true);
-          _state.add(_state.value.buildNewToDoUpdated(updated));
-          _usecases.setToDo(updated);
           _usecases.setUserCheckedToDoBefore();
+          _updateToDoDone(toDo);
         }
       );
     } else {
-      final updated = toDo.buildNew(isDone: true);
-      _state.add(_state.value.buildNewToDoUpdated(updated));
-      _usecases.setToDo(updated);
+      _updateToDoDone(toDo);
     }
+  }
+
+  Future<void> _updateToDoDone(ToDo toDo) async {
+    final updated = toDo.buildNew(isDone: true);
+    _state.add(_state.value.buildNewToDoUpdated(updated));
+    _usecases.setToDo(updated);
   }
 
   void onEditingCategoryTextChanged(String changed) {

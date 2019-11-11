@@ -166,6 +166,11 @@ class WeekBloc {
     _initState();
   }
 
+  void onMarkDayCompletedClicked(DateTime date) {
+    //todo: updated UI
+    _usecases.setDayMarkedCompleted(date);
+  }
+
   void dispose() {
     delegator.removeBottomNavigationItemClickedListener(_bottomNavigationItemClickedListener);
   }

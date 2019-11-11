@@ -16,4 +16,5 @@ abstract class PrefsRepository {
   Future<bool> getUseRealFirstLaunchDate();
   Future<String> getCustomFirstLaunchDateString();
   void setCustomFirstLaunchDate(DateTime date);
+  Future<String> getFirstLaunchDateString();
 }

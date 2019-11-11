@@ -18,6 +18,7 @@ class AppDatabase implements ToDoDataSource,
   static const String TABLE_TODOS = 'todos';
   static const String TABLE_DAY_MEMOS = 'daymemos';
   static const String TABLE_CATEGORIES = 'categories';
+  static const String TABLE_MARKED_COMPLETED_DAYS = 'marked_completed_days';
 
   static const String COLUMN_ID = '_id';
   static const String COLUMN_YEAR = 'year';
@@ -35,6 +36,8 @@ class AppDatabase implements ToDoDataSource,
   static const String COLUMN_BORDER_COLOR = 'border_color';
   static const String COLUMN_IMAGE_PATH = 'image_path';
   static const String COLUMN_CATEGORY_ID = 'category_id';
+  static const String COLUMN_MILLIS_SINCE_EPOCH = 'millis_since_epoch';
+  static const String COLUMN_STREAK_COUNT = 'streak_count';
 
   // ignore: close_sinks
   final _database = BehaviorSubject<Database>();
@@ -86,6 +89,18 @@ class AppDatabase implements ToDoDataSource,
           );
           """
         );
+        await db.execute(
+          """
+          CREATE TABLE $TABLE_MARKED_COMPLETED_DAYS(
+            $COLUMN_YEAR INTEGER NOT NULL,
+            $COLUMN_MONTH INTEGER NOT NULL,
+            $COLUMN_DAY INTEGER NOT NULL,
+            $COLUMN_MILLIS_SINCE_EPOCH INTEGER NOT NULL,
+            $COLUMN_STREAK_COUNT INTEGER NOT NULL,
+            PRIMARY KEY ($COLUMN_YEAR, $COLUMN_MONTH, $COLUMN_DAY)
+          );
+          """
+        );
         return db.execute(
           """
           CREATE TABLE $TABLE_DAY_MEMOS(
@@ -103,11 +118,24 @@ class AppDatabase implements ToDoDataSource,
       onUpgrade: (db, oldVersion, newVersion) {
         if (oldVersion == 1 && newVersion == 2) {
           return db.execute('DROP TABLE IF EXISTS locks');
+        } else if (oldVersion == 2 && newVersion == 3) {
+          return db.execute(
+          """
+          CREATE TABLE $TABLE_MARKED_COMPLETED_DAYS(
+            $COLUMN_YEAR INTEGER NOT NULL,
+            $COLUMN_MONTH INTEGER NOT NULL,
+            $COLUMN_DAY INTEGER NOT NULL,
+            $COLUMN_MILLIS_SINCE_EPOCH INTEGER NOT NULL,
+            $COLUMN_STREAK_COUNT INTEGER NOT NULL,
+            PRIMARY KEY ($COLUMN_YEAR, $COLUMN_MONTH, $COLUMN_DAY)
+          );
+          """
+          );
         } else {
           return null;
         }
       },
-      version: 2,
+      version: 3,
     );
   }
 
@@ -146,6 +174,88 @@ class AppDatabase implements ToDoDataSource,
       where: ToDo.createWhereQueryForToDo(),
       whereArgs: ToDo.createWhereArgsForToDo(toDo),
     );
+  }
+
+  @override
+  Future<void> setDayMarkedCompleted(DateTime date) async {
+    final year = date.year;
+    final month = date.month;
+    final day = date.day;
+    final millis = date.millisecondsSinceEpoch;
+    final prevDayStreak = await _getStreakCount(date.subtract(const Duration(days: 1)));
+    final db = await _database.first;
+
+    await db.insert(
+      TABLE_MARKED_COMPLETED_DAYS,
+      {
+        COLUMN_YEAR: year,
+        COLUMN_MONTH: month,
+        COLUMN_DAY: day,
+        COLUMN_MILLIS_SINCE_EPOCH: millis,
+        COLUMN_STREAK_COUNT: prevDayStreak + 1,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<int> _getStreakCount(DateTime date) async {
+    final year = date.year;
+    final month = date.month;
+    final day = date.day;
+    final db = await _database.first;
+
+    final maps = await db.query(
+      TABLE_MARKED_COMPLETED_DAYS,
+      where: '$COLUMN_YEAR = ? AND $COLUMN_MONTH = ? AND $COLUMN_DAY = ?',
+      whereArgs: [year, month, day],
+    );
+
+    return maps.isEmpty ? 0 : maps[0][COLUMN_STREAK_COUNT] ?? 0;
+  }
+
+  @override
+  Future<int> getMarkedCompletedDaysCount() async {
+    final db = await _database.first;
+    return Sqflite.firstIntValue(await db.rawQuery(
+      'SELECT COUNT(*) FROM $TABLE_MARKED_COMPLETED_DAYS'
+    ));
+  }
+
+  @override
+  Future<int> getLatestStreakCount() async {
+    final db = await _database.first;
+    final maps = await db.query(
+      TABLE_MARKED_COMPLETED_DAYS,
+      orderBy: '$COLUMN_MILLIS_SINCE_EPOCH DESC',
+      limit: 1,
+    );
+    return maps.isEmpty ? 0 : maps[0][COLUMN_STREAK_COUNT] ?? 0;
+  }
+
+  @override
+  Future<int> getMaxStreakCount() async {
+    final db = await _database.first;
+    final maps = await db.query(
+      TABLE_MARKED_COMPLETED_DAYS,
+      orderBy: '$COLUMN_STREAK_COUNT DESC',
+      limit: 1,
+    );
+    return maps.isEmpty ? 0 : maps[0][COLUMN_STREAK_COUNT] ?? 0;
+  }
+
+  @override
+  Future<bool> hasDayBeenMarkedCompleted(DateTime date) async {
+    final year = date.year;
+    final month = date.month;
+    final day = date.day;
+    final db = await _database.first;
+
+    final maps = await db.query(
+      TABLE_MARKED_COMPLETED_DAYS,
+      where: '$COLUMN_YEAR = ? AND $COLUMN_MONTH = ? AND $COLUMN_DAY = ?',
+      whereArgs: [year, month, day],
+    );
+    return maps.isNotEmpty;
   }
 
   @override

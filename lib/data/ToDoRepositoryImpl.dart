@@ -22,4 +22,29 @@ class ToDoRepositoryImpl implements ToDoRepository {
   void removeToDo(ToDo toDo) {
     _dataSource.removeToDo(toDo);
   }
+
+  @override
+  void setDayMarkedCompleted(DateTime date) {
+    _dataSource.setDayMarkedCompleted(date);
+  }
+
+  @override
+  Future<int> getMarkedCompletedDaysCount() {
+    return _dataSource.getMarkedCompletedDaysCount();
+  }
+
+  @override
+  Future<int> getLatestStreakCount() {
+    return _dataSource.getLatestStreakCount();
+  }
+
+  @override
+  Future<int> getMaxStreakCount() {
+    return _dataSource.getMaxStreakCount();
+  }
+
+  @override
+  Future<bool> hasDayBeenMarkedCompleted(DateTime date) {
+    return _dataSource.hasDayBeenMarkedCompleted(date);
+  }
 }
