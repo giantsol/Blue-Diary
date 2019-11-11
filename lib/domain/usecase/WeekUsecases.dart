@@ -19,12 +19,12 @@ class WeekUsecases {
 
   const WeekUsecases(this._memoRepository, this._dateRepository, this._toDoRepository, this._prefsRepository);
 
-  DateTime getToday() {
+  Future<DateTime> getToday() {
     return _dateRepository.getToday();
   }
 
   Future<WeekRecord> getWeekRecord(DateTime date) async {
-    final today = _dateRepository.getToday();
+    final today = await _dateRepository.getToday();
     final dateInWeek = DateInWeek.fromDate(date);
     final checkPoints = await _memoRepository.getCheckPoints(date);
     bool containsToday = false;

@@ -21,7 +21,7 @@ class DayUsecases {
   const DayUsecases(this._toDoRepository, this._categoryRepository, this._memoRepository, this._prefsRepository, this._dateRepository);
 
   Future<DayRecord> getDayRecord(DateTime date) async {
-    final today = _dateRepository.getToday();
+    final today = await _dateRepository.getToday();
     final toDoRecords = await getToDoRecords(date);
     final dayMemo = await getDayMemo(date);
     return DayRecord(

@@ -70,6 +70,8 @@ class AppLocalizations {
   static const JOURNEY_TITLE = "journeyTitle";
   static const WORLD_BEGINNING = "worldBeginning";
   static const WORLD_GRASSLAND = "worldGrassland";
+  static const RETRY = "retry";
+  static const WEEK_SCREEN_NETWORK_ERROR_REASON = "weekScreenNetworkErrorReason";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -142,6 +144,8 @@ class AppLocalizations {
       JOURNEY_TITLE: 'Journey',
       WORLD_BEGINNING: 'The Beginning',
       WORLD_GRASSLAND: 'Grassland',
+      RETRY: 'Retry',
+      WEEK_SCREEN_NETWORK_ERROR_REASON: 'Unable to get today\'s date.\nPlease check your network.',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -209,6 +213,8 @@ class AppLocalizations {
       JOURNEY_TITLE: '여행',
       WORLD_BEGINNING: '태초',
       WORLD_GRASSLAND: '초원',
+      RETRY: '다시 시도',
+      WEEK_SCREEN_NETWORK_ERROR_REASON: '오늘 날짜를 확인할 수 없습니다.\n네트워크를 확인해주세요.',
     },
   };
 
@@ -276,6 +282,8 @@ class AppLocalizations {
   String get leaveFeedbackTitle => _localizedValues[locale.languageCode][LEAVE_FEEDBACK_TITLE];
   String get leaveFeedbackBody => _localizedValues[locale.languageCode][LEAVE_FEEDBACK_BODY];
   String get journeyTitle => _localizedValues[locale.languageCode][JOURNEY_TITLE];
+  String get retry => _localizedValues[locale.languageCode][RETRY];
+  String get weekScreenNetworkErrorReason => _localizedValues[locale.languageCode][WEEK_SCREEN_NETWORK_ERROR_REASON];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {

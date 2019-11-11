@@ -108,6 +108,7 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
     }
 
     return state.viewState == WeekViewState.WHOLE_LOADING ? _WholeLoadingView()
+      : state.viewState == WeekViewState.NETWORK_ERROR ? _NetworkErrorView(bloc: _bloc)
       : WillPopScope(
       onWillPop: () async {
         return !_unfocusTextFieldIfAny();
@@ -289,6 +290,37 @@ class _WholeLoadingView extends StatelessWidget {
       color: AppColors.BACKGROUND_WHITE,
       alignment: Alignment.center,
       child: CircularProgressIndicator(),
+    );
+  }
+}
+
+class _NetworkErrorView extends StatelessWidget {
+  final WeekBloc bloc;
+
+  _NetworkErrorView({
+    @required this.bloc,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: AppColors.BACKGROUND_WHITE,
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          FlatButton(
+            onPressed: () => bloc.onNetworkErrorRetryClicked(),
+            child: Text(
+              AppLocalizations.of(context).retry,
+            ),
+          ),
+          Text(
+            AppLocalizations.of(context).weekScreenNetworkErrorReason,
+            textAlign: TextAlign.center,
+          )
+        ],
+      )
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:todo_app/presentation/week/WeekScreen.dart';
 enum WeekViewState {
   WHOLE_LOADING,
   NORMAL,
+  NETWORK_ERROR,
 }
 
 class WeekState {

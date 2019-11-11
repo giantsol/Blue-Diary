@@ -1,5 +1,4 @@
 
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/Delegators.dart';
@@ -7,6 +6,7 @@ import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
+import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/usecase/WeekUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/day/DayScreen.dart';
@@ -42,29 +42,35 @@ class WeekBloc {
   }
 
   Future<void> _initState() async {
-    final initialDate = _usecases.getToday();
-    final dateInWeek = DateInWeek.fromDate(initialDate);
-    final currentWeekRecord = await _usecases.getWeekRecord(initialDate);
-    final prevWeekRecord = await _usecases.getWeekRecord(initialDate.subtract(_sevenDays));
-    final nextWeekRecord = await _usecases.getWeekRecord(initialDate.add(_sevenDays));
-    final startTutorial = !(await _usecases.hasShownWeekScreenTutorial());
+    final initialDate = await _usecases.getToday();
+    if (initialDate == DateRepository.INVALID_DATE) {
+      _state.add(_state.value.buildNew(
+        viewState: WeekViewState.NETWORK_ERROR,
+      ));
+    } else {
+      final dateInWeek = DateInWeek.fromDate(initialDate);
+      final currentWeekRecord = await _usecases.getWeekRecord(initialDate);
+      final prevWeekRecord = await _usecases.getWeekRecord(initialDate.subtract(_sevenDays));
+      final nextWeekRecord = await _usecases.getWeekRecord(initialDate.add(_sevenDays));
+      final startTutorial = !(await _usecases.hasShownWeekScreenTutorial());
 
-    _state.add(_state.value.buildNew(
-      viewState: WeekViewState.NORMAL,
-      year: dateInWeek.year,
-      month: dateInWeek.month,
-      nthWeek: dateInWeek.nthWeek,
-      currentWeekRecord: currentWeekRecord,
-      prevWeekRecord: prevWeekRecord,
-      nextWeekRecord: nextWeekRecord,
-      initialDate: initialDate,
-      currentWeekRecordPageIndex: _state.value.initialWeekRecordPageIndex,
-      currentDate: initialDate,
-      pageViewScrollEnabled: !startTutorial,
+      _state.add(_state.value.buildNew(
+        viewState: WeekViewState.NORMAL,
+        year: dateInWeek.year,
+        month: dateInWeek.month,
+        nthWeek: dateInWeek.nthWeek,
+        currentWeekRecord: currentWeekRecord,
+        prevWeekRecord: prevWeekRecord,
+        nextWeekRecord: nextWeekRecord,
+        initialDate: initialDate,
+        currentWeekRecordPageIndex: _state.value.initialWeekRecordPageIndex,
+        currentDate: initialDate,
+        pageViewScrollEnabled: !startTutorial,
 
-      startTutorialEvent: startTutorial,
-      scrollToTodayPreviewEvent: !startTutorial,
-    ));
+        startTutorialEvent: startTutorial,
+        scrollToTodayPreviewEvent: !startTutorial,
+      ));
+    }
   }
 
   void updateDelegator(WeekBlocDelegator delegator) {
@@ -126,16 +132,11 @@ class WeekBloc {
   }
 
   Future<void> onPrevArrowClicked() async {
-    // todo: remove this test code
-    final callable = CloudFunctions.instance.getHttpsCallable(functionName: 'getTodayInMillis');
-    final millis = (await callable.call()).data;
-    final today = DateTime.fromMillisecondsSinceEpoch(millis);
-    debugPrint('year: ${today.year} month: ${today.month} day: ${today.day} hour: ${today.hour} minutes: ${today.minute}');
-//    final newPageIndex = _state.value.currentWeekRecordPageIndex - 1;
-//    _state.add(_state.value.buildNew(
-//      currentWeekRecordPageIndex: newPageIndex,
-//      animateToPageEvent: newPageIndex,
-//    ));
+    final newPageIndex = _state.value.currentWeekRecordPageIndex - 1;
+    _state.add(_state.value.buildNew(
+      currentWeekRecordPageIndex: newPageIndex,
+      animateToPageEvent: newPageIndex,
+    ));
   }
 
   Future<void> startTutorial(BuildContext context, WeekScreenTutorialCallback callback) async {
@@ -154,6 +155,13 @@ class WeekBloc {
     _state.add(_state.value.buildNew(
       pageViewScrollEnabled: true,
     ));
+  }
+
+  void onNetworkErrorRetryClicked() {
+    _state.add(_state.value.buildNew(
+      viewState: WeekViewState.WHOLE_LOADING,
+    ));
+    _initState();
   }
 
   void dispose() {
