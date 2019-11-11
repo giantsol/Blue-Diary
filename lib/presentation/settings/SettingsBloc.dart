@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:open_appstore/open_appstore.dart';
 import 'package:todo_app/Delegators.dart';
@@ -203,6 +204,26 @@ class SettingsBloc {
       AppLocalizations.of(context).leaveFeedbackBody,
       null,
         () => OpenAppstore.launch(androidAppId: 'com.giantsol.blue_diary'),
+    );
+  }
+
+  Future<void> onUseRealFirstLaunchDateChanged() async {
+    final firstLaunchDateString = await _usecases.getRealFirstLaunchDateString();
+    final firstLaunchDate = firstLaunchDateString.isEmpty ? DateTime.fromMillisecondsSinceEpoch(0) : DateTime.parse(firstLaunchDateString);
+    _usecases.setCustomFirstLaunchDate(firstLaunchDate);
+
+    if (_needUpdateListener != null) {
+      _needUpdateListener();
+    }
+  }
+
+  Future<void> onCustomFirstLaunchDateClicked(BuildContext context) async {
+    final customFirstLaunchDateString = await _usecases.getCustomFirstLaunchDateString();
+    DatePicker.showDatePicker(
+      context,
+      onConfirm: (date) => _usecases.setCustomFirstLaunchDate(date),
+      currentTime: DateTime.parse(customFirstLaunchDateString),
+      locale: Localizations.localeOf(context).languageCode == 'ko' ? LocaleType.ko : LocaleType.en,
     );
   }
 }

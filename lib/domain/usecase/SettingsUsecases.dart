@@ -25,4 +25,20 @@ class SettingsUsecases {
   Future<String> getRecoveryEmail() async {
     return _prefsRepository.getRecoveryEmail();
   }
+
+  Future<String> getRealFirstLaunchDateString() async {
+    return _prefsRepository.getRealFirstLaunchDateString();
+  }
+
+  Future<bool> getUseRealFirstLaunchDate() async {
+    return _prefsRepository.getUseRealFirstLaunchDate();
+  }
+
+  Future<String> getCustomFirstLaunchDateString() async {
+    return _prefsRepository.getCustomFirstLaunchDateString();
+  }
+
+  void setCustomFirstLaunchDate(DateTime date) {
+    _prefsRepository.setCustomFirstLaunchDate(date);
+  }
 }

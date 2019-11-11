@@ -45,6 +45,8 @@ dependencies:
   firebase_analytics: ^5.0.6
   cloud_functions: ^0.4.1+4
 
+  flutter_datetime_picker: ^1.2.8
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

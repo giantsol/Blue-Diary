@@ -1,4 +1,5 @@
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:preferences/preference_page.dart';
 import 'package:preferences/preference_title.dart';
@@ -79,7 +80,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Text(AppLocalizations.of(context).settingsFeedback),
         ),
         onPressed: () => _bloc.onFeedbackClicked(context),
-      )
+      ),
+      !kReleaseMode ? _DeveloperSettings(bloc: _bloc) : const SizedBox.shrink(),
     ]);
+  }
+}
+
+class _DeveloperSettings extends StatelessWidget {
+  final SettingsBloc bloc;
+
+  _DeveloperSettings({
+    @required this.bloc,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        PreferenceTitle(AppLocalizations.of(context).settingsDeveloper),
+        SwitchPreference(
+          AppLocalizations.of(context).settingsUseRealFirstLaunchDate,
+          AppPreferences.KEY_USE_REAL_FIRST_LAUNCH_DATE,
+          defaultVal: true,
+          onChange: () => bloc.onUseRealFirstLaunchDateChanged(),
+        ),
+        PreferenceHider([
+          FlatButton(
+            padding: const EdgeInsets.all(16),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(AppLocalizations.of(context).settingsCustomFirstLaunchDate),
+            ),
+            onPressed: () => bloc.onCustomFirstLaunchDateClicked(context),
+          ),
+        ], AppPreferences.KEY_USE_REAL_FIRST_LAUNCH_DATE),
+      ],
+    );
   }
 }

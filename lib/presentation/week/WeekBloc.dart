@@ -48,6 +48,8 @@ class WeekBloc {
         viewState: WeekViewState.NETWORK_ERROR,
       ));
     } else {
+      _usecases.setRealFirstLaunchDateIfNotExists(initialDate);
+
       final dateInWeek = DateInWeek.fromDate(initialDate);
       final currentWeekRecord = await _usecases.getWeekRecord(initialDate);
       final prevWeekRecord = await _usecases.getWeekRecord(initialDate.subtract(_sevenDays));

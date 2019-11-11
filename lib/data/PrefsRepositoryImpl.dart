@@ -1,4 +1,5 @@
 
+import 'package:flutter/foundation.dart';
 import 'package:todo_app/data/AppPreferences.dart';
 import 'package:todo_app/domain/repository/PrefRepository.dart';
 
@@ -60,5 +61,30 @@ class PrefsRepositoryImpl implements PrefsRepository {
   @override
   void setShownDayScreenTutorial() {
     _prefs.setShownDayScreenTutorial();
+  }
+
+  @override
+  Future<String> getRealFirstLaunchDateString() {
+    return _prefs.getRealFirstLaunchDateString();
+  }
+
+  @override
+  void setRealFirstLaunchDate(DateTime date) {
+    _prefs.setRealFirstLaunchDateString(date.toIso8601String());
+  }
+
+  @override
+  Future<bool> getUseRealFirstLaunchDate() async {
+    return kReleaseMode || await _prefs.getUseRealFirstLaunchDate();
+  }
+
+  @override
+  Future<String> getCustomFirstLaunchDateString() {
+    return _prefs.getCustomFirstLaunchDateString();
+  }
+
+  @override
+  void setCustomFirstLaunchDate(DateTime date) {
+    _prefs.setCustomFirstLaunchDateString(date.toIso8601String());
   }
 }

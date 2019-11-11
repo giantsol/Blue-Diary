@@ -106,4 +106,20 @@ class WeekUsecases {
   void setShownWeekScreenTutorial() {
     _prefsRepository.setShownWeekScreenTutorial();
   }
+
+  Future<void> setRealFirstLaunchDateIfNotExists(DateTime date) async {
+    final savedValue = await _prefsRepository.getRealFirstLaunchDateString();
+    if (savedValue.isEmpty) {
+      _prefsRepository.setRealFirstLaunchDate(date);
+    }
+  }
+
+  Future<DateTime> getFirstLaunchDate() async {
+    final useReal = await _prefsRepository.getUseRealFirstLaunchDate();
+    if (useReal) {
+      return DateTime.parse(await _prefsRepository.getRealFirstLaunchDateString());
+    } else {
+      return DateTime.parse(await _prefsRepository.getCustomFirstLaunchDateString());
+    }
+  }
 }

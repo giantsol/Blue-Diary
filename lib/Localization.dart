@@ -72,6 +72,9 @@ class AppLocalizations {
   static const WORLD_GRASSLAND = "worldGrassland";
   static const RETRY = "retry";
   static const WEEK_SCREEN_NETWORK_ERROR_REASON = "weekScreenNetworkErrorReason";
+  static const SETTINGS_DEVELOPER = "settingsDeveloper";
+  static const SETTINGS_USE_REAL_FIRST_LAUNCH_DATE = "settingsUseRealFirstLaunchDate";
+  static const SETTINGS_CUSTOM_FIRST_LAUNCH_DATE = "settingsCustomFirstLaunchDate";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -146,6 +149,9 @@ class AppLocalizations {
       WORLD_GRASSLAND: 'Grassland',
       RETRY: 'Retry',
       WEEK_SCREEN_NETWORK_ERROR_REASON: 'Unable to get today\'s date.\nPlease check your network.',
+      SETTINGS_DEVELOPER: 'Developer',
+      SETTINGS_USE_REAL_FIRST_LAUNCH_DATE: 'Use real first launch date',
+      SETTINGS_CUSTOM_FIRST_LAUNCH_DATE: 'Set custom first launch date',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -215,6 +221,9 @@ class AppLocalizations {
       WORLD_GRASSLAND: '초원',
       RETRY: '다시 시도',
       WEEK_SCREEN_NETWORK_ERROR_REASON: '오늘 날짜를 확인할 수 없습니다.\n네트워크를 확인해주세요.',
+      SETTINGS_DEVELOPER: '개발자 설정',
+      SETTINGS_USE_REAL_FIRST_LAUNCH_DATE: '실제 첫 실행 날짜 사용',
+      SETTINGS_CUSTOM_FIRST_LAUNCH_DATE: '커스텀 첫 실행 날짜 설정',
     },
   };
 
@@ -284,6 +293,9 @@ class AppLocalizations {
   String get journeyTitle => _localizedValues[locale.languageCode][JOURNEY_TITLE];
   String get retry => _localizedValues[locale.languageCode][RETRY];
   String get weekScreenNetworkErrorReason => _localizedValues[locale.languageCode][WEEK_SCREEN_NETWORK_ERROR_REASON];
+  String get settingsDeveloper => _localizedValues[locale.languageCode][SETTINGS_DEVELOPER];
+  String get settingsUseRealFirstLaunchDate => _localizedValues[locale.languageCode][SETTINGS_USE_REAL_FIRST_LAUNCH_DATE];
+  String get settingsCustomFirstLaunchDate => _localizedValues[locale.languageCode][SETTINGS_CUSTOM_FIRST_LAUNCH_DATE];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {

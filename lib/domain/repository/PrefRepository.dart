@@ -11,4 +11,9 @@ abstract class PrefsRepository {
   void setShownWeekScreenTutorial();
   Future<bool> hasShownDayScreenTutorial();
   void setShownDayScreenTutorial();
+  Future<String> getRealFirstLaunchDateString();
+  void setRealFirstLaunchDate(DateTime date);
+  Future<bool> getUseRealFirstLaunchDate();
+  Future<String> getCustomFirstLaunchDateString();
+  void setCustomFirstLaunchDate(DateTime date);
 }
