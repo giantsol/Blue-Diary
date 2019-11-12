@@ -44,6 +44,11 @@ class ToDoRepositoryImpl implements ToDoRepository {
   }
 
   @override
+  Future<int> getStreakCount(DateTime date) {
+    return _dataSource.getStreakCount(date);
+  }
+
+  @override
   Future<bool> hasDayBeenMarkedCompleted(DateTime date) {
     return _dataSource.hasDayBeenMarkedCompleted(date);
   }

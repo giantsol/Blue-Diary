@@ -13,7 +13,6 @@ class DayPreview {
   final bool isToday;
   // whether its color should be weakened(i.e. light)
   final bool isLightColor;
-  //todo: change line visibility logic
   final bool isTopLineVisible;
   final bool isTopLineLightColor;
   final bool isBottomLineVisible;
@@ -56,28 +55,4 @@ class DayPreview {
     this.toDoPreviews = const [],
     this.canBeMarkedCompleted = false,
   });
-
-  DayPreview buildNew({
-    bool isBottomLineVisible,
-    bool isBottomLineLightColor,
-    bool canBeMarkedCompleted,
-  }) {
-    return DayPreview(
-      year: this.year,
-      month: this.month,
-      day: this.day,
-      weekday: this.weekday,
-      totalToDosCount: this.totalToDosCount,
-      doneToDosCount: this.doneToDosCount,
-      isToday: this.isToday,
-      isLightColor: this.isLightColor,
-      isTopLineVisible: this.isTopLineVisible,
-      isTopLineLightColor: this.isTopLineLightColor,
-      isBottomLineVisible: isBottomLineVisible ?? this.isBottomLineVisible,
-      isBottomLineLightColor: isBottomLineLightColor ?? this.isBottomLineLightColor,
-      memoPreview: this.memoPreview,
-      toDoPreviews: this.toDoPreviews,
-      canBeMarkedCompleted: canBeMarkedCompleted ?? this.canBeMarkedCompleted,
-    );
-  }
 }

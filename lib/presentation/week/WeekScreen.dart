@@ -434,6 +434,7 @@ class _WeekRecord extends StatelessWidget {
                   bloc: bloc,
                   weekRecord: weekRecord,
                   dayPreview: item,
+                  isFirstItem: index == 0,
                 );
               })
             ),
@@ -567,12 +568,14 @@ class _DayPreviewItem extends StatelessWidget {
   final WeekBloc bloc;
   final WeekRecord weekRecord;
   final DayPreview dayPreview;
+  final bool isFirstItem;
 
   _DayPreviewItem({
     Key key,
     @required this.bloc,
     @required this.weekRecord,
     @required this.dayPreview,
+    @required this.isFirstItem,
   }): super(key: key);
 
   @override
@@ -586,7 +589,7 @@ class _DayPreviewItem extends StatelessWidget {
     return InkWell(
       onTap: () => bloc.onDayPreviewClicked(context, dayPreview),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.only(right: 24),
         child: IntrinsicHeight(
           child: Row(
             children: [
@@ -602,6 +605,7 @@ class _DayPreviewItem extends StatelessWidget {
                 isBottomLineLightColor: dayPreview.isBottomLineLightColor,
                 canBeMarkedCompleted: dayPreview.canBeMarkedCompleted,
                 date: dayPreview.date,
+                isFirstItem: isFirstItem,
               ),
               Expanded(
                 child: Padding(
@@ -660,6 +664,7 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
   final bool isBottomLineLightColor;
   final bool canBeMarkedCompleted;
   final DateTime date;
+  final bool isFirstItem;
 
   _DayPreviewItemThumbnail({
     @required this.bloc,
@@ -673,64 +678,94 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
     @required this.isBottomLineLightColor,
     @required this.canBeMarkedCompleted,
     @required this.date,
+    @required this.isFirstItem,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: AlignmentDirectional.center,
-      children: <Widget>[
-        isTopLineVisible ? Align(
-          alignment: Alignment.topCenter,
-          child: ClipRect(
-            child: Align(
-              alignment: Alignment.topCenter,
-              heightFactor: 0.5,
-              child: Container(
-                color: isTopLineLightColor ? AppColors.PRIMARY_LIGHT_LIGHT : AppColors.PRIMARY,
-                width: 2,
+    return SizedBox(
+      width: 72,
+      child: Stack(
+        alignment: AlignmentDirectional.centerEnd,
+        children: <Widget>[
+          isBottomLineVisible ? Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 24),
+              child: ClipRect(
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  heightFactor: 0.5,
+                  child: Container(
+                    color: isBottomLineLightColor ? AppColors.PRIMARY_LIGHT_LIGHT : AppColors.PRIMARY,
+                    width: 2,
+                  ),
+                ),
+              ),
+            ),
+          ) : const SizedBox.shrink(),
+          !isTopLineVisible ? const SizedBox.shrink()
+            : isFirstItem ? Align(
+            alignment: Alignment.centerLeft,
+            child: ClipRect(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  color: isTopLineLightColor ? AppColors.PRIMARY_LIGHT_LIGHT : AppColors.PRIMARY,
+                  height: 2,
+                ),
+              ),
+            ),
+          ) : Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 24),
+              child: ClipRect(
+                child: Align(
+                  alignment: Alignment.topRight,
+                  heightFactor: 0.5,
+                  child: Container(
+                    color: isTopLineLightColor ? AppColors.PRIMARY_LIGHT_LIGHT : AppColors.PRIMARY,
+                    width: 2,
+                  ),
+                ),
               ),
             ),
           ),
-        ) : const SizedBox.shrink(),
-        isBottomLineVisible ? Align(
-          alignment: Alignment.bottomCenter,
-          child: ClipRect(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              heightFactor: 0.5,
-              child: Container(
-                color: isBottomLineLightColor ? AppColors.PRIMARY_LIGHT_LIGHT : AppColors.PRIMARY,
-                width: 2,
+          _ThumbnailCircle(
+            color: bgColor,
+            ratio: 1.0,
+          ),
+          ratio > 0 ? _ThumbnailCircle(
+            color: fgColor,
+            ratio: ratio,
+          ) : const SizedBox.shrink(),
+          Container(
+            width: 48,
+            height: 48,
+            alignment: Alignment.center,
+            child: Center(
+              child: Text(
+                text,
+                style: TextStyle(
+                  color: AppColors.TEXT_WHITE,
+                  fontSize: 14,
+                ),
+                textScaleFactor: 1.0,
               ),
             ),
           ),
-        ) : const SizedBox.shrink(),
-        _ThumbnailCircle(
-          color: bgColor,
-          ratio: 1.0,
-        ),
-        ratio > 0 ? _ThumbnailCircle(
-          color: fgColor,
-          ratio: ratio,
-        ) : const SizedBox.shrink(),
-        Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: AppColors.TEXT_WHITE,
-              fontSize: 14,
-            ),
-            textScaleFactor: 1.0,
-          ),
-        ),
-        canBeMarkedCompleted ? Center(
-          child: GestureDetector(
-            child: Image.asset('assets/ic_check.png'),
-            onTap: () => bloc.onMarkDayCompletedClicked(date),
-          )
-        ): const SizedBox.shrink(),
-      ],
+          canBeMarkedCompleted ? Container(
+            width: 48,
+            height: 48,
+            alignment: Alignment.center,
+            child: GestureDetector(
+              child: Image.asset('assets/ic_check.png'),
+              onTap: () => bloc.onMarkDayCompletedClicked(date),
+            )
+          ): const SizedBox.shrink(),
+        ],
+      ),
     );
   }
 }

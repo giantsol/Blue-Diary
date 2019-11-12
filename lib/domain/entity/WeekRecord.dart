@@ -51,13 +51,4 @@ class WeekRecord {
     }
     return buildNew(dayPreviews: updatedDayPreviews);
   }
-
-  WeekRecord buildNewDayMarkedCompleted(DateTime date) {
-    final updatedDayPreviews = List.of(dayPreviews);
-    final updatedIndex = updatedDayPreviews.indexWhere((it) => Utils.isSameDay(date, it.date));
-    if (updatedIndex >= 0) {
-      updatedDayPreviews[updatedIndex] = updatedDayPreviews[updatedIndex].buildNew(canBeMarkedCompleted: false);
-    }
-    return buildNew(dayPreviews: updatedDayPreviews);
-  }
 }

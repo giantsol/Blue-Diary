@@ -167,8 +167,12 @@ class WeekBloc {
   }
 
   Future<void> onMarkDayCompletedClicked(DateTime date) async {
-    _state.add(_state.value.buildNewDayMarkedCompleted(date));
     _usecases.setDayMarkedCompleted(date);
+
+    final currentWeekRecord = await _usecases.getWeekRecord(_state.value.currentDate);
+    _state.add(_state.value.buildNew(
+      currentWeekRecord: currentWeekRecord,
+    ));
   }
 
   void dispose() {

@@ -182,7 +182,7 @@ class AppDatabase implements ToDoDataSource,
     final month = date.month;
     final day = date.day;
     final millis = date.millisecondsSinceEpoch;
-    final prevDayStreak = await _getStreakCount(date.subtract(const Duration(days: 1)));
+    final prevDayStreak = await getStreakCount(date.subtract(const Duration(days: 1)));
     final db = await _database.first;
 
     await db.insert(
@@ -196,21 +196,6 @@ class AppDatabase implements ToDoDataSource,
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-  }
-
-  Future<int> _getStreakCount(DateTime date) async {
-    final year = date.year;
-    final month = date.month;
-    final day = date.day;
-    final db = await _database.first;
-
-    final maps = await db.query(
-      TABLE_MARKED_COMPLETED_DAYS,
-      where: '$COLUMN_YEAR = ? AND $COLUMN_MONTH = ? AND $COLUMN_DAY = ?',
-      whereArgs: [year, month, day],
-    );
-
-    return maps.isEmpty ? 0 : maps[0][COLUMN_STREAK_COUNT] ?? 0;
   }
 
   @override
@@ -240,6 +225,22 @@ class AppDatabase implements ToDoDataSource,
       orderBy: '$COLUMN_STREAK_COUNT DESC',
       limit: 1,
     );
+    return maps.isEmpty ? 0 : maps[0][COLUMN_STREAK_COUNT] ?? 0;
+  }
+
+  @override
+  Future<int> getStreakCount(DateTime date) async {
+    final year = date.year;
+    final month = date.month;
+    final day = date.day;
+    final db = await _database.first;
+
+    final maps = await db.query(
+      TABLE_MARKED_COMPLETED_DAYS,
+      where: '$COLUMN_YEAR = ? AND $COLUMN_MONTH = ? AND $COLUMN_DAY = ?',
+      whereArgs: [year, month, day],
+    );
+
     return maps.isEmpty ? 0 : maps[0][COLUMN_STREAK_COUNT] ?? 0;
   }
 

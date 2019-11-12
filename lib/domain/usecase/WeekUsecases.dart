@@ -24,20 +24,16 @@ class WeekUsecases {
   }
 
   Future<WeekRecord> getWeekRecord(DateTime date) async {
-    // todo: improve logic
     final today = await _dateRepository.getToday();
     final dateInWeek = DateInWeek.fromDate(date);
-    final checkPoints = await _memoRepository.getCheckPoints(date);
-    bool containsToday = false;
-
     final datesInWeek = Utils.getDatesInWeek(date);
     List<DayPreview> dayPreviews = [];
-    // used for calculating whether to draw lines above/below the circle
-    bool prevDayCompleted = false;
-    bool curDayCompleted = false;
+    bool containsToday = false;
 
     for (int i = 0; i < datesInWeek.length; i++) {
       final date = datesInWeek[i];
+      final isToday = Utils.isSameDay(date, today);
+      containsToday = containsToday || isToday;
       final toDos = await _toDoRepository.getToDos(date);
       final memo = await _memoRepository.getDayMemo(date);
 
@@ -52,13 +48,22 @@ class WeekUsecases {
         }
       });
 
-      curDayCompleted = toDos.length > 0 && toDos.length == toDos.where((toDo) => toDo.isDone).length;
+      // whether to draw top and bottom lines
+      final currentDayStreak = await _toDoRepository.getStreakCount(date);
+      final prevDayStreak = await _toDoRepository.getStreakCount(date.subtract(const Duration(days: 1)));
+      final nextDayStreak = await _toDoRepository.getStreakCount(date.add(const Duration(days: 1)));
+      final allToDosDone = toDos.length > 0 && toDos.every((it) => it.isDone);
+      final isLightColor = !allToDosDone && today.compareTo(date) > 0;
+      final isTopLineVisible = (currentDayStreak >= 2) || (prevDayStreak >= 1 && isToday);
+      final isTopLineLightColorIfVisible = currentDayStreak < 1;
+      final isBottomLineVisible = (currentDayStreak >= 1 && nextDayStreak > currentDayStreak) || (currentDayStreak >= 1 && today.difference(date).inDays == 1);
+      final isBottomLineLightColorIfVisible = nextDayStreak <= currentDayStreak;
 
-      final isToday = Utils.isSameDay(date, today);
-      containsToday = containsToday || isToday;
-
+      // whether to show mark completed icon
       final firstLaunchDate = DateTime.parse(await _prefsRepository.getFirstLaunchDateString());
       final hasBeenMarkedCompleted = await _toDoRepository.hasDayBeenMarkedCompleted(date);
+      final canBeMarkedCompleted = allToDosDone && !hasBeenMarkedCompleted &&
+        date.compareTo(firstLaunchDate) >= 0 && date.compareTo(today) <= 0;
 
       final dayPreview = DayPreview(
         year: date.year,
@@ -68,25 +73,19 @@ class WeekUsecases {
         totalToDosCount: toDos.length,
         doneToDosCount: toDos.where((it) => it.isDone).length,
         isToday: isToday,
-        isLightColor: !curDayCompleted && today.compareTo(date) > 0,
-        isTopLineVisible: (curDayCompleted && prevDayCompleted) || (date == today && prevDayCompleted),
-        isTopLineLightColor: !curDayCompleted,
+        isLightColor: isLightColor,
+        isTopLineVisible: isTopLineVisible,
+        isTopLineLightColor: isTopLineLightColorIfVisible,
+        isBottomLineVisible: isBottomLineVisible,
+        isBottomLineLightColor: isBottomLineLightColorIfVisible,
         memoPreview: memo.text.length > 0 ? memo.text.replaceAll(_enterRegex, ', ') : '',
         toDoPreviews: toDos.length > 2 ? toDos.sublist(0, 2) : toDos,
-        canBeMarkedCompleted: curDayCompleted && !hasBeenMarkedCompleted && date.compareTo(firstLaunchDate) >= 0 && date.compareTo(today) <= 0,
+        canBeMarkedCompleted: canBeMarkedCompleted,
       );
-
       dayPreviews.add(dayPreview);
-
-      if (i > 0) {
-        dayPreviews[i - 1] = dayPreviews[i - 1].buildNew(
-          isBottomLineVisible: (prevDayCompleted && curDayCompleted) || (date == today && prevDayCompleted),
-          isBottomLineLightColor: !curDayCompleted,
-        );
-      }
-
-      prevDayCompleted = curDayCompleted;
     }
+
+    final checkPoints = await _memoRepository.getCheckPoints(date);
 
     return WeekRecord(
       dateInWeek: dateInWeek,
