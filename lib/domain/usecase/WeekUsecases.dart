@@ -129,4 +129,24 @@ class WeekUsecases {
   void setShownMarkDayCompletedTutorial() {
     _prefsRepository.setShownMarkDayCompletedTutorial();
   }
+
+  Future<DateTime> getCompletedMarkableDayToKeepStreakBefore(DateTime date) async {
+    final DateTime lastMarkedCompletedDay = await _toDoRepository.getLastMarkedCompletedDay(date.millisecondsSinceEpoch);
+    if (lastMarkedCompletedDay != DateRepository.INVALID_DATE) {
+      final nextOfLastMarkedCompletedDay = lastMarkedCompletedDay.add(const Duration(days: 1));
+      if (nextOfLastMarkedCompletedDay.compareTo(date) >= 0) {
+        return DateRepository.INVALID_DATE;
+      } else {
+        final toDos = await _toDoRepository.getToDos(nextOfLastMarkedCompletedDay);
+        final allToDosDone = toDos.length > 0 && toDos.every((it) => it.isDone);
+        if (allToDosDone) {
+          return nextOfLastMarkedCompletedDay;
+        } else {
+          return DateRepository.INVALID_DATE;
+        }
+      }
+    } else {
+      return DateRepository.INVALID_DATE;
+    }
+  }
 }

@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/Delegators.dart';
+import 'package:todo_app/Localization.dart';
+import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
@@ -166,7 +168,25 @@ class WeekBloc {
     _initState();
   }
 
-  Future<void> onMarkDayCompletedClicked(DateTime date) async {
+  Future<void> onMarkDayCompletedClicked(BuildContext context, DateTime date) async {
+    final completedMarkableDay = await _usecases.getCompletedMarkableDayToKeepStreakBefore(date);
+    if (completedMarkableDay != DateRepository.INVALID_DATE) {
+      final title = AppLocalizations.of(context).warning;
+      final body = AppLocalizations.of(context).getHasCompletedMarkableDay(completedMarkableDay);
+      Utils.showAppDialog(context,
+        title,
+        body,
+        null,
+          () {
+          _markDayCompleted(date);
+        }
+      );
+    } else {
+      _markDayCompleted(date);
+    }
+  }
+
+  Future<void> _markDayCompleted(DateTime date) async {
     _usecases.setDayMarkedCompleted(date);
 
     final currentWeekRecord = await _usecases.getWeekRecord(_state.value.currentDate);

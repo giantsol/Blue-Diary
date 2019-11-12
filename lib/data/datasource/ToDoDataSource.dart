@@ -11,4 +11,5 @@ abstract class ToDoDataSource {
   Future<int> getMaxStreakCount();
   Future<int> getStreakCount(DateTime date);
   Future<bool> hasDayBeenMarkedCompleted(DateTime date);
+  Future<int> getLastMarkedCompletedDayMillis(int maxMillis);
 }

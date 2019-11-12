@@ -1,6 +1,7 @@
 
 import 'package:todo_app/data/datasource/ToDoDataSource.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
+import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/repository/ToDoRepository.dart';
 
 class ToDoRepositoryImpl implements ToDoRepository {
@@ -51,5 +52,15 @@ class ToDoRepositoryImpl implements ToDoRepository {
   @override
   Future<bool> hasDayBeenMarkedCompleted(DateTime date) {
     return _dataSource.hasDayBeenMarkedCompleted(date);
+  }
+
+  @override
+  Future<DateTime> getLastMarkedCompletedDay(int maxMillis) async {
+    final millis =  await _dataSource.getLastMarkedCompletedDayMillis(maxMillis);
+    if (millis <= 0) {
+      return DateRepository.INVALID_DATE;
+    } else {
+      return DateTime.fromMillisecondsSinceEpoch(millis);
+    }
   }
 }

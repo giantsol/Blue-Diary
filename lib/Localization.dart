@@ -75,6 +75,7 @@ class AppLocalizations {
   static const SETTINGS_DEVELOPER = "settingsDeveloper";
   static const SETTINGS_USE_REAL_FIRST_LAUNCH_DATE = "settingsUseRealFirstLaunchDate";
   static const SETTINGS_CUSTOM_FIRST_LAUNCH_DATE = "settingsCustomFirstLaunchDate";
+  static const WARNING = "warning";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -152,6 +153,7 @@ class AppLocalizations {
       SETTINGS_DEVELOPER: 'Developer',
       SETTINGS_USE_REAL_FIRST_LAUNCH_DATE: 'Use real first launch date',
       SETTINGS_CUSTOM_FIRST_LAUNCH_DATE: 'Set custom first launch date',
+      WARNING: 'Warning',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -224,6 +226,7 @@ class AppLocalizations {
       SETTINGS_DEVELOPER: '개발자 설정',
       SETTINGS_USE_REAL_FIRST_LAUNCH_DATE: '실제 첫 실행 날짜 사용',
       SETTINGS_CUSTOM_FIRST_LAUNCH_DATE: '커스텀 첫 실행 날짜 설정',
+      WARNING: '주의',
     },
   };
 
@@ -296,6 +299,7 @@ class AppLocalizations {
   String get settingsDeveloper => _localizedValues[locale.languageCode][SETTINGS_DEVELOPER];
   String get settingsUseRealFirstLaunchDate => _localizedValues[locale.languageCode][SETTINGS_USE_REAL_FIRST_LAUNCH_DATE];
   String get settingsCustomFirstLaunchDate => _localizedValues[locale.languageCode][SETTINGS_CUSTOM_FIRST_LAUNCH_DATE];
+  String get warning => _localizedValues[locale.languageCode][WARNING];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {
@@ -451,6 +455,14 @@ class AppLocalizations {
         return _localizedValues[locale.languageCode][WORLD_GRASSLAND];
       default:
         return '';
+    }
+  }
+
+  String getHasCompletedMarkableDay(DateTime date) {
+    if (locale.languageCode == 'ko') {
+      return '${date.month}월 ${date.day}에 먼저 완료 가능한 날이 있습니다.\n순서대로 완료하지 않으면 streak을 처음부터 시작하게 됩니다.\n진행하시겠습니까?';
+    } else {
+      return 'You have a completable day at ${date.month}.${date.day} to keep your streak.\nYou will lose current streak if you don\'t complete it orderly. Proceed?';
     }
   }
 }

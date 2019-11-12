@@ -10,6 +10,7 @@ import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
+import 'package:todo_app/domain/repository/DateRepository.dart';
 
 class AppDatabase implements ToDoDataSource,
   MemoDataSource,
@@ -257,6 +258,20 @@ class AppDatabase implements ToDoDataSource,
       whereArgs: [year, month, day],
     );
     return maps.isNotEmpty;
+  }
+
+  @override
+  Future<int> getLastMarkedCompletedDayMillis(int maxMillis) async {
+    final db = await _database.first;
+
+    final maps = await db.query(
+      TABLE_MARKED_COMPLETED_DAYS,
+      where: '$COLUMN_MILLIS_SINCE_EPOCH <= ?',
+      whereArgs: [maxMillis],
+      orderBy: '$COLUMN_MILLIS_SINCE_EPOCH DESC',
+      limit: 1,
+    );
+    return maps.isEmpty ? 0 : maps[0][COLUMN_MILLIS_SINCE_EPOCH] ?? 0;
   }
 
   @override

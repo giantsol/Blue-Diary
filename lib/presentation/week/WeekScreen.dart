@@ -761,7 +761,7 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
             alignment: Alignment.center,
             child: GestureDetector(
               child: Image.asset('assets/ic_check.png'),
-              onTap: () => bloc.onMarkDayCompletedClicked(date),
+              onTap: () => bloc.onMarkDayCompletedClicked(context, date),
             )
           ): const SizedBox.shrink(),
         ],
