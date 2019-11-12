@@ -96,4 +96,8 @@ class WeekState {
   WeekState buildNewCheckPointUpdated(CheckPoint updated) {
     return buildNew(currentWeekRecord: currentWeekRecord.buildNewCheckPointUpdated(updated));
   }
+
+  WeekState buildNewDayMarkedCompleted(DateTime date) {
+    return buildNew(currentWeekRecord: currentWeekRecord.buildNewDayMarkedCompleted(date));
+  }
 }

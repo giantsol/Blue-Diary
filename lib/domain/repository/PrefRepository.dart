@@ -17,4 +17,6 @@ abstract class PrefsRepository {
   Future<String> getCustomFirstLaunchDateString();
   void setCustomFirstLaunchDate(DateTime date);
   Future<String> getFirstLaunchDateString();
+  Future<bool> hasShownMarkDayCompletedTutorial();
+  void setShownMarkDayCompletedTutorial();
 }

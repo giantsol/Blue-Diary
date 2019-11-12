@@ -60,6 +60,7 @@ class DayPreview {
   DayPreview buildNew({
     bool isBottomLineVisible,
     bool isBottomLineLightColor,
+    bool canBeMarkedCompleted,
   }) {
     return DayPreview(
       year: this.year,
@@ -76,7 +77,7 @@ class DayPreview {
       isBottomLineLightColor: isBottomLineLightColor ?? this.isBottomLineLightColor,
       memoPreview: this.memoPreview,
       toDoPreviews: this.toDoPreviews,
-      canBeMarkedCompleted: this.canBeMarkedCompleted,
+      canBeMarkedCompleted: canBeMarkedCompleted ?? this.canBeMarkedCompleted,
     );
   }
 }

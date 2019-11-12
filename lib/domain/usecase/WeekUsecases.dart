@@ -24,6 +24,7 @@ class WeekUsecases {
   }
 
   Future<WeekRecord> getWeekRecord(DateTime date) async {
+    // todo: improve logic
     final today = await _dateRepository.getToday();
     final dateInWeek = DateInWeek.fromDate(date);
     final checkPoints = await _memoRepository.getCheckPoints(date);
@@ -103,7 +104,7 @@ class WeekUsecases {
     return _prefsRepository.getUserPassword();
   }
 
-  Future<bool> hasShownWeekScreenTutorial() async {
+  Future<bool> hasShownWeekScreenTutorial() {
     return _prefsRepository.hasShownWeekScreenTutorial();
   }
 
@@ -120,5 +121,13 @@ class WeekUsecases {
 
   void setDayMarkedCompleted(DateTime date) {
     _toDoRepository.setDayMarkedCompleted(date);
+  }
+
+  Future<bool> hasShownMarkDayCompletedTutorial() {
+    return _prefsRepository.hasShownMarkDayCompletedTutorial();
+  }
+
+  void setShownMarkDayCompletedTutorial() {
+    _prefsRepository.setShownMarkDayCompletedTutorial();
   }
 }

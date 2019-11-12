@@ -99,4 +99,14 @@ class PrefsRepositoryImpl implements PrefsRepository {
       return getCustomFirstLaunchDateString();
     }
   }
+
+  @override
+  Future<bool> hasShownMarkDayCompletedTutorial() {
+    return _prefs.hasShownMarkDayCompletedTutorial();
+  }
+
+  @override
+  void setShownMarkDayCompletedTutorial() {
+    _prefs.setShownMarkDayCompletedTutorial();
+  }
 }

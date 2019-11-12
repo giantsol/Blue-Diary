@@ -166,8 +166,8 @@ class WeekBloc {
     _initState();
   }
 
-  void onMarkDayCompletedClicked(DateTime date) {
-    //todo: updated UI
+  Future<void> onMarkDayCompletedClicked(DateTime date) async {
+    _state.add(_state.value.buildNewDayMarkedCompleted(date));
     _usecases.setDayMarkedCompleted(date);
   }
 

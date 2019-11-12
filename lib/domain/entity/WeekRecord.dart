@@ -1,4 +1,5 @@
 
+import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
@@ -47,6 +48,15 @@ class WeekRecord {
     final updatedIndex = updatedDayPreviews.indexWhere((it) => it.key == updated.key);
     if (updatedIndex >= 0) {
       updatedDayPreviews[updatedIndex] = updated;
+    }
+    return buildNew(dayPreviews: updatedDayPreviews);
+  }
+
+  WeekRecord buildNewDayMarkedCompleted(DateTime date) {
+    final updatedDayPreviews = List.of(dayPreviews);
+    final updatedIndex = updatedDayPreviews.indexWhere((it) => Utils.isSameDay(date, it.date));
+    if (updatedIndex >= 0) {
+      updatedDayPreviews[updatedIndex] = updatedDayPreviews[updatedIndex].buildNew(canBeMarkedCompleted: false);
     }
     return buildNew(dayPreviews: updatedDayPreviews);
   }

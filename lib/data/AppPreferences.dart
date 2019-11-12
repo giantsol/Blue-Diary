@@ -1,5 +1,4 @@
 
-import 'package:flutter/foundation.dart';
 import 'package:preferences/preference_service.dart';
 
 class AppPreferences {
@@ -13,6 +12,7 @@ class AppPreferences {
   static const String KEY_REAL_FIRST_LAUNCH_DATE = 'real.first.launch.date';
   static const String KEY_USE_REAL_FIRST_LAUNCH_DATE = 'use.real.first.launch.date';
   static const String KEY_CUSTOM_FIRST_LAUNCH_DATE = 'custom.first.launch.date';
+  static const String KEY_SHOWN_MARK_DAY_COMPLETED_TUTORIAL = 'user.marked.day.completed.before';
 
   Future<String> getUserPassword() async {
     return PrefService.getString(KEY_USER_PASSWORD) ?? '';
@@ -76,5 +76,13 @@ class AppPreferences {
 
   void setCustomFirstLaunchDateString(String value) {
     PrefService.setString(KEY_CUSTOM_FIRST_LAUNCH_DATE, value);
+  }
+
+  Future<bool> hasShownMarkDayCompletedTutorial() async {
+    return PrefService.getBool(KEY_SHOWN_MARK_DAY_COMPLETED_TUTORIAL) ?? false;
+  }
+
+  void setShownMarkDayCompletedTutorial() {
+    PrefService.setBool(KEY_SHOWN_MARK_DAY_COMPLETED_TUTORIAL, true);
   }
 }
