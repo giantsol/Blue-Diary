@@ -40,6 +40,22 @@ class _RankingScreenState extends State<RankingScreen> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text('Ranking Screen'),
+          state.userDisplayName.isEmpty ? Column(
+            children: <Widget>[
+              RaisedButton(
+                child: Text('Google SignIn'),
+                onPressed: () => _bloc.onGoogleSignInClicked(),
+              ),
+            ],
+          ) : Column(
+            children: <Widget>[
+              Text('UserName: ${state.userDisplayName}'),
+              RaisedButton(
+                child: Text('Sign Out'),
+                onPressed: () => _bloc.onSignOutClicked(),
+              )
+            ],
+          ),
         ],
       ),
     );
