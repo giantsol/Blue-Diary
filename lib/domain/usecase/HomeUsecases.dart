@@ -25,6 +25,13 @@ class HomeUsecases {
       titleColor: _currentChildScreenItemKey == HomeChildScreenItem.KEY_JOURNEY ? AppColors.PRIMARY
         : AppColors.TEXT_BLACK_LIGHT,
     );
+    final rankingNavigationItem = HomeChildScreenItem(
+      key: HomeChildScreenItem.KEY_RANKING,
+      iconPath: _currentChildScreenItemKey == HomeChildScreenItem.KEY_RANKING ? 'assets/ic_record_activated.png'
+        : 'assets/ic_record.png',
+      titleColor: _currentChildScreenItemKey == HomeChildScreenItem.KEY_RANKING ? AppColors.PRIMARY
+        : AppColors.TEXT_BLACK_LIGHT,
+    );
     final settingsNavigationItem = HomeChildScreenItem(
       key: HomeChildScreenItem.KEY_SETTINGS,
       iconPath: _currentChildScreenItemKey == HomeChildScreenItem.KEY_SETTINGS ? 'assets/ic_settings_activated.png'
@@ -32,7 +39,7 @@ class HomeUsecases {
       titleColor: _currentChildScreenItemKey == HomeChildScreenItem.KEY_SETTINGS ? AppColors.PRIMARY
         : AppColors.TEXT_BLACK_LIGHT,
     );
-    return [recordNavigationItem, journeyNavigationItem, settingsNavigationItem];
+    return [recordNavigationItem, journeyNavigationItem, rankingNavigationItem, settingsNavigationItem];
   }
 
   String getCurrentChildScreenKey() {

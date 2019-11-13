@@ -46,6 +46,7 @@ class AppLocalizations {
   static const REMOVE_SELECTED_TO_DOS_TITLE = "removeSelectedToDosTitle";
   static const RECORD_NAVIGATION_TITLE = "recordNavigationTitle";
   static const JOURNEY_NAVIGATION_TITLE = "journeyNavigationTitle";
+  static const RANKING_NAVIGATION_TITLE = "rankingNavigationTitle";
   static const SETTINGS_NAVIGATION_TITLE = "settingsNavigationTitle";
   static const CHECK_POINT_HINT = "checkPointHint";
   static const DAY_MEMO_HINT = "dayMemoHint";
@@ -124,6 +125,7 @@ class AppLocalizations {
       REMOVE_SELECTED_TO_DOS_TITLE: 'Remove TODO',
       RECORD_NAVIGATION_TITLE: 'Record',
       JOURNEY_NAVIGATION_TITLE: 'Journey',
+      RANKING_NAVIGATION_TITLE: 'Ranking',
       SETTINGS_NAVIGATION_TITLE: 'Settings',
       CHECK_POINT_HINT: 'Anything to remind yourself?',
       DAY_MEMO_HINT: 'Memo for today. Anything.',
@@ -197,6 +199,7 @@ class AppLocalizations {
       REMOVE_SELECTED_TO_DOS_TITLE: '작업 삭제',
       RECORD_NAVIGATION_TITLE: '기록',
       JOURNEY_NAVIGATION_TITLE: '여행',
+      RANKING_NAVIGATION_TITLE: '랭킹',
       SETTINGS_NAVIGATION_TITLE: '설정',
       CHECK_POINT_HINT: '이번주의 다짐을 적어보세요.',
       DAY_MEMO_HINT: '오늘의 메모를 적어보세요.',
@@ -440,6 +443,8 @@ class AppLocalizations {
         return _localizedValues[locale.languageCode][RECORD_NAVIGATION_TITLE];
       case HomeChildScreenItem.KEY_JOURNEY:
         return _localizedValues[locale.languageCode][JOURNEY_NAVIGATION_TITLE];
+      case HomeChildScreenItem.KEY_RANKING:
+        return _localizedValues[locale.languageCode][RANKING_NAVIGATION_TITLE];
       case HomeChildScreenItem.KEY_SETTINGS:
         return _localizedValues[locale.languageCode][SETTINGS_NAVIGATION_TITLE];
       default:

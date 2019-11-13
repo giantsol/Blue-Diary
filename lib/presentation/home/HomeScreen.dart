@@ -9,6 +9,7 @@ import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
 import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
 import 'package:todo_app/presentation/journey/JourneyScreen.dart';
+import 'package:todo_app/presentation/ranking/RankingScreen.dart';
 import 'package:todo_app/presentation/settings/SettingsScreen.dart';
 import 'package:todo_app/presentation/week/WeekScreen.dart';
 
@@ -131,6 +132,8 @@ class _ChildScreen extends StatelessWidget {
         );
       case HomeChildScreenItem.KEY_JOURNEY:
         return JourneyScreen();
+      case HomeChildScreenItem.KEY_RANKING:
+        return RankingScreen();
       case HomeChildScreenItem.KEY_SETTINGS:
         return SettingsScreen(
           settingsBlocDelegator: settingsBlocDelegator,
