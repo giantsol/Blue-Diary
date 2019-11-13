@@ -32,6 +32,16 @@ class RankingBloc {
     }
   }
 
+  Future<void> onFacebookSignInClicked() async {
+    final success = await _usecases.signInWithFacebook();
+    if (success) {
+      final userDisplayName = await _usecases.getUserDisplayName();
+      _state.add(_state.value.buildNew(
+        userDisplayName: userDisplayName,
+      ));
+    }
+  }
+
   Future<void> onSignOutClicked() async {
     final success = await _usecases.signOut();
     if (success) {

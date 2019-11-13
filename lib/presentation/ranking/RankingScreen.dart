@@ -46,6 +46,10 @@ class _RankingScreenState extends State<RankingScreen> {
                 child: Text('Google SignIn'),
                 onPressed: () => _bloc.onGoogleSignInClicked(),
               ),
+              RaisedButton(
+                child: Text('Facebook SignIn'),
+                onPressed: () => _bloc.onFacebookSignInClicked(),
+              ),
             ],
           ) : Column(
             children: <Widget>[
@@ -53,7 +57,7 @@ class _RankingScreenState extends State<RankingScreen> {
               RaisedButton(
                 child: Text('Sign Out'),
                 onPressed: () => _bloc.onSignOutClicked(),
-              )
+              ),
             ],
           ),
         ],

@@ -14,6 +14,10 @@ class RankingUsecases {
     return _userRepository.signInWithGoogle();
   }
 
+  Future<bool> signInWithFacebook() {
+    return _userRepository.signInWithFacebook();
+  }
+
   Future<bool> signOut() {
     return _userRepository.signOut();
   }

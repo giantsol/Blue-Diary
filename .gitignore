@@ -74,3 +74,5 @@
 **/key.properties
 **/google-services.json
 **/GoogleService-Info.plist
+**/strings-secret.xml
+**/Secrets.xcconfig
