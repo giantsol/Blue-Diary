@@ -78,6 +78,7 @@ class DayBloc {
       currentDayRecord: currentDayRecord,
       prevDayRecord: prevDayRecord,
       nextDayRecord: nextDayRecord,
+      selectedToDoKeys: const [],
     ));
   }
 
