@@ -96,4 +96,8 @@ class DayUsecases {
   void setShownDayScreenTutorial() {
     _prefsRepository.setShownDayScreenTutorial();
   }
+
+  Future<bool> hasDayBeenMarkedCompleted(DateTime date) {
+    return _toDoRepository.hasDayBeenMarkedCompleted(date);
+  }
 }

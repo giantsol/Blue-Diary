@@ -115,7 +115,13 @@ class DayBloc {
     Navigator.pop(context);
   }
 
-  void onAddToDoClicked(BuildContext context) {
+  Future<void> onAddToDoClicked(BuildContext context) async {
+    final hasBeenMarkedCompleted = await _usecases.hasDayBeenMarkedCompleted(_state.value.currentDate);
+    if (hasBeenMarkedCompleted) {
+      // todo: show message
+      return;
+    }
+
     final currentDayRecord = _state.value.currentDayRecord;
     final toDoRecords = currentDayRecord.toDoRecords;
     final draft = _createDraftToDoRecord(_state.value.currentDate, toDoRecords);
@@ -182,7 +188,13 @@ class DayBloc {
     _state.add(_state.value.buildNew(editingToDoRecord: updated));
   }
 
-  void onToDoRecordItemClicked(ToDoRecord toDoRecord) {
+  Future<void> onToDoRecordItemClicked(ToDoRecord toDoRecord) async {
+    final hasBeenMarkedCompleted = await _usecases.hasDayBeenMarkedCompleted(_state.value.currentDate);
+    if (hasBeenMarkedCompleted) {
+      // todo: show message
+      return;
+    }
+
     if (_state.value.viewState == DayViewState.SELECTION) {
       final selectedKey = toDoRecord.toDo.key;
       final current = _state.value.selectedToDoKeys;
@@ -241,7 +253,13 @@ class DayBloc {
     ));
   }
 
-  void onToDoRecordItemLongClicked(BuildContext context, ToDoRecord toDoRecord) {
+  Future<void> onToDoRecordItemLongClicked(BuildContext context, ToDoRecord toDoRecord) async {
+    final hasBeenMarkedCompleted = await _usecases.hasDayBeenMarkedCompleted(_state.value.currentDate);
+    if (hasBeenMarkedCompleted) {
+      // todo: show message
+      return;
+    }
+
     if (_state.value.viewState != DayViewState.SELECTION) {
       _state.add(_state.value.buildNew(
         viewState: DayViewState.SELECTION,
