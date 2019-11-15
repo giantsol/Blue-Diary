@@ -30,12 +30,6 @@ class JourneyBloc {
       ),
     ];
 
-    //todo: remove below debug code
-    final completionRatio = await _usecases.getCompletionRatio();
-    final currentStreakCount = await _usecases.getLatestStreakCount();
-    final maxStreakCount = await _usecases.getMaxStreakCount();
-    debugPrint('completionRatio: $completionRatio, currentStreak: $currentStreakCount, maxStreak: $maxStreakCount');
-
     _state.add(_state.value.buildNew(
       viewState: JourneyViewState.NORMAL,
       worlds: worlds,

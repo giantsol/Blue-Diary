@@ -54,9 +54,9 @@ class WeekUsecases {
       final nextDayStreak = await _toDoRepository.getStreakCount(date.add(const Duration(days: 1)));
       final allToDosDone = toDos.length > 0 && toDos.every((it) => it.isDone);
       final isLightColor = !allToDosDone && today.compareTo(date) > 0;
-      final isTopLineVisible = (currentDayStreak >= 2) || (prevDayStreak >= 1 && isToday);
+      final isTopLineVisible = (currentDayStreak >= 2) || (prevDayStreak >= 1 && currentDayStreak == 0 && isToday);
       final isTopLineLightColorIfVisible = currentDayStreak < 1;
-      final isBottomLineVisible = (currentDayStreak >= 1 && nextDayStreak > currentDayStreak) || (currentDayStreak >= 1 && today.difference(date).inDays == 1);
+      final isBottomLineVisible = (currentDayStreak >= 1 && nextDayStreak > currentDayStreak) || (currentDayStreak >= 1 && nextDayStreak == 0 && today.difference(date).inDays == 1);
       final isBottomLineLightColorIfVisible = nextDayStreak <= currentDayStreak;
 
       // whether to show mark completed icon

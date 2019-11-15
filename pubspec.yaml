@@ -47,6 +47,7 @@ dependencies:
   google_sign_in: ^4.0.13
   flutter_facebook_login: ^3.0.0
   firebase_auth: ^0.14.0+8
+  cloud_firestore: ^0.12.10
 
   flutter_datetime_picker: ^1.2.8
 

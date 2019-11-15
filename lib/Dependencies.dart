@@ -41,5 +41,5 @@ class Dependencies {
   final SettingsUsecases settingsUsecases = SettingsUsecases(_prefsRepository);
   final LockUsecases lockUsecases = LockUsecases(_prefsRepository);
   final JourneyUsecases journeyUsecases = JourneyUsecases(_dateRepository, _prefsRepository, _toDoRepository);
-  final RankingUsecases rankingUsecases = RankingUsecases(_userRepository);
+  final RankingUsecases rankingUsecases = RankingUsecases(_userRepository, _dateRepository, _prefsRepository, _toDoRepository);
 }

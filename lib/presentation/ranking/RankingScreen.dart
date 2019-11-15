@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/presentation/ranking/RankingBloc.dart';
 import 'package:todo_app/presentation/ranking/RankingState.dart';
 
@@ -37,7 +38,6 @@ class _RankingScreenState extends State<RankingScreen> {
   Widget _buildUI(RankingState state) {
     return Center(
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text('Ranking Screen'),
           state.userDisplayName.isEmpty ? Column(
@@ -58,10 +58,57 @@ class _RankingScreenState extends State<RankingScreen> {
                 child: Text('Sign Out'),
                 onPressed: () => _bloc.onSignOutClicked(),
               ),
+              RaisedButton(
+                child: Text('Submit my score'),
+                onPressed: () => _bloc.onSubmitMyScoreClicked(),
+              ),
             ],
+          ),
+          state.hasMoreRankingInfos ? RaisedButton(
+            child: Text('Load more'),
+            onPressed: () => _bloc.onLoadMoreRankingInfosClicked(),
+          ): const SizedBox.shrink(),
+          Expanded(
+            child: ListView.builder(
+              itemCount: state.rankingUserInfos.length,
+              itemBuilder: (context, index) {
+                final userInfo = state.rankingUserInfos[index];
+                return _RankingItem(
+                  rank: index + 1,
+                  userInfo: userInfo,
+                );
+              },
+            ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _RankingItem extends StatelessWidget {
+  final int rank;
+  final RankingUserInfo userInfo;
+
+  const _RankingItem({
+    @required this.rank,
+    @required this.userInfo,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Text('$rank'),
+        const SizedBox(width: 4,),
+        Text('${userInfo.name}'),
+        const SizedBox(width: 4,),
+        Text('ratio: ${userInfo.completionRatio}'),
+        const SizedBox(width: 4,),
+        Text('ls: ${userInfo.latestStreak}'),
+        const SizedBox(width: 4,),
+        Text('ms: ${userInfo.maxStreak}'),
+      ],
     );
   }
 }
