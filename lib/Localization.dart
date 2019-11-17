@@ -45,7 +45,7 @@ class AppLocalizations {
   static const TEMP_PASSWORD_MAIL_SEND_FAILED = "tempPasswordMailSendFailed";
   static const REMOVE_SELECTED_TO_DOS_TITLE = "removeSelectedToDosTitle";
   static const RECORD_NAVIGATION_TITLE = "recordNavigationTitle";
-  static const JOURNEY_NAVIGATION_TITLE = "journeyNavigationTitle";
+  static const PET_NAVIGATION_TITLE = "petNavigationTitle";
   static const RANKING_NAVIGATION_TITLE = "rankingNavigationTitle";
   static const SETTINGS_NAVIGATION_TITLE = "settingsNavigationTitle";
   static const CHECK_POINT_HINT = "checkPointHint";
@@ -68,7 +68,7 @@ class AppLocalizations {
   static const SETTINGS_FEEDBACK = "settingsFeedback";
   static const LEAVE_FEEDBACK_TITLE = "leaveFeedbackTitle";
   static const LEAVE_FEEDBACK_BODY = "leaveFeedbackBody";
-  static const JOURNEY_TITLE = "journeyTitle";
+  static const PET_TITLE = "petTitle";
   static const WORLD_BEGINNING = "worldBeginning";
   static const WORLD_GRASSLAND = "worldGrassland";
   static const RETRY = "retry";
@@ -124,7 +124,7 @@ class AppLocalizations {
       TEMP_PASSWORD_MAIL_SEND_FAILED: 'Mail has not been sent. Please check your recovery email again.',
       REMOVE_SELECTED_TO_DOS_TITLE: 'Remove TODO',
       RECORD_NAVIGATION_TITLE: 'Record',
-      JOURNEY_NAVIGATION_TITLE: 'Journey',
+      PET_NAVIGATION_TITLE: 'Pet',
       RANKING_NAVIGATION_TITLE: 'Ranking',
       SETTINGS_NAVIGATION_TITLE: 'Settings',
       CHECK_POINT_HINT: 'Anything to remind yourself?',
@@ -147,7 +147,7 @@ class AppLocalizations {
       SETTINGS_FEEDBACK: 'Leave Feedback :)',
       LEAVE_FEEDBACK_TITLE: 'Oh sweet...',
       LEAVE_FEEDBACK_BODY: 'It would be lovely to get your feedback. Write review in app store?',
-      JOURNEY_TITLE: 'Journey',
+      PET_TITLE: 'Pet',
       WORLD_BEGINNING: 'The Beginning',
       WORLD_GRASSLAND: 'Grassland',
       RETRY: 'Retry',
@@ -198,7 +198,7 @@ class AppLocalizations {
       TEMP_PASSWORD_MAIL_SEND_FAILED: '메일 발송에 실패하였습니다. 복원 이메일을 확인해주세요.',
       REMOVE_SELECTED_TO_DOS_TITLE: '작업 삭제',
       RECORD_NAVIGATION_TITLE: '기록',
-      JOURNEY_NAVIGATION_TITLE: '여행',
+      PET_NAVIGATION_TITLE: '펫',
       RANKING_NAVIGATION_TITLE: '랭킹',
       SETTINGS_NAVIGATION_TITLE: '설정',
       CHECK_POINT_HINT: '이번주의 다짐을 적어보세요.',
@@ -221,7 +221,7 @@ class AppLocalizations {
       SETTINGS_FEEDBACK: '의견 남기기 :)',
       LEAVE_FEEDBACK_TITLE: '우왕...',
       LEAVE_FEEDBACK_BODY: '의견을 주신다면 영광입니다. 앱스토어에 리뷰를 작성하시겠습니까?',
-      JOURNEY_TITLE: '여행',
+      PET_TITLE: '여행',
       WORLD_BEGINNING: '태초',
       WORLD_GRASSLAND: '초원',
       RETRY: '다시 시도',
@@ -296,7 +296,7 @@ class AppLocalizations {
   String get settingsFeedback => _localizedValues[locale.languageCode][SETTINGS_FEEDBACK];
   String get leaveFeedbackTitle => _localizedValues[locale.languageCode][LEAVE_FEEDBACK_TITLE];
   String get leaveFeedbackBody => _localizedValues[locale.languageCode][LEAVE_FEEDBACK_BODY];
-  String get journeyTitle => _localizedValues[locale.languageCode][JOURNEY_TITLE];
+  String get petTitle => _localizedValues[locale.languageCode][PET_TITLE];
   String get retry => _localizedValues[locale.languageCode][RETRY];
   String get weekScreenNetworkErrorReason => _localizedValues[locale.languageCode][WEEK_SCREEN_NETWORK_ERROR_REASON];
   String get settingsDeveloper => _localizedValues[locale.languageCode][SETTINGS_DEVELOPER];
@@ -441,8 +441,8 @@ class AppLocalizations {
     switch (key) {
       case HomeChildScreenItem.KEY_RECORD:
         return _localizedValues[locale.languageCode][RECORD_NAVIGATION_TITLE];
-      case HomeChildScreenItem.KEY_JOURNEY:
-        return _localizedValues[locale.languageCode][JOURNEY_NAVIGATION_TITLE];
+      case HomeChildScreenItem.KEY_PET:
+        return _localizedValues[locale.languageCode][PET_NAVIGATION_TITLE];
       case HomeChildScreenItem.KEY_RANKING:
         return _localizedValues[locale.languageCode][RANKING_NAVIGATION_TITLE];
       case HomeChildScreenItem.KEY_SETTINGS:

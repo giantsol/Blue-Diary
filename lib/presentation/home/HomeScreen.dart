@@ -8,7 +8,7 @@ import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
 import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
-import 'package:todo_app/presentation/journey/JourneyScreen.dart';
+import 'package:todo_app/presentation/pet/PetScreen.dart';
 import 'package:todo_app/presentation/ranking/RankingScreen.dart';
 import 'package:todo_app/presentation/settings/SettingsScreen.dart';
 import 'package:todo_app/presentation/week/WeekScreen.dart';
@@ -130,8 +130,8 @@ class _ChildScreen extends StatelessWidget {
         return WeekScreen(
           weekBlocDelegator: weekBlocDelegator,
         );
-      case HomeChildScreenItem.KEY_JOURNEY:
-        return JourneyScreen();
+      case HomeChildScreenItem.KEY_PET:
+        return PetScreen();
       case HomeChildScreenItem.KEY_RANKING:
         return RankingScreen();
       case HomeChildScreenItem.KEY_SETTINGS:
@@ -197,7 +197,12 @@ class _BottomNavigationItem extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Image.asset(item.iconPath),
+                  Container(
+                    width: 24,
+                    height: 24,
+                    alignment: Alignment.center,
+                    child: Image.asset(item.iconPath),
+                  ),
                   SizedBox(height: 2),
                   Text(
                     title,

@@ -1,26 +1,26 @@
 
 import 'package:todo_app/domain/entity/World.dart';
 
-class JourneyState {
-  final JourneyViewState viewState;
+class PetState {
+  final PetViewState viewState;
   final int growthPainCount;
   final List<World> worlds;
   final bool showToBeContinued;
 
-  const JourneyState({
-    this.viewState = JourneyViewState.LOADING,
+  const PetState({
+    this.viewState = PetViewState.LOADING,
     this.growthPainCount = 0,
     this.worlds = const [],
     this.showToBeContinued = true,
   });
 
-  JourneyState buildNew({
-    JourneyViewState viewState,
+  PetState buildNew({
+    PetViewState viewState,
     int growthPainCount,
     List<World> worlds,
     bool showToBeContinued,
   }) {
-    return JourneyState(
+    return PetState(
       viewState: viewState ?? this.viewState,
       growthPainCount: growthPainCount ?? this.growthPainCount,
       worlds: worlds ?? this.worlds,
@@ -29,7 +29,7 @@ class JourneyState {
   }
 }
 
-enum JourneyViewState {
+enum PetViewState {
   LOADING,
   NORMAL,
 }

@@ -4,23 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/World.dart';
-import 'package:todo_app/presentation/journey/JourneyBloc.dart';
-import 'package:todo_app/presentation/journey/JourneyState.dart';
+import 'package:todo_app/presentation/pet/PetBloc.dart';
+import 'package:todo_app/presentation/pet/PetState.dart';
 
-class JourneyScreen extends StatefulWidget {
+class PetScreen extends StatefulWidget {
   @override
-  State createState() => _JourneyScreenState();
+  State createState() => _PetScreenState();
 }
 
-class _JourneyScreenState extends State<JourneyScreen> {
-  JourneyBloc _bloc;
+class _PetScreenState extends State<PetScreen> {
+  PetBloc _bloc;
   ScrollController _scrollController;
   final GlobalKey<_HeaderShadowState> _headerShadowKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
-    _bloc = JourneyBloc();
+    _bloc = PetBloc();
     _scrollController = ScrollController();
   }
 
@@ -42,12 +42,12 @@ class _JourneyScreenState extends State<JourneyScreen> {
     );
   }
 
-  Widget _buildUI(JourneyState state) {
-    return state.viewState == JourneyViewState.LOADING ? _WholeLoadingView()
+  Widget _buildUI(PetState state) {
+    return state.viewState == PetViewState.LOADING ? _WholeLoadingView()
       : Column(
       children: <Widget>[
         _Header(
-          title: AppLocalizations.of(context).journeyTitle,
+          title: AppLocalizations.of(context).petTitle,
           growthPainCount: state.growthPainCount,
         ),
         Expanded(
@@ -190,7 +190,7 @@ class _HeaderShadowState extends State<_HeaderShadow> {
 }
 
 class _WorldItem extends StatelessWidget {
-  final JourneyBloc bloc;
+  final PetBloc bloc;
   final World item;
 
   _WorldItem({

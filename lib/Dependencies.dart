@@ -17,7 +17,7 @@ import 'package:todo_app/domain/usecase/CreatePasswordUsecases.dart';
 import 'package:todo_app/domain/usecase/DayUsecases.dart';
 import 'package:todo_app/domain/usecase/HomeUsecases.dart';
 import 'package:todo_app/domain/usecase/InputPasswordUsecases.dart';
-import 'package:todo_app/domain/usecase/JourneyUsecases.dart';
+import 'package:todo_app/domain/usecase/PetUsecases.dart';
 import 'package:todo_app/domain/usecase/LockUsecases.dart';
 import 'package:todo_app/domain/usecase/RankingUsecases.dart';
 import 'package:todo_app/domain/usecase/SettingsUsecases.dart';
@@ -40,6 +40,6 @@ class Dependencies {
   final DayUsecases dayUsecases = DayUsecases(_toDoRepository, _categoryRepository, _memoRepository, _prefsRepository, _dateRepository);
   final SettingsUsecases settingsUsecases = SettingsUsecases(_prefsRepository);
   final LockUsecases lockUsecases = LockUsecases(_prefsRepository);
-  final JourneyUsecases journeyUsecases = JourneyUsecases(_dateRepository, _prefsRepository, _toDoRepository);
+  final PetUsecases petUsecases = PetUsecases(_dateRepository, _prefsRepository, _toDoRepository);
   final RankingUsecases rankingUsecases = RankingUsecases(_userRepository, _dateRepository, _prefsRepository, _toDoRepository);
 }

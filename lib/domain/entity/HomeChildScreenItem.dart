@@ -4,7 +4,7 @@ import 'package:todo_app/AppColors.dart';
 
 class HomeChildScreenItem {
   static const KEY_RECORD = 'record';
-  static const KEY_JOURNEY = 'journey';
+  static const KEY_PET = 'pet';
   static const KEY_RANKING = 'ranking';
   static const KEY_SETTINGS = 'settings';
 

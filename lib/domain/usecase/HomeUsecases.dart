@@ -18,17 +18,17 @@ class HomeUsecases {
       titleColor: _currentChildScreenItemKey == HomeChildScreenItem.KEY_RECORD ? AppColors.PRIMARY
         : AppColors.TEXT_BLACK_LIGHT,
     );
-    final journeyNavigationItem = HomeChildScreenItem(
-      key: HomeChildScreenItem.KEY_JOURNEY,
-      iconPath: _currentChildScreenItemKey == HomeChildScreenItem.KEY_JOURNEY ? 'assets/ic_record_activated.png'
-        : 'assets/ic_record.png',
-      titleColor: _currentChildScreenItemKey == HomeChildScreenItem.KEY_JOURNEY ? AppColors.PRIMARY
+    final petNavigationItem = HomeChildScreenItem(
+      key: HomeChildScreenItem.KEY_PET,
+      iconPath: _currentChildScreenItemKey == HomeChildScreenItem.KEY_PET ? 'assets/ic_pet_activated.png'
+        : 'assets/ic_pet.png',
+      titleColor: _currentChildScreenItemKey == HomeChildScreenItem.KEY_PET ? AppColors.PRIMARY
         : AppColors.TEXT_BLACK_LIGHT,
     );
     final rankingNavigationItem = HomeChildScreenItem(
       key: HomeChildScreenItem.KEY_RANKING,
-      iconPath: _currentChildScreenItemKey == HomeChildScreenItem.KEY_RANKING ? 'assets/ic_record_activated.png'
-        : 'assets/ic_record.png',
+      iconPath: _currentChildScreenItemKey == HomeChildScreenItem.KEY_RANKING ? 'assets/ic_ranking_activated.png'
+        : 'assets/ic_ranking.png',
       titleColor: _currentChildScreenItemKey == HomeChildScreenItem.KEY_RANKING ? AppColors.PRIMARY
         : AppColors.TEXT_BLACK_LIGHT,
     );
@@ -39,7 +39,7 @@ class HomeUsecases {
       titleColor: _currentChildScreenItemKey == HomeChildScreenItem.KEY_SETTINGS ? AppColors.PRIMARY
         : AppColors.TEXT_BLACK_LIGHT,
     );
-    return [recordNavigationItem, journeyNavigationItem, rankingNavigationItem, settingsNavigationItem];
+    return [recordNavigationItem, petNavigationItem, rankingNavigationItem, settingsNavigationItem];
   }
 
   String getCurrentChildScreenKey() {

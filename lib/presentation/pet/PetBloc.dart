@@ -2,19 +2,19 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/entity/World.dart';
-import 'package:todo_app/domain/usecase/JourneyUsecases.dart';
+import 'package:todo_app/domain/usecase/PetUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
-import 'package:todo_app/presentation/journey/JourneyState.dart';
+import 'package:todo_app/presentation/pet/PetState.dart';
 import 'package:todo_app/presentation/world/WorldScreen.dart';
 
-class JourneyBloc {
-  final _state = BehaviorSubject<JourneyState>.seeded(JourneyState());
-  JourneyState getInitialState() => _state.value;
-  Stream<JourneyState> observeState() => _state.distinct();
+class PetBloc {
+  final _state = BehaviorSubject<PetState>.seeded(PetState());
+  PetState getInitialState() => _state.value;
+  Stream<PetState> observeState() => _state.distinct();
 
-  final JourneyUsecases _usecases = dependencies.journeyUsecases;
+  final PetUsecases _usecases = dependencies.petUsecases;
 
-  JourneyBloc() {
+  PetBloc() {
     _initState();
   }
 
@@ -31,7 +31,7 @@ class JourneyBloc {
     ];
 
     _state.add(_state.value.buildNew(
-      viewState: JourneyViewState.NORMAL,
+      viewState: PetViewState.NORMAL,
       worlds: worlds,
     ));
   }
