@@ -465,9 +465,9 @@ class AppLocalizations {
 
   String getHasCompletedMarkableDay(DateTime date) {
     if (locale.languageCode == 'ko') {
-      return '${date.month}월 ${date.day}에 먼저 완료 가능한 날이 있습니다.\n순서대로 완료하지 않으면 streak을 처음부터 시작하게 됩니다.\n진행하시겠습니까?';
+      return '${date.month}월 ${date.day}일에 먼저 완료 가능한 날이 있습니다. 순서대로 완료하지 않으면 연속 성공 횟수를 잃게됩니다.\n진행하시겠습니까?';
     } else {
-      return 'You have a completable day at ${date.month}.${date.day} to keep your streak.\nYou will lose current streak if you don\'t complete it orderly. Proceed?';
+      return 'You have a completable day at ${date.month}.${date.day}. You will lose current streak if you don\'t complete it orderly.\nProceed?';
     }
   }
 }

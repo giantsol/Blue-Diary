@@ -20,6 +20,8 @@ class DayPreview {
   final String memoPreview;
   final List<ToDo> toDoPreviews;
   final bool canBeMarkedCompleted;
+  final bool isMarkedCompleted;
+  final int streakCount;
 
   bool get hasTrailingDots => weekday != DateTime.sunday;
   String get key => '$year-$month-$day';
@@ -30,7 +32,9 @@ class DayPreview {
   DateTime get date => DateTime(year, month, day);
 
   String get thumbnailString {
-    if (totalToDosCount == 0) {
+    if (isMarkedCompleted) {
+      return '$streakCount';
+    } else if (totalToDosCount == 0) {
       return '-';
     } else {
       final percent = (ratio * 100).toInt();
@@ -54,5 +58,7 @@ class DayPreview {
     this.memoPreview = '',
     this.toDoPreviews = const [],
     this.canBeMarkedCompleted = false,
+    this.isMarkedCompleted = false,
+    this.streakCount = 0,
   });
 }

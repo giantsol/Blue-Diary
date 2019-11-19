@@ -1,6 +1,7 @@
 
 import 'dart:math';
 
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:todo_app/AppColors.dart';
@@ -740,7 +741,17 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
             color: fgColor,
             ratio: ratio,
           ) : const SizedBox.shrink(),
-          Container(
+          canBeMarkedCompleted ? SizedBox(
+            width: 48,
+            height: 48,
+            child: GestureDetector(
+              child: FlareActor(
+                'assets/seed_awaiting.flr',
+                animation: 'idle',
+              ),
+              onTap: () => bloc.onMarkDayCompletedClicked(context, date),
+            )
+          ): Container(
             width: 48,
             height: 48,
             alignment: Alignment.center,
@@ -755,15 +766,6 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
               ),
             ),
           ),
-          canBeMarkedCompleted ? Container(
-            width: 48,
-            height: 48,
-            alignment: Alignment.center,
-            child: GestureDetector(
-              child: Image.asset('assets/ic_check.png'),
-              onTap: () => bloc.onMarkDayCompletedClicked(context, date),
-            )
-          ): const SizedBox.shrink(),
         ],
       ),
     );

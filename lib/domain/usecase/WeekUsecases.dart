@@ -81,6 +81,8 @@ class WeekUsecases {
         memoPreview: memo.text.length > 0 ? memo.text.replaceAll(_enterRegex, ', ') : '',
         toDoPreviews: toDos.length > 2 ? toDos.sublist(0, 2) : toDos,
         canBeMarkedCompleted: canBeMarkedCompleted,
+        isMarkedCompleted: currentDayStreak > 0,
+        streakCount: currentDayStreak,
       );
       dayPreviews.add(dayPreview);
     }
