@@ -12,6 +12,7 @@ import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/usecase/WeekUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/day/DayScreen.dart';
+import 'package:todo_app/presentation/week/FirstCompletableDayTutorial.dart';
 import 'package:todo_app/presentation/week/WeekScreenTutorial.dart';
 import 'package:todo_app/presentation/week/WeekScreenTutorialCallback.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
@@ -57,6 +58,7 @@ class WeekBloc {
       final prevWeekRecord = await _usecases.getWeekRecord(initialDate.subtract(_sevenDays));
       final nextWeekRecord = await _usecases.getWeekRecord(initialDate.add(_sevenDays));
       final startTutorial = !(await _usecases.hasShownWeekScreenTutorial());
+      final showFirstCompletableDayTutorial = currentWeekRecord.showFirstCompletableDayTutorialIndex >= 0;
 
       _state.add(_state.value.buildNew(
         viewState: WeekViewState.NORMAL,
@@ -69,10 +71,11 @@ class WeekBloc {
         initialDate: initialDate,
         currentWeekRecordPageIndex: _state.value.initialWeekRecordPageIndex,
         currentDate: initialDate,
-        pageViewScrollEnabled: !startTutorial,
+        pageViewScrollEnabled: !startTutorial && !showFirstCompletableDayTutorial,
 
         startTutorialEvent: startTutorial,
         scrollToTodayPreviewEvent: !startTutorial,
+        showFirstCompletableDayTutorialEvent: showFirstCompletableDayTutorial,
       ));
     }
   }
@@ -99,11 +102,15 @@ class WeekBloc {
     final currentWeekRecord = await _usecases.getWeekRecord(currentDate);
     final prevWeekRecord = await _usecases.getWeekRecord(currentDate.subtract(_sevenDays));
     final nextWeekRecord = await _usecases.getWeekRecord(currentDate.add(_sevenDays));
+    final showFirstCompletableDayTutorialEvent = currentWeekRecord.showFirstCompletableDayTutorialIndex >= 0;
 
     _state.add(_state.value.buildNew(
       currentWeekRecord: currentWeekRecord,
       prevWeekRecord: prevWeekRecord,
       nextWeekRecord: nextWeekRecord,
+      pageViewScrollEnabled: !showFirstCompletableDayTutorialEvent,
+
+      showFirstCompletableDayTutorialEvent: showFirstCompletableDayTutorialEvent,
     ));
   }
 
@@ -122,8 +129,13 @@ class WeekBloc {
     );
 
     final currentWeekRecord = await _usecases.getWeekRecord(_state.value.currentDate);
+    final showFirstCompletableDayTutorialEvent = currentWeekRecord.showFirstCompletableDayTutorialIndex >= 0;
+
     _state.add(_state.value.buildNew(
       currentWeekRecord: currentWeekRecord,
+      pageViewScrollEnabled: !showFirstCompletableDayTutorialEvent,
+
+      showFirstCompletableDayTutorialEvent: showFirstCompletableDayTutorialEvent,
     ));
   }
 
@@ -192,6 +204,24 @@ class WeekBloc {
     final currentWeekRecord = await _usecases.getWeekRecord(_state.value.currentDate);
     _state.add(_state.value.buildNew(
       currentWeekRecord: currentWeekRecord,
+    ));
+  }
+
+  Future<void> showFirstCompletableDayTutorial(BuildContext context, WeekScreenTutorialCallback callback) async {
+    // just rebuild to clear flag
+    _state.add(_state.value.buildNew());
+
+    await Navigator.push(context, PageRouteBuilder(
+      opaque: false,
+      pageBuilder: (context, _, __) => FirstCompletableDayTutorial(
+        weekScreenTutorialCallback: callback,
+      ),
+    ));
+
+    _usecases.setShownFirstCompletableDayTutorial();
+
+    _state.add(_state.value.buildNew(
+      pageViewScrollEnabled: true,
     ));
   }
 

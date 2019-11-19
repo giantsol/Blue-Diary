@@ -9,6 +9,7 @@ class WeekRecord {
   final List<CheckPoint> checkPoints;
   final List<DayPreview> dayPreviews;
   final bool containsToday;
+  final int showFirstCompletableDayTutorialIndex;
 
   String get key => '${dateInWeek.year}-${dateInWeek.month}-${dateInWeek.nthWeek}';
 
@@ -17,18 +18,21 @@ class WeekRecord {
     this.checkPoints = const [],
     this.dayPreviews = const [],
     this.containsToday = false,
+    this.showFirstCompletableDayTutorialIndex = -1,
   });
 
   WeekRecord buildNew({
     List<CheckPoint> checkPoints,
     List<DayPreview> dayPreviews,
     bool containsToday,
+    bool showFirstCompletableDayTutorialIndex,
   }) {
     return WeekRecord(
       dateInWeek: this.dateInWeek,
       checkPoints: checkPoints ?? this.checkPoints,
       dayPreviews: dayPreviews ?? this.dayPreviews,
       containsToday: containsToday ?? this.containsToday,
+      showFirstCompletableDayTutorialIndex: showFirstCompletableDayTutorialIndex ?? this.showFirstCompletableDayTutorialIndex,
     );
   }
 

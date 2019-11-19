@@ -101,12 +101,12 @@ class PrefsRepositoryImpl implements PrefsRepository {
   }
 
   @override
-  Future<bool> hasShownMarkDayCompletedTutorial() {
-    return _prefs.hasShownMarkDayCompletedTutorial();
+  Future<bool> hasShownFirstCompletableDayTutorial() {
+    return _prefs.hasShownFirstCompletableDayTutorial();
   }
 
   @override
-  void setShownMarkDayCompletedTutorial() {
-    _prefs.setShownMarkDayCompletedTutorial();
+  void setShownFirstCompletableDayTutorial() {
+    _prefs.setShownFirstCompletableDayTutorial();
   }
 }

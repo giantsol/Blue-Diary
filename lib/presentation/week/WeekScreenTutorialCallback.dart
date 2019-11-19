@@ -7,4 +7,6 @@ abstract class WeekScreenTutorialCallback {
   ViewLayoutInfo Function() getCheckPointsFinder();
   Future<void> scrollToTodayPreview();
   ViewLayoutInfo Function() getTodayPreviewFinder();
+  Future<void> scrollToFirstCompletableDayPreview();
+  ViewLayoutInfo Function() getFirstCompletableDayPreviewFinder();
 }

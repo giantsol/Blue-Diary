@@ -27,8 +27,10 @@ class WeekUsecases {
     final today = await _dateRepository.getToday();
     final dateInWeek = DateInWeek.fromDate(date);
     final datesInWeek = Utils.getDatesInWeek(date);
+    final hasShownFirstCompletableDayTutorial = await _prefsRepository.hasShownFirstCompletableDayTutorial();
     List<DayPreview> dayPreviews = [];
     bool containsToday = false;
+    int showFirstCompletableDayTutorialIndex = -1;
 
     for (int i = 0; i < datesInWeek.length; i++) {
       final date = datesInWeek[i];
@@ -64,6 +66,9 @@ class WeekUsecases {
       final hasBeenMarkedCompleted = await _toDoRepository.hasDayBeenMarkedCompleted(date);
       final canBeMarkedCompleted = allToDosDone && !hasBeenMarkedCompleted &&
         date.compareTo(firstLaunchDate) >= 0 && date.compareTo(today) <= 0;
+      if (showFirstCompletableDayTutorialIndex == -1) {
+        showFirstCompletableDayTutorialIndex = !hasShownFirstCompletableDayTutorial && canBeMarkedCompleted ? i : -1;
+      }
 
       final dayPreview = DayPreview(
         year: date.year,
@@ -94,6 +99,7 @@ class WeekUsecases {
       checkPoints: checkPoints,
       dayPreviews: dayPreviews,
       containsToday: containsToday,
+      showFirstCompletableDayTutorialIndex: showFirstCompletableDayTutorialIndex,
     );
   }
 
@@ -124,14 +130,6 @@ class WeekUsecases {
     _toDoRepository.setDayMarkedCompleted(date);
   }
 
-  Future<bool> hasShownMarkDayCompletedTutorial() {
-    return _prefsRepository.hasShownMarkDayCompletedTutorial();
-  }
-
-  void setShownMarkDayCompletedTutorial() {
-    _prefsRepository.setShownMarkDayCompletedTutorial();
-  }
-
   Future<DateTime> getCompletedMarkableDayToKeepStreakBefore(DateTime date) async {
     final DateTime lastMarkedCompletedDay = await _toDoRepository.getLastMarkedCompletedDay(date.millisecondsSinceEpoch);
     if (lastMarkedCompletedDay != DateRepository.INVALID_DATE) {
@@ -150,5 +148,9 @@ class WeekUsecases {
     } else {
       return DateRepository.INVALID_DATE;
     }
+  }
+
+  void setShownFirstCompletableDayTutorial() {
+    _prefsRepository.setShownFirstCompletableDayTutorial();
   }
 }

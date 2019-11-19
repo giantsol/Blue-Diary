@@ -77,6 +77,8 @@ class AppLocalizations {
   static const SETTINGS_USE_REAL_FIRST_LAUNCH_DATE = "settingsUseRealFirstLaunchDate";
   static const SETTINGS_CUSTOM_FIRST_LAUNCH_DATE = "settingsCustomFirstLaunchDate";
   static const WARNING = "warning";
+  static const FIRST_COMPLETABLE_DAY_TUTORIAL = "firstCompletableDayTutorial";
+  static const FIRST_COMPLETABLE_DAY_TUTORIAL_SUB = "firstCompletableDayTutorialSub";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -156,6 +158,8 @@ class AppLocalizations {
       SETTINGS_USE_REAL_FIRST_LAUNCH_DATE: 'Use real first launch date',
       SETTINGS_CUSTOM_FIRST_LAUNCH_DATE: 'Set custom first launch date',
       WARNING: 'Warning',
+      FIRST_COMPLETABLE_DAY_TUTORIAL: 'You\'ve made it! Click the seed to complete your day and get the points.\nThe longer the streak, the more points you\'ll get!',
+      FIRST_COMPLETABLE_DAY_TUTORIAL_SUB: 'Warning: Tasks in completed days are unmodifiable.',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -230,6 +234,8 @@ class AppLocalizations {
       SETTINGS_USE_REAL_FIRST_LAUNCH_DATE: '실제 첫 실행 날짜 사용',
       SETTINGS_CUSTOM_FIRST_LAUNCH_DATE: '커스텀 첫 실행 날짜 설정',
       WARNING: '주의',
+      FIRST_COMPLETABLE_DAY_TUTORIAL: '모든 작업을 끝내셨네요! 씨앗을 눌러 하루를 완료하고 점수를 얻을 수 있습니다.\n연속으로 성공시 더 많은 점수를 얻을 수 있습니다!',
+      FIRST_COMPLETABLE_DAY_TUTORIAL_SUB: '주의: 완료된 하루의 작업은 수정이 불가합니다.',
     },
   };
 
@@ -303,6 +309,8 @@ class AppLocalizations {
   String get settingsUseRealFirstLaunchDate => _localizedValues[locale.languageCode][SETTINGS_USE_REAL_FIRST_LAUNCH_DATE];
   String get settingsCustomFirstLaunchDate => _localizedValues[locale.languageCode][SETTINGS_CUSTOM_FIRST_LAUNCH_DATE];
   String get warning => _localizedValues[locale.languageCode][WARNING];
+  String get firstCompletableDayTutorial => _localizedValues[locale.languageCode][FIRST_COMPLETABLE_DAY_TUTORIAL];
+  String get firstCompletableDayTutorialSub => _localizedValues[locale.languageCode][FIRST_COMPLETABLE_DAY_TUTORIAL_SUB];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {
