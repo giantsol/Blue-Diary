@@ -830,7 +830,7 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
                 animation: 'idle',
               ),
               onTap: () => bloc.onMarkDayCompletedClicked(context, date),
-            )
+            ),
           ): Container(
             width: 48,
             height: 48,

@@ -25,8 +25,8 @@ class ToDoRepositoryImpl implements ToDoRepository {
   }
 
   @override
-  void setDayMarkedCompleted(DateTime date) {
-    _dataSource.setDayMarkedCompleted(date);
+  Future<void> setDayMarkedCompleted(DateTime date) {
+    return _dataSource.setDayMarkedCompleted(date);
   }
 
   @override

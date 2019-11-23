@@ -127,8 +127,8 @@ class WeekUsecases {
     }
   }
 
-  void setDayMarkedCompleted(DateTime date) {
-    _toDoRepository.setDayMarkedCompleted(date);
+  Future<void> setDayMarkedCompleted(DateTime date) {
+    return _toDoRepository.setDayMarkedCompleted(date);
   }
 
   Future<DateTime> getCompletedMarkableDayToKeepStreakBefore(DateTime date) async {
@@ -153,5 +153,13 @@ class WeekUsecases {
 
   void setShownFirstCompletableDayTutorial() {
     _prefsRepository.setShownFirstCompletableDayTutorial();
+  }
+
+  Future<int> getStreakCount(DateTime date) {
+    return _toDoRepository.getStreakCount(date);
+  }
+
+  void addSeed(int count) {
+    _prefsRepository.addSeed(count);
   }
 }

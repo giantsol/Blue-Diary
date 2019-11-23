@@ -6,6 +6,7 @@ import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
+import 'package:todo_app/domain/entity/ViewLayoutInfo.dart';
 import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
 import 'package:todo_app/presentation/pet/PetScreen.dart';
@@ -20,15 +21,24 @@ class HomeScreen extends StatefulWidget {
   }
 }
 
-class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator,
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin implements WeekBlocDelegator,
   SettingsBlocDelegator {
   HomeBloc _bloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+
+  final GlobalKey _petViewTabKey = GlobalKey();
+  int _currentSeedAddedAnimationCount;
+  AnimationController _seedAddedAnimationController;
 
   @override
   void initState() {
     super.initState();
     _bloc = HomeBloc(context);
+
+    _seedAddedAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
   }
 
   @override
@@ -44,45 +54,97 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator,
 
   @override
   void dispose() {
+    _seedAddedAnimationController.dispose();
+
     super.dispose();
     _bloc.dispose();
   }
 
   Widget _buildUI(HomeState state) {
+    final petViewTabPosition = ViewLayoutInfo.create(
+      _petViewTabKey.currentContext?.findRenderObject(),
+      offset: Offset(0, -MediaQuery.of(context).padding.top)
+    );
+
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
-        body: Column(
+        body: Stack(
           children: <Widget>[
-            Expanded(
-              child: Stack(
-                children: <Widget>[
-                  _ChildScreen(
-                    childScreenKey: state.currentChildScreenKey,
-                    weekBlocDelegator: this,
-                    settingsBlocDelegator: this,
+            Column(
+              children: <Widget>[
+                Expanded(
+                  child: Stack(
+                    children: <Widget>[
+                      _ChildScreen(
+                        childScreenKey: state.currentChildScreenKey,
+                        weekBlocDelegator: this,
+                        settingsBlocDelegator: this,
+                      ),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          width: double.infinity,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                              colors: [AppColors.DIVIDER, AppColors.DIVIDER.withAlpha(0)]
+                            )
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      width: double.infinity,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [AppColors.DIVIDER, AppColors.DIVIDER.withAlpha(0)]
+                ),
+                _BottomNavigationBar(
+                  bloc: _bloc,
+                  childScreenItems: state.childScreenItems,
+                  petViewTabKey: _petViewTabKey,
+                ),
+              ],
+            ),
+            petViewTabPosition.isValid ? Positioned(
+              left: petViewTabPosition.left,
+              right: petViewTabPosition.right,
+              top: petViewTabPosition.top,
+              child: FadeTransition(
+                opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+                  parent: _seedAddedAnimationController,
+                  curve: Interval(0, 0.1, curve: Curves.ease),
+                )),
+                child: FadeTransition(
+                  opacity: Tween<double>(begin: 1, end: 0).animate(CurvedAnimation(
+                    parent: _seedAddedAnimationController,
+                    curve: Interval(0.8, 1, curve: Curves.ease),
+                  )),
+                  child: SlideTransition(
+                    position: Tween<Offset>(begin: Offset(0, 0), end: Offset(0, -1)).animate(CurvedAnimation(
+                      parent: _seedAddedAnimationController,
+                      curve: Curves.ease,
+                    )),
+                    child: Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.PRIMARY,
+                          borderRadius: BorderRadius.all(Radius.circular(6)),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 1, horizontal: 3,),
+                        child: Text(
+                          '+ $_currentSeedAddedAnimationCount',
+                          style: TextStyle(
+                            color: AppColors.TEXT_WHITE,
+                            fontSize: 12,
+                          ),
+                          textAlign: TextAlign.center,
                         )
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-            _BottomNavigationBar(
-              bloc: _bloc,
-              childScreenItems: state.childScreenItems,
-            ),
+            ): const SizedBox.shrink(),
           ],
         ),
       ),
@@ -109,6 +171,16 @@ class _HomeScreenState extends State<HomeScreen> implements WeekBlocDelegator,
   @override
   void removeBottomNavigationItemClickedListener(void Function(String key) listener) {
     _bloc.removeBottomNavigationItemClickedListener(listener);
+  }
+
+  @override
+  void showSeedAddedAnimation(int seedCount) {
+    setState(() {
+      _currentSeedAddedAnimationCount = seedCount;
+    });
+
+    _seedAddedAnimationController.reset();
+    _seedAddedAnimationController.forward();
   }
 }
 
@@ -147,10 +219,12 @@ class _ChildScreen extends StatelessWidget {
 class _BottomNavigationBar extends StatelessWidget {
   final HomeBloc bloc;
   final List<HomeChildScreenItem> childScreenItems;
+  final Key petViewTabKey;
 
   _BottomNavigationBar({
     @required this.bloc,
     @required this.childScreenItems,
+    @required this.petViewTabKey,
   });
 
   @override
@@ -164,9 +238,11 @@ class _BottomNavigationBar extends StatelessWidget {
         color: AppColors.BACKGROUND_WHITE,
         child: Row(
           children: List.generate(childScreenItems.length, (index) {
+            final item = childScreenItems[index];
             return _BottomNavigationItem(
+              key: item.key == HomeChildScreenItem.KEY_PET ? petViewTabKey : null,
               bloc: bloc,
-              item: childScreenItems[index],
+              item: item,
             );
           }),
         ),
@@ -180,9 +256,10 @@ class _BottomNavigationItem extends StatelessWidget {
   final HomeChildScreenItem item;
 
   _BottomNavigationItem({
+    Key key,
     @required this.bloc,
     @required this.item,
-  });
+  }): super(key: key);
 
   @override
   Widget build(BuildContext context) {

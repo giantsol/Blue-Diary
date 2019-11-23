@@ -13,6 +13,7 @@ class AppPreferences {
   static const String KEY_USE_REAL_FIRST_LAUNCH_DATE = 'use.real.first.launch.date';
   static const String KEY_CUSTOM_FIRST_LAUNCH_DATE = 'custom.first.launch.date';
   static const String KEY_SHOWN_FIRST_COMPLETABLE_DAY_TUTORIAL = 'shown.first.completable.day.tutorial';
+  static const String KEY_SEED = 'seed';
 
   Future<String> getUserPassword() async {
     return PrefService.getString(KEY_USER_PASSWORD) ?? '';
@@ -84,5 +85,13 @@ class AppPreferences {
 
   void setShownFirstCompletableDayTutorial() {
     PrefService.setBool(KEY_SHOWN_FIRST_COMPLETABLE_DAY_TUTORIAL, true);
+  }
+
+  void addSeed(int count) {
+    PrefService.setInt(KEY_SEED, getSeed() + count);
+  }
+
+  int getSeed() {
+    return PrefService.getInt(KEY_SEED) ?? 0;
   }
 }

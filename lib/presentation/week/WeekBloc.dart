@@ -199,12 +199,16 @@ class WeekBloc {
   }
 
   Future<void> _markDayCompleted(DateTime date) async {
-    _usecases.setDayMarkedCompleted(date);
+    await _usecases.setDayMarkedCompleted(date);
 
     final currentWeekRecord = await _usecases.getWeekRecord(_state.value.currentDate);
     _state.add(_state.value.buildNew(
       currentWeekRecord: currentWeekRecord,
     ));
+
+    final streakCount = await _usecases.getStreakCount(date);
+    _usecases.addSeed(streakCount);
+    delegator.showSeedAddedAnimation(streakCount);
   }
 
   Future<void> showFirstCompletableDayTutorial(BuildContext context, WeekScreenTutorialCallback callback) async {

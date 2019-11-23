@@ -5,7 +5,7 @@ abstract class ToDoRepository {
   Future<List<ToDo>> getToDos(DateTime date);
   void setToDo(ToDo toDo);
   void removeToDo(ToDo toDo);
-  void setDayMarkedCompleted(DateTime date);
+  Future<void> setDayMarkedCompleted(DateTime date);
   Future<int> getMarkedCompletedDaysCount();
   Future<int> getLatestStreakCount();
   Future<int> getMaxStreakCount();

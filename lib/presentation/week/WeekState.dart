@@ -21,6 +21,7 @@ class WeekState {
   final int currentWeekRecordPageIndex;
   final bool pageViewScrollEnabled;
 
+  // todo: Looks like one-time events shouldn't be handled this way. Maybe they should just be handled in View level, without going through Blocs.
   final bool moveToTodayEvent;
   final int animateToPageEvent;
   final bool startTutorialEvent;

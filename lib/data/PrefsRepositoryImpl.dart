@@ -109,4 +109,9 @@ class PrefsRepositoryImpl implements PrefsRepository {
   void setShownFirstCompletableDayTutorial() {
     _prefs.setShownFirstCompletableDayTutorial();
   }
+
+  @override
+  void addSeed(int count) {
+    _prefs.addSeed(count);
+  }
 }

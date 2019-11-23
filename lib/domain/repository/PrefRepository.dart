@@ -19,4 +19,5 @@ abstract class PrefsRepository {
   Future<String> getFirstLaunchDateString();
   Future<bool> hasShownFirstCompletableDayTutorial();
   void setShownFirstCompletableDayTutorial();
+  void addSeed(int count);
 }
