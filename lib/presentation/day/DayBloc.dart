@@ -116,10 +116,12 @@ class DayBloc {
     Navigator.pop(context);
   }
 
-  Future<void> onAddToDoClicked(BuildContext context) async {
+  Future<void> onAddToDoClicked(BuildContext context, ScaffoldState scaffoldState) async {
     final hasBeenMarkedCompleted = await _usecases.hasDayBeenMarkedCompleted(_state.value.currentDate);
     if (hasBeenMarkedCompleted) {
-      // todo: show message
+      final msg = AppLocalizations.of(context).cannotModifyCompletedDaysTasks;
+      scaffoldState.removeCurrentSnackBar();
+      Utils.showSnackBar(scaffoldState, msg, const Duration(seconds: 1));
       return;
     }
 
@@ -189,10 +191,12 @@ class DayBloc {
     _state.add(_state.value.buildNew(editingToDoRecord: updated));
   }
 
-  Future<void> onToDoRecordItemClicked(ToDoRecord toDoRecord) async {
+  Future<void> onToDoRecordItemClicked(BuildContext context, ToDoRecord toDoRecord, ScaffoldState scaffoldState) async {
     final hasBeenMarkedCompleted = await _usecases.hasDayBeenMarkedCompleted(_state.value.currentDate);
     if (hasBeenMarkedCompleted) {
-      // todo: show message
+      final msg = AppLocalizations.of(context).cannotModifyCompletedDaysTasks;
+      scaffoldState.removeCurrentSnackBar();
+      Utils.showSnackBar(scaffoldState, msg, const Duration(seconds: 1));
       return;
     }
 
@@ -254,10 +258,12 @@ class DayBloc {
     ));
   }
 
-  Future<void> onToDoRecordItemLongClicked(BuildContext context, ToDoRecord toDoRecord) async {
+  Future<void> onToDoRecordItemLongClicked(BuildContext context, ToDoRecord toDoRecord, ScaffoldState scaffoldState) async {
     final hasBeenMarkedCompleted = await _usecases.hasDayBeenMarkedCompleted(_state.value.currentDate);
     if (hasBeenMarkedCompleted) {
-      // todo: show message
+      final msg = AppLocalizations.of(context).cannotModifyCompletedDaysTasks;
+      scaffoldState.removeCurrentSnackBar();
+      Utils.showSnackBar(scaffoldState, msg, const Duration(seconds: 1));
       return;
     }
 

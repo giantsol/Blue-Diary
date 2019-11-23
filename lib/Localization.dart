@@ -79,6 +79,7 @@ class AppLocalizations {
   static const WARNING = "warning";
   static const FIRST_COMPLETABLE_DAY_TUTORIAL = "firstCompletableDayTutorial";
   static const FIRST_COMPLETABLE_DAY_TUTORIAL_SUB = "firstCompletableDayTutorialSub";
+  static const CANNOT_MODIFY_COMPLETED_DAYS_TASKS = "cannotModifyCompletedDaysTasks";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -160,6 +161,7 @@ class AppLocalizations {
       WARNING: 'Warning',
       FIRST_COMPLETABLE_DAY_TUTORIAL: 'Click to complete your day and get points!\nThe longer the streak, the more points you\'ll get.',
       FIRST_COMPLETABLE_DAY_TUTORIAL_SUB: 'Warning: You won\'t be able to modify tasks anymore.',
+      CANNOT_MODIFY_COMPLETED_DAYS_TASKS: 'Cannot modify completed days\'s tasks',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -236,6 +238,7 @@ class AppLocalizations {
       WARNING: '주의',
       FIRST_COMPLETABLE_DAY_TUTORIAL: '클릭해서 하루를 완료하고 점수를 얻으세요!\n연속으로 완료시 더 많은 점수를 얻을 수 있습니다.',
       FIRST_COMPLETABLE_DAY_TUTORIAL_SUB: '주의: 완료한 날짜의 작업은 수정이 불가합니다.',
+      CANNOT_MODIFY_COMPLETED_DAYS_TASKS: '완료한 날짜의 작업은 수정이 불가합니다.',
     },
   };
 
@@ -311,6 +314,7 @@ class AppLocalizations {
   String get warning => _localizedValues[locale.languageCode][WARNING];
   String get firstCompletableDayTutorial => _localizedValues[locale.languageCode][FIRST_COMPLETABLE_DAY_TUTORIAL];
   String get firstCompletableDayTutorialSub => _localizedValues[locale.languageCode][FIRST_COMPLETABLE_DAY_TUTORIAL_SUB];
+  String get cannotModifyCompletedDaysTasks => _localizedValues[locale.languageCode][CANNOT_MODIFY_COMPLETED_DAYS_TASKS];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {
