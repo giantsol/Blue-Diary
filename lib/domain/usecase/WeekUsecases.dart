@@ -132,23 +132,22 @@ class WeekUsecases {
   }
 
   Future<DateTime> getCompletedMarkableDayToKeepStreakBefore(DateTime date) async {
-    final DateTime lastMarkedCompletedDay = await _toDoRepository.getLastMarkedCompletedDay(date.millisecondsSinceEpoch);
-    if (lastMarkedCompletedDay != DateRepository.INVALID_DATE) {
-      final nextOfLastMarkedCompletedDay = lastMarkedCompletedDay.add(const Duration(days: 1));
-      if (nextOfLastMarkedCompletedDay.compareTo(date) >= 0) {
-        return DateRepository.INVALID_DATE;
-      } else {
-        final toDos = await _toDoRepository.getToDos(nextOfLastMarkedCompletedDay);
-        final allToDosDone = toDos.length > 0 && toDos.every((it) => it.isDone);
-        if (allToDosDone) {
-          return nextOfLastMarkedCompletedDay;
-        } else {
-          return DateRepository.INVALID_DATE;
-        }
-      }
+    final prevDay = date.subtract(const Duration(days: 1));
+    final canPrevDayBeMarkedCompleted = await getCanBeMarkedCompleted(prevDay);
+    if (canPrevDayBeMarkedCompleted) {
+      return prevDay;
     } else {
       return DateRepository.INVALID_DATE;
     }
+  }
+
+  Future<bool> getCanBeMarkedCompleted(DateTime date) async {
+    final toDos = await _toDoRepository.getToDos(date);
+    final allToDosDone = toDos.length > 0 && toDos.every((it) => it.isDone);
+    final hasBeenMarkedCompleted = await _toDoRepository.hasDayBeenMarkedCompleted(date);
+    final firstLaunchDate = DateTime.parse(await _prefsRepository.getFirstLaunchDateString());
+    final today = await _dateRepository.getToday();
+    return allToDosDone && !hasBeenMarkedCompleted && date.compareTo(firstLaunchDate) >= 0 && date.compareTo(today) <= 0;
   }
 
   void setShownFirstCompletableDayTutorial() {
