@@ -2,7 +2,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
-import 'package:todo_app/domain/entity/World.dart';
 
 class AppLocalizations {
   static const NEW_PASSWORD = "newPassword";
@@ -69,8 +68,6 @@ class AppLocalizations {
   static const LEAVE_FEEDBACK_TITLE = "leaveFeedbackTitle";
   static const LEAVE_FEEDBACK_BODY = "leaveFeedbackBody";
   static const PET_TITLE = "petTitle";
-  static const WORLD_BEGINNING = "worldBeginning";
-  static const WORLD_GRASSLAND = "worldGrassland";
   static const RETRY = "retry";
   static const WEEK_SCREEN_NETWORK_ERROR_REASON = "weekScreenNetworkErrorReason";
   static const SETTINGS_DEVELOPER = "settingsDeveloper";
@@ -151,8 +148,6 @@ class AppLocalizations {
       LEAVE_FEEDBACK_TITLE: 'Oh sweet...',
       LEAVE_FEEDBACK_BODY: 'It would be lovely to get your feedback. Write review in app store?',
       PET_TITLE: 'Pet',
-      WORLD_BEGINNING: 'The Beginning',
-      WORLD_GRASSLAND: 'Grassland',
       RETRY: 'Retry',
       WEEK_SCREEN_NETWORK_ERROR_REASON: 'Unable to get today\'s date.\nPlease check your network.',
       SETTINGS_DEVELOPER: 'Developer',
@@ -228,8 +223,6 @@ class AppLocalizations {
       LEAVE_FEEDBACK_TITLE: '우왕...',
       LEAVE_FEEDBACK_BODY: '의견을 주신다면 영광입니다. 앱스토어에 리뷰를 작성하시겠습니까?',
       PET_TITLE: '여행',
-      WORLD_BEGINNING: '태초',
-      WORLD_GRASSLAND: '초원',
       RETRY: '다시 시도',
       WEEK_SCREEN_NETWORK_ERROR_REASON: '오늘 날짜를 확인할 수 없습니다.\n네트워크를 확인해주세요.',
       SETTINGS_DEVELOPER: '개발자 설정',
@@ -459,17 +452,6 @@ class AppLocalizations {
         return _localizedValues[locale.languageCode][RANKING_NAVIGATION_TITLE];
       case HomeChildScreenItem.KEY_SETTINGS:
         return _localizedValues[locale.languageCode][SETTINGS_NAVIGATION_TITLE];
-      default:
-        return '';
-    }
-  }
-
-  String getWorldTitle(String key) {
-    switch (key) {
-      case World.KEY_BEGINNING:
-        return _localizedValues[locale.languageCode][WORLD_BEGINNING];
-      case World.KEY_GRASSLAND:
-        return _localizedValues[locale.languageCode][WORLD_GRASSLAND];
       default:
         return '';
     }
