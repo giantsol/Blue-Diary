@@ -158,8 +158,8 @@ class AppLocalizations {
       SETTINGS_USE_REAL_FIRST_LAUNCH_DATE: 'Use real first launch date',
       SETTINGS_CUSTOM_FIRST_LAUNCH_DATE: 'Set custom first launch date',
       WARNING: 'Warning',
-      FIRST_COMPLETABLE_DAY_TUTORIAL: 'You\'ve made it! Click the seed to complete your day and get the points.\nThe longer the streak, the more points you\'ll get!',
-      FIRST_COMPLETABLE_DAY_TUTORIAL_SUB: 'Warning: Tasks in completed days are unmodifiable.',
+      FIRST_COMPLETABLE_DAY_TUTORIAL: 'Click to complete your day and get points!\nThe longer the streak, the more points you\'ll get.',
+      FIRST_COMPLETABLE_DAY_TUTORIAL_SUB: 'Warning: You won\'t be able to modify tasks anymore.',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -234,8 +234,8 @@ class AppLocalizations {
       SETTINGS_USE_REAL_FIRST_LAUNCH_DATE: '실제 첫 실행 날짜 사용',
       SETTINGS_CUSTOM_FIRST_LAUNCH_DATE: '커스텀 첫 실행 날짜 설정',
       WARNING: '주의',
-      FIRST_COMPLETABLE_DAY_TUTORIAL: '모든 작업을 끝내셨네요! 씨앗을 눌러 하루를 완료하고 점수를 얻을 수 있습니다.\n연속으로 성공시 더 많은 점수를 얻을 수 있습니다!',
-      FIRST_COMPLETABLE_DAY_TUTORIAL_SUB: '주의: 완료된 하루의 작업은 수정이 불가합니다.',
+      FIRST_COMPLETABLE_DAY_TUTORIAL: '클릭해서 하루를 완료하고 점수를 얻으세요!\n연속으로 완료시 더 많은 점수를 얻을 수 있습니다.',
+      FIRST_COMPLETABLE_DAY_TUTORIAL_SUB: '주의: 완료한 날짜의 작업은 수정이 불가합니다.',
     },
   };
 

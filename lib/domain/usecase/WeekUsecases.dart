@@ -30,7 +30,7 @@ class WeekUsecases {
     final hasShownFirstCompletableDayTutorial = await _prefsRepository.hasShownFirstCompletableDayTutorial();
     List<DayPreview> dayPreviews = [];
     bool containsToday = false;
-    int showFirstCompletableDayTutorialIndex = -1;
+    int firstCompletableDayTutorialIndex = -1;
 
     for (int i = 0; i < datesInWeek.length; i++) {
       final date = datesInWeek[i];
@@ -66,8 +66,9 @@ class WeekUsecases {
       final hasBeenMarkedCompleted = await _toDoRepository.hasDayBeenMarkedCompleted(date);
       final canBeMarkedCompleted = allToDosDone && !hasBeenMarkedCompleted &&
         date.compareTo(firstLaunchDate) >= 0 && date.compareTo(today) <= 0;
-      if (showFirstCompletableDayTutorialIndex == -1) {
-        showFirstCompletableDayTutorialIndex = !hasShownFirstCompletableDayTutorial && canBeMarkedCompleted ? i : -1;
+
+      if (!hasShownFirstCompletableDayTutorial && firstCompletableDayTutorialIndex == -1 && canBeMarkedCompleted) {
+        firstCompletableDayTutorialIndex = i;
       }
 
       final dayPreview = DayPreview(
@@ -99,7 +100,7 @@ class WeekUsecases {
       checkPoints: checkPoints,
       dayPreviews: dayPreviews,
       containsToday: containsToday,
-      showFirstCompletableDayTutorialIndex: showFirstCompletableDayTutorialIndex,
+      firstCompletableDayTutorialIndex: firstCompletableDayTutorialIndex,
     );
   }
 

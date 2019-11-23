@@ -64,7 +64,7 @@ class _FirstCompletableDayTutorialState extends State<FirstCompletableDayTutoria
 
   Future<void> _updatePhase(int phase) async {
     if (phase == 0) {
-      await widget.weekScreenTutorialCallback.scrollToFirstCompletableDayPreview();
+      await widget.weekScreenTutorialCallback.scrollToFirstCompletableDayThumbnail();
       _firstPhaseController.forward();
 
       setState(() {
@@ -73,7 +73,7 @@ class _FirstCompletableDayTutorialState extends State<FirstCompletableDayTutoria
         _currentPhase = phase;
       });
     } else {
-      Navigator.pop(context);
+      Navigator.pop(context, true);
     }
   }
 
@@ -81,7 +81,7 @@ class _FirstCompletableDayTutorialState extends State<FirstCompletableDayTutoria
   Widget build(BuildContext context) {
     _firstPhase = _FirstPhase(
       controller: _firstPhaseController,
-      firstCompletableDayPreviewFinder: widget.weekScreenTutorialCallback.getFirstCompletableDayPreviewFinder(),
+      firstCompletableDayThumbnailFinder: widget.weekScreenTutorialCallback.getFirstCompletableDayThumbnailFinder(),
     );
 
     return Scaffold(
@@ -116,7 +116,7 @@ class _FirstCompletableDayTutorialState extends State<FirstCompletableDayTutoria
                         padding: const EdgeInsets.only(bottom: 12),
                         child: GestureDetector(
                           behavior: HitTestBehavior.translucent,
-                          onTap: _onNextClicked,
+                          onTap: _onOkClicked,
                           child: Padding(
                             padding: const EdgeInsets.all(24),
                             child: Text(
@@ -151,7 +151,7 @@ class _FirstCompletableDayTutorialState extends State<FirstCompletableDayTutoria
     }
   }
 
-  void _onNextClicked() {
+  void _onOkClicked() {
     if (_allowButtonClick) {
       _updatePhase(_currentPhase + 1);
     }
@@ -160,14 +160,14 @@ class _FirstCompletableDayTutorialState extends State<FirstCompletableDayTutoria
 
 class _FirstPhase extends StatefulWidget {
   final AnimationController controller;
-  final ViewLayoutInfo Function() firstCompletableDayPreviewFinder;
+  final ViewLayoutInfo Function() firstCompletableDayThumbnailFinder;
   final _FirstPhaseClipper clipper;
 
   _FirstPhase({
     @required this.controller,
-    @required this.firstCompletableDayPreviewFinder,
+    @required this.firstCompletableDayThumbnailFinder,
   }): clipper = _FirstPhaseClipper(
-    firstCompletableDayPreviewFinder: firstCompletableDayPreviewFinder,
+    firstCompletableDayThumbnailFinder: firstCompletableDayThumbnailFinder,
   );
 
   @override
@@ -181,7 +181,7 @@ class _FirstPhaseState extends State<_FirstPhase> {
   Widget build(BuildContext context) {
     SchedulerBinding.instance.addPostFrameCallback(_updateMyHeight);
 
-    final dayPreview = widget.firstCompletableDayPreviewFinder();
+    final dayThumbnail = widget.firstCompletableDayThumbnailFinder();
     return FadeTransition(
       opacity: Tween<double>(begin: 0, end: 1).animate(widget.controller),
       child: SlideTransition(
@@ -197,7 +197,7 @@ class _FirstPhaseState extends State<_FirstPhase> {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 4,),
+            const SizedBox(height: 8,),
             Text(
               AppLocalizations.of(context).firstCompletableDayTutorialSub,
               style: TextStyle(
@@ -206,7 +206,7 @@ class _FirstPhaseState extends State<_FirstPhase> {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: max<double>(_myHeight - dayPreview.top + 8, 0),),
+            SizedBox(height: max<double>(_myHeight - dayThumbnail.top + 8, 0),),
           ],
         ),
       ),
@@ -224,15 +224,15 @@ class _FirstPhaseState extends State<_FirstPhase> {
 }
 
 class _FirstPhaseClipper extends CustomClipper<Path> {
-  final ViewLayoutInfo Function() firstCompletableDayPreviewFinder;
+  final ViewLayoutInfo Function() firstCompletableDayThumbnailFinder;
 
   _FirstPhaseClipper({
-    @required this.firstCompletableDayPreviewFinder,
+    @required this.firstCompletableDayThumbnailFinder,
   });
 
   @override
   Path getClip(Size size) {
-    final view = firstCompletableDayPreviewFinder();
+    final view = firstCompletableDayThumbnailFinder();
     final path = Path()
       ..addOval(Rect.fromLTWH(view.left, view.top, view.width, view.height))
       ..addRect(Rect.fromLTWH(0, 0, size.width, size.height));

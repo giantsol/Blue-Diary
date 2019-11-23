@@ -58,7 +58,7 @@ class WeekBloc {
       final prevWeekRecord = await _usecases.getWeekRecord(initialDate.subtract(_sevenDays));
       final nextWeekRecord = await _usecases.getWeekRecord(initialDate.add(_sevenDays));
       final startTutorial = !(await _usecases.hasShownWeekScreenTutorial());
-      final showFirstCompletableDayTutorial = currentWeekRecord.showFirstCompletableDayTutorialIndex >= 0;
+      final showFirstCompletableDayTutorial = currentWeekRecord.firstCompletableDayTutorialIndex >= 0;
 
       _state.add(_state.value.buildNew(
         viewState: WeekViewState.NORMAL,
@@ -102,7 +102,7 @@ class WeekBloc {
     final currentWeekRecord = await _usecases.getWeekRecord(currentDate);
     final prevWeekRecord = await _usecases.getWeekRecord(currentDate.subtract(_sevenDays));
     final nextWeekRecord = await _usecases.getWeekRecord(currentDate.add(_sevenDays));
-    final showFirstCompletableDayTutorialEvent = currentWeekRecord.showFirstCompletableDayTutorialIndex >= 0;
+    final showFirstCompletableDayTutorialEvent = currentWeekRecord.firstCompletableDayTutorialIndex >= 0;
 
     _state.add(_state.value.buildNew(
       currentWeekRecord: currentWeekRecord,
@@ -129,7 +129,7 @@ class WeekBloc {
     );
 
     final currentWeekRecord = await _usecases.getWeekRecord(_state.value.currentDate);
-    final showFirstCompletableDayTutorialEvent = currentWeekRecord.showFirstCompletableDayTutorialIndex >= 0;
+    final showFirstCompletableDayTutorialEvent = currentWeekRecord.firstCompletableDayTutorialIndex >= 0;
 
     _state.add(_state.value.buildNew(
       currentWeekRecord: currentWeekRecord,
@@ -211,18 +211,20 @@ class WeekBloc {
     // just rebuild to clear flag
     _state.add(_state.value.buildNew());
 
-    await Navigator.push(context, PageRouteBuilder(
+    Navigator.popUntil(context, (route) => route.isFirst);
+    final result = await Navigator.push(context, PageRouteBuilder(
       opaque: false,
       pageBuilder: (context, _, __) => FirstCompletableDayTutorial(
         weekScreenTutorialCallback: callback,
       ),
     ));
 
-    _usecases.setShownFirstCompletableDayTutorial();
-
-    _state.add(_state.value.buildNew(
-      pageViewScrollEnabled: true,
-    ));
+    if (result == true) {
+      _usecases.setShownFirstCompletableDayTutorial();
+      _state.add(_state.value.buildNew(
+        pageViewScrollEnabled: true,
+      ));
+    }
   }
 
   void dispose() {

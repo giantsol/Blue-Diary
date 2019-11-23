@@ -43,8 +43,9 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
   final GlobalKey _headerKey = GlobalKey();
   final GlobalKey _firstCheckPointsKey = GlobalKey();
   final GlobalKey _todayPreviewKey = GlobalKey();
-  final GlobalKey _firstCompletableWeekRecord = GlobalKey();
-  final GlobalKey _firstCompletableDayPreview = GlobalKey();
+  int _firstCompletableWeekRecordPageIndex = -1;
+  final GlobalKey _firstCompletableWeekRecordKey = GlobalKey();
+  final GlobalKey _firstCompletableDayThumbnailKey = GlobalKey();
 
   @override
   void initState() {
@@ -114,8 +115,6 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
       SchedulerBinding.instance.addPostFrameCallback((_) => _checkViewsBuiltToShowFirstCompletableDayTutorial());
     }
 
-    debugPrint('pageViewScrollEnabled: ${state.pageViewScrollEnabled}');
-
     return state.viewState == WeekViewState.WHOLE_LOADING ? _WholeLoadingView()
       : state.viewState == WeekViewState.NETWORK_ERROR ? _NetworkErrorView(bloc: _bloc)
       : WillPopScope(
@@ -145,9 +144,16 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
                         child: CircularProgressIndicator(),
                       );
                     } else {
+                      final foundFirstCompletableWeekRecord = (_firstCompletableWeekRecordPageIndex == -1 || _firstCompletableWeekRecordPageIndex == index)
+                        && weekRecord.firstCompletableDayTutorialIndex >= 0;
+
+                      if (foundFirstCompletableWeekRecord) {
+                        _firstCompletableWeekRecordPageIndex = index;
+                      }
+
                       return _WeekRecord(
                         key: index == WeekScreen.INITIAL_WEEK_PAGE ? _firstWeekRecordKey
-                          : weekRecord.showFirstCompletableDayTutorialIndex >= 0 ? _firstCompletableWeekRecord
+                          : foundFirstCompletableWeekRecord ? _firstCompletableWeekRecordKey
                           : null,
                         bloc: _bloc,
                         weekRecord: weekRecord,
@@ -155,7 +161,7 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
                         scrollController: _scrollController,
                         memoKey: index == WeekScreen.INITIAL_WEEK_PAGE ? _firstCheckPointsKey : null,
                         todayPreviewKey: _todayPreviewKey,
-                        firstCompletableDayPreviewKey: _firstCompletableDayPreview,
+                        firstCompletableDayThumbnailKey: foundFirstCompletableWeekRecord ? _firstCompletableDayThumbnailKey : null,
                       );
                     }
                   },
@@ -215,8 +221,13 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
   }
 
   void _checkViewsBuiltToShowFirstCompletableDayTutorial() {
-    if (_firstCompletableDayPreview.currentContext?.findRenderObject() == null) {
-      SchedulerBinding.instance.addPostFrameCallback((_) => _checkViewsBuiltToShowFirstCompletableDayTutorial());
+    if (_firstCompletableDayThumbnailKey.currentContext?.findRenderObject() == null) {
+      if (_firstCompletableWeekRecordPageIndex >= 0 && _pageController.page != _firstCompletableWeekRecordPageIndex) {
+        _pageController.animateToPage(_firstCompletableWeekRecordPageIndex,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.ease,
+        );
+      }
       return;
     }
 
@@ -249,22 +260,22 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
     }
   }
 
-  Future<void> _scrollToFirstCompletableDayPreview() async {
-    final RenderBox weekRecordRenderBox = _firstCompletableWeekRecord.currentContext?.findRenderObject() ?? _firstWeekRecordKey.currentContext?.findRenderObject();
-    final RenderBox dayPreviewRenderBox = _firstCompletableDayPreview.currentContext?.findRenderObject();
-    if (weekRecordRenderBox == null || dayPreviewRenderBox == null || !_scrollController.hasClients) {
-      SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToFirstCompletableDayPreview());
+  Future<void> _scrollToFirstCompletableDayThumbnail() async {
+    final RenderBox weekRecordRenderBox = _firstCompletableWeekRecordKey.currentContext?.findRenderObject() ?? _firstWeekRecordKey.currentContext?.findRenderObject();
+    final RenderBox dayThumbnailRenderBox = _firstCompletableDayThumbnailKey.currentContext?.findRenderObject();
+    if (weekRecordRenderBox == null || dayThumbnailRenderBox == null || !_scrollController.hasClients) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToFirstCompletableDayThumbnail());
       return;
     }
 
     final weekRecordTop = weekRecordRenderBox.localToGlobal(Offset.zero).dy;
     final weekRecordHeight = weekRecordRenderBox.size.height;
-    final checkPointsTop = dayPreviewRenderBox.localToGlobal(Offset.zero).dy;
-    final checkPointsHeight = dayPreviewRenderBox.size.height;
+    final dayThumbnailTop = dayThumbnailRenderBox.localToGlobal(Offset.zero).dy;
+    final dayThumbnailHeight = dayThumbnailRenderBox.size.height;
 
-    if (checkPointsTop < weekRecordTop || checkPointsTop + checkPointsHeight > weekRecordTop + weekRecordHeight) {
+    if (dayThumbnailTop < weekRecordTop || dayThumbnailTop + dayThumbnailHeight > weekRecordTop + weekRecordHeight) {
       final currentScrollOffset = _scrollController.offset;
-      final targetScrollOffset = max<double>(checkPointsTop + checkPointsHeight - weekRecordTop - weekRecordHeight, 0);
+      final targetScrollOffset = max<double>(dayThumbnailTop + dayThumbnailHeight - weekRecordTop - weekRecordHeight, 0);
       final duration = Duration(milliseconds: max<int>(300, min<int>(700, ((targetScrollOffset - currentScrollOffset).abs() * 10).toInt())));
 
       return await _scrollController.animateTo(
@@ -330,14 +341,14 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
   }
 
   @override
-  Future<void> scrollToFirstCompletableDayPreview() async {
-    return _scrollToFirstCompletableDayPreview();
+  Future<void> scrollToFirstCompletableDayThumbnail() async {
+    return _scrollToFirstCompletableDayThumbnail();
   }
 
   @override
-  ViewLayoutInfo Function() getFirstCompletableDayPreviewFinder() {
+  ViewLayoutInfo Function() getFirstCompletableDayThumbnailFinder() {
     return () {
-      final RenderBox box = _firstCompletableDayPreview.currentContext?.findRenderObject();
+      final RenderBox box = _firstCompletableDayThumbnailKey.currentContext?.findRenderObject();
       return ViewLayoutInfo.create(box);
     };
   }
@@ -459,7 +470,7 @@ class _WeekRecord extends StatelessWidget {
   final ScrollController scrollController;
   final Key memoKey;
   final Key todayPreviewKey;
-  final Key firstCompletableDayPreviewKey;
+  final Key firstCompletableDayThumbnailKey;
 
   _WeekRecord({
     Key key,
@@ -469,12 +480,12 @@ class _WeekRecord extends StatelessWidget {
     @required this.scrollController,
     @required this.memoKey,
     @required this.todayPreviewKey,
-    @required this.firstCompletableDayPreviewKey,
+    @required this.firstCompletableDayThumbnailKey,
   }): super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final firstCompletableDayPreviewIndex = weekRecord.showFirstCompletableDayTutorialIndex;
+    final firstCompletableDayThumbnailIndex = weekRecord.firstCompletableDayTutorialIndex;
     final dayPreviews = weekRecord.dayPreviews;
 
     return SingleChildScrollView(
@@ -498,7 +509,7 @@ class _WeekRecord extends StatelessWidget {
                   weekRecord: weekRecord,
                   dayPreview: item,
                   isFirstItem: index == 0,
-                  thumbnailKey: index == firstCompletableDayPreviewIndex ? firstCompletableDayPreviewKey : null,
+                  thumbnailKey: index == firstCompletableDayThumbnailIndex ? firstCompletableDayThumbnailKey : null,
                 );
               })
             ),
