@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
+import 'package:todo_app/presentation/pet/PetState.dart';
 
 class AppLocalizations {
   static const NEW_PASSWORD = "newPassword";
@@ -67,7 +68,6 @@ class AppLocalizations {
   static const SETTINGS_FEEDBACK = "settingsFeedback";
   static const LEAVE_FEEDBACK_TITLE = "leaveFeedbackTitle";
   static const LEAVE_FEEDBACK_BODY = "leaveFeedbackBody";
-  static const PET_TITLE = "petTitle";
   static const RETRY = "retry";
   static const WEEK_SCREEN_NETWORK_ERROR_REASON = "weekScreenNetworkErrorReason";
   static const SETTINGS_DEVELOPER = "settingsDeveloper";
@@ -77,6 +77,16 @@ class AppLocalizations {
   static const FIRST_COMPLETABLE_DAY_TUTORIAL = "firstCompletableDayTutorial";
   static const FIRST_COMPLETABLE_DAY_TUTORIAL_SUB = "firstCompletableDayTutorialSub";
   static const CANNOT_MODIFY_COMPLETED_DAYS_TASKS = "cannotModifyCompletedDaysTasks";
+  static const NO_PET_SELECTED = "noPetSelected";
+  static const UNKNOWNS_EGG = "unknownsEgg";
+  static const PET_A_0_TITLE = "petA0Title";
+  static const PET_A_1_TITLE = "petA1Title";
+  static const PET_A_2_TITLE = "petA2Title";
+  static const PET_A_UNACTIVATED_SUBTITLE = "petAUnactivatedSubtitle";
+  static const PET_A_HATCHING_SUBTITLE = "petAHatchingSubtitle";
+  static const PET_A_0_SUBTITLE = "petA0Subtitle";
+  static const PET_A_1_SUBTITLE = "petA1Subtitle";
+  static const PET_A_2_SUBTITLE = "petA2Subtitle";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -147,7 +157,6 @@ class AppLocalizations {
       SETTINGS_FEEDBACK: 'Leave Feedback :)',
       LEAVE_FEEDBACK_TITLE: 'Oh sweet...',
       LEAVE_FEEDBACK_BODY: 'It would be lovely to get your feedback. Write review in app store?',
-      PET_TITLE: 'Pet',
       RETRY: 'Retry',
       WEEK_SCREEN_NETWORK_ERROR_REASON: 'Unable to get today\'s date.\nPlease check your network.',
       SETTINGS_DEVELOPER: 'Developer',
@@ -157,6 +166,16 @@ class AppLocalizations {
       FIRST_COMPLETABLE_DAY_TUTORIAL: 'Click to complete your day and get points!\nThe longer the streak, the more points you\'ll get.',
       FIRST_COMPLETABLE_DAY_TUTORIAL_SUB: 'Warning: You won\'t be able to modify tasks anymore.',
       CANNOT_MODIFY_COMPLETED_DAYS_TASKS: 'Cannot modify completed days\'s tasks',
+      NO_PET_SELECTED: 'No pet selected',
+      UNKNOWNS_EGG: '???\'s egg',
+      PET_A_0_TITLE: 'A',
+      PET_A_1_TITLE: 'Able',
+      PET_A_2_TITLE: 'Ace!',
+      PET_A_UNACTIVATED_SUBTITLE: 'First kid on the road!',
+      PET_A_HATCHING_SUBTITLE: 'Ay, something\'s cooking...',
+      PET_A_0_SUBTITLE: 'Hai!',
+      PET_A_1_SUBTITLE: 'Hai!',
+      PET_A_2_SUBTITLE: 'Hai!',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -222,7 +241,6 @@ class AppLocalizations {
       SETTINGS_FEEDBACK: '의견 남기기 :)',
       LEAVE_FEEDBACK_TITLE: '우왕...',
       LEAVE_FEEDBACK_BODY: '의견을 주신다면 영광입니다. 앱스토어에 리뷰를 작성하시겠습니까?',
-      PET_TITLE: '여행',
       RETRY: '다시 시도',
       WEEK_SCREEN_NETWORK_ERROR_REASON: '오늘 날짜를 확인할 수 없습니다.\n네트워크를 확인해주세요.',
       SETTINGS_DEVELOPER: '개발자 설정',
@@ -232,6 +250,16 @@ class AppLocalizations {
       FIRST_COMPLETABLE_DAY_TUTORIAL: '클릭해서 하루를 완료하고 점수를 얻으세요!\n연속으로 완료시 더 많은 점수를 얻을 수 있습니다.',
       FIRST_COMPLETABLE_DAY_TUTORIAL_SUB: '주의: 완료한 날짜의 작업은 수정이 불가합니다.',
       CANNOT_MODIFY_COMPLETED_DAYS_TASKS: '완료한 날짜의 작업은 수정이 불가합니다.',
+      NO_PET_SELECTED: '선택된 펫이 없습니다',
+      UNKNOWNS_EGG: '???의 알',
+      PET_A_0_TITLE: '에이',
+      PET_A_1_TITLE: '에이블',
+      PET_A_2_TITLE: '에이스!',
+      PET_A_UNACTIVATED_SUBTITLE: '첫번째 아이가 누굴까요~?',
+      PET_A_HATCHING_SUBTITLE: '엑, 뭔가 타는 냄새 안나요?',
+      PET_A_0_SUBTITLE: '안녕!',
+      PET_A_1_SUBTITLE: '안녕!',
+      PET_A_2_SUBTITLE: '안녕!',
     },
   };
 
@@ -298,7 +326,6 @@ class AppLocalizations {
   String get settingsFeedback => _localizedValues[locale.languageCode][SETTINGS_FEEDBACK];
   String get leaveFeedbackTitle => _localizedValues[locale.languageCode][LEAVE_FEEDBACK_TITLE];
   String get leaveFeedbackBody => _localizedValues[locale.languageCode][LEAVE_FEEDBACK_BODY];
-  String get petTitle => _localizedValues[locale.languageCode][PET_TITLE];
   String get retry => _localizedValues[locale.languageCode][RETRY];
   String get weekScreenNetworkErrorReason => _localizedValues[locale.languageCode][WEEK_SCREEN_NETWORK_ERROR_REASON];
   String get settingsDeveloper => _localizedValues[locale.languageCode][SETTINGS_DEVELOPER];
@@ -308,6 +335,7 @@ class AppLocalizations {
   String get firstCompletableDayTutorial => _localizedValues[locale.languageCode][FIRST_COMPLETABLE_DAY_TUTORIAL];
   String get firstCompletableDayTutorialSub => _localizedValues[locale.languageCode][FIRST_COMPLETABLE_DAY_TUTORIAL_SUB];
   String get cannotModifyCompletedDaysTasks => _localizedValues[locale.languageCode][CANNOT_MODIFY_COMPLETED_DAYS_TASKS];
+  String get noPetSelected => _localizedValues[locale.languageCode][NO_PET_SELECTED];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {
@@ -462,6 +490,32 @@ class AppLocalizations {
       return '${date.month}월 ${date.day}일에 먼저 완료 가능한 날이 있습니다. 순서대로 완료하지 않으면 연속 성공 횟수를 잃게됩니다.\n진행하시겠습니까?';
     } else {
       return 'You have a completable day at ${date.month}.${date.day}. You will lose current streak if you don\'t complete it orderly.\nProceed?';
+    }
+  }
+
+  String getPetTitle(String key, int phase, bool isActivated, bool isHatching) {
+    if (!isActivated) {
+      return '???';
+    } else if (isHatching) {
+      return _localizedValues[locale.languageCode][UNKNOWNS_EGG];
+    } else {
+      switch (key) {
+        default:
+          return phase == 0 ? _localizedValues[locale.languageCode][PET_A_0_TITLE]
+            : phase == 1 ? _localizedValues[locale.languageCode][PET_A_1_TITLE]
+            : _localizedValues[locale.languageCode][PET_A_2_TITLE];
+      }
+    }
+  }
+
+  String getPetSubtitle(String key, int phase, bool isActivated, bool isHatching) {
+    switch (key) {
+      default:
+        return !isActivated ? _localizedValues[locale.languageCode][PET_A_UNACTIVATED_SUBTITLE]
+          : isHatching ? _localizedValues[locale.languageCode][PET_A_HATCHING_SUBTITLE]
+          : phase == 0 ? _localizedValues[locale.languageCode][PET_A_0_SUBTITLE]
+          : phase == 1 ? _localizedValues[locale.languageCode][PET_A_1_SUBTITLE]
+          : _localizedValues[locale.languageCode][PET_A_2_SUBTITLE];
     }
   }
 }

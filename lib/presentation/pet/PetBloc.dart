@@ -16,8 +16,25 @@ class PetBloc {
   }
 
   Future<void> _initState() async {
+    //todo: replace dummy data with real data
     _state.add(_state.value.buildNew(
       viewState: PetViewState.NORMAL,
+      seedCount: 25,
+      selectedPet: SelectedPet(
+        phases: [
+          Phase(
+            imgPath: 'assets/ic_backspace.png',
+            maxExp: 100,
+            curExp: 50,
+          ),
+          Phase(
+            imgPath: 'assets/ic_backspace.png',
+            maxExp: 150,
+            curExp: 50,
+          ),
+        ],
+        selectedPhase: 1,
+      ),
     ));
   }
 

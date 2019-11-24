@@ -1,5 +1,5 @@
 
-import 'package:flutter/cupertino.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
@@ -42,8 +42,8 @@ class _PetScreenState extends State<PetScreen> {
       : Column(
       children: <Widget>[
         _Header(
-          title: AppLocalizations.of(context).petTitle,
-          growthPainCount: state.growthPainCount,
+          seedCount: state.seedCount,
+          selectedPet: state.selectedPet,
         ),
         Expanded(
           child: Stack(
@@ -68,46 +68,354 @@ class _WholeLoadingView extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
-  final String title;
-  final int growthPainCount;
+  final int seedCount;
+  final SelectedPet selectedPet;
 
   _Header({
-    @required this.title,
-    @required this.growthPainCount,
+    @required this.seedCount,
+    @required this.selectedPet,
   });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 184,
+      child: Column(
+        children: <Widget>[
+          Container(
+            height: 56,
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.only(right: 24),
+            child: _SeedCount(seedCount),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 24, top: 12, right: 24),
+              child: Center(
+                child: selectedPet == null ? Text(
+                  AppLocalizations.of(context).noPetSelected,
+                  style: TextStyle(
+                    color: AppColors.TEXT_BLACK_LIGHT,
+                    fontSize: 24,
+                  ),
+                  textAlign: TextAlign.center,
+                ): _SelectedPetView(selectedPet),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _SeedCount extends StatelessWidget {
+  final int count;
+
+  _SeedCount(this.count);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12,),
+      decoration: BoxDecoration(
+        color: AppColors.PRIMARY,
+        borderRadius: BorderRadius.all(Radius.circular(6)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Image.asset('assets/ic_seed.png'),
+          const SizedBox(width: 12,),
+          Text(
+            '$count',
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.TEXT_WHITE,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SelectedPetView extends StatelessWidget {
+  final SelectedPet selectedPet;
+
+  _SelectedPetView(this.selectedPet);
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        Expanded(
-          child: Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+        Container(
+          width: 108,
+          height: 108,
+          child: FlareActor(
+            selectedPet.flrPath,
+            animation: selectedPet.flrAnimation,
           ),
         ),
-        _GrowthPainCount(
-          count: growthPainCount,
+        const SizedBox(width: 8,),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                AppLocalizations.of(context).getPetTitle(
+                  selectedPet.key,
+                  selectedPet.selectedPhase,
+                  selectedPet.isActivated,
+                  selectedPet.isHatching
+                ),
+                style: TextStyle(
+                  fontSize: 24,
+                  color: AppColors.TEXT_BLACK,
+                ),
+              ),
+              const SizedBox(height: 2,),
+              Text(
+                AppLocalizations.of(context).getPetSubtitle(
+                  selectedPet.key,
+                  selectedPet.selectedPhase,
+                  selectedPet.isActivated,
+                  selectedPet.isHatching
+                ),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.TEXT_BLACK_LIGHT,
+                ),
+              ),
+              const Spacer(),
+              _Phases(
+                phases: selectedPet.phases,
+                selectedPhase: selectedPet.selectedPhase,
+              ),
+            ],
+          ),
         ),
       ],
     );
   }
 }
 
-class _GrowthPainCount extends StatelessWidget {
-  final int count;
+class _Phases extends StatelessWidget {
+  final List<Phase> phases;
+  final int selectedPhase;
 
-  _GrowthPainCount({
-    @required this.count,
+  _Phases({
+    @required this.phases,
+    @required this.selectedPhase,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Stack(
+          alignment: Alignment.bottomCenter,
+          children: <Widget>[
+            _PhaseBar(
+              phases: phases,
+            ),
+            phases.length >= 2 ? Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(phases.length, (index) {
+                return SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: Image.asset(phases[index].imgPath),
+                );
+              }),
+            ) : const SizedBox.shrink(),
+          ],
+        ),
+        const SizedBox(height: 2,),
+        Stack(
+          children: <Widget>[
+            _getPhaseScoreView(),
+            phases.length >= 2 && selectedPhase >= 0 ? Align(
+              alignment: phases.length == 3 && selectedPhase == 0 ? Alignment.topLeft
+                : phases.length == 3 && selectedPhase == 1 ? Alignment.topCenter
+                : phases.length == 3 ? Alignment.topRight
+                : phases.length == 2 && selectedPhase == 0 ? Alignment.topLeft
+                : Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Image.asset('assets/ic_selected_phase.png'),
+              ),
+            ) : const SizedBox.shrink(),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _getPhaseScoreView() {
+    final phaseScoreText = RichText(
+      strutStyle: StrutStyle(
+        fontSize: 12,
+      ),
+      text: phases.length == 3 ? TextSpan(
+        style: TextStyle(
+          fontSize: 12,
+          color: AppColors.PRIMARY_LIGHT,
+        ),
+        children: [
+          TextSpan(
+            text: '${phases[0].isFull ? phases[1].curExp : phases[0].curExp}',
+            style: TextStyle(
+              color: AppColors.PRIMARY,
+            ),
+          ),
+          TextSpan(
+            text: ' / ${phases[0].isFull ? phases[1].maxExp : phases[0].maxExp}',
+          ),
+        ],
+      ) : phases.length > 0 ? TextSpan(
+        style: TextStyle(
+          fontSize: 12,
+          color: AppColors.PRIMARY_LIGHT,
+        ),
+        children: [
+          TextSpan(
+            text: '${phases[0].curExp}',
+            style: TextStyle(
+              color: AppColors.PRIMARY,
+            ),
+          ),
+          TextSpan(
+            text: ' / ${phases[0].maxExp}',
+          ),
+        ],
+      ) : TextSpan(),
+      textScaleFactor: 1.0,
+    );
+
+    return phases.length == 3 && phases[0].isFull ? Align(
+      alignment: Alignment.centerRight,
+      child: FractionallySizedBox(
+        widthFactor: 0.5,
+        child: Center(
+          child: phaseScoreText,
+        ),
+      ),
+    ) : phases.length == 3 && !phases[0].isFull ? FractionallySizedBox(
+      widthFactor: 0.5,
+      child: Center(
+        child: phaseScoreText,
+      ),
+    ) : Center(
+      child: phaseScoreText,
+    );
+  }
+}
+
+class _PhaseBar extends StatelessWidget {
+  final List<Phase> phases;
+
+  _PhaseBar({
+    @required this.phases,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Text(
-        '$count',
+      height: 12,
+      child: Stack(
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(60)),
+              color: AppColors.BACKGROUND_GREY,
+            ),
+          ),
+          phases.length == 3 ? _ThreePhaseBar(phases)
+            : phases.length > 0 ? _SinglePhaseBar(phases[0])
+            : const SizedBox.shrink(),
+        ],
       ),
+    );
+  }
+}
+
+class _SinglePhaseBar extends StatelessWidget {
+  final Phase phase;
+
+  _SinglePhaseBar(this.phase);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(60)),
+            color: AppColors.PRIMARY_LIGHT,
+          ),
+        ),
+        FractionallySizedBox(
+          widthFactor: phase.curExp / phase.maxExp,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(60)),
+              color: AppColors.PRIMARY,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ThreePhaseBar extends StatelessWidget {
+  final List<Phase> phases;
+
+  _ThreePhaseBar(this.phases);
+
+  @override
+  Widget build(BuildContext context) {
+    final firstPhase = phases[0];
+    final secondPhase = phases[1];
+    final isFirstPhaseFull = phases[0].isFull;
+
+    return Stack(
+      children: <Widget>[
+        isFirstPhaseFull ? Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(60)),
+            color: AppColors.PRIMARY_LIGHT,
+          ),
+        ) : FractionallySizedBox(
+          widthFactor: 0.5,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(60)),
+              color: AppColors.PRIMARY_LIGHT,
+            ),
+          ),
+        ),
+        isFirstPhaseFull ? FractionallySizedBox(
+          widthFactor: 0.5 + secondPhase.curExp / secondPhase.maxExp * 0.5,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(60)),
+              color: AppColors.PRIMARY,
+            ),
+          ),
+        ) : FractionallySizedBox(
+          widthFactor: firstPhase.curExp / firstPhase.maxExp * 0.5,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(60)),
+              color: AppColors.PRIMARY,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
