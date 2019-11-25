@@ -38,18 +38,50 @@ class _PetScreenState extends State<PetScreen> {
   }
 
   Widget _buildUI(PetState state) {
-    return state.viewState == PetViewState.LOADING ? _WholeLoadingView()
-      : Column(
+    return Stack(
       children: <Widget>[
-        _Header(
-          seedCount: state.seedCount,
-          selectedPet: state.selectedPet,
+        state.viewState == PetViewState.LOADING ? _WholeLoadingView()
+          : Column(
+          children: <Widget>[
+            _Header(
+              seedCount: state.seedCount,
+              selectedPet: state.selectedPet,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(left: 36, top: 40,),
+                    child: Text(
+                      'Pets',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.TEXT_BLACK,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 24, top: 12, right: 24,),
+                      child: GridView.count(
+                        crossAxisCount: 4,
+                        children: List.generate(state.petPreviews.length, (index) {
+                          return _PetPreview(
+                            item: state.petPreviews[index],
+                          );
+                        }),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
         ),
-        Expanded(
-          child: Stack(
-            children: <Widget>[
-            ],
-          ),
+        _FAB(
+          state: state.fabState,
         ),
       ],
     );
@@ -416,6 +448,53 @@ class _ThreePhaseBar extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _FAB extends StatelessWidget {
+  final FabState state;
+
+  _FAB({
+    @required this.state,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return state != FabState.HIDDEN ? Align(
+      alignment: Alignment.bottomRight,
+      child: Padding(
+        padding: const EdgeInsets.only(right: 16, bottom: 16,),
+        child: FloatingActionButton(
+          child: Image.asset(state == FabState.SEED ? 'assets/ic_seed.png' : 'assets/ic_egg.png'),
+          backgroundColor: AppColors.PRIMARY,
+          splashColor: AppColors.PRIMARY_DARK,
+          onPressed: () { },
+        ),
+      ),
+    ) : const SizedBox.shrink();
+  }
+}
+
+class _PetPreview extends StatelessWidget {
+  final PetPreview item;
+
+  _PetPreview({
+    @required this.item,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      color: AppColors.PRIMARY_LIGHT,
+      child: SizedBox(
+        width: 48,
+        height: 48,
+        child: Container(
+          color: AppColors.SECONDARY,
+        ),
+      ),
     );
   }
 }

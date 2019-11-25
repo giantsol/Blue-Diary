@@ -35,6 +35,24 @@ class PetBloc {
         ],
         selectedPhase: 1,
       ),
+      fabState: FabState.EGG,
+      petPreviews: [
+        PetPreview(
+
+        ),
+        PetPreview(
+
+        ),
+        PetPreview(
+
+        ),
+        PetPreview(
+
+        ),
+        PetPreview(
+
+        ),
+      ]
     ));
   }
 
