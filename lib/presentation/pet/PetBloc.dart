@@ -62,6 +62,19 @@ class PetBloc {
     }
   }
 
+  void onBornPhaseIndexClicked(int index) {
+    final selectedPet = _state.value.selectedPet;
+    final maxSelectablePhaseIndex = selectedPet.maxSelectablePhaseIndex;
+    if (index <= maxSelectablePhaseIndex) {
+      final updated = selectedPet.buildNew(
+        currentPhaseIndex: index,
+      );
+      _state.add(_state.value.buildNewSelectedPetUpdated(updated));
+
+      _usecases.setPet(updated);
+    }
+  }
+
   void dispose() {
 
   }

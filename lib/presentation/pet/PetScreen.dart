@@ -45,6 +45,7 @@ class _PetScreenState extends State<PetScreen> {
           : Column(
           children: <Widget>[
             _Header(
+              bloc: _bloc,
               seedCount: state.seedCount,
               selectedPet: state.selectedPet,
             ),
@@ -105,10 +106,12 @@ class _WholeLoadingView extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
+  final PetBloc bloc;
   final int seedCount;
   final Pet selectedPet;
 
   _Header({
+    @required this.bloc,
     @required this.seedCount,
     @required this.selectedPet,
   });
@@ -137,6 +140,7 @@ class _Header extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ): _SelectedPetView(
+                  bloc: bloc,
                   pet: selectedPet
                 ),
               ),
@@ -180,9 +184,11 @@ class _SeedCount extends StatelessWidget {
 }
 
 class _SelectedPetView extends StatelessWidget {
+  final PetBloc bloc;
   final Pet pet;
 
   _SelectedPetView({
+    @required this.bloc,
     @required this.pet,
   });
 
@@ -232,6 +238,7 @@ class _SelectedPetView extends StatelessWidget {
               ),
               const Spacer(),
               _Phases(
+                bloc: bloc,
                 pet: pet,
               ),
             ],
@@ -243,9 +250,11 @@ class _SelectedPetView extends StatelessWidget {
 }
 
 class _Phases extends StatelessWidget {
+  final PetBloc bloc;
   final Pet pet;
 
   _Phases({
+    @required this.bloc,
     @required this.pet,
   });
 
@@ -307,17 +316,20 @@ class _Phases extends StatelessWidget {
                 final phase = pet.bornPhases[index];
                 final double maxSize = 36;
                 final double petSize = 36 * phase.sizeRatio;
-                return Container(
-                  width: maxSize,
-                  height: maxSize,
-                  child: Align(
-                    alignment: phase.alignment,
-                    child: SizedBox(
-                      width: petSize,
-                      height: petSize,
-                      child: Image.asset(
-                        phase.imgPath,
-                        fit: BoxFit.fill,
+                return GestureDetector(
+                  onTap: () => bloc.onBornPhaseIndexClicked(index),
+                  child: Container(
+                    width: maxSize,
+                    height: maxSize,
+                    child: Align(
+                      alignment: phase.alignment,
+                      child: SizedBox(
+                        width: petSize,
+                        height: petSize,
+                        child: Image.asset(
+                          phase.imgPath,
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
