@@ -14,6 +14,7 @@ class AppPreferences {
   static const String KEY_CUSTOM_FIRST_LAUNCH_DATE = 'custom.first.launch.date';
   static const String KEY_SHOWN_FIRST_COMPLETABLE_DAY_TUTORIAL = 'shown.first.completable.day.tutorial';
   static const String KEY_SEED = 'seed';
+  static const String KEY_SELECTED_PET_KEY = 'selected.pet.key';
 
   Future<String> getUserPassword() async {
     return PrefService.getString(KEY_USER_PASSWORD) ?? '';
@@ -88,10 +89,18 @@ class AppPreferences {
   }
 
   void addSeed(int count) {
-    PrefService.setInt(KEY_SEED, getSeed() + count);
+    PrefService.setInt(KEY_SEED, getSeedCount() + count);
   }
 
-  int getSeed() {
+  int getSeedCount() {
     return PrefService.getInt(KEY_SEED) ?? 0;
+  }
+
+  String getSelectedPetKey() {
+    return PrefService.getString(KEY_SELECTED_PET_KEY) ?? '';
+  }
+
+  void setSelectedPetKey(String key) {
+    PrefService.setString(KEY_SELECTED_PET_KEY, key);
   }
 }

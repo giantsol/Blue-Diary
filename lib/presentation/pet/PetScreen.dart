@@ -1,8 +1,9 @@
 
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
+import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/presentation/pet/PetBloc.dart';
 import 'package:todo_app/presentation/pet/PetState.dart';
 
@@ -67,9 +68,12 @@ class _PetScreenState extends State<PetScreen> {
                       padding: const EdgeInsets.only(left: 24, top: 12, right: 24,),
                       child: GridView.count(
                         crossAxisCount: 4,
-                        children: List.generate(state.petPreviews.length, (index) {
+                        children: List.generate(state.pets.length, (index) {
+                          final pet = state.pets[index];
                           return _PetPreview(
-                            item: state.petPreviews[index],
+                            bloc: _bloc,
+                            pet: pet,
+                            isSelected: state.selectedPetKey == pet.key,
                           );
                         }),
                       ),
@@ -81,6 +85,7 @@ class _PetScreenState extends State<PetScreen> {
           ],
         ),
         _FAB(
+          bloc: _bloc,
           state: state.fabState,
         ),
       ],
@@ -101,7 +106,7 @@ class _WholeLoadingView extends StatelessWidget {
 
 class _Header extends StatelessWidget {
   final int seedCount;
-  final SelectedPet selectedPet;
+  final Pet selectedPet;
 
   _Header({
     @required this.seedCount,
@@ -131,7 +136,9 @@ class _Header extends StatelessWidget {
                     fontSize: 24,
                   ),
                   textAlign: TextAlign.center,
-                ): _SelectedPetView(selectedPet),
+                ): _SelectedPetView(
+                  pet: selectedPet
+                ),
               ),
             ),
           )
@@ -173,20 +180,34 @@ class _SeedCount extends StatelessWidget {
 }
 
 class _SelectedPetView extends StatelessWidget {
-  final SelectedPet selectedPet;
+  final Pet pet;
 
-  _SelectedPetView(this.selectedPet);
+  _SelectedPetView({
+    @required this.pet,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final currentPhase = pet.currentPhase;
+    final double petMaxSize = 108;
+    final double petSize = petMaxSize * currentPhase.sizeRatio;
+
     return Row(
       children: <Widget>[
         Container(
-          width: 108,
-          height: 108,
-          child: FlareActor(
-            selectedPet.flrPath,
-            animation: selectedPet.flrAnimation,
+          width: petMaxSize,
+          height: petMaxSize,
+          child: Align(
+            alignment: currentPhase.alignment,
+            child: SizedBox(
+              width: petSize,
+              height: petSize,
+              //todo: change to flare
+              child: Image.asset(
+                currentPhase.imgPath,
+                fit: BoxFit.fill,
+              ),
+            ),
           ),
         ),
         const SizedBox(width: 8,),
@@ -195,12 +216,7 @@ class _SelectedPetView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                AppLocalizations.of(context).getPetTitle(
-                  selectedPet.key,
-                  selectedPet.selectedPhase,
-                  selectedPet.isActivated,
-                  selectedPet.isHatching
-                ),
+                AppLocalizations.of(context).getPetTitle(pet),
                 style: TextStyle(
                   fontSize: 24,
                   color: AppColors.TEXT_BLACK,
@@ -208,12 +224,7 @@ class _SelectedPetView extends StatelessWidget {
               ),
               const SizedBox(height: 2,),
               Text(
-                AppLocalizations.of(context).getPetSubtitle(
-                  selectedPet.key,
-                  selectedPet.selectedPhase,
-                  selectedPet.isActivated,
-                  selectedPet.isHatching
-                ),
+                AppLocalizations.of(context).getPetSubtitle(pet),
                 style: TextStyle(
                   fontSize: 12,
                   color: AppColors.TEXT_BLACK_LIGHT,
@@ -221,8 +232,7 @@ class _SelectedPetView extends StatelessWidget {
               ),
               const Spacer(),
               _Phases(
-                phases: selectedPet.phases,
-                selectedPhase: selectedPet.selectedPhase,
+                pet: pet,
               ),
             ],
           ),
@@ -233,16 +243,25 @@ class _SelectedPetView extends StatelessWidget {
 }
 
 class _Phases extends StatelessWidget {
-  final List<Phase> phases;
-  final int selectedPhase;
+  final Pet pet;
 
   _Phases({
-    @required this.phases,
-    @required this.selectedPhase,
+    @required this.pet,
   });
 
   @override
   Widget build(BuildContext context) {
+    final maxSelectablePhaseIndex = pet.maxSelectablePhaseIndex;
+
+    final double barBgWidthFactor = maxSelectablePhaseIndex == Pet.PHASE_INDEX_INACTIVE ? 0
+      : maxSelectablePhaseIndex == Pet.PHASE_INDEX_EGG || pet.bornPhases.length == 2 || maxSelectablePhaseIndex >= 1 ? 1
+      : 0.5;
+    final double barFgWidthFactor = maxSelectablePhaseIndex == Pet.PHASE_INDEX_INACTIVE ? 0
+      : maxSelectablePhaseIndex == Pet.PHASE_INDEX_EGG ? pet.exp / pet.eggPhase.maxExp
+      : pet.bornPhases.length == 2 ? (pet.exp - pet.eggPhase.maxExp) / pet.bornPhases[0].maxExp
+      : maxSelectablePhaseIndex == 0 ? 0.5 * (pet.exp - pet.eggPhase.maxExp) / pet.bornPhases[0].maxExp
+      : 0.5 + 0.5 * (pet.exp - pet.eggPhase.maxExp - pet.bornPhases[0].maxExp) / pet.bornPhases[1].maxExp;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,16 +269,58 @@ class _Phases extends StatelessWidget {
         Stack(
           alignment: Alignment.bottomCenter,
           children: <Widget>[
-            _PhaseBar(
-              phases: phases,
+            // phase bar graph
+            Container(
+              height: 12,
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(60)),
+                      color: AppColors.BACKGROUND_GREY,
+                    ),
+                  ),
+                  FractionallySizedBox(
+                    widthFactor: barBgWidthFactor,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(60)),
+                        color: AppColors.PRIMARY_LIGHT,
+                      ),
+                    ),
+                  ),
+                  FractionallySizedBox(
+                    widthFactor: barFgWidthFactor,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(60)),
+                        color: AppColors.PRIMARY,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            phases.length >= 2 ? Row(
+            maxSelectablePhaseIndex >= 0 ? Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(phases.length, (index) {
-                return SizedBox(
-                  width: 36,
-                  height: 36,
-                  child: Image.asset(phases[index].imgPath),
+              children: List.generate(pet.bornPhases.length, (index) {
+                final phase = pet.bornPhases[index];
+                final double maxSize = 36;
+                final double petSize = 36 * phase.sizeRatio;
+                return Container(
+                  width: maxSize,
+                  height: maxSize,
+                  child: Align(
+                    alignment: phase.alignment,
+                    child: SizedBox(
+                      width: petSize,
+                      height: petSize,
+                      child: Image.asset(
+                        phase.imgPath,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                  ),
                 );
               }),
             ) : const SizedBox.shrink(),
@@ -269,11 +330,10 @@ class _Phases extends StatelessWidget {
         Stack(
           children: <Widget>[
             _getPhaseScoreView(),
-            phases.length >= 2 && selectedPhase >= 0 ? Align(
-              alignment: phases.length == 3 && selectedPhase == 0 ? Alignment.topLeft
-                : phases.length == 3 && selectedPhase == 1 ? Alignment.topCenter
-                : phases.length == 3 ? Alignment.topRight
-                : phases.length == 2 && selectedPhase == 0 ? Alignment.topLeft
+            maxSelectablePhaseIndex >= 0 ? Align(
+              alignment: pet.currentPhaseIndex == 0 ? Alignment.topLeft
+                : pet.currentPhaseIndex == 1 && pet.bornPhases.length == 2 ? Alignment.topRight
+                : pet.currentPhaseIndex == 1 ? Alignment.topCenter
                 : Alignment.topRight,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -287,47 +347,45 @@ class _Phases extends StatelessWidget {
   }
 
   Widget _getPhaseScoreView() {
+    final maxSelectablePhaseIndex = pet.maxSelectablePhaseIndex;
+    final numerator = maxSelectablePhaseIndex == Pet.PHASE_INDEX_EGG ? pet.exp
+      : maxSelectablePhaseIndex == 0 ? pet.exp - pet.eggPhase.maxExp
+      : maxSelectablePhaseIndex == 1 && pet.bornPhases.length == 3 ? pet.exp - pet.eggPhase.maxExp - pet.bornPhases[0].maxExp
+      : 0;
+    final denominator = maxSelectablePhaseIndex == Pet.PHASE_INDEX_EGG ? pet.eggPhase.maxExp
+      : maxSelectablePhaseIndex == 0 ? pet.bornPhases[0].maxExp
+      : maxSelectablePhaseIndex == 1 && pet.bornPhases.length == 3 ? pet.bornPhases[1].maxExp
+      : 0;
+
     final phaseScoreText = RichText(
       strutStyle: StrutStyle(
         fontSize: 12,
       ),
-      text: phases.length == 3 ? TextSpan(
+      text: denominator != 0 ? TextSpan(
         style: TextStyle(
           fontSize: 12,
           color: AppColors.PRIMARY_LIGHT,
         ),
         children: [
           TextSpan(
-            text: '${phases[0].isFull ? phases[1].curExp : phases[0].curExp}',
+            text: '$numerator',
             style: TextStyle(
               color: AppColors.PRIMARY,
             ),
           ),
           TextSpan(
-            text: ' / ${phases[0].isFull ? phases[1].maxExp : phases[0].maxExp}',
+            text: ' / $denominator',
           ),
         ],
-      ) : phases.length > 0 ? TextSpan(
+      ) : TextSpan(
         style: TextStyle(
           fontSize: 12,
-          color: AppColors.PRIMARY_LIGHT,
         ),
-        children: [
-          TextSpan(
-            text: '${phases[0].curExp}',
-            style: TextStyle(
-              color: AppColors.PRIMARY,
-            ),
-          ),
-          TextSpan(
-            text: ' / ${phases[0].maxExp}',
-          ),
-        ],
-      ) : TextSpan(),
+      ),
       textScaleFactor: 1.0,
     );
 
-    return phases.length == 3 && phases[0].isFull ? Align(
+    return maxSelectablePhaseIndex == 1 && pet.bornPhases.length == 3 ? Align(
       alignment: Alignment.centerRight,
       child: FractionallySizedBox(
         widthFactor: 0.5,
@@ -335,7 +393,7 @@ class _Phases extends StatelessWidget {
           child: phaseScoreText,
         ),
       ),
-    ) : phases.length == 3 && !phases[0].isFull ? FractionallySizedBox(
+    ) : maxSelectablePhaseIndex == 0 ? FractionallySizedBox(
       widthFactor: 0.5,
       child: Center(
         child: phaseScoreText,
@@ -346,116 +404,12 @@ class _Phases extends StatelessWidget {
   }
 }
 
-class _PhaseBar extends StatelessWidget {
-  final List<Phase> phases;
-
-  _PhaseBar({
-    @required this.phases,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 12,
-      child: Stack(
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(60)),
-              color: AppColors.BACKGROUND_GREY,
-            ),
-          ),
-          phases.length == 3 ? _ThreePhaseBar(phases)
-            : phases.length > 0 ? _SinglePhaseBar(phases[0])
-            : const SizedBox.shrink(),
-        ],
-      ),
-    );
-  }
-}
-
-class _SinglePhaseBar extends StatelessWidget {
-  final Phase phase;
-
-  _SinglePhaseBar(this.phase);
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(60)),
-            color: AppColors.PRIMARY_LIGHT,
-          ),
-        ),
-        FractionallySizedBox(
-          widthFactor: phase.curExp / phase.maxExp,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(60)),
-              color: AppColors.PRIMARY,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ThreePhaseBar extends StatelessWidget {
-  final List<Phase> phases;
-
-  _ThreePhaseBar(this.phases);
-
-  @override
-  Widget build(BuildContext context) {
-    final firstPhase = phases[0];
-    final secondPhase = phases[1];
-    final isFirstPhaseFull = phases[0].isFull;
-
-    return Stack(
-      children: <Widget>[
-        isFirstPhaseFull ? Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(60)),
-            color: AppColors.PRIMARY_LIGHT,
-          ),
-        ) : FractionallySizedBox(
-          widthFactor: 0.5,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(60)),
-              color: AppColors.PRIMARY_LIGHT,
-            ),
-          ),
-        ),
-        isFirstPhaseFull ? FractionallySizedBox(
-          widthFactor: 0.5 + secondPhase.curExp / secondPhase.maxExp * 0.5,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(60)),
-              color: AppColors.PRIMARY,
-            ),
-          ),
-        ) : FractionallySizedBox(
-          widthFactor: firstPhase.curExp / firstPhase.maxExp * 0.5,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(60)),
-              color: AppColors.PRIMARY,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _FAB extends StatelessWidget {
+  final PetBloc bloc;
   final FabState state;
 
   _FAB({
+    @required this.bloc,
     @required this.state,
   });
 
@@ -469,7 +423,7 @@ class _FAB extends StatelessWidget {
           child: Image.asset(state == FabState.SEED ? 'assets/ic_seed.png' : 'assets/ic_egg.png'),
           backgroundColor: AppColors.PRIMARY,
           splashColor: AppColors.PRIMARY_DARK,
-          onPressed: () { },
+          onPressed: () => state == FabState.EGG ? bloc.onEggFabClicked() : bloc.onSeedFabClicked(),
         ),
       ),
     ) : const SizedBox.shrink();
@@ -477,22 +431,32 @@ class _FAB extends StatelessWidget {
 }
 
 class _PetPreview extends StatelessWidget {
-  final PetPreview item;
+  final PetBloc bloc;
+  final Pet pet;
+  final bool isSelected;
 
   _PetPreview({
-    @required this.item,
+    @required this.bloc,
+    @required this.pet,
+    @required this.isSelected,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      color: AppColors.PRIMARY_LIGHT,
-      child: SizedBox(
-        width: 48,
-        height: 48,
-        child: Container(
-          color: AppColors.SECONDARY,
+    return GestureDetector(
+      onTap: () => bloc.onPetPreviewClicked(pet),
+      child: Container(
+        alignment: Alignment.center,
+        color: isSelected && pet.currentPhaseIndex == Pet.PHASE_INDEX_INACTIVE ? AppColors.BACKGROUND_GREY
+          : isSelected ? AppColors.PRIMARY_LIGHT
+          : AppColors.BACKGROUND_WHITE,
+        child: SizedBox(
+          width: 48,
+          height: 48,
+          child: Image.asset(
+            pet.currentPhase.imgPath,
+            fit: BoxFit.fill,
+          ),
         ),
       ),
     );

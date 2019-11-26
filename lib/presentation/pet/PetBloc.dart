@@ -1,5 +1,6 @@
 
 import 'package:rxdart/rxdart.dart';
+import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/usecase/PetUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/pet/PetState.dart';
@@ -16,44 +17,49 @@ class PetBloc {
   }
 
   Future<void> _initState() async {
-    //todo: replace dummy data with real data
+    final seedCount = _usecases.getSeedCount();
+    final allPets = await _usecases.getAllPets();
+    final selectedPetKey = _usecases.getSelectedPetKey();
+
     _state.add(_state.value.buildNew(
       viewState: PetViewState.NORMAL,
-      seedCount: 25,
-      selectedPet: SelectedPet(
-        phases: [
-          Phase(
-            imgPath: 'assets/ic_backspace.png',
-            maxExp: 100,
-            curExp: 50,
-          ),
-          Phase(
-            imgPath: 'assets/ic_backspace.png',
-            maxExp: 150,
-            curExp: 50,
-          ),
-        ],
-        selectedPhase: 1,
-      ),
-      fabState: FabState.EGG,
-      petPreviews: [
-        PetPreview(
-
-        ),
-        PetPreview(
-
-        ),
-        PetPreview(
-
-        ),
-        PetPreview(
-
-        ),
-        PetPreview(
-
-        ),
-      ]
+      seedCount: seedCount,
+      pets: allPets,
+      selectedPetKey: selectedPetKey,
     ));
+  }
+
+  void onEggFabClicked() {
+    final selectedPet = _state.value.selectedPet;
+    final updated = selectedPet.buildNew(currentPhaseIndex: selectedPet.currentPhaseIndex + 1);
+    _state.add(_state.value.buildNewSelectedPetUpdated(updated));
+
+    _usecases.setPet(updated);
+    _usecases.setSelectedPetKey(_state.value.selectedPetKey);
+  }
+
+  void onSeedFabClicked() {
+    // todo: use seed counts
+    final selectedPet = _state.value.selectedPet;
+    final updated = selectedPet.buildNewExpIncreased();
+    _state.add(_state.value.buildNewSelectedPetUpdated(updated));
+
+    _usecases.setPet(updated);
+  }
+
+  void onPetPreviewClicked(Pet pet) {
+    if (pet.key == _state.value.selectedPetKey) {
+      _state.add(_state.value.buildNew(
+        selectedPetKey: '',
+      ));
+      _usecases.setSelectedPetKey('');
+    } else {
+      final isPetActivated = pet.currentPhaseIndex != Pet.PHASE_INDEX_INACTIVE;
+      _state.add(_state.value.buildNew(
+        selectedPetKey: pet.key,
+      ));
+      _usecases.setSelectedPetKey(isPetActivated ? pet.key : '');
+    }
   }
 
   void dispose() {

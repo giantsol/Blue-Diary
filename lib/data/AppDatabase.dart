@@ -4,22 +4,26 @@ import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:todo_app/data/datasource/CategoryDataSource.dart';
 import 'package:todo_app/data/datasource/MemoDataSource.dart';
+import 'package:todo_app/data/datasource/PetDataSource.dart';
 import 'package:todo_app/data/datasource/ToDoDataSource.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
+import 'package:todo_app/domain/entity/Pet.dart';
+import 'package:todo_app/domain/entity/Pets.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
-import 'package:todo_app/domain/repository/DateRepository.dart';
 
 class AppDatabase implements ToDoDataSource,
   MemoDataSource,
-  CategoryDataSource {
+  CategoryDataSource,
+  PetDataSource {
   static const String TABLE_CHECK_POINTS = 'checkpoints';
   static const String TABLE_TODOS = 'todos';
   static const String TABLE_DAY_MEMOS = 'daymemos';
   static const String TABLE_CATEGORIES = 'categories';
   static const String TABLE_MARKED_COMPLETED_DAYS = 'marked_completed_days';
+  static const String TABLE_PET_USER_DATUM = 'pet_user_datum';
 
   static const String COLUMN_ID = '_id';
   static const String COLUMN_YEAR = 'year';
@@ -39,6 +43,9 @@ class AppDatabase implements ToDoDataSource,
   static const String COLUMN_CATEGORY_ID = 'category_id';
   static const String COLUMN_MILLIS_SINCE_EPOCH = 'millis_since_epoch';
   static const String COLUMN_STREAK_COUNT = 'streak_count';
+  static const String COLUMN_KEY = '_key';
+  static const String COLUMN_EXP = 'exp';
+  static const String COLUMN_SELECTED_PHASE = 'selected_phase';
 
   // ignore: close_sinks
   final _database = BehaviorSubject<Database>();
@@ -102,6 +109,15 @@ class AppDatabase implements ToDoDataSource,
           );
           """
         );
+        await db.execute(
+          """
+          CREATE TABLE $TABLE_PET_USER_DATUM(
+            $COLUMN_KEY TEXT NOT NULL PRIMARY KEY,
+            $COLUMN_EXP INTEGER NOT NULL,
+            $COLUMN_SELECTED_PHASE INTEGER NOT NULL
+           );
+           """
+        );
         return db.execute(
           """
           CREATE TABLE $TABLE_DAY_MEMOS(
@@ -132,11 +148,21 @@ class AppDatabase implements ToDoDataSource,
           );
           """
           );
+        } else if (oldVersion == 3 && newVersion == 4) {
+          return db.execute(
+          """
+          CREATE TABLE $TABLE_PET_USER_DATUM(
+            $COLUMN_KEY TEXT NOT NULL PRIMARY KEY,
+            $COLUMN_EXP INTEGER NOT NULL,
+            $COLUMN_SELECTED_PHASE INTEGER NOT NULL
+          );
+          """
+          );
         } else {
           return null;
         }
       },
-      version: 3,
+      version: 4,
     );
   }
 
@@ -377,6 +403,37 @@ class AppDatabase implements ToDoDataSource,
       TABLE_CATEGORIES,
       where: Category.createWhereQuery(),
       whereArgs: Category.createWhereArgs(category.id),
+    );
+  }
+
+  @override
+  Future<List<Pet>> getAllPets() async {
+    final pets = Pets.getPetPrototypes();
+    final db = await _database.first;
+
+    List<Map<String, dynamic>> maps = await db.query(TABLE_PET_USER_DATUM);
+    for (Map<String, dynamic> entry in maps) {
+      final key = entry[COLUMN_KEY];
+      final index = pets.indexWhere((it) => it.key == key);
+      if (index >= 0) {
+        // fill with user data
+        pets[index] = pets[index].buildNew(
+          exp: entry[COLUMN_EXP],
+          currentPhaseIndex: entry[COLUMN_SELECTED_PHASE],
+        );
+      }
+    }
+
+    return pets;
+  }
+
+  @override
+  Future<void> setPet(Pet pet) async {
+    final db = await _database.first;
+    return db.insert(
+      TABLE_PET_USER_DATUM,
+      pet.toUserDatumDatabase(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 }

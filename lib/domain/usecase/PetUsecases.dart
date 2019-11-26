@@ -1,12 +1,31 @@
 
-import 'package:todo_app/domain/repository/DateRepository.dart';
+import 'package:todo_app/domain/entity/Pet.dart';
+import 'package:todo_app/domain/repository/PetRepository.dart';
 import 'package:todo_app/domain/repository/PrefRepository.dart';
-import 'package:todo_app/domain/repository/ToDoRepository.dart';
 
 class PetUsecases {
-  final DateRepository _dateRepository;
+  final PetRepository _petRepository;
   final PrefsRepository _prefsRepository;
-  final ToDoRepository _toDoRepository;
 
-  const PetUsecases(this._dateRepository, this._prefsRepository, this._toDoRepository);
+  const PetUsecases(this._petRepository, this._prefsRepository);
+
+  int getSeedCount() {
+    return _prefsRepository.getSeedCount();
+  }
+
+  Future<List<Pet>> getAllPets() {
+    return _petRepository.getAllPets();
+  }
+
+  String getSelectedPetKey() {
+    return _prefsRepository.getSelectedPetKey();
+  }
+
+  void setPet(Pet pet) {
+    _petRepository.setPet(pet);
+  }
+
+  void setSelectedPetKey(String petKey) {
+    _prefsRepository.setSelectedPetKey(petKey);
+  }
 }

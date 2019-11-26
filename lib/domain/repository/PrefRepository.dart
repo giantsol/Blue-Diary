@@ -20,4 +20,7 @@ abstract class PrefsRepository {
   Future<bool> hasShownFirstCompletableDayTutorial();
   void setShownFirstCompletableDayTutorial();
   void addSeed(int count);
+  int getSeedCount();
+  String getSelectedPetKey();
+  void setSelectedPetKey(String key);
 }
