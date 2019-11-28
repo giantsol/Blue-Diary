@@ -306,7 +306,7 @@ class _Header extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               Text(
-                'Last updated: ${myRankingInfo.lastUpdated}',
+                'Last updated: ${DateTime.fromMillisecondsSinceEpoch(myRankingInfo.lastUpdatedMillis)}',
                 style: TextStyle(
                   fontSize: 10,
                   color: AppColors.TEXT_BLACK,

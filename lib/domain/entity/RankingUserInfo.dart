@@ -9,7 +9,7 @@ class RankingUserInfo {
   static const KEY_LATEST_STREAK = 'latest_streak';
   static const KEY_LONGEST_STREAK = 'longest_streak';
   static const KEY_THUMBS_UP = 'thumbs_up';
-  static const KEY_LAST_UPDATED = 'last_updated';
+  static const KEY_LAST_UPDATED_MILLIS = 'last_updated_millis';
   static const KEY_PET_KEY = 'pet_key';
   static const KEY_PET_PHASE_INDEX = 'pet_phase_index';
 
@@ -23,7 +23,7 @@ class RankingUserInfo {
       latestStreak: map[KEY_LATEST_STREAK] ?? 0,
       longestStreak: map[KEY_LONGEST_STREAK] ?? 0,
       thumbsUp: map[KEY_THUMBS_UP] ?? 0,
-      lastUpdated: map[KEY_LAST_UPDATED] ?? 0,
+      lastUpdatedMillis: map[KEY_LAST_UPDATED_MILLIS] ?? 0,
       petKey: map[KEY_PET_KEY] ?? '',
       petPhaseIndex: map[KEY_PET_PHASE_INDEX] ?? Pet.PHASE_INDEX_INACTIVE,
     );
@@ -35,7 +35,7 @@ class RankingUserInfo {
   final int latestStreak;
   final int longestStreak;
   final int thumbsUp;
-  final int lastUpdated;
+  final int lastUpdatedMillis;
   final String petKey;
   final int petPhaseIndex;
 
@@ -57,7 +57,7 @@ class RankingUserInfo {
     this.latestStreak = 0,
     this.longestStreak = 0,
     this.thumbsUp = 0,
-    this.lastUpdated = 0,
+    this.lastUpdatedMillis = 0,
     this.petKey = '',
     this.petPhaseIndex = Pet.PHASE_INDEX_INACTIVE,
   });
@@ -70,9 +70,9 @@ class RankingUserInfo {
       KEY_LATEST_STREAK: latestStreak,
       KEY_LONGEST_STREAK: longestStreak,
       KEY_THUMBS_UP: thumbsUp,
-      KEY_LAST_UPDATED: lastUpdated,
       KEY_PET_KEY: petKey,
       KEY_PET_PHASE_INDEX: petPhaseIndex,
+      // we don't send lastUpdatedMillis here
     };
   }
 }

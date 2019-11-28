@@ -2,7 +2,6 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/usecase/RankingUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
@@ -106,7 +105,7 @@ class RankingBloc {
         petKey: selectedPet.key,
         petPhaseIndex: selectedPet.currentPhaseIndex,
       );
-      await _usecases.setRankingUserInfo(uid, rankingUserInfo);
+      return _usecases.setRankingUserInfo(uid, rankingUserInfo);
     }
   }
 

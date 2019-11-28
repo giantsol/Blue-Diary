@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/entity/RankingUserInfosEvent.dart';
@@ -36,11 +37,9 @@ class RankingRepositoryImpl implements RankingRepository {
   }
 
   @override
-  Future<void> setRankingUserInfo(String uid, RankingUserInfo info) async {
-    return Firestore.instance
-      .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
-      .document(uid)
-      .setData(info.toMap(), merge: true);
+  Future<void> setRankingUserInfo(String uid, RankingUserInfo info) {
+    final callable = CloudFunctions.instance.getHttpsCallable(functionName: 'setRankingUserInfo');
+    return callable.call(info.toMap()).timeout(const Duration(seconds: 3));
   }
 
   @override
