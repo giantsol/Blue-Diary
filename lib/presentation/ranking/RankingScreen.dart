@@ -4,6 +4,7 @@ import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
+import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/presentation/ranking/RankingBloc.dart';
 import 'package:todo_app/presentation/ranking/RankingState.dart';
 
@@ -136,6 +137,20 @@ class _Header extends StatelessWidget {
     final petPhase = myRankingInfo.petPhase;
     final double petMaxSize = 72;
 
+    final latestStreakStartDate = myRankingInfo.latestStreakStartDate;
+    final latestStreakEndDate = myRankingInfo.latestStreakEndDate;
+    String latestStreakDateRangeText = '';
+    if (latestStreakStartDate != DateRepository.INVALID_DATE && latestStreakEndDate != DateRepository.INVALID_DATE) {
+      latestStreakDateRangeText = '${latestStreakStartDate.year}.${latestStreakStartDate.month}.${latestStreakStartDate.day} - ${latestStreakEndDate.year}.${latestStreakEndDate.month}.${latestStreakEndDate.day}';
+    }
+
+    final longestStreakStartDate = myRankingInfo.longestStreakStartDate;
+    final longestStreakEndDate = myRankingInfo.longestStreakEndDate;
+    String longestStreakDateRangeText = '';
+    if (longestStreakStartDate != DateRepository.INVALID_DATE && longestStreakEndDate != DateRepository.INVALID_DATE) {
+      longestStreakDateRangeText = '${longestStreakStartDate.year}.${longestStreakStartDate.month}.${longestStreakStartDate.day} - ${longestStreakEndDate.year}.${longestStreakEndDate.month}.${longestStreakEndDate.day}';
+    }
+
     return myRankingInfo == RankingUserInfo.INVALID ? GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () => bloc.onSignInAndJoinClicked(),
@@ -167,7 +182,7 @@ class _Header extends StatelessWidget {
                 InkWell(
                   onTap: () => bloc.onSignOutClicked(),
                   child: Image.asset('assets/ic_back_arrow.png'),
-                )
+                ),
               ],
             ),
           ),
@@ -249,7 +264,7 @@ class _Header extends StatelessWidget {
                           ),
                         ),
                         TextSpan(
-                          text: '  Dec 11 - Jan 8',
+                          text: '  $latestStreakDateRangeText',
                         ),
                       ],
                     ),
@@ -277,7 +292,7 @@ class _Header extends StatelessWidget {
                           ),
                         ),
                         TextSpan(
-                          text: '  Dec 11 - Jan 8',
+                          text: '  $longestStreakDateRangeText',
                         ),
                       ],
                     ),
@@ -312,7 +327,10 @@ class _Header extends StatelessWidget {
                   color: AppColors.TEXT_BLACK,
                 ),
               ),
-              Image.asset('assets/ic_back_arrow.png'),
+              InkWell(
+                onTap: () => bloc.onRefreshMyRankingInfoClicked(),
+                child: Image.asset('assets/ic_back_arrow.png'),
+              ),
             ],
           ),
         ],

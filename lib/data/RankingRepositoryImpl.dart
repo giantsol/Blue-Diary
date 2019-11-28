@@ -39,7 +39,7 @@ class RankingRepositoryImpl implements RankingRepository {
   @override
   Future<void> setRankingUserInfo(String uid, RankingUserInfo info) {
     final callable = CloudFunctions.instance.getHttpsCallable(functionName: 'setRankingUserInfo');
-    return callable.call(info.toMap()).timeout(const Duration(seconds: 3));
+    return callable.call(info.toMap()).timeout(const Duration(seconds: 10));
   }
 
   @override

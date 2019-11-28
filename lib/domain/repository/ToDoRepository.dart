@@ -8,7 +8,9 @@ abstract class ToDoRepository {
   Future<void> setDayMarkedCompleted(DateTime date);
   Future<int> getMarkedCompletedDaysCount();
   Future<int> getLatestStreakCount();
-  Future<int> getMaxStreakCount();
+  Future<int> getLatestStreakEndMillis();
+  Future<int> getLongestStreakCount();
+  Future<int> getLongestStreakEndMillis();
   Future<int> getStreakCount(DateTime date);
   Future<bool> hasDayBeenMarkedCompleted(DateTime date);
   Future<DateTime> getLastMarkedCompletedDay(int maxMillis);

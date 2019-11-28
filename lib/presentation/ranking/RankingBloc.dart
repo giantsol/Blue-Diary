@@ -88,20 +88,32 @@ class RankingBloc {
     }
   }
 
+  Future<void> onRefreshMyRankingInfoClicked() async {
+    await _uploadMyRankingInfo();
+    final myRankingInfo = await _usecases.getMyRankingUserInfo();
+    _state.add(_state.value.buildNew(
+      myRankingUserInfo: myRankingInfo,
+    ));
+  }
+
   Future<void> _uploadMyRankingInfo() async {
     final uid = await _usecases.getUserId();
     if (uid.isNotEmpty) {
       final userName = await _usecases.getUserDisplayName();
       final completionRatio = await _usecases.getCompletionRatio();
       final latestStreakCount = await _usecases.getLatestStreakCount();
-      final maxStreakCount = await _usecases.getMaxStreakCount();
+      final latestStreakEndMillis = await _usecases.getLatestStreakEndMillis();
+      final longestStreakCount = await _usecases.getLongestStreakCount();
+      final longestStreakEndMillis = await _usecases.getLongestStreakEndMillis();
       final selectedPet = await _usecases.getSelectedPet();
       final rankingUserInfo = RankingUserInfo(
         uid: uid,
         name: userName,
         completionRatio: completionRatio,
         latestStreak: latestStreakCount,
-        longestStreak: maxStreakCount,
+        latestStreakEndMillis: latestStreakEndMillis,
+        longestStreak: longestStreakCount,
+        longestStreakEndMillis: longestStreakEndMillis,
         petKey: selectedPet.key,
         petPhaseIndex: selectedPet.currentPhaseIndex,
       );

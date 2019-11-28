@@ -245,7 +245,18 @@ class AppDatabase implements ToDoDataSource,
   }
 
   @override
-  Future<int> getMaxStreakCount() async {
+  Future<int> getLatestStreakEndMillis() async {
+    final db = await _database.first;
+    final maps = await db.query(
+      TABLE_MARKED_COMPLETED_DAYS,
+      orderBy: '$COLUMN_MILLIS_SINCE_EPOCH DESC',
+      limit: 1,
+    );
+    return maps.isEmpty ? 0 : maps[0][COLUMN_MILLIS_SINCE_EPOCH] ?? 0;
+  }
+
+  @override
+  Future<int> getLongestStreakCount() async {
     final db = await _database.first;
     final maps = await db.query(
       TABLE_MARKED_COMPLETED_DAYS,
@@ -253,6 +264,17 @@ class AppDatabase implements ToDoDataSource,
       limit: 1,
     );
     return maps.isEmpty ? 0 : maps[0][COLUMN_STREAK_COUNT] ?? 0;
+  }
+
+  @override
+  Future<int> getLongestStreakEndMillis() async {
+    final db = await _database.first;
+    final maps = await db.query(
+      TABLE_MARKED_COMPLETED_DAYS,
+      orderBy: '$COLUMN_STREAK_COUNT DESC',
+      limit: 1,
+    );
+    return maps.isEmpty ? 0 : maps[0][COLUMN_MILLIS_SINCE_EPOCH] ?? 0;
   }
 
   @override

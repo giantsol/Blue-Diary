@@ -40,8 +40,18 @@ class ToDoRepositoryImpl implements ToDoRepository {
   }
 
   @override
-  Future<int> getMaxStreakCount() {
-    return _dataSource.getMaxStreakCount();
+  Future<int> getLatestStreakEndMillis() {
+    return _dataSource.getLatestStreakEndMillis();
+  }
+
+  @override
+  Future<int> getLongestStreakCount() {
+    return _dataSource.getLongestStreakCount();
+  }
+
+  @override
+  Future<int> getLongestStreakEndMillis() {
+    return _dataSource.getLongestStreakEndMillis();
   }
 
   @override

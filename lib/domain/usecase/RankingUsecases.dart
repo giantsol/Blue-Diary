@@ -71,8 +71,16 @@ class RankingUsecases {
     return _toDoRepository.getLatestStreakCount();
   }
 
-  Future<int> getMaxStreakCount() {
-    return _toDoRepository.getMaxStreakCount();
+  Future<int> getLatestStreakEndMillis() {
+    return _toDoRepository.getLatestStreakEndMillis();
+  }
+
+  Future<int> getLongestStreakCount() {
+    return _toDoRepository.getLongestStreakCount();
+  }
+
+  Future<int> getLongestStreakEndMillis() {
+    return _toDoRepository.getLongestStreakEndMillis();
   }
 
   Future<void> setRankingUserInfo(String uid, RankingUserInfo info) {
