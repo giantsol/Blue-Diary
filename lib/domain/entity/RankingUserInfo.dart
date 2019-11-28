@@ -107,6 +107,24 @@ class RankingUserInfo {
     this.petPhaseIndex = Pet.PHASE_INDEX_INACTIVE,
   });
 
+  RankingUserInfo buildNew({
+    int thumbsUp,
+  }) {
+    return RankingUserInfo(
+      uid: this.uid,
+      name: this.name,
+      completionRatio: this.completionRatio,
+      latestStreak: this.latestStreak,
+      latestStreakEndMillis: this.latestStreakEndMillis,
+      longestStreak: this.longestStreak,
+      longestStreakEndMillis: this.longestStreakEndMillis,
+      thumbsUp: thumbsUp ?? this.thumbsUp,
+      lastUpdatedMillis: this.lastUpdatedMillis,
+      petKey: this.petKey,
+      petPhaseIndex: this.petPhaseIndex,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       KEY_UID: uid,

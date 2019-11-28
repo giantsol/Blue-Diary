@@ -40,6 +40,8 @@ class _RankingScreenState extends State<RankingScreen> {
   }
 
   Widget _buildUI(RankingState state) {
+    final thumbedUpUids = state.thumbedUpUids;
+
     return WillPopScope(
       onWillPop: () async => !_bloc.handleBackPress(),
       child: Stack(
@@ -73,8 +75,10 @@ class _RankingScreenState extends State<RankingScreen> {
                       if (index <= state.rankingUserInfos.length - 1) {
                         final userInfo = state.rankingUserInfos[index];
                         return _RankingItem(
+                          bloc: _bloc,
                           rank: index + 1,
                           userInfo: userInfo,
+                          hasThumbedUp: thumbedUpUids.containsKey(userInfo.uid) ? true : false,
                         );
                       } else {
                         return Padding(
@@ -340,12 +344,16 @@ class _Header extends StatelessWidget {
 }
 
 class _RankingItem extends StatelessWidget {
+  final RankingBloc bloc;
   final int rank;
   final RankingUserInfo userInfo;
+  final bool hasThumbedUp;
 
   const _RankingItem({
+    @required this.bloc,
     @required this.rank,
     @required this.userInfo,
+    @required this.hasThumbedUp,
   });
 
   @override
@@ -428,7 +436,10 @@ class _RankingItem extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8,),
-          Image.asset('assets/ic_next.png'),
+          InkWell(
+            onTap: () => bloc.onThumbsUpClicked(userInfo),
+            child: Image.asset(hasThumbedUp ? 'assets/ic_prev.png' : 'assets/ic_next.png'),
+          ),
           const SizedBox(width: 4,),
           ConstrainedBox(
             constraints: BoxConstraints(minWidth: 22),

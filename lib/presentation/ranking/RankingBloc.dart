@@ -117,7 +117,7 @@ class RankingBloc {
         petKey: selectedPet.key,
         petPhaseIndex: selectedPet.currentPhaseIndex,
       );
-      return _usecases.setRankingUserInfo(uid, rankingUserInfo);
+      return _usecases.setMyRankingUserInfo(rankingUserInfo);
     }
   }
 
@@ -146,6 +146,16 @@ class RankingBloc {
     _state.add(_state.value.buildNew(
       signInDialogShown: false,
     ));
+  }
+
+  void onThumbsUpClicked(RankingUserInfo userInfo) {
+    final updatedThumbedUpUids = Map.of(_state.value.thumbedUpUids);
+    updatedThumbedUpUids[userInfo.uid] = true;
+    _state.add(_state.value.buildNew(
+      thumbedUpUids: updatedThumbedUpUids,
+    ));
+
+    _usecases.increaseThumbsUp(userInfo);
   }
 
   void dispose() {

@@ -7,6 +7,7 @@ class RankingState {
   final bool hasMoreRankingInfos;
   final RankingUserInfo myRankingInfo;
   final bool signInDialogShown;
+  final Map<String, bool> thumbedUpUids;
 
   const RankingState({
     this.viewState = RankingViewState.LOADING,
@@ -14,6 +15,7 @@ class RankingState {
     this.hasMoreRankingInfos = false,
     this.myRankingInfo = RankingUserInfo.INVALID,
     this.signInDialogShown = false,
+    this.thumbedUpUids = const {},
   });
 
   RankingState buildNew({
@@ -22,6 +24,7 @@ class RankingState {
     bool hasMoreRankingInfos,
     RankingUserInfo myRankingUserInfo,
     bool signInDialogShown,
+    Map<String, bool> thumbedUpUids,
   }) {
     return RankingState(
       viewState: viewState ?? this.viewState,
@@ -29,6 +32,7 @@ class RankingState {
       hasMoreRankingInfos: hasMoreRankingInfos ?? this.hasMoreRankingInfos,
       myRankingInfo: myRankingUserInfo ?? this.myRankingInfo,
       signInDialogShown: signInDialogShown ?? this.signInDialogShown,
+      thumbedUpUids: thumbedUpUids ?? this.thumbedUpUids,
     );
   }
 }

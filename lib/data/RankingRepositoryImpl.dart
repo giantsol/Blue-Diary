@@ -37,7 +37,7 @@ class RankingRepositoryImpl implements RankingRepository {
   }
 
   @override
-  Future<void> setRankingUserInfo(String uid, RankingUserInfo info) {
+  Future<void> setRankingUserInfoUpdatingLastUpdatedTime(RankingUserInfo info) {
     final callable = CloudFunctions.instance.getHttpsCallable(functionName: 'setRankingUserInfo');
     return callable.call(info.toMap()).timeout(const Duration(seconds: 10));
   }
@@ -61,6 +61,7 @@ class RankingRepositoryImpl implements RankingRepository {
       .limit(maxCount)
       .snapshots()
       .listen((querySnapshot) {
+      // todo: use documentChanges instead of documents
       final snapshots = querySnapshot.documents;
       final infos = snapshots.map((snapshot) => RankingUserInfo.fromMap(snapshot.data)).toList();
       final hasMore = snapshots.length == maxCount;
@@ -85,5 +86,16 @@ class RankingRepositoryImpl implements RankingRepository {
       .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
       .document(uid)
       .delete();
+  }
+
+  @override
+  void increaseThumbsUp(RankingUserInfo info) {
+    final increasedInfo = info.buildNew(
+      thumbsUp: info.thumbsUp + 1,
+    );
+    Firestore.instance
+      .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
+      .document(increasedInfo.uid)
+      .setData(increasedInfo.toMap(), merge: true);
   }
 }

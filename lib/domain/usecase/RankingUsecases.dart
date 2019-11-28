@@ -83,8 +83,8 @@ class RankingUsecases {
     return _toDoRepository.getLongestStreakEndMillis();
   }
 
-  Future<void> setRankingUserInfo(String uid, RankingUserInfo info) {
-    return _rankingRepository.setRankingUserInfo(uid, info);
+  Future<void> setMyRankingUserInfo(RankingUserInfo info) {
+    return _rankingRepository.setRankingUserInfoUpdatingLastUpdatedTime(info);
   }
 
   Stream<RankingUserInfosEvent> observeRankingUserInfosEvent() {
@@ -105,5 +105,9 @@ class RankingUsecases {
 
   Future<Pet> getSelectedPet() {
     return _petRepository.getSelectedPet();
+  }
+
+  void increaseThumbsUp(RankingUserInfo userInfo) {
+    _rankingRepository.increaseThumbsUp(userInfo);
   }
 }
