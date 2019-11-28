@@ -223,7 +223,7 @@ class _Header extends StatelessWidget {
                         ),
                         children: [
                           TextSpan(
-                            text: '${myRankingInfo.completionRatio}',
+                            text: myRankingInfo.completionRatioPercentageString,
                             style: TextStyle(
                               fontSize: 24,
                               color: AppColors.PRIMARY,
@@ -412,7 +412,7 @@ class _RankingItem extends StatelessWidget {
               ),
               children: [
                 TextSpan(
-                  text: '${userInfo.completionRatio}',
+                  text: userInfo.completionRatioPercentageString,
                   style: TextStyle(
                     fontSize: 20,
                     color: rank == 1 ? AppColors.GOLD

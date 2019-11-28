@@ -89,6 +89,10 @@ class RankingUserInfo {
     }
   }
 
+  String get completionRatioPercentageString {
+    return (completionRatio * 100).toStringAsFixed(1);
+  }
+
   const RankingUserInfo({
     this.uid = '',
     this.name = '',
