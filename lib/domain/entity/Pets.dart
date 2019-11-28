@@ -10,16 +10,20 @@ class Pets {
     _PET_B,
   ];
 
+  static Pet getPetPrototype(String key) {
+    return getPetPrototypes().firstWhere((it) => it.key == key, orElse: () => Pet.INVALID);
+  }
+
   static const _PET_A = const Pet(
     key: Pet.KEY_A,
-    inactivePhase: Phase(
+    inactivePhase: PetPhase(
       imgPath: 'assets/ic_check.png',
       sizeRatio: 0.6,
       alignment: Alignment.bottomCenter,
       titleKey: AppLocalizations.UNKNOWN_PET_NAME,
       subtitleKey: AppLocalizations.PET_A_INACTIVE_SUBTITLE,
     ),
-    eggPhase: Phase(
+    eggPhase: PetPhase(
       flrPath: '', // todo: add flrPath
       imgPath: 'assets/ic_egg.png',
       sizeRatio: 0.6,
@@ -29,7 +33,7 @@ class Pets {
       subtitleKey: AppLocalizations.PET_A_EGG_SUBTITLE,
     ),
     bornPhases: const [
-      Phase(
+      PetPhase(
         flrPath: '',
         imgPath: 'assets/ic_pet.png',
         sizeRatio: 0.6,
@@ -38,7 +42,7 @@ class Pets {
         titleKey: AppLocalizations.PET_A_0_TITLE,
         subtitleKey: AppLocalizations.PET_A_0_SUBTITLE,
       ),
-      Phase(
+      PetPhase(
         flrPath: '',
         imgPath: 'assets/ic_pet.png',
         sizeRatio: 0.6,
@@ -47,7 +51,7 @@ class Pets {
         titleKey: AppLocalizations.PET_A_1_TITLE,
         subtitleKey: AppLocalizations.PET_A_1_SUBTITLE,
       ),
-      Phase(
+      PetPhase(
         flrPath: '',
         imgPath: 'assets/ic_pet.png',
         sizeRatio: 0.6,
@@ -60,14 +64,14 @@ class Pets {
 
   static const _PET_B = const Pet(
     key: Pet.KEY_B,
-    inactivePhase: Phase(
+    inactivePhase: PetPhase(
       imgPath: 'assets/ic_preview_memo.png',
       sizeRatio: 0.6,
       alignment: Alignment.center,
       titleKey: AppLocalizations.UNKNOWN_PET_NAME,
       subtitleKey: AppLocalizations.PET_B_INACTIVE_SUBTITLE,
     ),
-    eggPhase: Phase(
+    eggPhase: PetPhase(
       flrPath: '', // todo: add flrPath
       imgPath: 'assets/ic_egg.png',
       sizeRatio: 0.6,
@@ -77,7 +81,7 @@ class Pets {
       subtitleKey: AppLocalizations.PET_B_EGG_SUBTITLE,
     ),
     bornPhases: const [
-      Phase(
+      PetPhase(
         flrPath: '',
         imgPath: 'assets/ic_preview_memo.png',
         sizeRatio: 0.6,
@@ -86,7 +90,7 @@ class Pets {
         titleKey: AppLocalizations.PET_B_0_TITLE,
         subtitleKey: AppLocalizations.PET_B_0_SUBTITLE,
       ),
-      Phase(
+      PetPhase(
         flrPath: '',
         imgPath: 'assets/ic_preview_todo.png',
         sizeRatio: 0.7,
@@ -95,7 +99,7 @@ class Pets {
         titleKey: AppLocalizations.PET_B_1_TITLE,
         subtitleKey: AppLocalizations.PET_B_1_SUBTITLE,
       ),
-      Phase(
+      PetPhase(
         flrPath: '',
         imgPath: 'assets/ic_ranking.png',
         sizeRatio: 0.8,

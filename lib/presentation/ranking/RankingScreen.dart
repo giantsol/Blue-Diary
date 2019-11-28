@@ -1,5 +1,8 @@
 
 import 'package:flutter/material.dart';
+import 'package:todo_app/AppColors.dart';
+import 'package:todo_app/Localization.dart';
+import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/presentation/ranking/RankingBloc.dart';
 import 'package:todo_app/presentation/ranking/RankingState.dart';
@@ -36,49 +39,281 @@ class _RankingScreenState extends State<RankingScreen> {
   }
 
   Widget _buildUI(RankingState state) {
-    return Center(
-      child: Column(
+    return WillPopScope(
+      onWillPop: () async => !_bloc.handleBackPress(),
+      child: Stack(
         children: <Widget>[
-          Text('Ranking Screen'),
-          state.userDisplayName.isEmpty ? Column(
+          state.viewState == RankingViewState.LOADING ? _WholeLoadingView()
+            : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              RaisedButton(
-                child: Text('Google SignIn'),
-                onPressed: () => _bloc.onGoogleSignInClicked(),
+              _Header(
+                bloc: _bloc,
+                myRankingInfo: state.myRankingInfo,
               ),
-              RaisedButton(
-                child: Text('Facebook SignIn'),
-                onPressed: () => _bloc.onFacebookSignInClicked(),
+              const SizedBox(height: 20,),
+              Padding(
+                padding: const EdgeInsets.only(left: 36),
+                child: Text(
+                  AppLocalizations.of(context).ranking,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: AppColors.TEXT_BLACK,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 24, top: 8, right: 24,),
+                  child: ListView.builder(
+                    itemCount: state.hasMoreRankingInfos ? state.rankingUserInfos.length + 1 : state.rankingUserInfos.length,
+                    itemBuilder: (context, index) {
+                      if (index <= state.rankingUserInfos.length - 1) {
+                        final userInfo = state.rankingUserInfos[index];
+                        return _RankingItem(
+                          rank: index + 1,
+                          userInfo: userInfo,
+                        );
+                      } else {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4,),
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: () => _bloc.onLoadMoreRankingInfosClicked(),
+                            child: SizedBox(
+                              height: 36,
+                              child: Center(
+                                child: Text(
+                                  'Load more',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: AppColors.TEXT_BLACK,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              )
             ],
-          ) : Column(
+          ),
+          state.signInDialogShown ? _SignInDialog(
+            bloc: _bloc,
+          ) : const SizedBox.shrink(),
+        ],
+      ),
+    );
+  }
+}
+
+class _WholeLoadingView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: AppColors.BACKGROUND_WHITE,
+      alignment: Alignment.center,
+      child: CircularProgressIndicator(),
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  final RankingBloc bloc;
+  final RankingUserInfo myRankingInfo;
+
+  _Header({
+    @required this.bloc,
+    @required this.myRankingInfo,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final petPhase = myRankingInfo.petPhase;
+    final double petMaxSize = 72;
+
+    return myRankingInfo == RankingUserInfo.INVALID ? GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () => bloc.onSignInAndJoinClicked(),
+      child: Container(
+        height: 132,
+        alignment: Alignment.center,
+        child: Text(
+          AppLocalizations.of(context).clickToSignInAndJoin,
+        ),
+      ),
+    ) : Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24,),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            height: 56,
+            alignment: Alignment.centerLeft,
+            child: Row(
+              children: <Widget>[
+                Text(
+                  myRankingInfo.name,
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: AppColors.TEXT_BLACK,
+                  ),
+                ),
+                const Spacer(),
+                InkWell(
+                  onTap: () => bloc.onSignOutClicked(),
+                  child: Image.asset('assets/ic_back_arrow.png'),
+                )
+              ],
+            ),
+          ),
+          Row(
             children: <Widget>[
-              Text('UserName: ${state.userDisplayName}'),
-              RaisedButton(
-                child: Text('Sign Out'),
-                onPressed: () => _bloc.onSignOutClicked(),
+              Container(
+                width: petMaxSize,
+                height: petMaxSize,
+                child: petPhase != PetPhase.INVALID ? Align(
+                  alignment: petPhase.alignment,
+                  child: SizedBox(
+                    width: petMaxSize * petPhase.sizeRatio,
+                    height: petMaxSize * petPhase.sizeRatio,
+                    //todo: change to flare
+                    child: Image.asset(
+                      petPhase.imgPath,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ): const SizedBox.shrink(), // todo: show something else
               ),
-              RaisedButton(
-                child: Text('Submit my score'),
-                onPressed: () => _bloc.onSubmitMyScoreClicked(),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      AppLocalizations.of(context).completedDays,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.TEXT_BLACK,
+                      ),
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.TEXT_BLACK,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: '${myRankingInfo.completionRatio}',
+                            style: TextStyle(
+                              fontSize: 24,
+                              color: AppColors.PRIMARY,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' %'
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    AppLocalizations.of(context).currentStreak,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.TEXT_BLACK,
+                    ),
+                  ),
+                  RichText(
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: AppColors.TEXT_BLACK_LIGHT,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: '${myRankingInfo.latestStreak}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: AppColors.PRIMARY,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '  Dec 11 - Jan 8',
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 4,),
+                  Text(
+                    AppLocalizations.of(context).longestStreak,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.TEXT_BLACK,
+                    ),
+                  ),
+                  RichText(
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: AppColors.TEXT_BLACK_LIGHT,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: '${myRankingInfo.longestStreak}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: AppColors.PRIMARY,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '  Dec 11 - Jan 8',
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 4,),
+                  Text(
+                    AppLocalizations.of(context).thumbsUp,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.TEXT_BLACK,
+                    ),
+                  ),
+                  Text(
+                    '${myRankingInfo.thumbsUp}',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: AppColors.PRIMARY,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-          state.hasMoreRankingInfos ? RaisedButton(
-            child: Text('Load more'),
-            onPressed: () => _bloc.onLoadMoreRankingInfosClicked(),
-          ): const SizedBox.shrink(),
-          Expanded(
-            child: ListView.builder(
-              itemCount: state.rankingUserInfos.length,
-              itemBuilder: (context, index) {
-                final userInfo = state.rankingUserInfos[index];
-                return _RankingItem(
-                  rank: index + 1,
-                  userInfo: userInfo,
-                );
-              },
-            ),
+          const SizedBox(height: 8,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Text(
+                'Last updated: ${myRankingInfo.lastUpdated}',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: AppColors.TEXT_BLACK,
+                ),
+              ),
+              Image.asset('assets/ic_back_arrow.png'),
+            ],
           ),
         ],
       ),
@@ -97,18 +332,135 @@ class _RankingItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Text('$rank'),
-        const SizedBox(width: 4,),
-        Text('${userInfo.name}'),
-        const SizedBox(width: 4,),
-        Text('ratio: ${userInfo.completionRatio}'),
-        const SizedBox(width: 4,),
-        Text('ls: ${userInfo.latestStreak}'),
-        const SizedBox(width: 4,),
-        Text('ms: ${userInfo.maxStreak}'),
-      ],
+    final petPhase = userInfo.petPhase;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4,),
+      child: Row(
+        children: <Widget>[
+          ConstrainedBox(
+            constraints: BoxConstraints(minWidth: 20,),
+            child: Center(
+              child: Text(
+                rank.toString(),
+                style: TextStyle(
+                  color: rank == 1 ? AppColors.GOLD
+                  : rank == 2 ? AppColors.SILVER
+                  : rank == 3 ? AppColors.BRONZE
+                  : AppColors.TEXT_BLACK,
+                  fontSize: 14,
+                ),
+              ),
+            )
+          ),
+          const SizedBox(width: 8,),
+          SizedBox(
+            width: 36,
+            height: 36,
+            child: petPhase != PetPhase.INVALID ? Image.asset(
+              petPhase.imgPath,
+              fit: BoxFit.fill,
+            ) : const SizedBox.shrink(), // todo: show something else
+          ),
+          const SizedBox(width: 8,),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  userInfo.name,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.TEXT_BLACK,
+                  ),
+                ),
+                Text(
+                  '${userInfo.latestStreak} streak',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.TEXT_BLACK_LIGHT,
+                  ),
+                )
+              ],
+            ),
+          ),
+          const SizedBox(width: 8,),
+          RichText(
+            text: TextSpan(
+              style: TextStyle(
+                fontSize: 10,
+                color: AppColors.TEXT_BLACK,
+              ),
+              children: [
+                TextSpan(
+                  text: '${userInfo.completionRatio}',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: rank == 1 ? AppColors.GOLD
+                      : rank == 2 ? AppColors.SILVER
+                      : rank == 3 ? AppColors.BRONZE
+                      : AppColors.TEXT_BLACK,
+                  ),
+                ),
+                TextSpan(
+                  text: ' %'
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8,),
+          Image.asset('assets/ic_next.png'),
+          const SizedBox(width: 4,),
+          ConstrainedBox(
+            constraints: BoxConstraints(minWidth: 22),
+            child: Text(
+              userInfo.thumbsUp.toString(),
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColors.TEXT_BLACK,
+              ),
+              textAlign: TextAlign.left,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SignInDialog extends StatelessWidget {
+  final RankingBloc bloc;
+
+  _SignInDialog({
+    @required this.bloc,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () => bloc.onDismissSignInDialogClicked(),
+      child: Container(
+        color: AppColors.SCRIM,
+        alignment: Alignment.center,
+        child: Container(
+          color: AppColors.BACKGROUND_WHITE,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              FlatButton(
+                child: Text('Google SignIn'),
+                onPressed: () => bloc.onGoogleSignInClicked(),
+              ),
+              FlatButton(
+                child: Text('Facebook SignIn'),
+                onPressed: () => bloc.onFacebookSignInClicked(),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

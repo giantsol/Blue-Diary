@@ -77,6 +77,12 @@ class AppLocalizations {
   static const FIRST_COMPLETABLE_DAY_TUTORIAL = "firstCompletableDayTutorial";
   static const FIRST_COMPLETABLE_DAY_TUTORIAL_SUB = "firstCompletableDayTutorialSub";
   static const CANNOT_MODIFY_COMPLETED_DAYS_TASKS = "cannotModifyCompletedDaysTasks";
+  static const RANKING = "ranking";
+  static const CLICK_TO_SIGN_IN_AND_JOIN = "clickToSignInAndJoin";
+  static const COMPLETED_DAYS = "completedDays";
+  static const CURRENT_STREAK = "currentStreak";
+  static const LONGEST_STREAK = "longestStreak";
+  static const THUMBS_UP = "thumbsUp";
   static const NO_PET_SELECTED = "noPetSelected";
   static const UNKNOWN_PET_NAME = "unknownPetName";
   static const UNKNOWN_PET_EGG = "unknownPetEgg";
@@ -175,6 +181,12 @@ class AppLocalizations {
       FIRST_COMPLETABLE_DAY_TUTORIAL: 'Click to complete your day and get points!\nThe longer the streak, the more points you\'ll get.',
       FIRST_COMPLETABLE_DAY_TUTORIAL_SUB: 'Warning: You won\'t be able to modify tasks anymore.',
       CANNOT_MODIFY_COMPLETED_DAYS_TASKS: 'Cannot modify completed days\'s tasks',
+      RANKING: 'Ranking',
+      CLICK_TO_SIGN_IN_AND_JOIN: 'Click to sign in and join',
+      COMPLETED_DAYS: 'Completed days',
+      CURRENT_STREAK: 'Current streak',
+      LONGEST_STREAK: 'Longest streak',
+      THUMBS_UP: 'Thumbs up',
       NO_PET_SELECTED: 'No pet selected',
       UNKNOWN_PET_NAME: '???',
       UNKNOWN_PET_EGG: '???\'s egg',
@@ -268,6 +280,12 @@ class AppLocalizations {
       FIRST_COMPLETABLE_DAY_TUTORIAL: '클릭해서 하루를 완료하고 점수를 얻으세요!\n연속으로 완료시 더 많은 점수를 얻을 수 있습니다.',
       FIRST_COMPLETABLE_DAY_TUTORIAL_SUB: '주의: 완료한 날짜의 작업은 수정이 불가합니다.',
       CANNOT_MODIFY_COMPLETED_DAYS_TASKS: '완료한 날짜의 작업은 수정이 불가합니다.',
+      RANKING: '랭킹',
+      CLICK_TO_SIGN_IN_AND_JOIN: '가입하고 참여하세요!',
+      COMPLETED_DAYS: '완료한 날들',
+      CURRENT_STREAK: 'Current streak',
+      LONGEST_STREAK: 'Longest streak',
+      THUMBS_UP: '좋아요 갯수',
       NO_PET_SELECTED: '선택된 펫이 없습니다',
       UNKNOWN_PET_NAME: '???',
       UNKNOWN_PET_EGG: '???의 알',
@@ -362,6 +380,12 @@ class AppLocalizations {
   String get firstCompletableDayTutorial => _localizedValues[locale.languageCode][FIRST_COMPLETABLE_DAY_TUTORIAL];
   String get firstCompletableDayTutorialSub => _localizedValues[locale.languageCode][FIRST_COMPLETABLE_DAY_TUTORIAL_SUB];
   String get cannotModifyCompletedDaysTasks => _localizedValues[locale.languageCode][CANNOT_MODIFY_COMPLETED_DAYS_TASKS];
+  String get ranking => _localizedValues[locale.languageCode][RANKING];
+  String get clickToSignInAndJoin => _localizedValues[locale.languageCode][CLICK_TO_SIGN_IN_AND_JOIN];
+  String get completedDays => _localizedValues[locale.languageCode][COMPLETED_DAYS];
+  String get currentStreak => _localizedValues[locale.languageCode][CURRENT_STREAK];
+  String get longestStreak => _localizedValues[locale.languageCode][LONGEST_STREAK];
+  String get thumbsUp => _localizedValues[locale.languageCode][THUMBS_UP];
   String get noPetSelected => _localizedValues[locale.languageCode][NO_PET_SELECTED];
 
   String getMonthAndNthWeek(int month, int nthWeek) {

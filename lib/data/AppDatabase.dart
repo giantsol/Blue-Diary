@@ -436,4 +436,28 @@ class AppDatabase implements ToDoDataSource,
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
+
+  @override
+  Future<Pet> getPet(String key) async {
+    final pet = Pets.getPetPrototype(key);
+    if (pet == Pet.INVALID) {
+      return pet;
+    }
+
+    final db = await _database.first;
+    List<Map<String, dynamic>> maps = await db.query(
+      TABLE_PET_USER_DATUM,
+      where: '$COLUMN_KEY = ?',
+      whereArgs: [key],
+    );
+    if (maps.isEmpty) {
+      return pet;
+    } else {
+      final map = maps[0];
+      return pet.buildNew(
+        exp: map[COLUMN_EXP],
+        currentPhaseIndex: map[COLUMN_SELECTED_PHASE],
+      );
+    }
+  }
 }

@@ -21,6 +21,4 @@ abstract class PrefsRepository {
   void setShownFirstCompletableDayTutorial();
   void addSeed(int count);
   int getSeedCount();
-  String getSelectedPetKey();
-  void setSelectedPetKey(String key);
 }

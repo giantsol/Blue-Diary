@@ -2,25 +2,38 @@
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 
 class RankingState {
-  final String userDisplayName;
+  final RankingViewState viewState;
   final List<RankingUserInfo> rankingUserInfos;
   final bool hasMoreRankingInfos;
+  final RankingUserInfo myRankingInfo;
+  final bool signInDialogShown;
 
   const RankingState({
-    this.userDisplayName = '',
+    this.viewState = RankingViewState.LOADING,
     this.rankingUserInfos = const [],
     this.hasMoreRankingInfos = false,
+    this.myRankingInfo = RankingUserInfo.INVALID,
+    this.signInDialogShown = false,
   });
 
   RankingState buildNew({
-    String userDisplayName,
+    RankingViewState viewState,
     List<RankingUserInfo> rankingUserInfos,
-    bool hasMoreRaningInfos,
+    bool hasMoreRankingInfos,
+    RankingUserInfo myRankingUserInfo,
+    bool signInDialogShown,
   }) {
     return RankingState(
-      userDisplayName: userDisplayName ?? this.userDisplayName,
+      viewState: viewState ?? this.viewState,
       rankingUserInfos: rankingUserInfos ?? this.rankingUserInfos,
-      hasMoreRankingInfos: hasMoreRaningInfos ?? this.hasMoreRankingInfos,
+      hasMoreRankingInfos: hasMoreRankingInfos ?? this.hasMoreRankingInfos,
+      myRankingInfo: myRankingUserInfo ?? this.myRankingInfo,
+      signInDialogShown: signInDialogShown ?? this.signInDialogShown,
     );
   }
+}
+
+enum RankingViewState {
+  LOADING,
+  NORMAL,
 }

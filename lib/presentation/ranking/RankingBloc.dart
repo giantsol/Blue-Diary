@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
+import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/usecase/RankingUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
@@ -20,20 +21,24 @@ class RankingBloc {
   }
 
   Future<void> _initState() async {
-    final userDisplayName = await _usecases.getUserDisplayName();
+    final myRankingInfo = await _usecases.getMyRankingUserInfo();
+
     _state.add(_state.value.buildNew(
-      userDisplayName: userDisplayName,
+      viewState: RankingViewState.NORMAL,
+      myRankingUserInfo: myRankingInfo,
     ));
 
     _rankingUserInfosEventSubscription = _usecases.observeRankingUserInfosEvent()
       .listen((event) {
       _state.add(_state.value.buildNew(
         rankingUserInfos: event.rankingUserInfos,
-        hasMoreRaningInfos: event.hasMore,
+        hasMoreRankingInfos: event.hasMore,
       ));
     });
 
     _initRankingsCount();
+
+    // todo: update my ranking info once if last updated threshold is valid
   }
 
   void _initRankingsCount() {
@@ -43,21 +48,31 @@ class RankingBloc {
   Future<void> onGoogleSignInClicked() async {
     final success = await _usecases.signInWithGoogle();
     if (success) {
-      final userDisplayName = await _usecases.getUserDisplayName();
+      await _uploadMyRankingInfo();
+      final myRankingInfo = await _usecases.getMyRankingUserInfo();
       _state.add(_state.value.buildNew(
-        userDisplayName: userDisplayName,
+        myRankingUserInfo: myRankingInfo,
       ));
     }
+
+    _state.add(_state.value.buildNew(
+      signInDialogShown: false,
+    ));
   }
 
   Future<void> onFacebookSignInClicked() async {
     final success = await _usecases.signInWithFacebook();
     if (success) {
-      final userDisplayName = await _usecases.getUserDisplayName();
+      await _uploadMyRankingInfo();
+      final myRankingInfo = await _usecases.getMyRankingUserInfo();
       _state.add(_state.value.buildNew(
-        userDisplayName: userDisplayName,
+        myRankingUserInfo: myRankingInfo,
       ));
     }
+
+    _state.add(_state.value.buildNew(
+      signInDialogShown: false,
+    ));
   }
 
   Future<void> onSignOutClicked() async {
@@ -66,26 +81,30 @@ class RankingBloc {
 
     final success = await _usecases.signOut();
     if (success) {
-      final userDisplayName = await _usecases.getUserDisplayName();
       _state.add(_state.value.buildNew(
-        userDisplayName: userDisplayName,
+        myRankingUserInfo: RankingUserInfo.INVALID,
       ));
+
       _initRankingsCount();
     }
   }
 
-  Future<void> onSubmitMyScoreClicked() async {
+  Future<void> _uploadMyRankingInfo() async {
     final uid = await _usecases.getUserId();
     if (uid.isNotEmpty) {
       final userName = await _usecases.getUserDisplayName();
       final completionRatio = await _usecases.getCompletionRatio();
       final latestStreakCount = await _usecases.getLatestStreakCount();
       final maxStreakCount = await _usecases.getMaxStreakCount();
+      final selectedPet = await _usecases.getSelectedPet();
       final rankingUserInfo = RankingUserInfo(
+        uid: uid,
         name: userName,
         completionRatio: completionRatio,
         latestStreak: latestStreakCount,
-        maxStreak: maxStreakCount,
+        longestStreak: maxStreakCount,
+        petKey: selectedPet.key,
+        petPhaseIndex: selectedPet.currentPhaseIndex,
       );
       await _usecases.setRankingUserInfo(uid, rankingUserInfo);
     }
@@ -93,6 +112,29 @@ class RankingBloc {
 
   void onLoadMoreRankingInfosClicked() {
     _usecases.increaseRankingUserInfosCount();
+  }
+
+  void onSignInAndJoinClicked() {
+    _state.add(_state.value.buildNew(
+      signInDialogShown: true,
+    ));
+  }
+
+  bool handleBackPress() {
+    if (_state.value.signInDialogShown) {
+      _state.add(_state.value.buildNew(
+        signInDialogShown: false,
+      ));
+      return true;
+    }
+
+    return false;
+  }
+
+  void onDismissSignInDialogClicked() {
+    _state.add(_state.value.buildNew(
+      signInDialogShown: false,
+    ));
   }
 
   void dispose() {

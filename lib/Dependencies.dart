@@ -6,6 +6,7 @@ import 'package:todo_app/data/DateRepositoryImpl.dart';
 import 'package:todo_app/data/MemoRepositoryImpl.dart';
 import 'package:todo_app/data/PetRepositoryImpl.dart';
 import 'package:todo_app/data/PrefsRepositoryImpl.dart';
+import 'package:todo_app/data/RankingRepositoryImpl.dart';
 import 'package:todo_app/data/ToDoRepositoryImpl.dart';
 import 'package:todo_app/data/UserRepositoryImpl.dart';
 import 'package:todo_app/domain/repository/CategoryRepository.dart';
@@ -13,6 +14,7 @@ import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/repository/MemoRepository.dart';
 import 'package:todo_app/domain/repository/PetRepository.dart';
 import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/domain/repository/RankingRepository.dart';
 import 'package:todo_app/domain/repository/ToDoRepository.dart';
 import 'package:todo_app/domain/repository/UserRepository.dart';
 import 'package:todo_app/domain/usecase/CreatePasswordUsecases.dart';
@@ -33,7 +35,8 @@ final ToDoRepository _toDoRepository = ToDoRepositoryImpl(_database);
 final PrefsRepository _prefsRepository = PrefsRepositoryImpl(_prefs);
 final CategoryRepository _categoryRepository = CategoryRepositoryImpl(_database);
 final UserRepository _userRepository = UserRepositoryImpl();
-final PetRepository _petRepository = PetRepositoryImpl(_database);
+final PetRepository _petRepository = PetRepositoryImpl(_database, _prefs);
+final RankingRepository _rankingRepository = RankingRepositoryImpl();
 
 class Dependencies {
   final HomeUsecases homeUsecases = HomeUsecases(_prefsRepository);
@@ -44,5 +47,5 @@ class Dependencies {
   final SettingsUsecases settingsUsecases = SettingsUsecases(_prefsRepository);
   final LockUsecases lockUsecases = LockUsecases(_prefsRepository);
   final PetUsecases petUsecases = PetUsecases(_petRepository, _prefsRepository);
-  final RankingUsecases rankingUsecases = RankingUsecases(_userRepository, _dateRepository, _prefsRepository, _toDoRepository);
+  final RankingUsecases rankingUsecases = RankingUsecases(_userRepository, _dateRepository, _prefsRepository, _toDoRepository, _rankingRepository, _petRepository);
 }

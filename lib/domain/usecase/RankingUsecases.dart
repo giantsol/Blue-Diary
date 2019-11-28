@@ -1,8 +1,11 @@
 
+import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/entity/RankingUserInfosEvent.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
+import 'package:todo_app/domain/repository/PetRepository.dart';
 import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/domain/repository/RankingRepository.dart';
 import 'package:todo_app/domain/repository/ToDoRepository.dart';
 import 'package:todo_app/domain/repository/UserRepository.dart';
 
@@ -11,11 +14,22 @@ class RankingUsecases {
   final DateRepository _dateRepository;
   final PrefsRepository _prefsRepository;
   final ToDoRepository _toDoRepository;
+  final RankingRepository _rankingRepository;
+  final PetRepository _petRepository;
 
-  const RankingUsecases(this._userRepository, this._dateRepository, this._prefsRepository, this._toDoRepository);
+  const RankingUsecases(this._userRepository, this._dateRepository, this._prefsRepository, this._toDoRepository, this._rankingRepository, this._petRepository);
 
   Future<String> getUserDisplayName() {
     return _userRepository.getUserDisplayName();
+  }
+
+  Future<RankingUserInfo> getMyRankingUserInfo() async {
+    final uid = await _userRepository.getUserId();
+    if (uid.isEmpty) {
+      return RankingUserInfo.INVALID;
+    } else {
+      return _rankingRepository.getRankingUserInfo(uid);
+    }
   }
 
   Future<bool> signInWithGoogle() {
@@ -62,22 +76,26 @@ class RankingUsecases {
   }
 
   Future<void> setRankingUserInfo(String uid, RankingUserInfo info) {
-    return _userRepository.setRankingUserInfo(uid, info);
+    return _rankingRepository.setRankingUserInfo(uid, info);
   }
 
   Stream<RankingUserInfosEvent> observeRankingUserInfosEvent() {
-    return _userRepository.observeRankingUserInfosEvent();
+    return _rankingRepository.observeRankingUserInfosEvent();
   }
 
   void initRankingUserInfosCount() {
-    _userRepository.initRankingUserInfosCount();
+    _rankingRepository.initRankingUserInfosCount();
   }
 
   void increaseRankingUserInfosCount() {
-    _userRepository.increaseRankingUserInfosCount();
+    _rankingRepository.increaseRankingUserInfosCount();
   }
 
   Future<void> deleteRankingUserInfo(String uid) {
-    return _userRepository.deleteRankingUserInfo(uid);
+    return _rankingRepository.deleteRankingUserInfo(uid);
+  }
+
+  Future<Pet> getSelectedPet() {
+    return _petRepository.getSelectedPet();
   }
 }

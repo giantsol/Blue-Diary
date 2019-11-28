@@ -119,14 +119,4 @@ class PrefsRepositoryImpl implements PrefsRepository {
   int getSeedCount() {
     return _prefs.getSeedCount();
   }
-
-  @override
-  String getSelectedPetKey() {
-    return _prefs.getSelectedPetKey();
-  }
-
-  @override
-  void setSelectedPetKey(String key) {
-    _prefs.setSelectedPetKey(key);
-  }
 }

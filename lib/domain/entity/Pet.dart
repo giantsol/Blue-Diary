@@ -9,14 +9,16 @@ class Pet {
   static const PHASE_INDEX_INACTIVE = -2;
   static const PHASE_INDEX_EGG = -1;
 
+  static const INVALID = const Pet();
+
   final String key;
-  final Phase inactivePhase;
-  final Phase eggPhase;
-  final List<Phase> bornPhases; // must be either length 2 or 3
+  final PetPhase inactivePhase;
+  final PetPhase eggPhase;
+  final List<PetPhase> bornPhases; // must be either length 2 or 3
   final int exp;
   final int currentPhaseIndex;
 
-  Phase get currentPhase => currentPhaseIndex == PHASE_INDEX_INACTIVE ? inactivePhase
+  PetPhase get currentPhase => currentPhaseIndex == PHASE_INDEX_INACTIVE ? inactivePhase
     : currentPhaseIndex == PHASE_INDEX_EGG ? eggPhase
     : bornPhases[currentPhaseIndex];
 
@@ -53,8 +55,8 @@ class Pet {
 
   const Pet({
     this.key = '',
-    this.inactivePhase,
-    this.eggPhase,
+    this.inactivePhase = PetPhase.INVALID,
+    this.eggPhase = PetPhase.INVALID,
     this.bornPhases = const [],
     this.exp = 0,
     this.currentPhaseIndex = PHASE_INDEX_INACTIVE,
@@ -94,7 +96,9 @@ class Pet {
   }
 }
 
-class Phase {
+class PetPhase {
+  static const INVALID = const PetPhase();
+
   final String flrPath;
   final String imgPath;
   final double sizeRatio; // between 0 ~ 1.0
@@ -104,7 +108,7 @@ class Phase {
   final String subtitleKey; // key in AppLocalizations
   final String idleAnimName;
 
-  const Phase({
+  const PetPhase({
     this.flrPath = '',
     this.imgPath = '',
     this.sizeRatio = 1.0,

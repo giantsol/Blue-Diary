@@ -18,7 +18,7 @@ class PetUsecases {
   }
 
   String getSelectedPetKey() {
-    return _prefsRepository.getSelectedPetKey();
+    return _petRepository.getSelectedPetKey();
   }
 
   void setPet(Pet pet) {
@@ -26,6 +26,6 @@ class PetUsecases {
   }
 
   void setSelectedPetKey(String petKey) {
-    _prefsRepository.setSelectedPetKey(petKey);
+    _petRepository.setSelectedPetKey(petKey);
   }
 }
