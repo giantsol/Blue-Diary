@@ -51,6 +51,7 @@ class _RankingScreenState extends State<RankingScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               _Header(
+                today: state.today,
                 bloc: _bloc,
                 myRankingInfo: state.myRankingInfo,
               ),
@@ -75,6 +76,7 @@ class _RankingScreenState extends State<RankingScreen> {
                       if (index <= state.rankingUserInfos.length - 1) {
                         final userInfo = state.rankingUserInfos[index];
                         return _RankingItem(
+                          today: state.today,
                           bloc: _bloc,
                           rank: index + 1,
                           userInfo: userInfo,
@@ -128,10 +130,12 @@ class _WholeLoadingView extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
+  final DateTime today;
   final RankingBloc bloc;
   final RankingUserInfo myRankingInfo;
 
   _Header({
+    @required this.today,
     @required this.bloc,
     @required this.myRankingInfo,
   });
@@ -227,7 +231,7 @@ class _Header extends StatelessWidget {
                         ),
                         children: [
                           TextSpan(
-                            text: myRankingInfo.completionRatioPercentageString,
+                            text: myRankingInfo.getCompletionRatioPercentageString(today),
                             style: TextStyle(
                               fontSize: 24,
                               color: AppColors.PRIMARY,
@@ -344,12 +348,14 @@ class _Header extends StatelessWidget {
 }
 
 class _RankingItem extends StatelessWidget {
+  final DateTime today;
   final RankingBloc bloc;
   final int rank;
   final RankingUserInfo userInfo;
   final bool hasThumbedUp;
 
   const _RankingItem({
+    @required this.today,
     @required this.bloc,
     @required this.rank,
     @required this.userInfo,
@@ -420,7 +426,7 @@ class _RankingItem extends StatelessWidget {
               ),
               children: [
                 TextSpan(
-                  text: userInfo.completionRatioPercentageString,
+                  text: userInfo.getCompletionRatioPercentageString(today),
                   style: TextStyle(
                     fontSize: 20,
                     color: rank == 1 ? AppColors.GOLD

@@ -48,23 +48,17 @@ class RankingUsecases {
     return _userRepository.getUserId();
   }
 
-  Future<double> getCompletionRatio() async {
+  Future<DateTime> getFirstLaunchDate() async {
     final firstLaunchDateString = await _prefsRepository.getFirstLaunchDateString();
     if (firstLaunchDateString.isEmpty) {
-      return 0;
+      return DateRepository.INVALID_DATE;
     } else {
-      final today = await _dateRepository.getToday();
-      final firstLaunchDate = DateTime.parse(firstLaunchDateString);
-
-      final totalDaysCount = today.difference(firstLaunchDate).inDays + 1;
-      final markedCompletedDaysCount = await _toDoRepository.getMarkedCompletedDaysCount();
-
-      if (totalDaysCount <= 0) {
-        return 0;
-      } else {
-        return markedCompletedDaysCount / totalDaysCount;
-      }
+      return DateTime.parse(firstLaunchDateString);
     }
+  }
+
+  Future<int> getCompletedDaysCount() {
+    return _toDoRepository.getMarkedCompletedDaysCount();
   }
 
   Future<int> getLatestStreakCount() {
@@ -109,5 +103,9 @@ class RankingUsecases {
 
   void increaseThumbsUp(RankingUserInfo userInfo) {
     _rankingRepository.increaseThumbsUp(userInfo);
+  }
+
+  Future<DateTime> getToday() {
+    return _dateRepository.getToday();
   }
 }

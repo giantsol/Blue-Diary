@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
+import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/usecase/RankingUsecases.dart';
 import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/ranking/RankingState.dart';
@@ -20,10 +21,13 @@ class RankingBloc {
   }
 
   Future<void> _initState() async {
+    final today = await _usecases.getToday();
+    //todo: if today date is invalid, show error screen
     final myRankingInfo = await _usecases.getMyRankingUserInfo();
 
     _state.add(_state.value.buildNew(
       viewState: RankingViewState.NORMAL,
+      today: today,
       myRankingUserInfo: myRankingInfo,
     ));
 
@@ -100,7 +104,8 @@ class RankingBloc {
     final uid = await _usecases.getUserId();
     if (uid.isNotEmpty) {
       final userName = await _usecases.getUserDisplayName();
-      final completionRatio = await _usecases.getCompletionRatio();
+      final firstLaunchDate = await _usecases.getFirstLaunchDate();
+      final completedDaysCount = await _usecases.getCompletedDaysCount();
       final latestStreakCount = await _usecases.getLatestStreakCount();
       final latestStreakEndMillis = await _usecases.getLatestStreakEndMillis();
       final longestStreakCount = await _usecases.getLongestStreakCount();
@@ -109,7 +114,8 @@ class RankingBloc {
       final rankingUserInfo = RankingUserInfo(
         uid: uid,
         name: userName,
-        completionRatio: completionRatio,
+        firstLaunchDateMillis: firstLaunchDate != DateRepository.INVALID_DATE ? firstLaunchDate.millisecondsSinceEpoch : 0,
+        completedDaysCount: completedDaysCount,
         latestStreak: latestStreakCount,
         latestStreakEndMillis: latestStreakEndMillis,
         longestStreak: longestStreakCount,
