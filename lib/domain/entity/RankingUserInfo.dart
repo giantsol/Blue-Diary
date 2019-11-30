@@ -6,8 +6,6 @@ import 'package:todo_app/domain/repository/DateRepository.dart';
 class RankingUserInfo {
   static const KEY_UID = 'uid';
   static const KEY_NAME = 'name';
-  static const KEY_FIRST_LAUNCH_DATE_MILLIS = 'first_launch_date_millis';
-  static const KEY_COMPLETED_DAYS_COUNT = 'completed_days_count';
   static const KEY_COMPLETION_RATIO = 'completion_ratio';
   static const KEY_LATEST_STREAK = 'latest_streak';
   static const KEY_LATEST_STREAK_END_MILLIS = 'latest_streak_end_millis';
@@ -24,8 +22,7 @@ class RankingUserInfo {
     return RankingUserInfo(
       uid: map[KEY_UID] ?? '',
       name: map[KEY_NAME] ?? '',
-      firstLaunchDateMillis: map[KEY_FIRST_LAUNCH_DATE_MILLIS] ?? 0,
-      completedDaysCount: map[KEY_COMPLETED_DAYS_COUNT] ?? 0,
+      completionRatio: map[KEY_COMPLETION_RATIO] * 1.0 ?? 0.0, // need this to convert to double..
       latestStreak: map[KEY_LATEST_STREAK] ?? 0,
       latestStreakEndMillis: map[KEY_LATEST_STREAK_END_MILLIS] ?? 0,
       longestStreak: map[KEY_LONGEST_STREAK] ?? 0,
@@ -39,8 +36,7 @@ class RankingUserInfo {
 
   final String uid;
   final String name;
-  final int firstLaunchDateMillis;
-  final int completedDaysCount;
+  final double completionRatio;
   final int latestStreak;
   final int latestStreakEndMillis;
   final int longestStreak;
@@ -93,11 +89,14 @@ class RankingUserInfo {
     }
   }
 
+  String get completionRatioPercentageString {
+    return (completionRatio * 100).toStringAsFixed(1);
+  }
+
   const RankingUserInfo({
     this.uid = '',
     this.name = '',
-    this.firstLaunchDateMillis = 0,
-    this.completedDaysCount = 0,
+    this.completionRatio = 0,
     this.latestStreak = 0,
     this.latestStreakEndMillis = 0,
     this.longestStreak = 0,
@@ -108,24 +107,13 @@ class RankingUserInfo {
     this.petPhaseIndex = Pet.PHASE_INDEX_INACTIVE,
   });
 
-  String getCompletionRatioPercentageString(DateTime today) {
-    if (firstLaunchDateMillis == 0) {
-      return '0.0';
-    } else {
-      final startDate = DateTime.fromMillisecondsSinceEpoch(firstLaunchDateMillis);
-      final ratio = completedDaysCount.toDouble() / (today.difference(startDate).inDays + 1);
-      return (ratio * 100).toStringAsFixed(1);
-    }
-  }
-
   RankingUserInfo buildNew({
     int thumbsUp,
   }) {
     return RankingUserInfo(
       uid: this.uid,
       name: this.name,
-      firstLaunchDateMillis: this.firstLaunchDateMillis,
-      completedDaysCount: this.completedDaysCount,
+      completionRatio: this.completionRatio,
       latestStreak: this.latestStreak,
       latestStreakEndMillis: this.latestStreakEndMillis,
       longestStreak: this.longestStreak,
@@ -141,8 +129,7 @@ class RankingUserInfo {
     return {
       KEY_UID: uid,
       KEY_NAME: name,
-      KEY_FIRST_LAUNCH_DATE_MILLIS: firstLaunchDateMillis,
-      KEY_COMPLETED_DAYS_COUNT: completedDaysCount,
+      KEY_COMPLETION_RATIO: completionRatio,
       KEY_LATEST_STREAK: latestStreak,
       KEY_LATEST_STREAK_END_MILLIS: latestStreakEndMillis,
       KEY_LONGEST_STREAK: longestStreak,
