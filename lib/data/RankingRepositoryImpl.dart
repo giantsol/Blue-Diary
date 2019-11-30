@@ -63,7 +63,25 @@ class RankingRepositoryImpl implements RankingRepository {
       .listen((querySnapshot) {
       // todo: use documentChanges instead of documents
       final snapshots = querySnapshot.documents;
-      final infos = snapshots.map((snapshot) => RankingUserInfo.fromMap(snapshot.data)).toList();
+
+      int rank = 0;
+      double prevCompletionRatio;
+
+      final infos = snapshots.map((snapshot) {
+        final userInfo = RankingUserInfo.fromMap(snapshot.data);
+
+        if (prevCompletionRatio == null) {
+          rank += 1;
+          prevCompletionRatio = userInfo.completionRatio;
+        } else {
+          if (userInfo.completionRatio != prevCompletionRatio) {
+            rank += 1;
+            prevCompletionRatio = userInfo.completionRatio;
+          }
+        }
+
+        return userInfo.buildNew(rank: rank);
+      }).toList();
       final hasMore = snapshots.length == maxCount;
       final event =  RankingUserInfosEvent(
         rankingUserInfos: infos,

@@ -45,6 +45,7 @@ class RankingUserInfo {
   final int lastUpdatedMillis;
   final String petKey;
   final int petPhaseIndex;
+  final int rank;
 
   PetPhase get petPhase {
     final pet = Pets.getPetPrototype(petKey);
@@ -105,10 +106,12 @@ class RankingUserInfo {
     this.lastUpdatedMillis = 0,
     this.petKey = '',
     this.petPhaseIndex = Pet.PHASE_INDEX_INACTIVE,
+    this.rank = 0,
   });
 
   RankingUserInfo buildNew({
     int thumbsUp,
+    int rank,
   }) {
     return RankingUserInfo(
       uid: this.uid,
@@ -122,6 +125,7 @@ class RankingUserInfo {
       lastUpdatedMillis: this.lastUpdatedMillis,
       petKey: this.petKey,
       petPhaseIndex: this.petPhaseIndex,
+      rank: rank ?? this.rank,
     );
   }
 

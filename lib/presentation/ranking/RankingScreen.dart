@@ -76,7 +76,6 @@ class _RankingScreenState extends State<RankingScreen> {
                         final userInfo = state.rankingUserInfos[index];
                         return _RankingItem(
                           bloc: _bloc,
-                          rank: index + 1,
                           userInfo: userInfo,
                           hasThumbedUp: thumbedUpUids.containsKey(userInfo.uid) ? true : false,
                         );
@@ -345,13 +344,11 @@ class _Header extends StatelessWidget {
 
 class _RankingItem extends StatelessWidget {
   final RankingBloc bloc;
-  final int rank;
   final RankingUserInfo userInfo;
   final bool hasThumbedUp;
 
   const _RankingItem({
     @required this.bloc,
-    @required this.rank,
     @required this.userInfo,
     @required this.hasThumbedUp,
   });
@@ -359,6 +356,7 @@ class _RankingItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final petPhase = userInfo.petPhase;
+    final rank = userInfo.rank;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4,),
