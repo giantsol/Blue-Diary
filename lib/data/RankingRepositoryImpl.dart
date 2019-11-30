@@ -37,9 +37,9 @@ class RankingRepositoryImpl implements RankingRepository {
   }
 
   @override
-  Future<void> setRankingUserInfoUpdatingLastUpdatedTime(RankingUserInfo info) {
+  Future<void> setMyRankingUserInfo(RankingUserInfo info) {
     final callable = CloudFunctions.instance.getHttpsCallable(functionName: 'setRankingUserInfo');
-    return callable.call(info.toMap()).timeout(const Duration(seconds: 10));
+    return callable.call(info.toMyRankingUserInfoUpdateMap()).timeout(const Duration(seconds: 10));
   }
 
   @override
@@ -96,6 +96,6 @@ class RankingRepositoryImpl implements RankingRepository {
     Firestore.instance
       .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
       .document(increasedInfo.uid)
-      .setData(increasedInfo.toMap(), merge: true);
+      .setData(increasedInfo.toThumbsUpUpdateMap(), merge: true);
   }
 }

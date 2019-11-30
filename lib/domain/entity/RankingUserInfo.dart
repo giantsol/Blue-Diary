@@ -125,7 +125,7 @@ class RankingUserInfo {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMyRankingUserInfoUpdateMap() {
     return {
       KEY_UID: uid,
       KEY_NAME: name,
@@ -134,10 +134,14 @@ class RankingUserInfo {
       KEY_LATEST_STREAK_END_MILLIS: latestStreakEndMillis,
       KEY_LONGEST_STREAK: longestStreak,
       KEY_LONGEST_STREAK_END_MILLIS: longestStreakEndMillis,
-      KEY_THUMBS_UP: thumbsUp,
       KEY_PET_KEY: petKey,
       KEY_PET_PHASE_INDEX: petPhaseIndex,
-      // we don't send lastUpdatedMillis here
+    };
+  }
+
+  Map<String, dynamic> toThumbsUpUpdateMap() {
+    return {
+      KEY_THUMBS_UP: thumbsUp,
     };
   }
 }

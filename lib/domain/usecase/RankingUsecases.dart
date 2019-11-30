@@ -84,7 +84,7 @@ class RankingUsecases {
   }
 
   Future<void> setMyRankingUserInfo(RankingUserInfo info) {
-    return _rankingRepository.setRankingUserInfoUpdatingLastUpdatedTime(info);
+    return _rankingRepository.setMyRankingUserInfo(info);
   }
 
   Stream<RankingUserInfosEvent> observeRankingUserInfosEvent() {
