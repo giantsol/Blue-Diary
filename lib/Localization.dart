@@ -102,6 +102,7 @@ class AppLocalizations {
   static const PET_B_1_SUBTITLE = "petB1Subtitle";
   static const PET_B_2_TITLE = "petB2Title";
   static const PET_B_2_SUBTITLE = "petB2Subtitle";
+  static const SIGN_OUT = "signOut";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -206,6 +207,7 @@ class AppLocalizations {
       PET_B_1_SUBTITLE: 'B1_',
       PET_B_2_TITLE: 'B2',
       PET_B_2_SUBTITLE: 'B2_',
+      SIGN_OUT: 'Sign Out',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -281,7 +283,7 @@ class AppLocalizations {
       FIRST_COMPLETABLE_DAY_TUTORIAL_SUB: '주의: 완료한 날짜의 작업은 수정이 불가합니다.',
       CANNOT_MODIFY_COMPLETED_DAYS_TASKS: '완료한 날짜의 작업은 수정이 불가합니다.',
       RANKING: '랭킹',
-      CLICK_TO_SIGN_IN_AND_JOIN: '가입하고 참여하세요!',
+      CLICK_TO_SIGN_IN_AND_JOIN: '클릭해서 참여해보세요!',
       COMPLETED_DAYS: '완료한 날들',
       CURRENT_STREAK: 'Current streak',
       LONGEST_STREAK: 'Longest streak',
@@ -305,6 +307,7 @@ class AppLocalizations {
       PET_B_1_SUBTITLE: 'B1_',
       PET_B_2_TITLE: 'B2',
       PET_B_2_SUBTITLE: 'B2_',
+      SIGN_OUT: '탈퇴',
     },
   };
 
@@ -387,6 +390,7 @@ class AppLocalizations {
   String get longestStreak => _localizedValues[locale.languageCode][LONGEST_STREAK];
   String get thumbsUp => _localizedValues[locale.languageCode][THUMBS_UP];
   String get noPetSelected => _localizedValues[locale.languageCode][NO_PET_SELECTED];
+  String get signOut => _localizedValues[locale.languageCode][SIGN_OUT];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {

@@ -54,7 +54,7 @@ class _RankingScreenState extends State<RankingScreen> {
                 bloc: _bloc,
                 myRankingInfo: state.myRankingInfo,
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(height: 12,),
               Padding(
                 padding: const EdgeInsets.only(left: 36),
                 child: Text(
@@ -162,34 +162,49 @@ class _Header extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           AppLocalizations.of(context).clickToSignInAndJoin,
+          style: TextStyle(
+            fontSize: 24,
+            color: AppColors.TEXT_BLACK,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
-    ) : Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24,),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Container(
-            height: 56,
-            alignment: Alignment.centerLeft,
-            child: Row(
-              children: <Widget>[
-                Text(
-                  myRankingInfo.name,
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: AppColors.TEXT_BLACK,
+    ) : Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Container(
+          height: 56,
+          alignment: Alignment.centerLeft,
+          child: Row(
+            children: <Widget>[
+              const SizedBox(width: 24,),
+              Text(
+                myRankingInfo.name,
+                style: TextStyle(
+                  fontSize: 24,
+                  color: AppColors.TEXT_BLACK,
+                ),
+              ),
+              const Spacer(),
+              InkWell(
+                onTap: () => bloc.onSignOutClicked(),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 24),
+                  child: Text(
+                    AppLocalizations.of(context).signOut,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.TEXT_BLACK,
+                    ),
                   ),
-                ),
-                const Spacer(),
-                InkWell(
-                  onTap: () => bloc.onSignOutClicked(),
-                  child: Image.asset('assets/ic_back_arrow.png'),
-                ),
-              ],
-            ),
+                )
+              ),
+            ],
           ),
-          Row(
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24,),
+          child: Row(
             children: <Widget>[
               Container(
                 width: petMaxSize,
@@ -319,25 +334,32 @@ class _Header extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8,),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              Text(
-                'Last updated: ${DateTime.fromMillisecondsSinceEpoch(myRankingInfo.lastUpdatedMillis)}',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: AppColors.TEXT_BLACK,
-                ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24,),
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => bloc.onRefreshMyRankingInfoClicked(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8,),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Text(
+                    'Last updated: ${DateTime.fromMillisecondsSinceEpoch(myRankingInfo.lastUpdatedMillis)}',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.TEXT_BLACK,
+                    ),
+                  ),
+                  const SizedBox(width: 4,),
+                  Image.asset('assets/ic_refresh.png'),
+                ],
               ),
-              InkWell(
-                onTap: () => bloc.onRefreshMyRankingInfoClicked(),
-                child: Image.asset('assets/ic_back_arrow.png'),
-              ),
-            ],
+            ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -369,9 +391,9 @@ class _RankingItem extends StatelessWidget {
                 rank.toString(),
                 style: TextStyle(
                   color: rank == 1 ? AppColors.GOLD
-                  : rank == 2 ? AppColors.SILVER
-                  : rank == 3 ? AppColors.BRONZE
-                  : AppColors.TEXT_BLACK,
+                    : rank == 2 ? AppColors.SILVER
+                    : rank == 3 ? AppColors.BRONZE
+                    : AppColors.TEXT_BLACK,
                   fontSize: 14,
                 ),
               ),
@@ -434,20 +456,28 @@ class _RankingItem extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8,),
-          InkWell(
+          GestureDetector(
+            behavior: HitTestBehavior.translucent,
             onTap: () => bloc.onThumbsUpClicked(userInfo),
-            child: Image.asset(hasThumbedUp ? 'assets/ic_prev.png' : 'assets/ic_next.png'),
-          ),
-          const SizedBox(width: 4,),
-          ConstrainedBox(
-            constraints: BoxConstraints(minWidth: 22),
-            child: Text(
-              userInfo.thumbsUp.toString(),
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.TEXT_BLACK,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8,),
+              child: Row(
+                children: <Widget>[
+                  Image.asset(hasThumbedUp ? 'assets/ic_thumbs_up_activated.png' : 'assets/ic_thumbs_up.png'),
+                  const SizedBox(width: 4,),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: 22),
+                    child: Text(
+                      userInfo.thumbsUp.toString(),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.TEXT_BLACK,
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ],
               ),
-              textAlign: TextAlign.left,
             ),
           ),
         ],
