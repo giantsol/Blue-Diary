@@ -220,7 +220,18 @@ class _Header extends StatelessWidget {
                       fit: BoxFit.fill,
                     ),
                   ),
-                ): const SizedBox.shrink(), // todo: show something else
+                ): Container(
+                  width: petMaxSize,
+                  height: petMaxSize,
+                  alignment: Alignment.center,
+                  child: Text(
+                    AppLocalizations.of(context).noPet,
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: AppColors.TEXT_BLACK,
+                    ),
+                  ),
+                ),
               ),
               Expanded(
                 child: Column(
@@ -406,7 +417,23 @@ class _RankingItem extends StatelessWidget {
             child: petPhase != PetPhase.INVALID ? Image.asset(
               petPhase.imgPath,
               fit: BoxFit.fill,
-            ) : const SizedBox.shrink(), // todo: show something else
+            ) : userInfo.petKey.isEmpty ? Center(
+              child: Text(
+                AppLocalizations.of(context).noPet,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: AppColors.TEXT_BLACK,
+                ),
+              ),
+            ) : Center(
+              child: Text(
+                AppLocalizations.of(context).needUpdate,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: AppColors.TEXT_BLACK,
+                ),
+              ),
+            ),
           ),
           const SizedBox(width: 8,),
           Expanded(

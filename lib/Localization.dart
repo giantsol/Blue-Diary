@@ -103,6 +103,8 @@ class AppLocalizations {
   static const PET_B_2_TITLE = "petB2Title";
   static const PET_B_2_SUBTITLE = "petB2Subtitle";
   static const SIGN_OUT = "signOut";
+  static const NO_PET = "noPet";
+  static const NEED_UPDATE = "needUpdate";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -208,6 +210,8 @@ class AppLocalizations {
       PET_B_2_TITLE: 'B2',
       PET_B_2_SUBTITLE: 'B2_',
       SIGN_OUT: 'Sign Out',
+      NO_PET: 'No Pet',
+      NEED_UPDATE: 'Need Update',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -308,6 +312,8 @@ class AppLocalizations {
       PET_B_2_TITLE: 'B2',
       PET_B_2_SUBTITLE: 'B2_',
       SIGN_OUT: '탈퇴',
+      NO_PET: '펫 없음',
+      NEED_UPDATE: '업데이트 필요',
     },
   };
 
@@ -391,6 +397,8 @@ class AppLocalizations {
   String get thumbsUp => _localizedValues[locale.languageCode][THUMBS_UP];
   String get noPetSelected => _localizedValues[locale.languageCode][NO_PET_SELECTED];
   String get signOut => _localizedValues[locale.languageCode][SIGN_OUT];
+  String get noPet => _localizedValues[locale.languageCode][NO_PET];
+  String get needUpdate => _localizedValues[locale.languageCode][NEED_UPDATE];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {
