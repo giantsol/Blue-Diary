@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
+import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
@@ -357,7 +358,7 @@ class _Header extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   Text(
-                    'Last updated: ${DateTime.fromMillisecondsSinceEpoch(myRankingInfo.lastUpdatedMillis)}',
+                    'Last updated: ${Utils.toLastUpdatedFormat(DateTime.fromMillisecondsSinceEpoch(myRankingInfo.lastUpdatedMillis))}',
                     style: TextStyle(
                       fontSize: 10,
                       color: AppColors.TEXT_BLACK,
