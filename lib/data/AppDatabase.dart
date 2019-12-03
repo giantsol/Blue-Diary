@@ -186,7 +186,7 @@ class AppDatabase implements ToDoDataSource,
   @override
   Future<void> setToDo(ToDo toDo) async {
     final db = await _database.first;
-    await db.insert(
+    return db.insert(
       TABLE_TODOS,
       toDo.toDatabase(),
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -196,7 +196,7 @@ class AppDatabase implements ToDoDataSource,
   @override
   Future<void> removeToDo(ToDo toDo) async {
     final db = await _database.first;
-    await db.delete(
+    return db.delete(
       TABLE_TODOS,
       where: ToDo.createWhereQueryForToDo(),
       whereArgs: ToDo.createWhereArgsForToDo(toDo),
@@ -212,7 +212,7 @@ class AppDatabase implements ToDoDataSource,
     final prevDayStreak = await getStreakCount(date.subtract(const Duration(days: 1)));
     final db = await _database.first;
 
-    await db.insert(
+    return db.insert(
       TABLE_MARKED_COMPLETED_DAYS,
       {
         COLUMN_YEAR: year,
@@ -294,7 +294,7 @@ class AppDatabase implements ToDoDataSource,
   }
 
   @override
-  Future<bool> hasDayBeenMarkedCompleted(DateTime date) async {
+  Future<bool> isDayMarkedCompleted(DateTime date) async {
     final year = date.year;
     final month = date.month;
     final day = date.day;
@@ -347,7 +347,7 @@ class AppDatabase implements ToDoDataSource,
   @override
   Future<void> setCheckPoint(CheckPoint checkPoint) async {
     final db = await _database.first;
-    await db.insert(
+    return db.insert(
       TABLE_CHECK_POINTS,
       checkPoint.toDatabase(),
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -369,7 +369,7 @@ class AppDatabase implements ToDoDataSource,
   @override
   Future<void> setDayMemo(DayMemo dayMemo) async {
     final db = await _database.first;
-    await db.insert(
+    return db.insert(
       TABLE_DAY_MEMOS,
       dayMemo.toDatabase(),
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -421,7 +421,7 @@ class AppDatabase implements ToDoDataSource,
   @override
   Future<void> removeCategory(Category category) async {
     final db = await _database.first;
-    await db.delete(
+    return db.delete(
       TABLE_CATEGORIES,
       where: Category.createWhereQuery(),
       whereArgs: Category.createWhereArgs(category.id),

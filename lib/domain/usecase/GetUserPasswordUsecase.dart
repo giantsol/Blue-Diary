@@ -1,12 +1,12 @@
 
 import 'package:todo_app/domain/repository/PrefRepository.dart';
 
-class InputPasswordUsecases {
+class GetUserPasswordUsecase {
   final PrefsRepository _prefsRepository;
 
-  const InputPasswordUsecases(this._prefsRepository);
+  GetUserPasswordUsecase(this._prefsRepository);
 
-  Future<String> getUserPassword() async {
+  Future<String> invoke() {
     return _prefsRepository.getUserPassword();
   }
 }

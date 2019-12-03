@@ -10,8 +10,15 @@ import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/Secrets.dart';
 import 'package:todo_app/Utils.dart';
-import 'package:todo_app/domain/usecase/SettingsUsecases.dart';
-import 'package:todo_app/presentation/App.dart';
+import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/domain/usecase/GetCustomFirstLaunchDateStringUsecase.dart';
+import 'package:todo_app/domain/usecase/GetRealFirstLaunchDateStringUsecase.dart';
+import 'package:todo_app/domain/usecase/GetRecoveryEmailUseCase.dart';
+import 'package:todo_app/domain/usecase/GetUseLockScreenUsecase.dart';
+import 'package:todo_app/domain/usecase/GetUserPasswordUsecase.dart';
+import 'package:todo_app/domain/usecase/SetCustomFirstLaunchDateUsecase.dart';
+import 'package:todo_app/domain/usecase/SetUseLockScreenUsecase.dart';
+import 'package:todo_app/domain/usecase/SetUserPasswordUsecase.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordScreen.dart';
 import 'package:todo_app/presentation/inputpassword/InputPasswordScreen.dart';
 
@@ -20,17 +27,31 @@ class SettingsBloc {
   // ignore: non_constant_identifier_names
   static final _EMAIL_VALIDATION_REGEX = RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
 
-  final SettingsUsecases _usecases = dependencies.settingsUsecases;
-
   void Function() _needUpdateListener;
 
   final _twoSeconds = const Duration(seconds: 2);
 
   SettingsBlocDelegator delegator;
 
-  SettingsBloc({
+  final SetUserPasswordUsecase _setUserPasswordUsecase;
+  final GetUserPasswordUsecase _getUserPasswordUsecase;
+  final GetUseLockScreenUsecase _getUseLockScreenUsecase;
+  final SetUseLockScreenUsecase _setUseLockScreenUsecase;
+  final GetRecoveryEmailUseCase _getRecoveryEmailUseCase;
+  final GetRealFirstLaunchDateStringUsecase _getRealFirstLaunchDateStringUsecase;
+  final SetCustomFirstLaunchDateUsecase _setCustomFirstLaunchDateUsecase;
+  final GetCustomFirstLaunchDateStringUsecase _getCustomFirstLaunchDateStringUsecase;
+
+  SettingsBloc(PrefsRepository prefsRepository, {
     @required this.delegator,
-  });
+  }): _setUserPasswordUsecase = SetUserPasswordUsecase(prefsRepository),
+      _getUserPasswordUsecase = GetUserPasswordUsecase(prefsRepository),
+      _getUseLockScreenUsecase = GetUseLockScreenUsecase(prefsRepository),
+      _setUseLockScreenUsecase = SetUseLockScreenUsecase(prefsRepository),
+      _getRecoveryEmailUseCase = GetRecoveryEmailUseCase(prefsRepository),
+      _getRealFirstLaunchDateStringUsecase = GetRealFirstLaunchDateStringUsecase(prefsRepository),
+      _setCustomFirstLaunchDateUsecase = SetCustomFirstLaunchDateUsecase(prefsRepository),
+      _getCustomFirstLaunchDateStringUsecase = GetCustomFirstLaunchDateStringUsecase(prefsRepository);
 
   void updateDelegator(SettingsBlocDelegator delegator) {
     this.delegator = delegator;
@@ -41,14 +62,14 @@ class SettingsBloc {
   }
 
   Future<void> onUseLockScreenChanged(BuildContext context) async {
-    final useLockScreen = await _usecases.getUseLockScreen();
-    final userPassword = await _usecases.getUserPassword();
+    final useLockScreen = await _getUseLockScreenUsecase.invoke();
+    final userPassword = await _getUserPasswordUsecase.invoke();
 
     if (useLockScreen && userPassword.isEmpty) {
-      _usecases.setUseLockScreen(false);
+      _setUseLockScreenUsecase.invoke(false);
       _showCreatePasswordDialog(context,
         onCreated: () {
-          _usecases.setUseLockScreen(true);
+          _setUseLockScreenUsecase.invoke(true);
           if (_needUpdateListener != null) {
             _needUpdateListener();
           }
@@ -57,10 +78,10 @@ class SettingsBloc {
     } else if (!useLockScreen) {
       // set it to true forcefully instantly.
       // will set to false when user inputs password correctly
-      _usecases.setUseLockScreen(true);
+      _setUseLockScreenUsecase.invoke(true);
       delegator.showBottomSheet((context) =>
         InputPasswordScreen(onSuccess: () {
-          _usecases.setUseLockScreen(false);
+          _setUseLockScreenUsecase.invoke(false);
           if (_needUpdateListener != null) {
             _needUpdateListener();
           }
@@ -90,7 +111,7 @@ class SettingsBloc {
 
     delegator.showBottomSheet((context) => CreatePasswordScreen(),
       onClosed: () async {
-        final isPasswordSaved = await _usecases.getUserPassword().then((s) => s.length > 0);
+        final isPasswordSaved = await _getUserPasswordUsecase.invoke().then((s) => s.length > 0);
         if (isPasswordSaved) {
           delegator.showSnackBar(successMsg, _twoSeconds);
           if (onCreated != null) {
@@ -104,7 +125,7 @@ class SettingsBloc {
   }
 
   Future<void> onSendTempPasswordClicked(BuildContext context) async {
-    final recoveryEmail = await _usecases.getRecoveryEmail();
+    final recoveryEmail = await _getRecoveryEmailUseCase.invoke();
     if (!_EMAIL_VALIDATION_REGEX.hasMatch(recoveryEmail)) {
       final message = AppLocalizations.of(context).invalidRecoveryEmail;
       delegator.showSnackBar(message, _twoSeconds);
@@ -127,14 +148,14 @@ class SettingsBloc {
     final mailSendFailedMsg = AppLocalizations.of(context).tempPasswordMailSendFailed;
     final failedToSaveTempPasswordMsg = AppLocalizations.of(context).failedToSaveTempPasswordByUnknownError;
 
-    final prevPassword = await _usecases.getUserPassword();
-    await _usecases.setUserPassword(_createRandomPassword());
-    final changedPassword = await _usecases.getUserPassword();
+    final prevPassword = await _getUserPasswordUsecase.invoke();
+    await _setUserPasswordUsecase.invoke(_createRandomPassword());
+    final changedPassword = await _getUserPasswordUsecase.invoke();
 
     if (changedPassword.isNotEmpty && prevPassword != changedPassword) {
       final mailTitle = AppLocalizations.of(context).tempPasswordMailSubject;
       final mailBody = AppLocalizations.of(context).tempPasswordMailBody;
-      final recoveryEmail = await _usecases.getRecoveryEmail();
+      final recoveryEmail = await _getRecoveryEmailUseCase.invoke();
       final body = _createEmailBodyJson(
         targetEmail: recoveryEmail,
         title: mailTitle,
@@ -171,7 +192,7 @@ class SettingsBloc {
   }
 
   Future<void> onResetPasswordClicked(BuildContext context) async {
-    final prevPassword = await _usecases.getUserPassword();
+    final prevPassword = await _getUserPasswordUsecase.invoke();
 
     if (prevPassword.isEmpty) {
       _showCreatePasswordDialog(context);
@@ -184,7 +205,7 @@ class SettingsBloc {
           onSuccess: () async {
             delegator.showBottomSheet((context) => CreatePasswordScreen(),
               onClosed: () async {
-                final changedPassword = await _usecases.getUserPassword();
+                final changedPassword = await _getUserPasswordUsecase.invoke();
                 if (prevPassword != changedPassword) {
                   delegator.showSnackBar(changedMsg, _twoSeconds);
                 } else {
@@ -208,9 +229,9 @@ class SettingsBloc {
   }
 
   Future<void> onUseRealFirstLaunchDateChanged() async {
-    final firstLaunchDateString = await _usecases.getRealFirstLaunchDateString();
+    final firstLaunchDateString = await _getRealFirstLaunchDateStringUsecase.invoke();
     final firstLaunchDate = firstLaunchDateString.isEmpty ? DateTime.fromMillisecondsSinceEpoch(0) : DateTime.parse(firstLaunchDateString);
-    _usecases.setCustomFirstLaunchDate(firstLaunchDate);
+    _setCustomFirstLaunchDateUsecase.invoke(firstLaunchDate);
 
     if (_needUpdateListener != null) {
       _needUpdateListener();
@@ -218,10 +239,10 @@ class SettingsBloc {
   }
 
   Future<void> onCustomFirstLaunchDateClicked(BuildContext context) async {
-    final customFirstLaunchDateString = await _usecases.getCustomFirstLaunchDateString();
+    final customFirstLaunchDateString = await _getCustomFirstLaunchDateStringUsecase.invoke();
     DatePicker.showDatePicker(
       context,
-      onConfirm: (date) => _usecases.setCustomFirstLaunchDate(date),
+      onConfirm: (date) => _setCustomFirstLaunchDateUsecase.invoke(date),
       currentTime: DateTime.parse(customFirstLaunchDateString),
       locale: Localizations.localeOf(context).languageCode == 'ko' ? LocaleType.ko : LocaleType.en,
     );

@@ -1,6 +1,5 @@
 
 import 'package:todo_app/Utils.dart';
-import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
@@ -8,23 +7,31 @@ import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/repository/MemoRepository.dart';
 import 'package:todo_app/domain/repository/PrefRepository.dart';
 import 'package:todo_app/domain/repository/ToDoRepository.dart';
+import 'package:todo_app/domain/usecase/GetDayMemoUsecase.dart';
+import 'package:todo_app/domain/usecase/GetStreakCountUsecase.dart';
+import 'package:todo_app/domain/usecase/GetTodayUsecase.dart';
+import 'package:todo_app/domain/usecase/IsDayMarkedCompletedUsecase.dart';
 
-class WeekUsecases {
+class GetWeekRecordUsecase {
   static final _enterRegex = RegExp(r'\n');
 
-  final MemoRepository _memoRepository;
-  final DateRepository _dateRepository;
-  final ToDoRepository _toDoRepository;
   final PrefsRepository _prefsRepository;
+  final ToDoRepository _toDoRepository;
+  final MemoRepository _memoRepository;
 
-  const WeekUsecases(this._memoRepository, this._dateRepository, this._toDoRepository, this._prefsRepository);
+  final GetTodayUsecase _getTodayUsecase;
+  final GetDayMemoUsecase _getDayMemoUsecase;
+  final IsDayMarkedCompletedUsecase _isDayMarkedCompletedUsecase;
+  final GetStreakCountUsecase _getStreakCountUsecase;
 
-  Future<DateTime> getToday() {
-    return _dateRepository.getToday();
-  }
+  GetWeekRecordUsecase(this._prefsRepository, this._toDoRepository, this._memoRepository, DateRepository dateRepository)
+    : _getTodayUsecase = GetTodayUsecase(dateRepository),
+      _getDayMemoUsecase = GetDayMemoUsecase(_memoRepository),
+      _isDayMarkedCompletedUsecase = IsDayMarkedCompletedUsecase(_toDoRepository),
+      _getStreakCountUsecase = GetStreakCountUsecase(_toDoRepository);
 
-  Future<WeekRecord> getWeekRecord(DateTime date) async {
-    final today = await _dateRepository.getToday();
+  Future<WeekRecord> invoke(DateTime date) async {
+    final today = await _getTodayUsecase.invoke();
     final dateInWeek = DateInWeek.fromDate(date);
     final datesInWeek = Utils.getDatesInWeek(date);
     final hasShownFirstCompletableDayTutorial = await _prefsRepository.hasShownFirstCompletableDayTutorial();
@@ -37,7 +44,7 @@ class WeekUsecases {
       final isToday = Utils.isSameDay(date, today);
       containsToday = containsToday || isToday;
       final toDos = await _toDoRepository.getToDos(date);
-      final memo = await _memoRepository.getDayMemo(date);
+      final memo = await _getDayMemoUsecase.invoke(date);
 
       // bring undone todos to front
       toDos.sort((t1, t2) {
@@ -51,9 +58,9 @@ class WeekUsecases {
       });
 
       // whether to draw top and bottom lines
-      final currentDayStreak = await _toDoRepository.getStreakCount(date);
-      final prevDayStreak = await _toDoRepository.getStreakCount(date.subtract(const Duration(days: 1)));
-      final nextDayStreak = await _toDoRepository.getStreakCount(date.add(const Duration(days: 1)));
+      final currentDayStreak = await _getStreakCountUsecase.invoke(date);
+      final prevDayStreak = await _getStreakCountUsecase.invoke(date.subtract(const Duration(days: 1)));
+      final nextDayStreak = await _getStreakCountUsecase.invoke(date.add(const Duration(days: 1)));
       final allToDosDone = toDos.length > 0 && toDos.every((it) => it.isDone);
       final isLightColor = !allToDosDone && today.compareTo(date) > 0;
       final isTopLineVisible = (currentDayStreak >= 2) || (prevDayStreak >= 1 && currentDayStreak == 0 && isToday);
@@ -63,7 +70,7 @@ class WeekUsecases {
 
       // whether to show mark completed icon
       final firstLaunchDate = DateTime.parse(await _prefsRepository.getFirstLaunchDateString());
-      final hasBeenMarkedCompleted = await _toDoRepository.hasDayBeenMarkedCompleted(date);
+      final hasBeenMarkedCompleted = await _isDayMarkedCompletedUsecase.invoke(date);
       final canBeMarkedCompleted = allToDosDone && !hasBeenMarkedCompleted &&
         date.compareTo(firstLaunchDate) >= 0 && date.compareTo(today) <= 0;
 
@@ -102,63 +109,5 @@ class WeekUsecases {
       containsToday: containsToday,
       firstCompletableDayTutorialIndex: firstCompletableDayTutorialIndex,
     );
-  }
-
-  void setCheckPoint(CheckPoint checkPoint) {
-    _memoRepository.setCheckPoint(checkPoint);
-  }
-
-  Future<String> getUserPassword() async {
-    return _prefsRepository.getUserPassword();
-  }
-
-  Future<bool> hasShownWeekScreenTutorial() {
-    return _prefsRepository.hasShownWeekScreenTutorial();
-  }
-
-  void setShownWeekScreenTutorial() {
-    _prefsRepository.setShownWeekScreenTutorial();
-  }
-
-  Future<void> setRealFirstLaunchDateIfNotExists(DateTime date) async {
-    final savedValue = await _prefsRepository.getRealFirstLaunchDateString();
-    if (savedValue.isEmpty) {
-      _prefsRepository.setRealFirstLaunchDate(date);
-    }
-  }
-
-  Future<void> setDayMarkedCompleted(DateTime date) {
-    return _toDoRepository.setDayMarkedCompleted(date);
-  }
-
-  Future<DateTime> getCompletedMarkableDayToKeepStreakBefore(DateTime date) async {
-    final prevDay = date.subtract(const Duration(days: 1));
-    final canPrevDayBeMarkedCompleted = await getCanBeMarkedCompleted(prevDay);
-    if (canPrevDayBeMarkedCompleted) {
-      return prevDay;
-    } else {
-      return DateRepository.INVALID_DATE;
-    }
-  }
-
-  Future<bool> getCanBeMarkedCompleted(DateTime date) async {
-    final toDos = await _toDoRepository.getToDos(date);
-    final allToDosDone = toDos.length > 0 && toDos.every((it) => it.isDone);
-    final hasBeenMarkedCompleted = await _toDoRepository.hasDayBeenMarkedCompleted(date);
-    final firstLaunchDate = DateTime.parse(await _prefsRepository.getFirstLaunchDateString());
-    final today = await _dateRepository.getToday();
-    return allToDosDone && !hasBeenMarkedCompleted && date.compareTo(firstLaunchDate) >= 0 && date.compareTo(today) <= 0;
-  }
-
-  void setShownFirstCompletableDayTutorial() {
-    _prefsRepository.setShownFirstCompletableDayTutorial();
-  }
-
-  Future<int> getStreakCount(DateTime date) {
-    return _toDoRepository.getStreakCount(date);
-  }
-
-  void addSeed(int count) {
-    _prefsRepository.addSeed(count);
   }
 }

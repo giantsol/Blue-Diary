@@ -3,8 +3,22 @@ import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
-import 'package:todo_app/domain/usecase/RankingUsecases.dart';
-import 'package:todo_app/presentation/App.dart';
+import 'package:todo_app/domain/repository/DateRepository.dart';
+import 'package:todo_app/domain/repository/PetRepository.dart';
+import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/domain/repository/RankingRepository.dart';
+import 'package:todo_app/domain/repository/ToDoRepository.dart';
+import 'package:todo_app/domain/repository/UserRepository.dart';
+import 'package:todo_app/domain/usecase/AddThumbsUpUsecase.dart';
+import 'package:todo_app/domain/usecase/DeleteMyRankingUserInfoUsecase.dart';
+import 'package:todo_app/domain/usecase/GetMyRankingUserInfoUsecase.dart';
+import 'package:todo_app/domain/usecase/IncreaseRankingUserInfosCountUsecase.dart';
+import 'package:todo_app/domain/usecase/InitRankingUserInfosCountUsecase.dart';
+import 'package:todo_app/domain/usecase/ObserveRankingUserInfosUsecase.dart';
+import 'package:todo_app/domain/usecase/SetMyRankingUserInfoUsecase.dart';
+import 'package:todo_app/domain/usecase/SignInWithFacebookUsecase.dart';
+import 'package:todo_app/domain/usecase/SignInWithGoogleUsecase.dart';
+import 'package:todo_app/domain/usecase/SignOutUsecase.dart';
 import 'package:todo_app/presentation/ranking/RankingState.dart';
 
 class RankingBloc {
@@ -12,22 +26,43 @@ class RankingBloc {
   RankingState getInitialState() => _state.value;
   Stream<RankingState> observeState() => _state.distinct();
 
-  final RankingUsecases _usecases = dependencies.rankingUsecases;
+  final GetMyRankingUserInfoUsecase _getMyRankingUserInfoUsecase;
+  final ObserveRankingUserInfosUsecase _observeRankingUserInfosUsecase;
+  final InitRankingUserInfosCountUsecase _initRankingUserInfosCountUsecase;
+  final SetMyRankingUserInfoUsecase _setMyRankingUserInfoUsecase;
+  final SignInWithGoogleUsecase _signInWithGoogleUsecase;
+  final SignInWithFacebookUsecase _signInWithFacebookUsecase;
+  final DeleteMyRankingUserInfoUsecase _deleteMyRankingUserInfoUsecase;
+  final SignOutUsecase _signOutUsecase;
+  final IncreaseRankingUserInfosCountUsecase _increaseRankingUserInfosCountUsecase;
+  final AddThumbsUpUsecase _addThumbsUpUsecase;
+
   StreamSubscription _rankingUserInfosEventSubscription;
 
-  RankingBloc() {
+  RankingBloc(UserRepository userRepository, RankingRepository rankingRepository, ToDoRepository toDoRepository, PrefsRepository prefsRepository, DateRepository dateRepository, PetRepository petRepository)
+    : _getMyRankingUserInfoUsecase = GetMyRankingUserInfoUsecase(userRepository, rankingRepository),
+      _observeRankingUserInfosUsecase = ObserveRankingUserInfosUsecase(rankingRepository),
+      _initRankingUserInfosCountUsecase = InitRankingUserInfosCountUsecase(rankingRepository),
+      _setMyRankingUserInfoUsecase = SetMyRankingUserInfoUsecase(userRepository, toDoRepository, rankingRepository, prefsRepository, dateRepository, petRepository),
+      _signInWithGoogleUsecase = SignInWithGoogleUsecase(userRepository),
+      _signInWithFacebookUsecase = SignInWithFacebookUsecase(userRepository),
+      _deleteMyRankingUserInfoUsecase = DeleteMyRankingUserInfoUsecase(userRepository, rankingRepository),
+      _signOutUsecase = SignOutUsecase(userRepository),
+      _increaseRankingUserInfosCountUsecase = IncreaseRankingUserInfosCountUsecase(rankingRepository),
+      _addThumbsUpUsecase = AddThumbsUpUsecase(rankingRepository)
+  {
     _initState();
   }
 
   Future<void> _initState() async {
-    final myRankingInfo = await _usecases.getMyRankingUserInfo();
+    final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
 
     _state.add(_state.value.buildNew(
       viewState: RankingViewState.NORMAL,
       myRankingUserInfo: myRankingInfo,
     ));
 
-    _rankingUserInfosEventSubscription = _usecases.observeRankingUserInfosEvent()
+    _rankingUserInfosEventSubscription = _observeRankingUserInfosUsecase.invoke()
       .listen((event) {
       _state.add(_state.value.buildNew(
         rankingUserInfos: event.rankingUserInfos,
@@ -35,20 +70,16 @@ class RankingBloc {
       ));
     });
 
-    _initRankingsCount();
+    _initRankingUserInfosCountUsecase.invoke();
 
     // todo: update my ranking info once if last updated threshold is valid
   }
 
-  void _initRankingsCount() {
-    _usecases.initRankingUserInfosCount();
-  }
-
   Future<void> onGoogleSignInClicked() async {
-    final success = await _usecases.signInWithGoogle();
+    final success = await _signInWithGoogleUsecase.invoke();
     if (success) {
-      await _uploadMyRankingInfo();
-      final myRankingInfo = await _usecases.getMyRankingUserInfo();
+      await _setMyRankingUserInfoUsecase.invoke();
+      final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
       _state.add(_state.value.buildNew(
         myRankingUserInfo: myRankingInfo,
       ));
@@ -60,10 +91,10 @@ class RankingBloc {
   }
 
   Future<void> onFacebookSignInClicked() async {
-    final success = await _usecases.signInWithFacebook();
+    final success = await _signInWithFacebookUsecase.invoke();
     if (success) {
-      await _uploadMyRankingInfo();
-      final myRankingInfo = await _usecases.getMyRankingUserInfo();
+      await _setMyRankingUserInfoUsecase.invoke();
+      final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
       _state.add(_state.value.buildNew(
         myRankingUserInfo: myRankingInfo,
       ));
@@ -75,54 +106,28 @@ class RankingBloc {
   }
 
   Future<void> onSignOutClicked() async {
-    final uid = await _usecases.getUserId();
-    await _usecases.deleteRankingUserInfo(uid);
+    await _deleteMyRankingUserInfoUsecase.invoke();
 
-    final success = await _usecases.signOut();
+    final success = await _signOutUsecase.invoke();
     if (success) {
       _state.add(_state.value.buildNew(
         myRankingUserInfo: RankingUserInfo.INVALID,
       ));
 
-      _initRankingsCount();
+      _initRankingUserInfosCountUsecase.invoke();
     }
   }
 
   Future<void> onRefreshMyRankingInfoClicked() async {
-    await _uploadMyRankingInfo();
-    final myRankingInfo = await _usecases.getMyRankingUserInfo();
+    await _setMyRankingUserInfoUsecase.invoke();
+    final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
     _state.add(_state.value.buildNew(
       myRankingUserInfo: myRankingInfo,
     ));
   }
 
-  Future<void> _uploadMyRankingInfo() async {
-    final uid = await _usecases.getUserId();
-    if (uid.isNotEmpty) {
-      final userName = await _usecases.getUserDisplayName();
-      final completionRatio = await _usecases.getCompletionRatio();
-      final latestStreakCount = await _usecases.getLatestStreakCount();
-      final latestStreakEndMillis = await _usecases.getLatestStreakEndMillis();
-      final longestStreakCount = await _usecases.getLongestStreakCount();
-      final longestStreakEndMillis = await _usecases.getLongestStreakEndMillis();
-      final selectedPet = await _usecases.getSelectedPet();
-      final rankingUserInfo = RankingUserInfo(
-        uid: uid,
-        name: userName,
-        completionRatio: completionRatio,
-        latestStreak: latestStreakCount,
-        latestStreakEndMillis: latestStreakEndMillis,
-        longestStreak: longestStreakCount,
-        longestStreakEndMillis: longestStreakEndMillis,
-        petKey: selectedPet.key,
-        petPhaseIndex: selectedPet.currentPhaseIndex,
-      );
-      return _usecases.setMyRankingUserInfo(rankingUserInfo);
-    }
-  }
-
   void onLoadMoreRankingInfosClicked() {
-    _usecases.increaseRankingUserInfosCount();
+    _increaseRankingUserInfosCountUsecase.invoke();
   }
 
   void onSignInAndJoinClicked() {
@@ -155,7 +160,7 @@ class RankingBloc {
       thumbedUpUids: updatedThumbedUpUids,
     ));
 
-    _usecases.increaseThumbsUp(userInfo);
+    _addThumbsUpUsecase.invoke(userInfo);
   }
 
   void dispose() {

@@ -13,6 +13,7 @@ import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/DayRecord.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
 import 'package:todo_app/domain/entity/ViewLayoutInfo.dart';
+import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/day/DayBloc.dart';
 import 'package:todo_app/presentation/day/DayScreenTutorialCallback.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
@@ -47,7 +48,8 @@ class _DayScreenState extends State<DayScreen> with SingleTickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    _bloc = DayBloc(widget.date);
+    final deps = dependencies;
+    _bloc = DayBloc(widget.date, deps.dateRepository, deps.toDoRepository, deps.categoryRepository, deps.memoRepository, deps.prefsRepository);
     _toDoScrollController = ScrollController();
     _pageController = PageController(initialPage: _bloc.getInitialState().initialDayRecordPageIndex);
 

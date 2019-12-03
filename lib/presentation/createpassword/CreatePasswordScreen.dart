@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
+import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordBloc.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordState.dart';
 import 'package:todo_app/presentation/widgets/VirtualKeyboard.dart';
@@ -17,7 +18,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   @override
   void initState() {
     super.initState();
-    _bloc = CreatePasswordBloc();
+    _bloc = CreatePasswordBloc(dependencies.prefsRepository);
   }
 
   @override

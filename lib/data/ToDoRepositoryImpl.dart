@@ -15,8 +15,8 @@ class ToDoRepositoryImpl implements ToDoRepository {
   }
 
   @override
-  void setToDo(ToDo toDo) {
-    _dataSource.setToDo(toDo);
+  Future<void> setToDo(ToDo toDo) {
+    return _dataSource.setToDo(toDo);
   }
 
   @override
@@ -60,8 +60,8 @@ class ToDoRepositoryImpl implements ToDoRepository {
   }
 
   @override
-  Future<bool> hasDayBeenMarkedCompleted(DateTime date) {
-    return _dataSource.hasDayBeenMarkedCompleted(date);
+  Future<bool> isDayMarkedCompleted(DateTime date) {
+    return _dataSource.isDayMarkedCompleted(date);
   }
 
   @override

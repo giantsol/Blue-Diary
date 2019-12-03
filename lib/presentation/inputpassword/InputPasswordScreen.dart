@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
+import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/inputpassword/InputPasswordBloc.dart';
 import 'package:todo_app/presentation/inputpassword/InputPasswordState.dart';
 import 'package:todo_app/presentation/widgets/VirtualKeyboard.dart';
@@ -25,7 +26,7 @@ class _InputPasswordScreenState extends State<InputPasswordScreen> {
   @override
   void initState() {
     super.initState();
-    _bloc = InputPasswordBloc();
+    _bloc = InputPasswordBloc(dependencies.prefsRepository);
   }
 
   @override

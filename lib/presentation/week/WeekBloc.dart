@@ -9,8 +9,20 @@ import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
-import 'package:todo_app/domain/usecase/WeekUsecases.dart';
-import 'package:todo_app/presentation/App.dart';
+import 'package:todo_app/domain/repository/MemoRepository.dart';
+import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/domain/repository/ToDoRepository.dart';
+import 'package:todo_app/domain/usecase/AddSeedUsecase.dart';
+import 'package:todo_app/domain/usecase/GetCompletedMarkableDayToKeepStreakUsecase.dart';
+import 'package:todo_app/domain/usecase/GetStreakCountUsecase.dart';
+import 'package:todo_app/domain/usecase/GetTodayUsecase.dart';
+import 'package:todo_app/domain/usecase/GetWeekRecordUsecase.dart';
+import 'package:todo_app/domain/usecase/HasShownWeekScreenTutorialUsecase.dart';
+import 'package:todo_app/domain/usecase/SetCheckPointUsecase.dart';
+import 'package:todo_app/domain/usecase/SetDayMarkedCompletedUsecase.dart';
+import 'package:todo_app/domain/usecase/SetRealFirstLaunchDateIfNotExistsUsecase.dart';
+import 'package:todo_app/domain/usecase/SetShownFirstCompletableDayTutorialUsecase.dart';
+import 'package:todo_app/domain/usecase/SetShownWeekScreenTutorialUsecase.dart';
 import 'package:todo_app/presentation/day/DayScreen.dart';
 import 'package:todo_app/presentation/week/FirstCompletableDayTutorial.dart';
 import 'package:todo_app/presentation/week/WeekScreenTutorial.dart';
@@ -24,13 +36,34 @@ class WeekBloc {
   WeekState getInitialState() => _state.value;
   Stream<WeekState> observeState() => _state.distinct();
 
-  final WeekUsecases _usecases = dependencies.weekUsecases;
+  final GetTodayUsecase _getTodayUsecase;
+  final GetWeekRecordUsecase _getWeekRecordUsecase;
+  final SetRealFirstLaunchDateIfNotExistsUsecase _setRealFirstLaunchDateIfNotExistsUsecase;
+  final HasShownWeekScreenTutorialUsecase _hasShownWeekScreenTutorialUsecase;
+  final SetCheckPointUsecase _setCheckPointUsecase;
+  final SetShownWeekScreenTutorialUsecase _setShownWeekScreenTutorialUsecase;
+  final GetCompletedMarkableDayToKeepStreakUsecase _getCompletedMarkableDayToKeepStreakUsecase;
+  final SetDayMarkedCompletedUsecase _setDayMarkedCompletedUsecase;
+  final GetStreakCountUsecase _getStreakCountUsecase;
+  final AddSeedUsecase _addSeedUsecase;
+  final SetShownFirstCompletableDayTutorialUsecase _setShownFirstCompletableDayTutorialUsecase;
 
   WeekBlocDelegator delegator;
 
-  WeekBloc({
+  WeekBloc(DateRepository dateRepository, PrefsRepository prefsRepository, ToDoRepository toDoRepository, MemoRepository memoRepository, {
     @required this.delegator
-  }) {
+  }): _getTodayUsecase = GetTodayUsecase(dateRepository),
+      _getWeekRecordUsecase = GetWeekRecordUsecase(prefsRepository, toDoRepository, memoRepository, dateRepository),
+      _setRealFirstLaunchDateIfNotExistsUsecase = SetRealFirstLaunchDateIfNotExistsUsecase(prefsRepository),
+      _hasShownWeekScreenTutorialUsecase = HasShownWeekScreenTutorialUsecase(prefsRepository),
+      _setCheckPointUsecase = SetCheckPointUsecase(memoRepository),
+      _setShownWeekScreenTutorialUsecase = SetShownWeekScreenTutorialUsecase(prefsRepository),
+      _getCompletedMarkableDayToKeepStreakUsecase = GetCompletedMarkableDayToKeepStreakUsecase(toDoRepository, prefsRepository, dateRepository),
+      _setDayMarkedCompletedUsecase = SetDayMarkedCompletedUsecase(toDoRepository),
+      _getStreakCountUsecase = GetStreakCountUsecase(toDoRepository),
+      _addSeedUsecase = AddSeedUsecase(prefsRepository),
+      _setShownFirstCompletableDayTutorialUsecase = SetShownFirstCompletableDayTutorialUsecase(prefsRepository)
+  {
     _initState();
     delegator.addBottomNavigationItemClickedListener(_bottomNavigationItemClickedListener);
   }
@@ -45,19 +78,19 @@ class WeekBloc {
   }
 
   Future<void> _initState() async {
-    final initialDate = await _usecases.getToday();
+    final initialDate = await _getTodayUsecase.invoke();
     if (initialDate == DateRepository.INVALID_DATE) {
       _state.add(_state.value.buildNew(
         viewState: WeekViewState.NETWORK_ERROR,
       ));
     } else {
-      _usecases.setRealFirstLaunchDateIfNotExists(initialDate);
+      _setRealFirstLaunchDateIfNotExistsUsecase.invoke(initialDate);
 
       final dateInWeek = DateInWeek.fromDate(initialDate);
-      final currentWeekRecord = await _usecases.getWeekRecord(initialDate);
-      final prevWeekRecord = await _usecases.getWeekRecord(initialDate.subtract(_sevenDays));
-      final nextWeekRecord = await _usecases.getWeekRecord(initialDate.add(_sevenDays));
-      final startTutorial = !(await _usecases.hasShownWeekScreenTutorial());
+      final currentWeekRecord = await _getWeekRecordUsecase.invoke(initialDate);
+      final prevWeekRecord = await _getWeekRecordUsecase.invoke(initialDate.subtract(_sevenDays));
+      final nextWeekRecord = await _getWeekRecordUsecase.invoke(initialDate.add(_sevenDays));
+      final startTutorial = !(await _hasShownWeekScreenTutorialUsecase.invoke());
       final showFirstCompletableDayTutorial = currentWeekRecord.firstCompletableDayTutorialIndex >= 0;
 
       _state.add(_state.value.buildNew(
@@ -99,9 +132,9 @@ class WeekBloc {
       currentDate: currentDate,
     ));
 
-    final currentWeekRecord = await _usecases.getWeekRecord(currentDate);
-    final prevWeekRecord = await _usecases.getWeekRecord(currentDate.subtract(_sevenDays));
-    final nextWeekRecord = await _usecases.getWeekRecord(currentDate.add(_sevenDays));
+    final currentWeekRecord = await _getWeekRecordUsecase.invoke(currentDate);
+    final prevWeekRecord = await _getWeekRecordUsecase.invoke(currentDate.subtract(_sevenDays));
+    final nextWeekRecord = await _getWeekRecordUsecase.invoke(currentDate.add(_sevenDays));
     final showFirstCompletableDayTutorialEvent = currentWeekRecord.firstCompletableDayTutorialIndex >= 0;
 
     _state.add(_state.value.buildNew(
@@ -117,7 +150,7 @@ class WeekBloc {
   void onCheckPointTextChanged(CheckPoint checkPoint, String changed) {
     final updatedCheckPoint = checkPoint.buildNew(text: changed);
     _state.add(_state.value.buildNewCheckPointUpdated(updatedCheckPoint));
-    _usecases.setCheckPoint(checkPoint);
+    _setCheckPointUsecase.invoke(checkPoint);
   }
 
   Future<void> onDayPreviewClicked(BuildContext context, DayPreview dayPreview) async {
@@ -128,7 +161,7 @@ class WeekBloc {
       ),
     );
 
-    final currentWeekRecord = await _usecases.getWeekRecord(_state.value.currentDate);
+    final currentWeekRecord = await _getWeekRecordUsecase.invoke(_state.value.currentDate);
     final showFirstCompletableDayTutorialEvent = currentWeekRecord.firstCompletableDayTutorialIndex >= 0;
 
     _state.add(_state.value.buildNew(
@@ -166,7 +199,7 @@ class WeekBloc {
       ),
     ));
 
-    _usecases.setShownWeekScreenTutorial();
+    _setShownWeekScreenTutorialUsecase.invoke();
 
     _state.add(_state.value.buildNew(
       pageViewScrollEnabled: true,
@@ -181,7 +214,7 @@ class WeekBloc {
   }
 
   Future<void> onMarkDayCompletedClicked(BuildContext context, DateTime date) async {
-    final completedMarkableDay = await _usecases.getCompletedMarkableDayToKeepStreakBefore(date);
+    final completedMarkableDay = await _getCompletedMarkableDayToKeepStreakUsecase.invoke(date);
     if (completedMarkableDay != DateRepository.INVALID_DATE) {
       final title = AppLocalizations.of(context).warning;
       final body = AppLocalizations.of(context).getHasCompletedMarkableDay(completedMarkableDay);
@@ -199,15 +232,15 @@ class WeekBloc {
   }
 
   Future<void> _markDayCompleted(DateTime date) async {
-    await _usecases.setDayMarkedCompleted(date);
+    await _setDayMarkedCompletedUsecase.invoke(date);
 
-    final currentWeekRecord = await _usecases.getWeekRecord(_state.value.currentDate);
+    final currentWeekRecord = await _getWeekRecordUsecase.invoke(_state.value.currentDate);
     _state.add(_state.value.buildNew(
       currentWeekRecord: currentWeekRecord,
     ));
 
-    final streakCount = await _usecases.getStreakCount(date);
-    _usecases.addSeed(streakCount);
+    final streakCount = await _getStreakCountUsecase.invoke(date);
+    _addSeedUsecase.invoke(streakCount);
     delegator.showSeedAddedAnimation(streakCount);
   }
 
@@ -224,7 +257,7 @@ class WeekBloc {
     ));
 
     if (result == true) {
-      _usecases.setShownFirstCompletableDayTutorial();
+      _setShownFirstCompletableDayTutorialUsecase.invoke();
       _state.add(_state.value.buildNew(
         pageViewScrollEnabled: true,
       ));

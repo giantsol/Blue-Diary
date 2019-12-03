@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/Pet.dart';
+import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/pet/PetBloc.dart';
 import 'package:todo_app/presentation/pet/PetState.dart';
 
@@ -18,7 +19,7 @@ class _PetScreenState extends State<PetScreen> {
   @override
   void initState() {
     super.initState();
-    _bloc = PetBloc();
+    _bloc = PetBloc(dependencies.prefsRepository, dependencies.petRepository);
   }
 
   @override

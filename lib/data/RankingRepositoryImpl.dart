@@ -43,7 +43,7 @@ class RankingRepositoryImpl implements RankingRepository {
   }
 
   @override
-  Stream<RankingUserInfosEvent> observeRankingUserInfosEvent() {
+  Stream<RankingUserInfosEvent> observeRankingUserInfos() {
     return _rankingUserInfosEventSubject.distinct();
   }
 
@@ -107,7 +107,7 @@ class RankingRepositoryImpl implements RankingRepository {
   }
 
   @override
-  void increaseThumbsUp(RankingUserInfo info) {
+  void addThumbsUp(RankingUserInfo info) {
     final increasedInfo = info.buildNew(
       thumbsUp: info.thumbsUp + 1,
     );

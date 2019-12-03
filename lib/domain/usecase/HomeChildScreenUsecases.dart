@@ -1,14 +1,9 @@
 
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
-import 'package:todo_app/domain/repository/PrefRepository.dart';
 
-class HomeUsecases {
-  final PrefsRepository _prefsRepository;
-
+class HomeChildScreenUsecases {
   var _currentChildScreenItemKey = HomeChildScreenItem.KEY_RECORD;
-
-  HomeUsecases(this._prefsRepository);
 
   List<HomeChildScreenItem> getNavigationItems() {
     final recordNavigationItem = HomeChildScreenItem(
@@ -48,13 +43,5 @@ class HomeUsecases {
 
   void setCurrentChildScreenKey(String key) {
     _currentChildScreenItemKey = key;
-  }
-
-  Future<String> getUserPassword() async {
-    return _prefsRepository.getUserPassword();
-  }
-
-  Future<bool> getUseLockScreen() async {
-    return _prefsRepository.getUseLockScreen();
   }
 }
