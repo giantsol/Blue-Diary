@@ -1,11 +1,9 @@
 
 import 'package:todo_app/domain/entity/Pet.dart';
-import 'package:todo_app/domain/repository/PetRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class GetSelectedPetUsecase {
-  final PetRepository _petRepository;
-
-  GetSelectedPetUsecase(this._petRepository);
+  final _petRepository = dependencies.petRepository;
 
   Future<Pet> invoke() {
     return _petRepository.getSelectedPet();

@@ -12,7 +12,6 @@ import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/ViewLayoutInfo.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
-import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/week/WeekBloc.dart';
 import 'package:todo_app/presentation/week/WeekScreenTutorialCallback.dart';
 import 'package:todo_app/presentation/week/WeekState.dart';
@@ -51,9 +50,7 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
   @override
   void initState() {
     super.initState();
-    final deps = dependencies;
-    _bloc = WeekBloc(deps.dateRepository, deps.prefsRepository, deps.toDoRepository, deps.memoRepository, deps.userRepository, deps.rankingRepository, deps.petRepository,
-      delegator: widget.weekBlocDelegator);
+    _bloc = WeekBloc(delegator: widget.weekBlocDelegator);
     _pageController = PageController(initialPage: _bloc.getInitialState().initialWeekRecordPageIndex);
     _scrollController = ScrollController();
   }

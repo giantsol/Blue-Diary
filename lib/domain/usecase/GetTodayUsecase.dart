@@ -1,12 +1,9 @@
 
-import 'package:todo_app/domain/repository/DateRepository.dart';
-import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class GetTodayUsecase {
-  final DateRepository _dateRepository;
-  final PrefsRepository _prefsRepository;
-
-  GetTodayUsecase(this._dateRepository, this._prefsRepository);
+  final _dateRepository = dependencies.dateRepository;
+  final _prefsRepository = dependencies.prefsRepository;
 
   Future<DateTime> invoke() {
     final lastUpdatedLocalTimeMillis = _prefsRepository.getLastUpdatedTodayLocalTimeMillis();

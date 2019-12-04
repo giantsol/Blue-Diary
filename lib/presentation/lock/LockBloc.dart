@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/domain/repository/PrefRepository.dart';
 import 'package:todo_app/domain/usecase/GetUserPasswordUsecase.dart';
 import 'package:todo_app/presentation/lock/LockState.dart';
 import 'package:todo_app/presentation/widgets/VirtualKeyboard.dart';
@@ -12,10 +11,7 @@ class LockBloc {
   LockState getInitialState() => _state.value;
   Stream<LockState> observeState() => _state.distinct();
 
-  final GetUserPasswordUsecase _getUserPasswordUsecase;
-
-  LockBloc(PrefsRepository prefsRepository)
-    : _getUserPasswordUsecase = GetUserPasswordUsecase(prefsRepository);
+  final _getUserPasswordUsecase = GetUserPasswordUsecase();
 
   Future<void> onVirtualKeyPressed(BuildContext context, VirtualKeyboardKey key) async {
     final currentPassword = _state.value.password;

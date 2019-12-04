@@ -1,10 +1,8 @@
 
-import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class SetShownFirstCompletableDayTutorialUsecase {
-  final PrefsRepository _prefsRepository;
-
-  SetShownFirstCompletableDayTutorialUsecase(this._prefsRepository);
+  final _prefsRepository = dependencies.prefsRepository;
 
   void invoke() {
     _prefsRepository.setShownFirstCompletableDayTutorial();

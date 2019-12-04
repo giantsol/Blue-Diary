@@ -1,10 +1,8 @@
 
-import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class CanUpdateMyRankingUserInfoUsecase {
-  final PrefsRepository _prefsRepository;
-
-  CanUpdateMyRankingUserInfoUsecase(this._prefsRepository);
+  final _prefsRepository = dependencies.prefsRepository;
 
   bool invoke() {
     final lastUpdatedLocalTimeMillis = _prefsRepository.getLastUpdatedMyRankingUserInfoLocalTimeMillis();

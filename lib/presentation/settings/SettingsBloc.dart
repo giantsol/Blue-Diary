@@ -10,7 +10,6 @@ import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/Secrets.dart';
 import 'package:todo_app/Utils.dart';
-import 'package:todo_app/domain/repository/PrefRepository.dart';
 import 'package:todo_app/domain/usecase/GetCustomFirstLaunchDateStringUsecase.dart';
 import 'package:todo_app/domain/usecase/GetRealFirstLaunchDateStringUsecase.dart';
 import 'package:todo_app/domain/usecase/GetRecoveryEmailUseCase.dart';
@@ -33,25 +32,18 @@ class SettingsBloc {
 
   SettingsBlocDelegator delegator;
 
-  final SetUserPasswordUsecase _setUserPasswordUsecase;
-  final GetUserPasswordUsecase _getUserPasswordUsecase;
-  final GetUseLockScreenUsecase _getUseLockScreenUsecase;
-  final SetUseLockScreenUsecase _setUseLockScreenUsecase;
-  final GetRecoveryEmailUseCase _getRecoveryEmailUseCase;
-  final GetRealFirstLaunchDateStringUsecase _getRealFirstLaunchDateStringUsecase;
-  final SetCustomFirstLaunchDateUsecase _setCustomFirstLaunchDateUsecase;
-  final GetCustomFirstLaunchDateStringUsecase _getCustomFirstLaunchDateStringUsecase;
+  final _setUserPasswordUsecase = SetUserPasswordUsecase();
+  final _getUserPasswordUsecase = GetUserPasswordUsecase();
+  final _getUseLockScreenUsecase = GetUseLockScreenUsecase();
+  final _setUseLockScreenUsecase = SetUseLockScreenUsecase();
+  final _getRecoveryEmailUseCase = GetRecoveryEmailUseCase();
+  final _getRealFirstLaunchDateStringUsecase = GetRealFirstLaunchDateStringUsecase();
+  final _setCustomFirstLaunchDateUsecase = SetCustomFirstLaunchDateUsecase();
+  final _getCustomFirstLaunchDateStringUsecase = GetCustomFirstLaunchDateStringUsecase();
 
-  SettingsBloc(PrefsRepository prefsRepository, {
+  SettingsBloc({
     @required this.delegator,
-  }): _setUserPasswordUsecase = SetUserPasswordUsecase(prefsRepository),
-      _getUserPasswordUsecase = GetUserPasswordUsecase(prefsRepository),
-      _getUseLockScreenUsecase = GetUseLockScreenUsecase(prefsRepository),
-      _setUseLockScreenUsecase = SetUseLockScreenUsecase(prefsRepository),
-      _getRecoveryEmailUseCase = GetRecoveryEmailUseCase(prefsRepository),
-      _getRealFirstLaunchDateStringUsecase = GetRealFirstLaunchDateStringUsecase(prefsRepository),
-      _setCustomFirstLaunchDateUsecase = SetCustomFirstLaunchDateUsecase(prefsRepository),
-      _getCustomFirstLaunchDateStringUsecase = GetCustomFirstLaunchDateStringUsecase(prefsRepository);
+  });
 
   void updateDelegator(SettingsBlocDelegator delegator) {
     this.delegator = delegator;

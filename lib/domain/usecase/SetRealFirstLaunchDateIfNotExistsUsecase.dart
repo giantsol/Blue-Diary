@@ -1,14 +1,11 @@
 
-import 'package:todo_app/domain/repository/PrefRepository.dart';
 import 'package:todo_app/domain/usecase/GetRealFirstLaunchDateStringUsecase.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class SetRealFirstLaunchDateIfNotExistsUsecase {
-  final PrefsRepository _prefsRepository;
+  final _prefsRepository = dependencies.prefsRepository;
 
-  final GetRealFirstLaunchDateStringUsecase _getRealFirstLaunchDateStringUsecase;
-
-  SetRealFirstLaunchDateIfNotExistsUsecase(this._prefsRepository)
-    : _getRealFirstLaunchDateStringUsecase = GetRealFirstLaunchDateStringUsecase(_prefsRepository);
+  final _getRealFirstLaunchDateStringUsecase = GetRealFirstLaunchDateStringUsecase();
 
   Future<void> invoke(DateTime date) async {
     final savedValue = await _getRealFirstLaunchDateStringUsecase.invoke();

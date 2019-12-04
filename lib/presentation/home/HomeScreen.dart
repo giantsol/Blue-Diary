@@ -7,7 +7,6 @@ import 'package:todo_app/Localization.dart';
 import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
 import 'package:todo_app/domain/entity/ViewLayoutInfo.dart';
-import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/home/HomeBloc.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
 import 'package:todo_app/presentation/pet/PetScreen.dart';
@@ -34,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    _bloc = HomeBloc(context, dependencies.prefsRepository);
+    _bloc = HomeBloc(context);
 
     _seedAddedAnimationController = AnimationController(
       vsync: this,

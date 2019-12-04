@@ -1,10 +1,8 @@
 
-import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class SetUserCheckedToDoBeforeUsecase {
-  final PrefsRepository _prefsRepository;
-
-  SetUserCheckedToDoBeforeUsecase(this._prefsRepository);
+  final _prefsRepository = dependencies.prefsRepository;
 
   void invoke() {
     _prefsRepository.setUserCheckedToDoBefore();

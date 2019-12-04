@@ -1,10 +1,8 @@
 
-import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class GetUseRealFirstLaunchDateUsecase {
-  final PrefsRepository _prefsRepository;
-
-  GetUseRealFirstLaunchDateUsecase(this._prefsRepository);
+  final _prefsRepository = dependencies.prefsRepository;
 
   Future<bool> invoke() {
     return _prefsRepository.getUseRealFirstLaunchDate();

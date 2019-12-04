@@ -1,10 +1,8 @@
 
-import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class HasShownDayScreenTutorialUsecase {
-  final PrefsRepository _prefsRepository;
-
-  HasShownDayScreenTutorialUsecase(this._prefsRepository);
+  final _prefsRepository = dependencies.prefsRepository;
 
   Future<bool> invoke() {
     return _prefsRepository.hasShownDayScreenTutorial();

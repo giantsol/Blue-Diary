@@ -4,7 +4,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/domain/repository/PrefRepository.dart';
 import 'package:todo_app/domain/usecase/GetUseLockScreenUsecase.dart';
 import 'package:todo_app/domain/usecase/HomeChildScreenUsecases.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
@@ -16,14 +15,12 @@ class HomeBloc {
   HomeState getInitialState() => _state.value;
   Stream<HomeState> observeState() => _state.distinct();
 
-  final GetUseLockScreenUsecase _getUseLockScreenUsecase;
-  final HomeChildScreenUsecases _homeChildScreenUsecases = HomeChildScreenUsecases();
+  final _getUseLockScreenUsecase = GetUseLockScreenUsecase();
+  final _homeChildScreenUsecases = HomeChildScreenUsecases();
 
   final List<void Function(String key)> _bottomNavigationItemClickedListeners = [];
 
-  HomeBloc(BuildContext context, PrefsRepository prefsRepository)
-    : _getUseLockScreenUsecase = GetUseLockScreenUsecase(prefsRepository)
-  {
+  HomeBloc(BuildContext context) {
     _initState(context);
   }
 

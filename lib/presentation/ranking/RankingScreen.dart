@@ -7,7 +7,6 @@ import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
-import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/ranking/RankingBloc.dart';
 import 'package:todo_app/presentation/ranking/RankingState.dart';
 
@@ -28,8 +27,7 @@ class _RankingScreenState extends State<RankingScreen> {
   @override
   void initState() {
     super.initState();
-    final deps = dependencies;
-    _bloc = RankingBloc(deps.userRepository, deps.rankingRepository, deps.toDoRepository, deps.prefsRepository, deps.dateRepository, deps.petRepository);
+    _bloc = RankingBloc();
     _bloc.updateDelegator(widget.rankingBlocDelegator);
   }
 

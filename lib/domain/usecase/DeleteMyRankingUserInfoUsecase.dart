@@ -1,12 +1,9 @@
 
-import 'package:todo_app/domain/repository/RankingRepository.dart';
-import 'package:todo_app/domain/repository/UserRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class DeleteMyRankingUserInfoUsecase {
-  final UserRepository _userRepository;
-  final RankingRepository _rankingRepository;
-
-  DeleteMyRankingUserInfoUsecase(this._userRepository, this._rankingRepository);
+  final _userRepository = dependencies.userRepository;
+  final _rankingRepository = dependencies.rankingRepository;
 
   Future<void> invoke() async {
     final uid = await _userRepository.getUserId();

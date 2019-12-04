@@ -1,10 +1,8 @@
 
-import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class AddSeedUsecase {
-  final PrefsRepository _prefsRepository;
-
-  AddSeedUsecase(this._prefsRepository);
+  final _prefsRepository = dependencies.prefsRepository;
 
   void invoke(int count) {
     _prefsRepository.addSeed(count);

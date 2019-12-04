@@ -1,10 +1,8 @@
 
-import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class SetUserPasswordUsecase {
-  final PrefsRepository _prefsRepository;
-
-  SetUserPasswordUsecase(this._prefsRepository);
+  final _prefsRepository = dependencies.prefsRepository;
 
   Future<void> invoke(String password) {
     return _prefsRepository.setUserPassword(password);

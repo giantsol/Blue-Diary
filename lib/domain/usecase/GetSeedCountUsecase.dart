@@ -1,10 +1,8 @@
 
-import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class GetSeedCountUsecase {
-  final PrefsRepository _prefsRepository;
-
-  GetSeedCountUsecase(this._prefsRepository);
+  final _prefsRepository = dependencies.prefsRepository;
 
   int invoke() {
     return _prefsRepository.getSeedCount();

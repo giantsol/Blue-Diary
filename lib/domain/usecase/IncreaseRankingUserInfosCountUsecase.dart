@@ -1,10 +1,8 @@
 
-import 'package:todo_app/domain/repository/RankingRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class IncreaseRankingUserInfosCountUsecase {
-  final RankingRepository _rankingRepository;
-
-  IncreaseRankingUserInfosCountUsecase(this._rankingRepository);
+  final _rankingRepository = dependencies.rankingRepository;
 
   void invoke() {
     _rankingRepository.increaseRankingUserInfosCount();

@@ -1,20 +1,14 @@
 
-import 'package:todo_app/domain/repository/DateRepository.dart';
-import 'package:todo_app/domain/repository/PrefRepository.dart';
-import 'package:todo_app/domain/repository/ToDoRepository.dart';
 import 'package:todo_app/domain/usecase/GetTodayUsecase.dart';
 import 'package:todo_app/domain/usecase/IsDayMarkedCompletedUsecase.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class GetCanBeMarkedCompletedUsecase {
-  final ToDoRepository _toDoRepository;
-  final PrefsRepository _prefsRepository;
+  final _toDoRepository = dependencies.toDoRepository;
+  final _prefsRepository = dependencies.prefsRepository;
 
-  final GetTodayUsecase _getTodayUsecase;
-  final IsDayMarkedCompletedUsecase _isDayMarkedCompletedUsecase;
-
-  GetCanBeMarkedCompletedUsecase(this._toDoRepository, this._prefsRepository, DateRepository dateRepository)
-    : _getTodayUsecase = GetTodayUsecase(dateRepository, _prefsRepository),
-      _isDayMarkedCompletedUsecase = IsDayMarkedCompletedUsecase(_toDoRepository);
+  final _getTodayUsecase = GetTodayUsecase();
+  final _isDayMarkedCompletedUsecase = IsDayMarkedCompletedUsecase();
 
   Future<bool> invoke(DateTime date) async {
     final toDos = await _toDoRepository.getToDos(date);

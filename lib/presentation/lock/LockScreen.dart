@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Localization.dart';
-import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/lock/LockBloc.dart';
 import 'package:todo_app/presentation/lock/LockState.dart';
 import 'package:todo_app/presentation/widgets/VirtualKeyboard.dart';
@@ -22,7 +21,7 @@ class _LockScreenState extends State<LockScreen> {
   @override
   void initState() {
     super.initState();
-    _bloc = LockBloc(dependencies.prefsRepository);
+    _bloc = LockBloc();
     _flareControls = FlareControls();
   }
 

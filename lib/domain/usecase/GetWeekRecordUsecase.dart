@@ -3,32 +3,23 @@ import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
-import 'package:todo_app/domain/repository/DateRepository.dart';
-import 'package:todo_app/domain/repository/MemoRepository.dart';
-import 'package:todo_app/domain/repository/PrefRepository.dart';
-import 'package:todo_app/domain/repository/ToDoRepository.dart';
 import 'package:todo_app/domain/usecase/GetDayMemoUsecase.dart';
 import 'package:todo_app/domain/usecase/GetStreakCountUsecase.dart';
 import 'package:todo_app/domain/usecase/GetTodayUsecase.dart';
 import 'package:todo_app/domain/usecase/IsDayMarkedCompletedUsecase.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class GetWeekRecordUsecase {
   static final _enterRegex = RegExp(r'\n');
 
-  final PrefsRepository _prefsRepository;
-  final ToDoRepository _toDoRepository;
-  final MemoRepository _memoRepository;
+  final _prefsRepository = dependencies.prefsRepository;
+  final _toDoRepository = dependencies.toDoRepository;
+  final _memoRepository = dependencies.memoRepository;
 
-  final GetTodayUsecase _getTodayUsecase;
-  final GetDayMemoUsecase _getDayMemoUsecase;
-  final IsDayMarkedCompletedUsecase _isDayMarkedCompletedUsecase;
-  final GetStreakCountUsecase _getStreakCountUsecase;
-
-  GetWeekRecordUsecase(this._prefsRepository, this._toDoRepository, this._memoRepository, DateRepository dateRepository)
-    : _getTodayUsecase = GetTodayUsecase(dateRepository, _prefsRepository),
-      _getDayMemoUsecase = GetDayMemoUsecase(_memoRepository),
-      _isDayMarkedCompletedUsecase = IsDayMarkedCompletedUsecase(_toDoRepository),
-      _getStreakCountUsecase = GetStreakCountUsecase(_toDoRepository);
+  final _getTodayUsecase = GetTodayUsecase();
+  final _getDayMemoUsecase = GetDayMemoUsecase();
+  final _isDayMarkedCompletedUsecase = IsDayMarkedCompletedUsecase();
+  final _getStreakCountUsecase = GetStreakCountUsecase();
 
   Future<WeekRecord> invoke(DateTime date) async {
     final today = await _getTodayUsecase.invoke();

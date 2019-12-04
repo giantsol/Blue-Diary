@@ -1,10 +1,8 @@
 
-import 'package:todo_app/domain/repository/UserRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class SignInWithGoogleUsecase {
-  final UserRepository _userRepository;
-
-  SignInWithGoogleUsecase(this._userRepository);
+  final _userRepository = dependencies.userRepository;
 
   Future<bool> invoke() {
     return _userRepository.signInWithGoogle();

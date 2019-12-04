@@ -1,10 +1,8 @@
 
-import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class SetUseLockScreenUsecase {
-  final PrefsRepository _prefsRepository;
-
-  SetUseLockScreenUsecase(this._prefsRepository);
+  final _prefsRepository = dependencies.prefsRepository;
 
   void invoke(bool value) {
     _prefsRepository.setUseLockScreen(value);

@@ -1,10 +1,8 @@
 
-import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class GetRecoveryEmailUseCase {
-  final PrefsRepository _prefsRepository;
-
-  GetRecoveryEmailUseCase(this._prefsRepository);
+  final _prefsRepository = dependencies.prefsRepository;
 
   Future<String> invoke() {
     return _prefsRepository.getRecoveryEmail();

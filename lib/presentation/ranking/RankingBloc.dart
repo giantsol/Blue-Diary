@@ -7,11 +7,6 @@ import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
-import 'package:todo_app/domain/repository/PetRepository.dart';
-import 'package:todo_app/domain/repository/PrefRepository.dart';
-import 'package:todo_app/domain/repository/RankingRepository.dart';
-import 'package:todo_app/domain/repository/ToDoRepository.dart';
-import 'package:todo_app/domain/repository/UserRepository.dart';
 import 'package:todo_app/domain/usecase/AddThumbsUpUsecase.dart';
 import 'package:todo_app/domain/usecase/CanUpdateMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/DeleteMyRankingUserInfoUsecase.dart';
@@ -34,37 +29,23 @@ class RankingBloc {
 
   RankingBlocDelegator delegator;
 
-  final GetMyRankingUserInfoUsecase _getMyRankingUserInfoUsecase;
-  final ObserveRankingUserInfosUsecase _observeRankingUserInfosUsecase;
-  final InitRankingUserInfosCountUsecase _initRankingUserInfosCountUsecase;
-  final SetMyRankingUserInfoUsecase _setMyRankingUserInfoUsecase;
-  final SignInWithGoogleUsecase _signInWithGoogleUsecase;
-  final SignInWithFacebookUsecase _signInWithFacebookUsecase;
-  final DeleteMyRankingUserInfoUsecase _deleteMyRankingUserInfoUsecase;
-  final SignOutUsecase _signOutUsecase;
-  final IncreaseRankingUserInfosCountUsecase _increaseRankingUserInfosCountUsecase;
-  final AddThumbsUpUsecase _addThumbsUpUsecase;
-  final GetTodayUsecase _getTodayUsecase;
-  final SetRankingUserInfoUsecase _setRankingUserInfoUsecase;
-  final CanUpdateMyRankingUserInfoUsecase _canUpdateMyRankingUserInfoUsecase;
+  final _getMyRankingUserInfoUsecase = GetMyRankingUserInfoUsecase();
+  final _observeRankingUserInfosUsecase = ObserveRankingUserInfosUsecase();
+  final _initRankingUserInfosCountUsecase = InitRankingUserInfosCountUsecase();
+  final _setMyRankingUserInfoUsecase = SetMyRankingUserInfoUsecase();
+  final _signInWithGoogleUsecase = SignInWithGoogleUsecase();
+  final _signInWithFacebookUsecase = SignInWithFacebookUsecase();
+  final _deleteMyRankingUserInfoUsecase = DeleteMyRankingUserInfoUsecase();
+  final _signOutUsecase = SignOutUsecase();
+  final _increaseRankingUserInfosCountUsecase = IncreaseRankingUserInfosCountUsecase();
+  final _addThumbsUpUsecase = AddThumbsUpUsecase();
+  final _getTodayUsecase = GetTodayUsecase();
+  final _setRankingUserInfoUsecase = SetRankingUserInfoUsecase();
+  final _canUpdateMyRankingUserInfoUsecase = CanUpdateMyRankingUserInfoUsecase();
 
   StreamSubscription _rankingUserInfosEventSubscription;
 
-  RankingBloc(UserRepository userRepository, RankingRepository rankingRepository, ToDoRepository toDoRepository, PrefsRepository prefsRepository, DateRepository dateRepository, PetRepository petRepository)
-    : _getMyRankingUserInfoUsecase = GetMyRankingUserInfoUsecase(userRepository, rankingRepository),
-      _observeRankingUserInfosUsecase = ObserveRankingUserInfosUsecase(rankingRepository),
-      _initRankingUserInfosCountUsecase = InitRankingUserInfosCountUsecase(rankingRepository),
-      _setMyRankingUserInfoUsecase = SetMyRankingUserInfoUsecase(userRepository, toDoRepository, rankingRepository, prefsRepository, dateRepository, petRepository),
-      _signInWithGoogleUsecase = SignInWithGoogleUsecase(userRepository),
-      _signInWithFacebookUsecase = SignInWithFacebookUsecase(userRepository),
-      _deleteMyRankingUserInfoUsecase = DeleteMyRankingUserInfoUsecase(userRepository, rankingRepository),
-      _signOutUsecase = SignOutUsecase(userRepository),
-      _increaseRankingUserInfosCountUsecase = IncreaseRankingUserInfosCountUsecase(rankingRepository),
-      _addThumbsUpUsecase = AddThumbsUpUsecase(rankingRepository),
-      _getTodayUsecase = GetTodayUsecase(dateRepository, prefsRepository),
-      _setRankingUserInfoUsecase = SetRankingUserInfoUsecase(rankingRepository),
-      _canUpdateMyRankingUserInfoUsecase = CanUpdateMyRankingUserInfoUsecase(prefsRepository)
-  {
+  RankingBloc() {
     _initState();
   }
 

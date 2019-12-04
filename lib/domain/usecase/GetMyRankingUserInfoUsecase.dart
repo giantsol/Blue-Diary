@@ -1,13 +1,10 @@
 
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
-import 'package:todo_app/domain/repository/RankingRepository.dart';
-import 'package:todo_app/domain/repository/UserRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class GetMyRankingUserInfoUsecase {
-  final UserRepository _userRepository;
-  final RankingRepository _rankingRepository;
-
-  GetMyRankingUserInfoUsecase(this._userRepository, this._rankingRepository);
+  final _userRepository = dependencies.userRepository;
+  final _rankingRepository = dependencies.rankingRepository;
 
   Future<RankingUserInfo> invoke() async {
     final uid = await _userRepository.getUserId();

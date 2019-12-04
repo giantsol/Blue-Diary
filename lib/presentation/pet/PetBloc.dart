@@ -1,12 +1,6 @@
 
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/entity/Pet.dart';
-import 'package:todo_app/domain/repository/DateRepository.dart';
-import 'package:todo_app/domain/repository/PetRepository.dart';
-import 'package:todo_app/domain/repository/PrefRepository.dart';
-import 'package:todo_app/domain/repository/RankingRepository.dart';
-import 'package:todo_app/domain/repository/ToDoRepository.dart';
-import 'package:todo_app/domain/repository/UserRepository.dart';
 import 'package:todo_app/domain/usecase/CanUpdateMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/GetAllPetsUsecase.dart';
 import 'package:todo_app/domain/usecase/GetSeedCountUsecase.dart';
@@ -21,23 +15,15 @@ class PetBloc {
   PetState getInitialState() => _state.value;
   Stream<PetState> observeState() => _state.distinct();
 
-  final GetSeedCountUsecase _getSeedCountUsecase;
-  final GetAllPetsUsecase _getAllPetsUsecase;
-  final GetSelectedPetKeyUsecase _getSelectedPetKeyUsecase;
-  final SetPetUsecase _setPetUsecase;
-  final SetSelectedPetKeyUsecase _setSelectedPetKeyUsecase;
-  final CanUpdateMyRankingUserInfoUsecase _canUpdateMyRankingUserInfoUsecase;
-  final SetMyRankingUserInfoUsecase _setMyRankingUserInfoUsecase;
+  final _getSeedCountUsecase = GetSeedCountUsecase();
+  final _getAllPetsUsecase = GetAllPetsUsecase();
+  final _getSelectedPetKeyUsecase = GetSelectedPetKeyUsecase();
+  final _setPetUsecase = SetPetUsecase();
+  final _setSelectedPetKeyUsecase = SetSelectedPetKeyUsecase();
+  final _canUpdateMyRankingUserInfoUsecase = CanUpdateMyRankingUserInfoUsecase();
+  final _setMyRankingUserInfoUsecase = SetMyRankingUserInfoUsecase();
 
-  PetBloc(PrefsRepository prefsRepository, PetRepository petRepository, UserRepository userRepository, ToDoRepository toDoRepository, RankingRepository rankingRepository, DateRepository dateRepository)
-    : _getSeedCountUsecase = GetSeedCountUsecase(prefsRepository),
-      _getAllPetsUsecase = GetAllPetsUsecase(petRepository),
-      _getSelectedPetKeyUsecase = GetSelectedPetKeyUsecase(petRepository),
-      _setPetUsecase = SetPetUsecase(petRepository),
-      _setSelectedPetKeyUsecase = SetSelectedPetKeyUsecase(petRepository),
-      _canUpdateMyRankingUserInfoUsecase = CanUpdateMyRankingUserInfoUsecase(prefsRepository),
-      _setMyRankingUserInfoUsecase = SetMyRankingUserInfoUsecase(userRepository, toDoRepository, rankingRepository, prefsRepository, dateRepository, petRepository)
-  {
+  PetBloc() {
     _initState();
   }
 

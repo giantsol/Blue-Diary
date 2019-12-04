@@ -1,26 +1,18 @@
 
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
-import 'package:todo_app/domain/repository/PetRepository.dart';
-import 'package:todo_app/domain/repository/PrefRepository.dart';
-import 'package:todo_app/domain/repository/RankingRepository.dart';
-import 'package:todo_app/domain/repository/ToDoRepository.dart';
-import 'package:todo_app/domain/repository/UserRepository.dart';
 import 'package:todo_app/domain/usecase/GetSelectedPetUsecase.dart';
 import 'package:todo_app/domain/usecase/GetTodayUsecase.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class SetMyRankingUserInfoUsecase {
-  final UserRepository _userRepository;
-  final ToDoRepository _toDoRepository;
-  final RankingRepository _rankingRepository;
-  final PrefsRepository _prefsRepository;
+  final _userRepository = dependencies.userRepository;
+  final _toDoRepository = dependencies.toDoRepository;
+  final _rankingRepository = dependencies.rankingRepository;
+  final _prefsRepository = dependencies.prefsRepository;
 
-  final GetSelectedPetUsecase _getSelectedPetUsecase;
-  final GetTodayUsecase _getTodayUsecase;
-
-  SetMyRankingUserInfoUsecase(this._userRepository, this._toDoRepository, this._rankingRepository, this._prefsRepository, DateRepository dateRepository, PetRepository petRepository)
-    : _getSelectedPetUsecase = GetSelectedPetUsecase(petRepository),
-      _getTodayUsecase = GetTodayUsecase(dateRepository, _prefsRepository);
+  final _getSelectedPetUsecase = GetSelectedPetUsecase();
+  final _getTodayUsecase = GetTodayUsecase();
 
   Future<void> invoke() async {
     final uid = await _userRepository.getUserId();

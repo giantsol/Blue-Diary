@@ -9,11 +9,6 @@ import 'package:todo_app/domain/entity/CategoryPicker.dart';
 import 'package:todo_app/domain/entity/DayMemo.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/ToDoRecord.dart';
-import 'package:todo_app/domain/repository/CategoryRepository.dart';
-import 'package:todo_app/domain/repository/DateRepository.dart';
-import 'package:todo_app/domain/repository/MemoRepository.dart';
-import 'package:todo_app/domain/repository/PrefRepository.dart';
-import 'package:todo_app/domain/repository/ToDoRepository.dart';
 import 'package:todo_app/domain/usecase/GetAllCategoriesUsecase.dart';
 import 'package:todo_app/domain/usecase/GetDayRecordUsecase.dart';
 import 'package:todo_app/domain/usecase/GetToDoRecordsUsecase.dart';
@@ -24,10 +19,10 @@ import 'package:todo_app/domain/usecase/RemoveCategoryUsecase.dart';
 import 'package:todo_app/domain/usecase/RemoveToDoUsecase.dart';
 import 'package:todo_app/domain/usecase/SetCategoryUsecase.dart';
 import 'package:todo_app/domain/usecase/SetDayMemoUsecase.dart';
+import 'package:todo_app/domain/usecase/SetShownDayScreenTutorialUsecase.dart';
 import 'package:todo_app/domain/usecase/SetToDoRecordUsecase.dart';
 import 'package:todo_app/domain/usecase/SetToDoUsecase.dart';
 import 'package:todo_app/domain/usecase/SetUserCheckedToDoBeforeUsecase.dart';
-import 'package:todo_app/domain/usecase/SetShownDayScreenTutorialUsecase.dart';
 import 'package:todo_app/presentation/day/DayScreenTutorial.dart';
 import 'package:todo_app/presentation/day/DayScreenTutorialCallback.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
@@ -39,37 +34,22 @@ class DayBloc {
   DayState getInitialState() => _state.value;
   Stream<DayState> observeState() => _state.distinct();
 
-  final GetDayRecordUsecase _getDayRecordUsecase;
-  final GetToDoRecordsUsecase _getToDoRecordsUsecase;
-  final SetDayMemoUsecase _setDayMemoUsecase;
-  final SetToDoUsecase _setToDoUsecase;
-  final SetCategoryUsecase _setCategoryUsecase;
-  final SetToDoRecordUsecase _setToDoRecordUsecase;
-  final RemoveToDoUsecase _removeToDoUsecase;
-  final GetAllCategoriesUsecase _getAllCategoriesUsecase;
-  final RemoveCategoryUsecase _removeCategoryUsecase;
-  final GetUserCheckedToDoBeforeUsecase _getUserCheckedToDoBeforeUsecase;
-  final SetUserCheckedToDoBeforeUsecase _setUserCheckedToDoBeforeUsecase;
-  final HasShownDayScreenTutorialUsecase _hasShownDayScreenTutorialUsecase;
-  final SetShownDayScreenTutorialUsecase _setShownDayScreenTutorialUsecase;
-  final IsDayMarkedCompletedUsecase _isDayMarkedCompletedUsecase;
+  final _getDayRecordUsecase = GetDayRecordUsecase();
+  final _getToDoRecordsUsecase = GetToDoRecordsUsecase();
+  final _setDayMemoUsecase = SetDayMemoUsecase();
+  final _setToDoUsecase = SetToDoUsecase();
+  final _setCategoryUsecase = SetCategoryUsecase();
+  final _setToDoRecordUsecase = SetToDoRecordUsecase();
+  final _removeToDoUsecase = RemoveToDoUsecase();
+  final _getAllCategoriesUsecase = GetAllCategoriesUsecase();
+  final _removeCategoryUsecase = RemoveCategoryUsecase();
+  final _getUserCheckedToDoBeforeUsecase = GetUserCheckedToDoBeforeUsecase();
+  final _setUserCheckedToDoBeforeUsecase = SetUserCheckedToDoBeforeUsecase();
+  final _hasShownDayScreenTutorialUsecase = HasShownDayScreenTutorialUsecase();
+  final _setShownDayScreenTutorialUsecase = SetShownDayScreenTutorialUsecase();
+  final _isDayMarkedCompletedUsecase = IsDayMarkedCompletedUsecase();
 
-  DayBloc(DateTime date, DateRepository dateRepository, ToDoRepository toDoRepository, CategoryRepository categoryRepository, MemoRepository memoRepository, PrefsRepository prefsRepository)
-    : _getDayRecordUsecase = GetDayRecordUsecase(dateRepository, toDoRepository, categoryRepository, memoRepository, prefsRepository),
-      _getToDoRecordsUsecase = GetToDoRecordsUsecase(toDoRepository, categoryRepository),
-      _setDayMemoUsecase = SetDayMemoUsecase(memoRepository),
-      _setToDoUsecase = SetToDoUsecase(toDoRepository),
-      _setCategoryUsecase = SetCategoryUsecase(categoryRepository),
-      _setToDoRecordUsecase = SetToDoRecordUsecase(toDoRepository, categoryRepository),
-      _removeToDoUsecase = RemoveToDoUsecase(toDoRepository),
-      _getAllCategoriesUsecase = GetAllCategoriesUsecase(categoryRepository),
-      _removeCategoryUsecase = RemoveCategoryUsecase(categoryRepository),
-      _getUserCheckedToDoBeforeUsecase = GetUserCheckedToDoBeforeUsecase(prefsRepository),
-      _setUserCheckedToDoBeforeUsecase = SetUserCheckedToDoBeforeUsecase(prefsRepository),
-      _hasShownDayScreenTutorialUsecase = HasShownDayScreenTutorialUsecase(prefsRepository),
-      _setShownDayScreenTutorialUsecase = SetShownDayScreenTutorialUsecase(prefsRepository),
-      _isDayMarkedCompletedUsecase = IsDayMarkedCompletedUsecase(toDoRepository)
-  {
+  DayBloc(DateTime date) {
     _initState(date);
   }
 

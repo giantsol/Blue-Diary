@@ -1,10 +1,8 @@
 
-import 'package:todo_app/domain/repository/PetRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class SetSelectedPetKeyUsecase {
-  final PetRepository _petRepository;
-
-  SetSelectedPetKeyUsecase(this._petRepository);
+  final _petRepository = dependencies.petRepository;
 
   void invoke(String petKey) {
     _petRepository.setSelectedPetKey(petKey);

@@ -7,7 +7,6 @@ import 'package:preferences/preferences.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/data/AppPreferences.dart';
-import 'package:todo_app/presentation/App.dart';
 import 'package:todo_app/presentation/settings/SettingsBloc.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -27,8 +26,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _bloc = SettingsBloc(dependencies.prefsRepository,
-      delegator: widget.settingsBlocDelegator);
+    _bloc = SettingsBloc(delegator: widget.settingsBlocDelegator);
     _bloc.setNeedUpdateListener(_needUpdateListener);
   }
 

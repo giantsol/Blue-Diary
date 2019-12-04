@@ -1,11 +1,9 @@
 
 import 'package:todo_app/domain/entity/CheckPoint.dart';
-import 'package:todo_app/domain/repository/MemoRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class SetCheckPointUsecase {
-  final MemoRepository _memoRepository;
-
-  SetCheckPointUsecase(this._memoRepository);
+  final _memoRepository = dependencies.memoRepository;
 
   void invoke(CheckPoint checkPoint) {
     _memoRepository.setCheckPoint(checkPoint);

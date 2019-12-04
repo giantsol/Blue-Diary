@@ -1,10 +1,8 @@
 
-import 'package:todo_app/domain/repository/ToDoRepository.dart';
+import 'package:todo_app/presentation/App.dart';
 
 class IsDayMarkedCompletedUsecase {
-  final ToDoRepository _toDoRepository;
-
-  IsDayMarkedCompletedUsecase(this._toDoRepository);
+  final _toDoRepository = dependencies.toDoRepository;
 
   Future<bool> invoke(DateTime date) {
     return _toDoRepository.isDayMarkedCompleted(date);
