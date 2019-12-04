@@ -17,4 +17,9 @@ class DateRepositoryImpl implements DateRepository {
     }
     return _today;
   }
+
+  @override
+  void deleteCachedToday() {
+    _today = DateRepository.INVALID_DATE;
+  }
 }

@@ -19,7 +19,8 @@ class _PetScreenState extends State<PetScreen> {
   @override
   void initState() {
     super.initState();
-    _bloc = PetBloc(dependencies.prefsRepository, dependencies.petRepository);
+    final deps = dependencies;
+    _bloc = PetBloc(deps.prefsRepository, deps.petRepository, deps.userRepository, deps.toDoRepository, deps.rankingRepository, deps.dateRepository);
   }
 
   @override

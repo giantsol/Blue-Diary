@@ -30,6 +30,7 @@ class Utils {
   }
 
   static void showSnackBar(ScaffoldState scaffoldState, String text, Duration duration) {
+    scaffoldState.removeCurrentSnackBar();
     scaffoldState.showSnackBar(SnackBar(
       content: Text(text),
       duration: duration,

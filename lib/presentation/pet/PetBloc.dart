@@ -1,11 +1,17 @@
 
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/entity/Pet.dart';
+import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/repository/PetRepository.dart';
 import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/domain/repository/RankingRepository.dart';
+import 'package:todo_app/domain/repository/ToDoRepository.dart';
+import 'package:todo_app/domain/repository/UserRepository.dart';
+import 'package:todo_app/domain/usecase/CanUpdateMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/GetAllPetsUsecase.dart';
 import 'package:todo_app/domain/usecase/GetSeedCountUsecase.dart';
 import 'package:todo_app/domain/usecase/GetSelectedPetKeyUsecase.dart';
+import 'package:todo_app/domain/usecase/SetMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/SetPetUsecase.dart';
 import 'package:todo_app/domain/usecase/SetSelectedPetKeyUsecase.dart';
 import 'package:todo_app/presentation/pet/PetState.dart';
@@ -20,13 +26,17 @@ class PetBloc {
   final GetSelectedPetKeyUsecase _getSelectedPetKeyUsecase;
   final SetPetUsecase _setPetUsecase;
   final SetSelectedPetKeyUsecase _setSelectedPetKeyUsecase;
+  final CanUpdateMyRankingUserInfoUsecase _canUpdateMyRankingUserInfoUsecase;
+  final SetMyRankingUserInfoUsecase _setMyRankingUserInfoUsecase;
 
-  PetBloc(PrefsRepository prefsRepository, PetRepository petRepository)
+  PetBloc(PrefsRepository prefsRepository, PetRepository petRepository, UserRepository userRepository, ToDoRepository toDoRepository, RankingRepository rankingRepository, DateRepository dateRepository)
     : _getSeedCountUsecase = GetSeedCountUsecase(prefsRepository),
       _getAllPetsUsecase = GetAllPetsUsecase(petRepository),
       _getSelectedPetKeyUsecase = GetSelectedPetKeyUsecase(petRepository),
       _setPetUsecase = SetPetUsecase(petRepository),
-      _setSelectedPetKeyUsecase = SetSelectedPetKeyUsecase(petRepository)
+      _setSelectedPetKeyUsecase = SetSelectedPetKeyUsecase(petRepository),
+      _canUpdateMyRankingUserInfoUsecase = CanUpdateMyRankingUserInfoUsecase(prefsRepository),
+      _setMyRankingUserInfoUsecase = SetMyRankingUserInfoUsecase(userRepository, toDoRepository, rankingRepository, prefsRepository, dateRepository, petRepository)
   {
     _initState();
   }
@@ -51,15 +61,29 @@ class PetBloc {
 
     _setPetUsecase.invoke(updated);
     _setSelectedPetKeyUsecase.invoke(_state.value.selectedPetKey);
+
+    final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
+    if (canUpdateMyRankingUserInfo) {
+      _setMyRankingUserInfoUsecase.invoke();
+    }
   }
 
   void onSeedFabClicked() {
     // todo: use seed counts
     final selectedPet = _state.value.selectedPet;
+    final prevPhaseIndex = selectedPet.currentPhaseIndex;
     final updated = selectedPet.buildNewExpIncreased();
+    final updatedPhaseIndex = updated.currentPhaseIndex;
     _state.add(_state.value.buildNewSelectedPetUpdated(updated));
 
     _setPetUsecase.invoke(updated);
+
+    if (prevPhaseIndex != updatedPhaseIndex) {
+      final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
+      if (canUpdateMyRankingUserInfo) {
+        _setMyRankingUserInfoUsecase.invoke();
+      }
+    }
   }
 
   void onPetPreviewClicked(Pet pet) {
@@ -75,6 +99,11 @@ class PetBloc {
       ));
       _setSelectedPetKeyUsecase.invoke(isPetActivated ? pet.key : '');
     }
+
+    final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
+    if (canUpdateMyRankingUserInfo) {
+      _setMyRankingUserInfoUsecase.invoke();
+    }
   }
 
   void onBornPhaseIndexClicked(int index) {
@@ -87,6 +116,11 @@ class PetBloc {
       _state.add(_state.value.buildNewSelectedPetUpdated(updated));
 
       _setPetUsecase.invoke(updated);
+
+      final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
+      if (canUpdateMyRankingUserInfo) {
+        _setMyRankingUserInfoUsecase.invoke();
+      }
     }
   }
 

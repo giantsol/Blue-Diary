@@ -1,7 +1,10 @@
 
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:todo_app/Delegators.dart';
+import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/repository/PetRepository.dart';
@@ -10,12 +13,15 @@ import 'package:todo_app/domain/repository/RankingRepository.dart';
 import 'package:todo_app/domain/repository/ToDoRepository.dart';
 import 'package:todo_app/domain/repository/UserRepository.dart';
 import 'package:todo_app/domain/usecase/AddThumbsUpUsecase.dart';
+import 'package:todo_app/domain/usecase/CanUpdateMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/DeleteMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/GetMyRankingUserInfoUsecase.dart';
+import 'package:todo_app/domain/usecase/GetTodayUsecase.dart';
 import 'package:todo_app/domain/usecase/IncreaseRankingUserInfosCountUsecase.dart';
 import 'package:todo_app/domain/usecase/InitRankingUserInfosCountUsecase.dart';
 import 'package:todo_app/domain/usecase/ObserveRankingUserInfosUsecase.dart';
 import 'package:todo_app/domain/usecase/SetMyRankingUserInfoUsecase.dart';
+import 'package:todo_app/domain/usecase/SetRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/SignInWithFacebookUsecase.dart';
 import 'package:todo_app/domain/usecase/SignInWithGoogleUsecase.dart';
 import 'package:todo_app/domain/usecase/SignOutUsecase.dart';
@@ -25,6 +31,8 @@ class RankingBloc {
   final _state = BehaviorSubject<RankingState>.seeded(RankingState());
   RankingState getInitialState() => _state.value;
   Stream<RankingState> observeState() => _state.distinct();
+
+  RankingBlocDelegator delegator;
 
   final GetMyRankingUserInfoUsecase _getMyRankingUserInfoUsecase;
   final ObserveRankingUserInfosUsecase _observeRankingUserInfosUsecase;
@@ -36,6 +44,9 @@ class RankingBloc {
   final SignOutUsecase _signOutUsecase;
   final IncreaseRankingUserInfosCountUsecase _increaseRankingUserInfosCountUsecase;
   final AddThumbsUpUsecase _addThumbsUpUsecase;
+  final GetTodayUsecase _getTodayUsecase;
+  final SetRankingUserInfoUsecase _setRankingUserInfoUsecase;
+  final CanUpdateMyRankingUserInfoUsecase _canUpdateMyRankingUserInfoUsecase;
 
   StreamSubscription _rankingUserInfosEventSubscription;
 
@@ -49,9 +60,16 @@ class RankingBloc {
       _deleteMyRankingUserInfoUsecase = DeleteMyRankingUserInfoUsecase(userRepository, rankingRepository),
       _signOutUsecase = SignOutUsecase(userRepository),
       _increaseRankingUserInfosCountUsecase = IncreaseRankingUserInfosCountUsecase(rankingRepository),
-      _addThumbsUpUsecase = AddThumbsUpUsecase(rankingRepository)
+      _addThumbsUpUsecase = AddThumbsUpUsecase(rankingRepository),
+      _getTodayUsecase = GetTodayUsecase(dateRepository, prefsRepository),
+      _setRankingUserInfoUsecase = SetRankingUserInfoUsecase(rankingRepository),
+      _canUpdateMyRankingUserInfoUsecase = CanUpdateMyRankingUserInfoUsecase(prefsRepository)
   {
     _initState();
+  }
+
+  void updateDelegator(RankingBlocDelegator delegator) {
+    this.delegator = delegator;
   }
 
   Future<void> _initState() async {
@@ -63,26 +81,44 @@ class RankingBloc {
     ));
 
     _rankingUserInfosEventSubscription = _observeRankingUserInfosUsecase.invoke()
-      .listen((event) {
+      .listen((event) async {
       _state.add(_state.value.buildNew(
         rankingUserInfos: event.rankingUserInfos,
         hasMoreRankingInfos: event.hasMore,
       ));
+
+      final today = await _getTodayUsecase.invoke();
+      if (today != DateRepository.INVALID_DATE) {
+        event.rankingUserInfos.forEach((it) {
+          final firstLaunchDate = it.firstLaunchDateMillis != 0 ? DateTime.fromMillisecondsSinceEpoch(it.firstLaunchDateMillis) : DateRepository.INVALID_DATE;
+          if (firstLaunchDate != DateRepository.INVALID_DATE) {
+            final totalDaysCount = today.difference(firstLaunchDate).inDays + 1;
+            final completedDaysCount = it.completedDaysCount;
+            final double completionRatio = totalDaysCount > 0 ? completedDaysCount / totalDaysCount : 0;
+            if (it.completionRatio != completionRatio) {
+              final updated = it.buildNew(completionRatio: completionRatio);
+              debugPrint('updating completion ratio of id: ${updated.uid}');
+              _setRankingUserInfoUsecase.invoke(updated);
+            }
+          }
+        });
+      }
     });
 
     _initRankingUserInfosCountUsecase.invoke();
-
-    // todo: update my ranking info once if last updated threshold is valid
   }
 
   Future<void> onGoogleSignInClicked() async {
     final success = await _signInWithGoogleUsecase.invoke();
     if (success) {
-      await _setMyRankingUserInfoUsecase.invoke();
-      final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
-      _state.add(_state.value.buildNew(
-        myRankingUserInfo: myRankingInfo,
-      ));
+      final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
+      if (canUpdateMyRankingUserInfo) {
+        await _setMyRankingUserInfoUsecase.invoke();
+        final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
+        _state.add(_state.value.buildNew(
+          myRankingUserInfo: myRankingInfo,
+        ));
+      }
     }
 
     _state.add(_state.value.buildNew(
@@ -93,11 +129,14 @@ class RankingBloc {
   Future<void> onFacebookSignInClicked() async {
     final success = await _signInWithFacebookUsecase.invoke();
     if (success) {
-      await _setMyRankingUserInfoUsecase.invoke();
-      final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
-      _state.add(_state.value.buildNew(
-        myRankingUserInfo: myRankingInfo,
-      ));
+      final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
+      if (canUpdateMyRankingUserInfo) {
+        await _setMyRankingUserInfoUsecase.invoke();
+        final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
+        _state.add(_state.value.buildNew(
+          myRankingUserInfo: myRankingInfo,
+        ));
+      }
     }
 
     _state.add(_state.value.buildNew(
@@ -118,12 +157,17 @@ class RankingBloc {
     }
   }
 
-  Future<void> onRefreshMyRankingInfoClicked() async {
-    await _setMyRankingUserInfoUsecase.invoke();
-    final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
-    _state.add(_state.value.buildNew(
-      myRankingUserInfo: myRankingInfo,
-    ));
+  Future<void> onRefreshMyRankingInfoClicked(BuildContext context) async {
+    final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
+    if (canUpdateMyRankingUserInfo) {
+      await _setMyRankingUserInfoUsecase.invoke();
+      final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
+      _state.add(_state.value.buildNew(
+        myRankingUserInfo: myRankingInfo,
+      ));
+    } else {
+      delegator.showSnackBar(AppLocalizations.of(context).tryUpdateLater, const Duration(seconds: 2));
+    }
   }
 
   void onLoadMoreRankingInfosClicked() {

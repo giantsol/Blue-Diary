@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
+import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/Pet.dart';
@@ -11,6 +12,12 @@ import 'package:todo_app/presentation/ranking/RankingBloc.dart';
 import 'package:todo_app/presentation/ranking/RankingState.dart';
 
 class RankingScreen extends StatefulWidget {
+  final RankingBlocDelegator rankingBlocDelegator;
+
+  RankingScreen({
+    @required this.rankingBlocDelegator,
+  });
+
   @override
   State createState() => _RankingScreenState();
 }
@@ -23,6 +30,13 @@ class _RankingScreenState extends State<RankingScreen> {
     super.initState();
     final deps = dependencies;
     _bloc = RankingBloc(deps.userRepository, deps.rankingRepository, deps.toDoRepository, deps.prefsRepository, deps.dateRepository, deps.petRepository);
+    _bloc.updateDelegator(widget.rankingBlocDelegator);
+  }
+
+  @override
+  void didUpdateWidget(RankingScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _bloc.updateDelegator(widget.rankingBlocDelegator);
   }
 
   @override
@@ -353,7 +367,7 @@ class _Header extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24,),
           child: GestureDetector(
             behavior: HitTestBehavior.translucent,
-            onTap: () => bloc.onRefreshMyRankingInfoClicked(),
+            onTap: () => bloc.onRefreshMyRankingInfoClicked(context),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8,),
               child: Row(

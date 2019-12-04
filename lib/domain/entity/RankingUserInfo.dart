@@ -15,6 +15,8 @@ class RankingUserInfo {
   static const KEY_LAST_UPDATED_MILLIS = 'last_updated_millis';
   static const KEY_PET_KEY = 'pet_key';
   static const KEY_PET_PHASE_INDEX = 'pet_phase_index';
+  static const KEY_FIRST_LAUNCH_DATE_MILLIS = 'first_launch_date_millis';
+  static const KEY_COMPLETED_DAYS_COUNT = 'completed_days_count';
 
   static const INVALID = const RankingUserInfo();
 
@@ -31,6 +33,8 @@ class RankingUserInfo {
       lastUpdatedMillis: map[KEY_LAST_UPDATED_MILLIS] ?? 0,
       petKey: map[KEY_PET_KEY] ?? '',
       petPhaseIndex: map[KEY_PET_PHASE_INDEX] ?? Pet.PHASE_INDEX_INACTIVE,
+      firstLaunchDateMillis: map[KEY_FIRST_LAUNCH_DATE_MILLIS] ?? 0,
+      completedDaysCount: map[KEY_COMPLETED_DAYS_COUNT] ?? 0,
     );
   }
 
@@ -45,6 +49,9 @@ class RankingUserInfo {
   final int lastUpdatedMillis;
   final String petKey;
   final int petPhaseIndex;
+  final int firstLaunchDateMillis;
+  final int completedDaysCount;
+
   final int rank;
 
   PetPhase get petPhase {
@@ -106,17 +113,20 @@ class RankingUserInfo {
     this.lastUpdatedMillis = 0,
     this.petKey = '',
     this.petPhaseIndex = Pet.PHASE_INDEX_INACTIVE,
+    this.firstLaunchDateMillis = 0,
+    this.completedDaysCount = 0,
     this.rank = 0,
   });
 
   RankingUserInfo buildNew({
+    double completionRatio,
     int thumbsUp,
     int rank,
   }) {
     return RankingUserInfo(
       uid: this.uid,
       name: this.name,
-      completionRatio: this.completionRatio,
+      completionRatio: completionRatio ?? this.completionRatio,
       latestStreak: this.latestStreak,
       latestStreakEndMillis: this.latestStreakEndMillis,
       longestStreak: this.longestStreak,
@@ -125,6 +135,8 @@ class RankingUserInfo {
       lastUpdatedMillis: this.lastUpdatedMillis,
       petKey: this.petKey,
       petPhaseIndex: this.petPhaseIndex,
+      firstLaunchDateMillis: this.firstLaunchDateMillis,
+      completedDaysCount: this.completedDaysCount,
       rank: rank ?? this.rank,
     );
   }
@@ -140,6 +152,8 @@ class RankingUserInfo {
       KEY_LONGEST_STREAK_END_MILLIS: longestStreakEndMillis,
       KEY_PET_KEY: petKey,
       KEY_PET_PHASE_INDEX: petPhaseIndex,
+      KEY_FIRST_LAUNCH_DATE_MILLIS: firstLaunchDateMillis,
+      KEY_COMPLETED_DAYS_COUNT: completedDaysCount,
     };
   }
 

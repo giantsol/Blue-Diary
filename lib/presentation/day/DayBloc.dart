@@ -55,7 +55,7 @@ class DayBloc {
   final IsDayMarkedCompletedUsecase _isDayMarkedCompletedUsecase;
 
   DayBloc(DateTime date, DateRepository dateRepository, ToDoRepository toDoRepository, CategoryRepository categoryRepository, MemoRepository memoRepository, PrefsRepository prefsRepository)
-    : _getDayRecordUsecase = GetDayRecordUsecase(dateRepository, toDoRepository, categoryRepository, memoRepository),
+    : _getDayRecordUsecase = GetDayRecordUsecase(dateRepository, toDoRepository, categoryRepository, memoRepository, prefsRepository),
       _getToDoRecordsUsecase = GetToDoRecordsUsecase(toDoRepository, categoryRepository),
       _setDayMemoUsecase = SetDayMemoUsecase(memoRepository),
       _setToDoUsecase = SetToDoUsecase(toDoRepository),

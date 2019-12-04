@@ -23,7 +23,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin implements WeekBlocDelegator,
-  SettingsBlocDelegator {
+  SettingsBlocDelegator, RankingBlocDelegator {
   HomeBloc _bloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
@@ -81,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         childScreenKey: state.currentChildScreenKey,
                         weekBlocDelegator: this,
                         settingsBlocDelegator: this,
+                        rankingBlocDelegator: this,
                       ),
                       Align(
                         alignment: Alignment.bottomCenter,
@@ -189,11 +190,13 @@ class _ChildScreen extends StatelessWidget {
   final String childScreenKey;
   final WeekBlocDelegator weekBlocDelegator;
   final SettingsBlocDelegator settingsBlocDelegator;
+  final RankingBlocDelegator rankingBlocDelegator;
 
   _ChildScreen({
     @required this.childScreenKey,
     @required this.weekBlocDelegator,
     @required this.settingsBlocDelegator,
+    @required this.rankingBlocDelegator,
   });
 
   @override
@@ -206,7 +209,9 @@ class _ChildScreen extends StatelessWidget {
       case HomeChildScreenItem.KEY_PET:
         return PetScreen();
       case HomeChildScreenItem.KEY_RANKING:
-        return RankingScreen();
+        return RankingScreen(
+          rankingBlocDelegator: rankingBlocDelegator,
+        );
       case HomeChildScreenItem.KEY_SETTINGS:
         return SettingsScreen(
           settingsBlocDelegator: settingsBlocDelegator,

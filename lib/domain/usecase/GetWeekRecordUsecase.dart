@@ -25,7 +25,7 @@ class GetWeekRecordUsecase {
   final GetStreakCountUsecase _getStreakCountUsecase;
 
   GetWeekRecordUsecase(this._prefsRepository, this._toDoRepository, this._memoRepository, DateRepository dateRepository)
-    : _getTodayUsecase = GetTodayUsecase(dateRepository),
+    : _getTodayUsecase = GetTodayUsecase(dateRepository, _prefsRepository),
       _getDayMemoUsecase = GetDayMemoUsecase(_memoRepository),
       _isDayMarkedCompletedUsecase = IsDayMarkedCompletedUsecase(_toDoRepository),
       _getStreakCountUsecase = GetStreakCountUsecase(_toDoRepository);

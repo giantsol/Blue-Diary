@@ -10,9 +10,13 @@ import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/repository/MemoRepository.dart';
+import 'package:todo_app/domain/repository/PetRepository.dart';
 import 'package:todo_app/domain/repository/PrefRepository.dart';
+import 'package:todo_app/domain/repository/RankingRepository.dart';
 import 'package:todo_app/domain/repository/ToDoRepository.dart';
+import 'package:todo_app/domain/repository/UserRepository.dart';
 import 'package:todo_app/domain/usecase/AddSeedUsecase.dart';
+import 'package:todo_app/domain/usecase/CanUpdateMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/GetCompletedMarkableDayToKeepStreakUsecase.dart';
 import 'package:todo_app/domain/usecase/GetStreakCountUsecase.dart';
 import 'package:todo_app/domain/usecase/GetTodayUsecase.dart';
@@ -20,6 +24,7 @@ import 'package:todo_app/domain/usecase/GetWeekRecordUsecase.dart';
 import 'package:todo_app/domain/usecase/HasShownWeekScreenTutorialUsecase.dart';
 import 'package:todo_app/domain/usecase/SetCheckPointUsecase.dart';
 import 'package:todo_app/domain/usecase/SetDayMarkedCompletedUsecase.dart';
+import 'package:todo_app/domain/usecase/SetMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/SetRealFirstLaunchDateIfNotExistsUsecase.dart';
 import 'package:todo_app/domain/usecase/SetShownFirstCompletableDayTutorialUsecase.dart';
 import 'package:todo_app/domain/usecase/SetShownWeekScreenTutorialUsecase.dart';
@@ -47,12 +52,14 @@ class WeekBloc {
   final GetStreakCountUsecase _getStreakCountUsecase;
   final AddSeedUsecase _addSeedUsecase;
   final SetShownFirstCompletableDayTutorialUsecase _setShownFirstCompletableDayTutorialUsecase;
+  final SetMyRankingUserInfoUsecase _setMyRankingUserInfoUsecase;
+  final CanUpdateMyRankingUserInfoUsecase _canUpdateMyRankingUserInfoUsecase;
 
   WeekBlocDelegator delegator;
 
-  WeekBloc(DateRepository dateRepository, PrefsRepository prefsRepository, ToDoRepository toDoRepository, MemoRepository memoRepository, {
+  WeekBloc(DateRepository dateRepository, PrefsRepository prefsRepository, ToDoRepository toDoRepository, MemoRepository memoRepository, UserRepository userRepository, RankingRepository rankingRepository, PetRepository petRepository, {
     @required this.delegator
-  }): _getTodayUsecase = GetTodayUsecase(dateRepository),
+  }): _getTodayUsecase = GetTodayUsecase(dateRepository, prefsRepository),
       _getWeekRecordUsecase = GetWeekRecordUsecase(prefsRepository, toDoRepository, memoRepository, dateRepository),
       _setRealFirstLaunchDateIfNotExistsUsecase = SetRealFirstLaunchDateIfNotExistsUsecase(prefsRepository),
       _hasShownWeekScreenTutorialUsecase = HasShownWeekScreenTutorialUsecase(prefsRepository),
@@ -62,7 +69,9 @@ class WeekBloc {
       _setDayMarkedCompletedUsecase = SetDayMarkedCompletedUsecase(toDoRepository),
       _getStreakCountUsecase = GetStreakCountUsecase(toDoRepository),
       _addSeedUsecase = AddSeedUsecase(prefsRepository),
-      _setShownFirstCompletableDayTutorialUsecase = SetShownFirstCompletableDayTutorialUsecase(prefsRepository)
+      _setShownFirstCompletableDayTutorialUsecase = SetShownFirstCompletableDayTutorialUsecase(prefsRepository),
+      _setMyRankingUserInfoUsecase = SetMyRankingUserInfoUsecase(userRepository, toDoRepository, rankingRepository, prefsRepository, dateRepository, petRepository),
+      _canUpdateMyRankingUserInfoUsecase = CanUpdateMyRankingUserInfoUsecase(prefsRepository)
   {
     _initState();
     delegator.addBottomNavigationItemClickedListener(_bottomNavigationItemClickedListener);
@@ -110,6 +119,11 @@ class WeekBloc {
         scrollToTodayPreviewEvent: !startTutorial,
         showFirstCompletableDayTutorialEvent: showFirstCompletableDayTutorial,
       ));
+
+      final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
+      if (canUpdateMyRankingUserInfo) {
+        _setMyRankingUserInfoUsecase.invoke();
+      }
     }
   }
 
@@ -242,6 +256,12 @@ class WeekBloc {
     final streakCount = await _getStreakCountUsecase.invoke(date);
     _addSeedUsecase.invoke(streakCount);
     delegator.showSeedAddedAnimation(streakCount);
+
+
+    final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
+    if (canUpdateMyRankingUserInfo) {
+      _setMyRankingUserInfoUsecase.invoke();
+    }
   }
 
   Future<void> showFirstCompletableDayTutorial(BuildContext context, WeekScreenTutorialCallback callback) async {

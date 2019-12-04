@@ -52,7 +52,7 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
   void initState() {
     super.initState();
     final deps = dependencies;
-    _bloc = WeekBloc(deps.dateRepository, deps.prefsRepository, deps.toDoRepository, deps.memoRepository,
+    _bloc = WeekBloc(deps.dateRepository, deps.prefsRepository, deps.toDoRepository, deps.memoRepository, deps.userRepository, deps.rankingRepository, deps.petRepository,
       delegator: widget.weekBlocDelegator);
     _pageController = PageController(initialPage: _bloc.getInitialState().initialWeekRecordPageIndex);
     _scrollController = ScrollController();

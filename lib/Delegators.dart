@@ -29,3 +29,6 @@ abstract class WeekBlocDelegator implements
 abstract class SettingsBlocDelegator implements
   ShowBottomSheetDelegator,
   ShowSnackBarDelegator { }
+
+abstract class RankingBlocDelegator implements
+  ShowSnackBarDelegator { }

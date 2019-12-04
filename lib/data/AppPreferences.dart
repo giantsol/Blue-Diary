@@ -15,6 +15,8 @@ class AppPreferences {
   static const String KEY_SHOWN_FIRST_COMPLETABLE_DAY_TUTORIAL = 'shown.first.completable.day.tutorial';
   static const String KEY_SEED = 'seed';
   static const String KEY_SELECTED_PET_KEY = 'selected.pet.key';
+  static const String KEY_LAST_UPDATED_MY_RANKING_USER_INFO_LOCAL_TIME_MILLIS = 'last.updated.my.ranking.user.info.local.time.millis';
+  static const String KEY_LAST_UPDATED_TODAY_LOCAL_TIME_MILLIS = 'last.updated.today.local.time.millis';
 
   Future<String> getUserPassword() async {
     return PrefService.getString(KEY_USER_PASSWORD) ?? '';
@@ -102,5 +104,21 @@ class AppPreferences {
 
   void setSelectedPetKey(String key) {
     PrefService.setString(KEY_SELECTED_PET_KEY, key);
+  }
+
+  int getLastUpdatedMyRankingUserInfoLocalTimeMillis() {
+    return PrefService.getInt(KEY_LAST_UPDATED_MY_RANKING_USER_INFO_LOCAL_TIME_MILLIS) ?? 0;
+  }
+
+  void setLastUpdatedMyRankingUserInfoLocalTimeMillis(int value) {
+    PrefService.setInt(KEY_LAST_UPDATED_MY_RANKING_USER_INFO_LOCAL_TIME_MILLIS, value);
+  }
+
+  int getLastUpdatedTodayLocalTimeMillis() {
+    return PrefService.getInt(KEY_LAST_UPDATED_TODAY_LOCAL_TIME_MILLIS) ?? 0;
+  }
+
+  void setLastUpdatedTodayLocalTimeMillis(int value) {
+    PrefService.setInt(KEY_LAST_UPDATED_TODAY_LOCAL_TIME_MILLIS, value);
   }
 }

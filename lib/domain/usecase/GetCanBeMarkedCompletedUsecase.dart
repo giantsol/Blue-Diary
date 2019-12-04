@@ -13,7 +13,7 @@ class GetCanBeMarkedCompletedUsecase {
   final IsDayMarkedCompletedUsecase _isDayMarkedCompletedUsecase;
 
   GetCanBeMarkedCompletedUsecase(this._toDoRepository, this._prefsRepository, DateRepository dateRepository)
-    : _getTodayUsecase = GetTodayUsecase(dateRepository),
+    : _getTodayUsecase = GetTodayUsecase(dateRepository, _prefsRepository),
       _isDayMarkedCompletedUsecase = IsDayMarkedCompletedUsecase(_toDoRepository);
 
   Future<bool> invoke(DateTime date) async {

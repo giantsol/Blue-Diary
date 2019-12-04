@@ -21,4 +21,8 @@ abstract class PrefsRepository {
   void setShownFirstCompletableDayTutorial();
   void addSeed(int count);
   int getSeedCount();
+  int getLastUpdatedMyRankingUserInfoLocalTimeMillis();
+  void setLastUpdatedMyRankingUserInfoLocalTimeMillis(int value);
+  int getLastUpdatedTodayLocalTimeMillis();
+  void setLastUpdatedTodayLocalTimeMillis(int value);
 }
