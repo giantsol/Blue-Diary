@@ -23,6 +23,4 @@ abstract class PrefsRepository {
   int getSeedCount();
   int getLastUpdatedMyRankingUserInfoLocalTimeMillis();
   void setLastUpdatedMyRankingUserInfoLocalTimeMillis(int value);
-  int getLastUpdatedTodayLocalTimeMillis();
-  void setLastUpdatedTodayLocalTimeMillis(int value);
 }

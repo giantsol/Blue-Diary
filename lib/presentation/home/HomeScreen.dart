@@ -16,9 +16,7 @@ import 'package:todo_app/presentation/week/WeekScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
-  State createState() {
-    return _HomeScreenState();
-  }
+  State createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin implements WeekBlocDelegator,
@@ -27,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   final GlobalKey _petViewTabKey = GlobalKey();
-  int _currentSeedAddedAnimationCount;
+  int _currentSeedAddedAnimationNumber;
   AnimationController _seedAddedAnimationController;
 
   @override
@@ -133,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         ),
                         padding: EdgeInsets.symmetric(vertical: 1, horizontal: 3,),
                         child: Text(
-                          '+ $_currentSeedAddedAnimationCount',
+                          '+ $_currentSeedAddedAnimationNumber',
                           style: TextStyle(
                             color: AppColors.TEXT_WHITE,
                             fontSize: 12,
@@ -175,9 +173,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   @override
-  void showSeedAddedAnimation(int seedCount) {
+  void showSeedAddedAnimation(int number) {
     setState(() {
-      _currentSeedAddedAnimationCount = seedCount;
+      _currentSeedAddedAnimationNumber = number;
     });
 
     _seedAddedAnimationController.reset();

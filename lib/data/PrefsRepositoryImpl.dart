@@ -129,14 +129,4 @@ class PrefsRepositoryImpl implements PrefsRepository {
   void setLastUpdatedMyRankingUserInfoLocalTimeMillis(int value) {
     _prefs.setLastUpdatedMyRankingUserInfoLocalTimeMillis(value);
   }
-
-  @override
-  int getLastUpdatedTodayLocalTimeMillis() {
-    return _prefs.getLastUpdatedTodayLocalTimeMillis();
-  }
-
-  @override
-  void setLastUpdatedTodayLocalTimeMillis(int value) {
-    _prefs.setLastUpdatedTodayLocalTimeMillis(value);
-  }
 }

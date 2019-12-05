@@ -19,7 +19,15 @@ class DateRepositoryImpl implements DateRepository {
   }
 
   @override
-  void deleteCachedToday() {
-    _today = DateRepository.INVALID_DATE;
+  Future<bool> syncTodayWithServer() async {
+    try {
+      final callable = CloudFunctions.instance.getHttpsCallable(functionName: 'getTodayInMillis');
+      final result = await callable.call().timeout(const Duration(seconds: 10));
+      final millis = result.data;
+      _today = DateTime.fromMillisecondsSinceEpoch(millis);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

@@ -20,6 +20,7 @@ import 'package:todo_app/domain/usecase/SetRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/SignInWithFacebookUsecase.dart';
 import 'package:todo_app/domain/usecase/SignInWithGoogleUsecase.dart';
 import 'package:todo_app/domain/usecase/SignOutUsecase.dart';
+import 'package:todo_app/domain/usecase/SyncTodayWithServerUsecase.dart';
 import 'package:todo_app/presentation/ranking/RankingState.dart';
 
 class RankingBloc {
@@ -42,6 +43,7 @@ class RankingBloc {
   final _getTodayUsecase = GetTodayUsecase();
   final _setRankingUserInfoUsecase = SetRankingUserInfoUsecase();
   final _canUpdateMyRankingUserInfoUsecase = CanUpdateMyRankingUserInfoUsecase();
+  final _syncTodayWithServerUsecase = SyncTodayWithServerUsecase();
 
   StreamSubscription _rankingUserInfosEventSubscription;
 
@@ -68,21 +70,26 @@ class RankingBloc {
         hasMoreRankingInfos: event.hasMore,
       ));
 
-      final today = await _getTodayUsecase.invoke();
-      if (today != DateRepository.INVALID_DATE) {
-        event.rankingUserInfos.forEach((it) {
-          final firstLaunchDate = it.firstLaunchDateMillis != 0 ? DateTime.fromMillisecondsSinceEpoch(it.firstLaunchDateMillis) : DateRepository.INVALID_DATE;
-          if (firstLaunchDate != DateRepository.INVALID_DATE) {
-            final totalDaysCount = today.difference(firstLaunchDate).inDays + 1;
-            final completedDaysCount = it.completedDaysCount;
-            final double completionRatio = totalDaysCount > 0 ? completedDaysCount / totalDaysCount : 0;
-            if (it.completionRatio != completionRatio) {
-              final updated = it.buildNew(completionRatio: completionRatio);
-              debugPrint('updating completion ratio of id: ${updated.uid}');
-              _setRankingUserInfoUsecase.invoke(updated);
+      final todaySyncedSuccessful = await _syncTodayWithServerUsecase.invoke();
+      if (todaySyncedSuccessful) {
+        final today = await _getTodayUsecase.invoke();
+        if (today != DateRepository.INVALID_DATE) {
+          event.rankingUserInfos.forEach((it) {
+            final firstLaunchDate = it.firstLaunchDateMillis != 0 ? DateTime.fromMillisecondsSinceEpoch(it.firstLaunchDateMillis)
+              : DateRepository.INVALID_DATE;
+            if (firstLaunchDate != DateRepository.INVALID_DATE) {
+              final totalDaysCount = today.difference(firstLaunchDate).inDays + 1;
+              final completedDaysCount = it.completedDaysCount;
+              final double completionRatio = totalDaysCount > 0 ? completedDaysCount / totalDaysCount : 0;
+
+              if (it.completionRatio != completionRatio) {
+                final updated = it.buildNew(completionRatio: completionRatio);
+                debugPrint('updating completion ratio of id: ${updated.uid}');
+                _setRankingUserInfoUsecase.invoke(updated);
+              }
             }
-          }
-        });
+          });
+        }
       }
     });
 
