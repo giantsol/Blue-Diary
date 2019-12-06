@@ -119,6 +119,10 @@ class RankingBloc {
   }
 
   Future<void> onSignOutClicked() async {
+    if (_state.value.showMyRankingInfoLoading) {
+      return;
+    }
+
     _state.add(_state.value.buildNew(
       showMyRankingInfoLoading: true,
     ));
@@ -133,6 +137,10 @@ class RankingBloc {
   }
 
   Future<void> onRefreshMyRankingInfoClicked(BuildContext context) async {
+    if (_state.value.showMyRankingInfoLoading) {
+      return;
+    }
+    
     _state.add(_state.value.buildNew(
       showMyRankingInfoLoading: true,
     ));
@@ -164,6 +172,10 @@ class RankingBloc {
   }
 
   void onSignInAndJoinClicked() {
+    if (_state.value.showMyRankingInfoLoading) {
+      return;
+    }
+
     _state.add(_state.value.buildNew(
       signInDialogShown: true,
     ));
