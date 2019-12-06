@@ -105,8 +105,6 @@ class WeekBloc {
         scrollToTodayPreviewEvent: !startTutorial,
         showFirstCompletableDayTutorialEvent: showFirstCompletableDayTutorial,
       ));
-
-      _setMyRankingUserInfoUsecase.invoke();
     }
   }
 

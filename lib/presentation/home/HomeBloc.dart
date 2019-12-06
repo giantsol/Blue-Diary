@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/usecase/GetUseLockScreenUsecase.dart';
 import 'package:todo_app/domain/usecase/HomeChildScreenUsecases.dart';
+import 'package:todo_app/domain/usecase/SetMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
 import 'package:todo_app/presentation/lock/LockScreen.dart';
 import 'package:todo_app/presentation/widgets/SlideUpPageRoute.dart';
@@ -17,6 +18,7 @@ class HomeBloc {
 
   final _getUseLockScreenUsecase = GetUseLockScreenUsecase();
   final _homeChildScreenUsecases = HomeChildScreenUsecases();
+  final _setMyRankingUserInfoUsecase = SetMyRankingUserInfoUsecase();
 
   final List<void Function(String key)> _bottomNavigationItemClickedListeners = [];
 
@@ -43,6 +45,8 @@ class HomeBloc {
       childScreenItems: navigationItems,
       currentChildScreenKey: currentChildScreenKey,
     ));
+
+    _setMyRankingUserInfoUsecase.invoke();
   }
 
   void onBottomNavigationItemClicked(String key) {
