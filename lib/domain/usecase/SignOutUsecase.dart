@@ -16,11 +16,9 @@ class SignOutUsecase {
       return RankingUserInfo.INVALID;
     }
 
-    final signOutSuccess = await _userRepository.signOut();
-    if (signOutSuccess) {
-      _prefsRepository.setLastUpdatedMyRankingUserInfoLocalTimeMillis(0);
-      await _rankingRepository.deleteRankingUserInfo(uid);
-    }
+    _rankingRepository.deleteRankingUserInfo(uid);
+    _prefsRepository.setLastUpdatedMyRankingUserInfoLocalTimeMillis(0);
+    await _userRepository.signOut();
 
     return _getMyRankingUserInfoUsecase.invoke();
   }

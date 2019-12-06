@@ -174,11 +174,12 @@ class _Header extends StatelessWidget {
 
     return myRankingInfo == RankingUserInfo.INVALID ? GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: () => bloc.onSignInAndJoinClicked(),
+      onTap: () => !showOverlayProgress ? bloc.onSignInAndJoinClicked() : { },
       child: Container(
         height: 132,
         alignment: Alignment.center,
         child: Stack(
+          alignment: Alignment.center,
           children: <Widget>[
             Text(
               AppLocalizations.of(context).clickToSignInAndJoin,

@@ -31,7 +31,7 @@ class RankingRepositoryImpl implements RankingRepository {
       .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
       .document(uid)
       .get();
-    if (snapshot == null) {
+    if (snapshot == null || snapshot.data == null) {
       return RankingUserInfo.INVALID;
     } else {
       return RankingUserInfo.fromMap(snapshot.data);
