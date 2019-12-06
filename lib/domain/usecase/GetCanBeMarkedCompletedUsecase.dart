@@ -3,7 +3,7 @@ import 'package:todo_app/domain/usecase/GetTodayUsecase.dart';
 import 'package:todo_app/domain/usecase/IsDayMarkedCompletedUsecase.dart';
 import 'package:todo_app/presentation/App.dart';
 
-class GetCanBeMarkedCompletedUsecase {
+class CanDayBeMarkedCompletedUsecase {
   final _toDoRepository = dependencies.toDoRepository;
   final _prefsRepository = dependencies.prefsRepository;
 

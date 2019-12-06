@@ -134,6 +134,7 @@ class DayBloc {
       ));
       return true;
     }
+
     return false;
   }
 
@@ -142,10 +143,9 @@ class DayBloc {
   }
 
   Future<void> onAddToDoClicked(BuildContext context, ScaffoldState scaffoldState) async {
-    final hasBeenMarkedCompleted = await _isDayMarkedCompletedUsecase.invoke(_state.value.currentDate);
-    if (hasBeenMarkedCompleted) {
+    final isDayMarkedCompleted = await _isDayMarkedCompletedUsecase.invoke(_state.value.currentDate);
+    if (isDayMarkedCompleted) {
       final msg = AppLocalizations.of(context).cannotModifyCompletedDaysTasks;
-      scaffoldState.removeCurrentSnackBar();
       Utils.showSnackBar(scaffoldState, msg, const Duration(seconds: 1));
       return;
     }
@@ -160,17 +160,6 @@ class DayBloc {
       editorState: EditorState.SHOWN_TODO,
       scrollToToDoListEvent: true,
     ));
-  }
-
-  void onDayMemoCollapseOrExpandClicked() {
-    final currentDayRecord = _state.value.currentDayRecord;
-    final currentDayMemo = currentDayRecord.dayMemo;
-    final updatedDayMemo = currentDayMemo.buildNew(isExpanded: !currentDayMemo.isExpanded);
-    final updatedDayRecord = currentDayRecord.buildNew(dayMemo: updatedDayMemo);
-    _state.add(_state.value.buildNew(
-      currentDayRecord: updatedDayRecord,
-    ));
-    _setDayMemoUsecase.invoke(updatedDayMemo);
   }
 
   void onDayMemoTextChanged(DayMemo dayMemo, String changed) {
@@ -190,15 +179,15 @@ class DayBloc {
         null,
           () {
           _setUserCheckedToDoBeforeUsecase.invoke();
-          _updateToDoDone(toDo);
+          _setToDoDone(toDo);
         }
       );
     } else {
-      _updateToDoDone(toDo);
+      _setToDoDone(toDo);
     }
   }
 
-  Future<void> _updateToDoDone(ToDo toDo) async {
+  void _setToDoDone(ToDo toDo) {
     final updated = toDo.buildNew(isDone: true);
     _state.add(_state.value.buildNewToDoUpdated(updated));
     _setToDoUsecase.invoke(updated);
@@ -217,26 +206,25 @@ class DayBloc {
   }
 
   Future<void> onToDoRecordItemClicked(BuildContext context, ToDoRecord toDoRecord, ScaffoldState scaffoldState) async {
-    final hasBeenMarkedCompleted = await _isDayMarkedCompletedUsecase.invoke(_state.value.currentDate);
-    if (hasBeenMarkedCompleted) {
+    final isDayMarkedCompleted = await _isDayMarkedCompletedUsecase.invoke(_state.value.currentDate);
+    if (isDayMarkedCompleted) {
       final msg = AppLocalizations.of(context).cannotModifyCompletedDaysTasks;
-      scaffoldState.removeCurrentSnackBar();
       Utils.showSnackBar(scaffoldState, msg, const Duration(seconds: 1));
       return;
     }
 
     if (_state.value.viewState == DayViewState.SELECTION) {
       final selectedKey = toDoRecord.toDo.key;
-      final current = _state.value.selectedToDoKeys;
-      if (current.contains(selectedKey)) {
-        final newKeys = List.of(current)
-          ..remove(selectedKey);
+      final currentKeys = _state.value.selectedToDoKeys;
+      if (currentKeys.contains(selectedKey)) {
+        final newKeys = List.of(currentKeys);
+        newKeys.remove(selectedKey);
         _state.add(_state.value.buildNew(
           selectedToDoKeys: newKeys,
         ));
       } else {
-        final newKeys = List.of(current)
-          ..add(selectedKey);
+        final newKeys = List.of(currentKeys);
+        newKeys.add(selectedKey);
         _state.add(_state.value.buildNew(
           selectedToDoKeys: newKeys,
         ));
@@ -284,10 +272,9 @@ class DayBloc {
   }
 
   Future<void> onToDoRecordItemLongClicked(BuildContext context, ToDoRecord toDoRecord, ScaffoldState scaffoldState) async {
-    final hasBeenMarkedCompleted = await _isDayMarkedCompletedUsecase.invoke(_state.value.currentDate);
-    if (hasBeenMarkedCompleted) {
+    final isDayMarkedCompleted = await _isDayMarkedCompletedUsecase.invoke(_state.value.currentDate);
+    if (isDayMarkedCompleted) {
       final msg = AppLocalizations.of(context).cannotModifyCompletedDaysTasks;
-      scaffoldState.removeCurrentSnackBar();
       Utils.showSnackBar(scaffoldState, msg, const Duration(seconds: 1));
       return;
     }

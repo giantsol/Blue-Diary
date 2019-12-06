@@ -60,7 +60,7 @@ class SettingsBloc {
     if (useLockScreen && userPassword.isEmpty) {
       _setUseLockScreenUsecase.invoke(false);
       _showCreatePasswordDialog(context,
-        onCreated: () {
+        onPasswordCreated: () {
           _setUseLockScreenUsecase.invoke(true);
           if (_needUpdateListener != null) {
             _needUpdateListener();
@@ -71,6 +71,7 @@ class SettingsBloc {
       // set it to true forcefully instantly.
       // will set to false when user inputs password correctly
       _setUseLockScreenUsecase.invoke(true);
+
       delegator.showBottomSheet((context) =>
         InputPasswordScreen(onSuccess: () {
           _setUseLockScreenUsecase.invoke(false);
@@ -85,18 +86,18 @@ class SettingsBloc {
   }
 
   Future<void> _showCreatePasswordDialog(BuildContext context, {
-    void Function() onCreated,
+    void Function() onPasswordCreated,
   }) async {
     return Utils.showAppDialog(context,
       AppLocalizations.of(context).createPassword,
       AppLocalizations.of(context).createPasswordBody,
       null,
-        () => _onCreatePasswordOkClicked(context, onCreated: onCreated),
+        () => _onCreatePasswordOkClicked(context, onPasswordCreated: onPasswordCreated),
     );
   }
 
   Future<void> _onCreatePasswordOkClicked(BuildContext context, {
-    void Function() onCreated,
+    void Function() onPasswordCreated,
   }) async {
     final successMsg = AppLocalizations.of(context).createPasswordSuccess;
     final failMsg = AppLocalizations.of(context).createPasswordFail;
@@ -106,8 +107,8 @@ class SettingsBloc {
         final isPasswordSaved = await _getUserPasswordUsecase.invoke().then((s) => s.length > 0);
         if (isPasswordSaved) {
           delegator.showSnackBar(successMsg, _twoSeconds);
-          if (onCreated != null) {
-            onCreated();
+          if (onPasswordCreated != null) {
+            onPasswordCreated();
           }
         } else {
           delegator.showSnackBar(failMsg, _twoSeconds);
@@ -122,17 +123,13 @@ class SettingsBloc {
       final message = AppLocalizations.of(context).invalidRecoveryEmail;
       delegator.showSnackBar(message, _twoSeconds);
     } else {
-      _showConfirmSendTempPasswordDialog(context);
+      Utils.showAppDialog(context,
+        AppLocalizations.of(context).confirmSendTempPassword,
+        AppLocalizations.of(context).confirmSendTempPasswordBody,
+        null,
+          () => _onConfirmSendTempPasswordOkClicked(context),
+      );
     }
-  }
-
-  Future<void> _showConfirmSendTempPasswordDialog(BuildContext context) async {
-    return Utils.showAppDialog(context,
-      AppLocalizations.of(context).confirmSendTempPassword,
-      AppLocalizations.of(context).confirmSendTempPasswordBody,
-      null,
-        () => _onConfirmSendTempPasswordOkClicked(context),
-    );
   }
 
   Future<void> _onConfirmSendTempPasswordOkClicked(BuildContext context) async {
@@ -145,13 +142,15 @@ class SettingsBloc {
     final changedPassword = await _getUserPasswordUsecase.invoke();
 
     if (changedPassword.isNotEmpty && prevPassword != changedPassword) {
+      final recoveryEmail = await _getRecoveryEmailUseCase.invoke();
+
       final mailTitle = AppLocalizations.of(context).tempPasswordMailSubject;
       final mailBody = AppLocalizations.of(context).tempPasswordMailBody;
-      final recoveryEmail = await _getRecoveryEmailUseCase.invoke();
       final body = _createEmailBodyJson(
         targetEmail: recoveryEmail,
         title: mailTitle,
         body: '$mailBody$changedPassword');
+
       final response = await http.post(
         _SENDGRID_SEND_API_ENDPOINT,
         headers: {
@@ -160,6 +159,7 @@ class SettingsBloc {
         },
         body: body,
       );
+
       if (response.statusCode.toString().startsWith('2')) {
         delegator.showSnackBar(mailSentMsg, _twoSeconds);
       } else {
@@ -222,7 +222,7 @@ class SettingsBloc {
 
   Future<void> onUseRealFirstLaunchDateChanged() async {
     final firstLaunchDateString = await _getRealFirstLaunchDateStringUsecase.invoke();
-    final firstLaunchDate = firstLaunchDateString.isEmpty ? DateTime.fromMillisecondsSinceEpoch(0) : DateTime.parse(firstLaunchDateString);
+    final firstLaunchDate = firstLaunchDateString.isEmpty ? DateTime.now() : DateTime.parse(firstLaunchDateString);
     _setCustomFirstLaunchDateUsecase.invoke(firstLaunchDate);
 
     if (_needUpdateListener != null) {

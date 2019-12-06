@@ -5,7 +5,7 @@ import 'package:todo_app/presentation/App.dart';
 class SetPetUsecase {
   final _petRepository = dependencies.petRepository;
 
-  void invoke(Pet pet) {
-    _petRepository.setPet(pet);
+  Future<void> invoke(Pet pet) {
+    return _petRepository.setPet(pet);
   }
 }

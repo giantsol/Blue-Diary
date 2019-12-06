@@ -1,7 +1,6 @@
 
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/entity/Pet.dart';
-import 'package:todo_app/domain/usecase/CanUpdateMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/GetAllPetsUsecase.dart';
 import 'package:todo_app/domain/usecase/GetSeedCountUsecase.dart';
 import 'package:todo_app/domain/usecase/GetSelectedPetKeyUsecase.dart';
@@ -20,7 +19,6 @@ class PetBloc {
   final _getSelectedPetKeyUsecase = GetSelectedPetKeyUsecase();
   final _setPetUsecase = SetPetUsecase();
   final _setSelectedPetKeyUsecase = SetSelectedPetKeyUsecase();
-  final _canUpdateMyRankingUserInfoUsecase = CanUpdateMyRankingUserInfoUsecase();
   final _setMyRankingUserInfoUsecase = SetMyRankingUserInfoUsecase();
 
   PetBloc() {
@@ -40,21 +38,17 @@ class PetBloc {
     ));
   }
 
-  void onEggFabClicked() {
+  Future<void> onEggFabClicked() async {
     final selectedPet = _state.value.selectedPet;
     final updated = selectedPet.buildNew(currentPhaseIndex: selectedPet.currentPhaseIndex + 1);
     _state.add(_state.value.buildNewSelectedPetUpdated(updated));
 
-    _setPetUsecase.invoke(updated);
-    _setSelectedPetKeyUsecase.invoke(_state.value.selectedPetKey);
-
-    final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
-    if (canUpdateMyRankingUserInfo) {
-      _setMyRankingUserInfoUsecase.invoke();
-    }
+    await _setPetUsecase.invoke(updated);
+    await _setSelectedPetKeyUsecase.invoke(updated.key);
+    _setMyRankingUserInfoUsecase.invoke();
   }
 
-  void onSeedFabClicked() {
+  Future<void> onSeedFabClicked() async {
     // todo: use seed counts
     final selectedPet = _state.value.selectedPet;
     final prevPhaseIndex = selectedPet.currentPhaseIndex;
@@ -62,51 +56,39 @@ class PetBloc {
     final updatedPhaseIndex = updated.currentPhaseIndex;
     _state.add(_state.value.buildNewSelectedPetUpdated(updated));
 
-    _setPetUsecase.invoke(updated);
+    await _setPetUsecase.invoke(updated);
 
     if (prevPhaseIndex != updatedPhaseIndex) {
-      final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
-      if (canUpdateMyRankingUserInfo) {
-        _setMyRankingUserInfoUsecase.invoke();
-      }
+      _setMyRankingUserInfoUsecase.invoke();
     }
   }
 
-  void onPetPreviewClicked(Pet pet) {
+  Future<void> onPetPreviewClicked(Pet pet) async {
     if (pet.key == _state.value.selectedPetKey) {
       _state.add(_state.value.buildNew(
         selectedPetKey: '',
       ));
-      _setSelectedPetKeyUsecase.invoke('');
+      await _setSelectedPetKeyUsecase.invoke('');
     } else {
       final isPetActivated = pet.currentPhaseIndex != Pet.PHASE_INDEX_INACTIVE;
       _state.add(_state.value.buildNew(
         selectedPetKey: pet.key,
       ));
-      _setSelectedPetKeyUsecase.invoke(isPetActivated ? pet.key : '');
+      await _setSelectedPetKeyUsecase.invoke(isPetActivated ? pet.key : '');
     }
 
-    final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
-    if (canUpdateMyRankingUserInfo) {
-      _setMyRankingUserInfoUsecase.invoke();
-    }
+    _setMyRankingUserInfoUsecase.invoke();
   }
 
-  void onBornPhaseIndexClicked(int index) {
+  Future<void> onBornPhaseIndexClicked(int index) async {
     final selectedPet = _state.value.selectedPet;
     final maxSelectablePhaseIndex = selectedPet.maxSelectablePhaseIndex;
     if (index <= maxSelectablePhaseIndex) {
-      final updated = selectedPet.buildNew(
-        currentPhaseIndex: index,
-      );
+      final updated = selectedPet.buildNew(currentPhaseIndex: index);
       _state.add(_state.value.buildNewSelectedPetUpdated(updated));
 
-      _setPetUsecase.invoke(updated);
-
-      final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
-      if (canUpdateMyRankingUserInfo) {
-        _setMyRankingUserInfoUsecase.invoke();
-      }
+      await _setPetUsecase.invoke(updated);
+      _setMyRankingUserInfoUsecase.invoke();
     }
   }
 

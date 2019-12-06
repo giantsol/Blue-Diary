@@ -101,8 +101,8 @@ class AppPreferences {
     return PrefService.getString(KEY_SELECTED_PET_KEY) ?? '';
   }
 
-  void setSelectedPetKey(String key) {
-    PrefService.setString(KEY_SELECTED_PET_KEY, key);
+  Future<void> setSelectedPetKey(String key) {
+    return PrefService.setString(KEY_SELECTED_PET_KEY, key);
   }
 
   int getLastUpdatedMyRankingUserInfoLocalTimeMillis() {

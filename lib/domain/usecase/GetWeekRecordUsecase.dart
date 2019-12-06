@@ -26,6 +26,7 @@ class GetWeekRecordUsecase {
     final dateInWeek = DateInWeek.fromDate(date);
     final datesInWeek = Utils.getDatesInWeek(date);
     final hasShownFirstCompletableDayTutorial = await _prefsRepository.hasShownFirstCompletableDayTutorial();
+
     List<DayPreview> dayPreviews = [];
     bool containsToday = false;
     int firstCompletableDayTutorialIndex = -1;
@@ -65,6 +66,7 @@ class GetWeekRecordUsecase {
       final canBeMarkedCompleted = allToDosDone && !hasBeenMarkedCompleted &&
         date.compareTo(firstLaunchDate) >= 0 && date.compareTo(today) <= 0;
 
+      // whether to show first completable day tutorial
       if (!hasShownFirstCompletableDayTutorial && firstCompletableDayTutorialIndex == -1 && canBeMarkedCompleted) {
         firstCompletableDayTutorialIndex = i;
       }
@@ -88,6 +90,7 @@ class GetWeekRecordUsecase {
         isMarkedCompleted: currentDayStreak > 0,
         streakCount: currentDayStreak,
       );
+
       dayPreviews.add(dayPreview);
     }
 

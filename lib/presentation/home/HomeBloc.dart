@@ -37,16 +37,12 @@ class HomeBloc {
           duration: const Duration(milliseconds: 500),
         ),
       );
-      _state.add(_state.value.buildNew(
-        childScreenItems: navigationItems,
-        currentChildScreenKey: currentChildScreenKey,
-      ));
-    } else {
-      _state.add(_state.value.buildNew(
-        childScreenItems: navigationItems,
-        currentChildScreenKey: currentChildScreenKey,
-      ));
     }
+
+    _state.add(_state.value.buildNew(
+      childScreenItems: navigationItems,
+      currentChildScreenKey: currentChildScreenKey,
+    ));
   }
 
   void onBottomNavigationItemClicked(String key) {

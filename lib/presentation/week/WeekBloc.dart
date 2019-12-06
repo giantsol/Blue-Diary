@@ -11,7 +11,6 @@ import 'package:todo_app/domain/entity/DayPreview.dart';
 import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/usecase/AddSeedUsecase.dart';
-import 'package:todo_app/domain/usecase/CanUpdateMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/GetCompletedMarkableDayToKeepStreakUsecase.dart';
 import 'package:todo_app/domain/usecase/GetStreakCountUsecase.dart';
 import 'package:todo_app/domain/usecase/GetTodayUsecase.dart';
@@ -36,6 +35,8 @@ class WeekBloc {
   WeekState getInitialState() => _state.value;
   Stream<WeekState> observeState() => _state.distinct();
 
+  WeekBlocDelegator delegator;
+
   final _getTodayUsecase = GetTodayUsecase();
   final _getWeekRecordUsecase = GetWeekRecordUsecase();
   final _setRealFirstLaunchDateIfNotExistsUsecase = SetRealFirstLaunchDateIfNotExistsUsecase();
@@ -48,15 +49,18 @@ class WeekBloc {
   final _addSeedUsecase = AddSeedUsecase();
   final _setShownFirstCompletableDayTutorialUsecase = SetShownFirstCompletableDayTutorialUsecase();
   final _setMyRankingUserInfoUsecase = SetMyRankingUserInfoUsecase();
-  final _canUpdateMyRankingUserInfoUsecase = CanUpdateMyRankingUserInfoUsecase();
-
-  WeekBlocDelegator delegator;
 
   WeekBloc({
     @required this.delegator
   }) {
     _initState();
     delegator.addBottomNavigationItemClickedListener(_bottomNavigationItemClickedListener);
+  }
+
+  void updateDelegator(WeekBlocDelegator delegator) {
+    this.delegator.removeBottomNavigationItemClickedListener(_bottomNavigationItemClickedListener);
+    this.delegator = delegator;
+    this.delegator.addBottomNavigationItemClickedListener(_bottomNavigationItemClickedListener);
   }
 
   void _bottomNavigationItemClickedListener(String key) {
@@ -102,17 +106,8 @@ class WeekBloc {
         showFirstCompletableDayTutorialEvent: showFirstCompletableDayTutorial,
       ));
 
-      final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
-      if (canUpdateMyRankingUserInfo) {
-        _setMyRankingUserInfoUsecase.invoke();
-      }
+      _setMyRankingUserInfoUsecase.invoke();
     }
-  }
-
-  void updateDelegator(WeekBlocDelegator delegator) {
-    this.delegator.removeBottomNavigationItemClickedListener(_bottomNavigationItemClickedListener);
-    this.delegator = delegator;
-    this.delegator.addBottomNavigationItemClickedListener(_bottomNavigationItemClickedListener);
   }
 
   Future<void> onWeekRecordPageIndexChanged(int newIndex) async {
@@ -146,7 +141,7 @@ class WeekBloc {
   void onCheckPointTextChanged(CheckPoint checkPoint, String changed) {
     final updatedCheckPoint = checkPoint.buildNew(text: changed);
     _state.add(_state.value.buildNewCheckPointUpdated(updatedCheckPoint));
-    _setCheckPointUsecase.invoke(checkPoint);
+    _setCheckPointUsecase.invoke(updatedCheckPoint);
   }
 
   Future<void> onDayPreviewClicked(BuildContext context, DayPreview dayPreview) async {
@@ -186,6 +181,8 @@ class WeekBloc {
 
   Future<void> startTutorial(BuildContext context, WeekScreenTutorialCallback callback) async {
     // just rebuild to clear startTutorialEvent flag
+    // this kind of behavior is why I now think UI events shouldn't be in State file.
+    // UI events should reside in Screen files I guess.
     _state.add(_state.value.buildNew());
 
     await Navigator.push(context, PageRouteBuilder(
@@ -214,14 +211,9 @@ class WeekBloc {
     if (completedMarkableDay != DateRepository.INVALID_DATE) {
       final title = AppLocalizations.of(context).warning;
       final body = AppLocalizations.of(context).getHasCompletedMarkableDay(completedMarkableDay);
-      Utils.showAppDialog(context,
-        title,
-        body,
-        null,
-          () {
-          _markDayCompleted(date);
-        }
-      );
+      Utils.showAppDialog(context, title, body, null, () {
+        _markDayCompleted(date);
+      });
     } else {
       _markDayCompleted(date);
     }
@@ -239,11 +231,7 @@ class WeekBloc {
     _addSeedUsecase.invoke(streakCount);
     delegator.showSeedAddedAnimation(streakCount);
 
-
-    final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
-    if (canUpdateMyRankingUserInfo) {
-      _setMyRankingUserInfoUsecase.invoke();
-    }
+    _setMyRankingUserInfoUsecase.invoke();
   }
 
   Future<void> showFirstCompletableDayTutorial(BuildContext context, WeekScreenTutorialCallback callback) async {

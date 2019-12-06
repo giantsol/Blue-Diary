@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -11,6 +12,7 @@ import 'package:todo_app/domain/repository/RankingRepository.dart';
 class RankingRepositoryImpl implements RankingRepository {
   static const FIRESTORE_RANKING_USER_INFO_COLLECTION = 'ranking_user_info';
   static const RANKING_PAGING_SIZE = 2;
+  static const RANKING_MAX_COUNT = 50;
 
   StreamSubscription _rankingUserInfosSubscription;
   int _currentRankingMaxCount = RANKING_PAGING_SIZE;
@@ -45,9 +47,15 @@ class RankingRepositoryImpl implements RankingRepository {
   }
 
   @override
-  Future<void> setMyRankingUserInfo(RankingUserInfo info) {
-    final callable = CloudFunctions.instance.getHttpsCallable(functionName: 'setRankingUserInfo');
-    return callable.call(info.toMyRankingUserInfoUpdateMap()).timeout(const Duration(seconds: 10));
+  Future<bool> setMyRankingUserInfo(RankingUserInfo info) async {
+    try {
+      // todo: change functionName to 'setMyRankingUserInfo'
+      final callable = CloudFunctions.instance.getHttpsCallable(functionName: 'setRankingUserInfo');
+      await callable.call(info.toMyRankingUserInfoUpdateMap()).timeout(const Duration(seconds: 10));
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   @override
@@ -90,7 +98,7 @@ class RankingRepositoryImpl implements RankingRepository {
 
         return userInfo.buildNew(rank: rank);
       }).toList();
-      final hasMore = snapshots.length == maxCount;
+      final hasMore = maxCount < RANKING_MAX_COUNT && snapshots.length == maxCount;
       final event =  RankingUserInfosEvent(
         rankingUserInfos: infos,
         hasMore: hasMore,
@@ -103,7 +111,7 @@ class RankingRepositoryImpl implements RankingRepository {
 
   @override
   void increaseRankingUserInfosCount() {
-    _setRankingUserInfosMaxCount(_currentRankingMaxCount + RANKING_PAGING_SIZE);
+    _setRankingUserInfosMaxCount(min<int>(_currentRankingMaxCount + RANKING_PAGING_SIZE, RANKING_MAX_COUNT));
   }
 
   @override

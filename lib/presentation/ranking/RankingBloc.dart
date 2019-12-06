@@ -8,8 +8,6 @@ import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/usecase/AddThumbsUpUsecase.dart';
-import 'package:todo_app/domain/usecase/CanUpdateMyRankingUserInfoUsecase.dart';
-import 'package:todo_app/domain/usecase/DeleteMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/GetMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/GetTodayUsecase.dart';
 import 'package:todo_app/domain/usecase/IncreaseRankingUserInfosCountUsecase.dart';
@@ -30,22 +28,20 @@ class RankingBloc {
 
   RankingBlocDelegator delegator;
 
+  StreamSubscription _rankingUserInfosEventSubscription;
+
   final _getMyRankingUserInfoUsecase = GetMyRankingUserInfoUsecase();
   final _observeRankingUserInfosUsecase = ObserveRankingUserInfosUsecase();
   final _initRankingUserInfosCountUsecase = InitRankingUserInfosCountUsecase();
   final _setMyRankingUserInfoUsecase = SetMyRankingUserInfoUsecase();
   final _signInWithGoogleUsecase = SignInWithGoogleUsecase();
   final _signInWithFacebookUsecase = SignInWithFacebookUsecase();
-  final _deleteMyRankingUserInfoUsecase = DeleteMyRankingUserInfoUsecase();
   final _signOutUsecase = SignOutUsecase();
   final _increaseRankingUserInfosCountUsecase = IncreaseRankingUserInfosCountUsecase();
   final _addThumbsUpUsecase = AddThumbsUpUsecase();
   final _getTodayUsecase = GetTodayUsecase();
   final _setRankingUserInfoUsecase = SetRankingUserInfoUsecase();
-  final _canUpdateMyRankingUserInfoUsecase = CanUpdateMyRankingUserInfoUsecase();
   final _syncTodayWithServerUsecase = SyncTodayWithServerUsecase();
-
-  StreamSubscription _rankingUserInfosEventSubscription;
 
   RankingBloc() {
     _initState();
@@ -97,65 +93,70 @@ class RankingBloc {
   }
 
   Future<void> onGoogleSignInClicked() async {
-    final success = await _signInWithGoogleUsecase.invoke();
-    if (success) {
-      final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
-      if (canUpdateMyRankingUserInfo) {
-        await _setMyRankingUserInfoUsecase.invoke();
-        final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
-        _state.add(_state.value.buildNew(
-          myRankingUserInfo: myRankingInfo,
-        ));
-      }
-    }
-
     _state.add(_state.value.buildNew(
       signInDialogShown: false,
+      showMyRankingInfoLoading: true,
+    ));
+
+    final myRankingUserInfo = await _signInWithGoogleUsecase.invoke();
+    _state.add(_state.value.buildNew(
+      myRankingUserInfo: myRankingUserInfo,
+      showMyRankingInfoLoading: false,
     ));
   }
 
   Future<void> onFacebookSignInClicked() async {
-    final success = await _signInWithFacebookUsecase.invoke();
-    if (success) {
-      final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
-      if (canUpdateMyRankingUserInfo) {
-        await _setMyRankingUserInfoUsecase.invoke();
-        final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
-        _state.add(_state.value.buildNew(
-          myRankingUserInfo: myRankingInfo,
-        ));
-      }
-    }
-
     _state.add(_state.value.buildNew(
       signInDialogShown: false,
+      showMyRankingInfoLoading: true,
+    ));
+
+    final myRankingUserInfo = await _signInWithFacebookUsecase.invoke();
+    _state.add(_state.value.buildNew(
+      myRankingUserInfo: myRankingUserInfo,
+      showMyRankingInfoLoading: false,
     ));
   }
 
   Future<void> onSignOutClicked() async {
-    await _deleteMyRankingUserInfoUsecase.invoke();
+    _state.add(_state.value.buildNew(
+      showMyRankingInfoLoading: true,
+    ));
 
-    final success = await _signOutUsecase.invoke();
-    if (success) {
-      _state.add(_state.value.buildNew(
-        myRankingUserInfo: RankingUserInfo.INVALID,
-      ));
+    final myRankingUserInfo = await _signOutUsecase.invoke();
+    _state.add(_state.value.buildNew(
+      myRankingUserInfo: myRankingUserInfo,
+      showMyRankingInfoLoading: false,
+    ));
 
-      _initRankingUserInfosCountUsecase.invoke();
-    }
+    _initRankingUserInfosCountUsecase.invoke();
   }
 
   Future<void> onRefreshMyRankingInfoClicked(BuildContext context) async {
-    final canUpdateMyRankingUserInfo = _canUpdateMyRankingUserInfoUsecase.invoke();
-    if (canUpdateMyRankingUserInfo) {
-      await _setMyRankingUserInfoUsecase.invoke();
-      final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
-      _state.add(_state.value.buildNew(
-        myRankingUserInfo: myRankingInfo,
-      ));
-    } else {
-      delegator.showSnackBar(AppLocalizations.of(context).tryUpdateLater, const Duration(seconds: 2));
+    _state.add(_state.value.buildNew(
+      showMyRankingInfoLoading: true,
+    ));
+
+    final updateResult = await _setMyRankingUserInfoUsecase.invoke();
+    switch (updateResult) {
+      case SetMyRankingUserInfoResult.SUCCESS:
+        final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
+        _state.add(_state.value.buildNew(
+          myRankingUserInfo: myRankingInfo,
+        ));
+        break;
+      case SetMyRankingUserInfoResult.FAIL_TRY_LATER:
+        delegator.showSnackBar(AppLocalizations.of(context).tryUpdateLater, const Duration(seconds: 2));
+        break;
+      case SetMyRankingUserInfoResult.FAIL_NO_INTERNET:
+        delegator.showSnackBar(AppLocalizations.of(context).checkInternet, const Duration(seconds: 2));
+        break;
+      default: break;
     }
+
+    _state.add(_state.value.buildNew(
+      showMyRankingInfoLoading: false,
+    ));
   }
 
   void onLoadMoreRankingInfosClicked() {

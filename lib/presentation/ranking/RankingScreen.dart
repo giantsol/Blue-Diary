@@ -67,7 +67,8 @@ class _RankingScreenState extends State<RankingScreen> {
             children: <Widget>[
               _Header(
                 bloc: _bloc,
-                myRankingInfo: state.myRankingInfo,
+                myRankingInfo: state.myRankingUserInfo,
+                showOverlayProgress: state.showMyRankingInfoLoading,
               ),
               const SizedBox(height: 12,),
               Padding(
@@ -144,10 +145,12 @@ class _WholeLoadingView extends StatelessWidget {
 class _Header extends StatelessWidget {
   final RankingBloc bloc;
   final RankingUserInfo myRankingInfo;
+  final bool showOverlayProgress;
 
   _Header({
     @required this.bloc,
     @required this.myRankingInfo,
+    @required this.showOverlayProgress,
   });
 
   @override
@@ -175,216 +178,228 @@ class _Header extends StatelessWidget {
       child: Container(
         height: 132,
         alignment: Alignment.center,
-        child: Text(
-          AppLocalizations.of(context).clickToSignInAndJoin,
-          style: TextStyle(
-            fontSize: 24,
-            color: AppColors.TEXT_BLACK,
-            fontWeight: FontWeight.bold,
-          ),
+        child: Stack(
+          children: <Widget>[
+            Text(
+              AppLocalizations.of(context).clickToSignInAndJoin,
+              style: TextStyle(
+                fontSize: 24,
+                color: AppColors.TEXT_BLACK,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            showOverlayProgress ? CircularProgressIndicator() : const SizedBox.shrink(),
+          ],
         ),
       ),
-    ) : Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Container(
-          height: 56,
-          alignment: Alignment.centerLeft,
-          child: Row(
-            children: <Widget>[
-              const SizedBox(width: 24,),
-              Text(
-                myRankingInfo.name,
-                style: TextStyle(
-                  fontSize: 24,
-                  color: AppColors.TEXT_BLACK,
-                ),
-              ),
-              const Spacer(),
-              InkWell(
-                onTap: () => bloc.onSignOutClicked(),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 24),
-                  child: Text(
-                    AppLocalizations.of(context).signOut,
+    ) : Stack(
+      children: [
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Container(
+              height: 56,
+              alignment: Alignment.centerLeft,
+              child: Row(
+                children: <Widget>[
+                  const SizedBox(width: 24,),
+                  Text(
+                    myRankingInfo.name,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 24,
                       color: AppColors.TEXT_BLACK,
                     ),
                   ),
-                )
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24,),
-          child: Row(
-            children: <Widget>[
-              Container(
-                width: petMaxSize,
-                height: petMaxSize,
-                child: petPhase != PetPhase.INVALID ? Align(
-                  alignment: petPhase.alignment,
-                  child: SizedBox(
-                    width: petMaxSize * petPhase.sizeRatio,
-                    height: petMaxSize * petPhase.sizeRatio,
-                    //todo: change to flare
-                    child: Image.asset(
-                      petPhase.imgPath,
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                ): Container(
-                  width: petMaxSize,
-                  height: petMaxSize,
-                  alignment: Alignment.center,
-                  child: Text(
-                    AppLocalizations.of(context).noPet,
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: AppColors.TEXT_BLACK,
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      AppLocalizations.of(context).completedDays,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.TEXT_BLACK,
-                      ),
-                    ),
-                    RichText(
-                      text: TextSpan(
+                  const Spacer(),
+                  InkWell(
+                    onTap: () => bloc.onSignOutClicked(),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 24),
+                      child: Text(
+                        AppLocalizations.of(context).signOut,
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 14,
                           color: AppColors.TEXT_BLACK,
                         ),
-                        children: [
-                          TextSpan(
-                            text: myRankingInfo.completionRatioPercentageString,
-                            style: TextStyle(
-                              fontSize: 24,
-                              color: AppColors.PRIMARY,
-                            ),
-                          ),
-                          TextSpan(
-                            text: ' %'
-                          ),
-                        ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    AppLocalizations.of(context).currentStreak,
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: AppColors.TEXT_BLACK,
-                    ),
+                    )
                   ),
-                  RichText(
-                    text: TextSpan(
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: AppColors.TEXT_BLACK_LIGHT,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: '${myRankingInfo.latestStreak}',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: AppColors.PRIMARY,
-                          ),
-                        ),
-                        TextSpan(
-                          text: '  $latestStreakDateRangeText',
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 4,),
-                  Text(
-                    AppLocalizations.of(context).longestStreak,
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: AppColors.TEXT_BLACK,
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: AppColors.TEXT_BLACK_LIGHT,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: '${myRankingInfo.longestStreak}',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: AppColors.PRIMARY,
-                          ),
-                        ),
-                        TextSpan(
-                          text: '  $longestStreakDateRangeText',
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 4,),
-                  Text(
-                    AppLocalizations.of(context).thumbsUp,
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: AppColors.TEXT_BLACK,
-                    ),
-                  ),
-                  Text(
-                    '${myRankingInfo.thumbsUp}',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: AppColors.PRIMARY,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24,),
-          child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () => bloc.onRefreshMyRankingInfoClicked(context),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8,),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Text(
-                    'Last updated: ${Utils.toLastUpdatedFormat(DateTime.fromMillisecondsSinceEpoch(myRankingInfo.lastUpdatedMillis))}',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: AppColors.TEXT_BLACK,
-                    ),
-                  ),
-                  const SizedBox(width: 4,),
-                  Image.asset('assets/ic_refresh.png'),
                 ],
               ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24,),
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    width: petMaxSize,
+                    height: petMaxSize,
+                    child: petPhase != PetPhase.INVALID ? Align(
+                      alignment: petPhase.alignment,
+                      child: SizedBox(
+                        width: petMaxSize * petPhase.sizeRatio,
+                        height: petMaxSize * petPhase.sizeRatio,
+                        //todo: change to flare
+                        child: Image.asset(
+                          petPhase.imgPath,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                    ): Container(
+                      width: petMaxSize,
+                      height: petMaxSize,
+                      alignment: Alignment.center,
+                      child: Text(
+                        AppLocalizations.of(context).noPet,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: AppColors.TEXT_BLACK,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text(
+                          AppLocalizations.of(context).completedDays,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.TEXT_BLACK,
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.TEXT_BLACK,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: myRankingInfo.completionRatioPercentageString,
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  color: AppColors.PRIMARY,
+                                ),
+                              ),
+                              TextSpan(
+                                text: ' %'
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        AppLocalizations.of(context).currentStreak,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: AppColors.TEXT_BLACK,
+                        ),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: AppColors.TEXT_BLACK_LIGHT,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: '${myRankingInfo.latestStreak}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: AppColors.PRIMARY,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '  $latestStreakDateRangeText',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 4,),
+                      Text(
+                        AppLocalizations.of(context).longestStreak,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: AppColors.TEXT_BLACK,
+                        ),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: AppColors.TEXT_BLACK_LIGHT,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: '${myRankingInfo.longestStreak}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: AppColors.PRIMARY,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '  $longestStreakDateRangeText',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 4,),
+                      Text(
+                        AppLocalizations.of(context).thumbsUp,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: AppColors.TEXT_BLACK,
+                        ),
+                      ),
+                      Text(
+                        '${myRankingInfo.thumbsUp}',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: AppColors.PRIMARY,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24,),
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () => bloc.onRefreshMyRankingInfoClicked(context),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8,),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Text(
+                        'Last updated: ${Utils.toLastUpdatedFormat(DateTime.fromMillisecondsSinceEpoch(myRankingInfo.lastUpdatedMillis))}',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: AppColors.TEXT_BLACK,
+                        ),
+                      ),
+                      const SizedBox(width: 4,),
+                      Image.asset('assets/ic_refresh.png'),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
+        showOverlayProgress ? Center(
+          child: CircularProgressIndicator(),
+        ) : const SizedBox.shrink(),
       ],
     );
   }

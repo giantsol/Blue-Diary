@@ -16,8 +16,8 @@ class PetRepositoryImpl implements PetRepository {
   }
 
   @override
-  void setPet(Pet pet) {
-    _dataSource.setPet(pet);
+  Future<void> setPet(Pet pet) {
+    return _dataSource.setPet(pet);
   }
 
   @override
@@ -26,8 +26,8 @@ class PetRepositoryImpl implements PetRepository {
   }
 
   @override
-  void setSelectedPetKey(String key) {
-    _prefs.setSelectedPetKey(key);
+  Future<void> setSelectedPetKey(String key) {
+    return _prefs.setSelectedPetKey(key);
   }
 
   @override
