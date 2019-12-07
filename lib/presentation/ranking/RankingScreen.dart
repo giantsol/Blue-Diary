@@ -256,6 +256,7 @@ class _Header extends StatelessWidget {
                           fontSize: 20,
                           color: AppColors.TEXT_BLACK,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   ),
@@ -271,6 +272,7 @@ class _Header extends StatelessWidget {
                           ),
                         ),
                         RichText(
+                          textScaleFactor: MediaQuery.of(context).textScaleFactor,
                           text: TextSpan(
                             style: TextStyle(
                               fontSize: 12,
@@ -282,6 +284,7 @@ class _Header extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 24,
                                   color: AppColors.PRIMARY,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                               TextSpan(
@@ -305,6 +308,7 @@ class _Header extends StatelessWidget {
                         ),
                       ),
                       RichText(
+                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
                         text: TextSpan(
                           style: TextStyle(
                             fontSize: 10,
@@ -316,6 +320,7 @@ class _Header extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 18,
                                 color: AppColors.PRIMARY,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                             TextSpan(
@@ -333,6 +338,7 @@ class _Header extends StatelessWidget {
                         ),
                       ),
                       RichText(
+                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
                         text: TextSpan(
                           style: TextStyle(
                             fontSize: 10,
@@ -344,6 +350,7 @@ class _Header extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 18,
                                 color: AppColors.PRIMARY,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                             TextSpan(
@@ -365,6 +372,7 @@ class _Header extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           color: AppColors.PRIMARY,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
@@ -455,6 +463,7 @@ class _RankingItem extends StatelessWidget {
                   fontSize: 10,
                   color: AppColors.TEXT_BLACK,
                 ),
+                textAlign: TextAlign.center,
               ),
             ) : Center(
               child: Text(
@@ -463,6 +472,7 @@ class _RankingItem extends StatelessWidget {
                   fontSize: 10,
                   color: AppColors.TEXT_BLACK,
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
           ),
@@ -491,6 +501,7 @@ class _RankingItem extends StatelessWidget {
           ),
           const SizedBox(width: 8,),
           RichText(
+            textScaleFactor: MediaQuery.of(context).textScaleFactor,
             text: TextSpan(
               style: TextStyle(
                 fontSize: 10,
@@ -505,6 +516,7 @@ class _RankingItem extends StatelessWidget {
                       : rank == 2 ? AppColors.SILVER
                       : rank == 3 ? AppColors.BRONZE
                       : AppColors.TEXT_BLACK,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 TextSpan(

@@ -341,7 +341,7 @@ class _Phases extends StatelessWidget {
         const SizedBox(height: 2,),
         Stack(
           children: <Widget>[
-            _getPhaseScoreView(),
+            _getPhaseScoreView(context),
             maxSelectablePhaseIndex >= 0 ? Align(
               alignment: pet.currentPhaseIndex == 0 ? Alignment.topLeft
                 : pet.currentPhaseIndex == 1 && pet.bornPhases.length == 2 ? Alignment.topRight
@@ -358,7 +358,7 @@ class _Phases extends StatelessWidget {
     );
   }
 
-  Widget _getPhaseScoreView() {
+  Widget _getPhaseScoreView(BuildContext context) {
     final maxSelectablePhaseIndex = pet.maxSelectablePhaseIndex;
     final numerator = maxSelectablePhaseIndex == Pet.PHASE_INDEX_EGG ? pet.exp
       : maxSelectablePhaseIndex == 0 ? pet.exp - pet.eggPhase.maxExp
@@ -370,6 +370,7 @@ class _Phases extends StatelessWidget {
       : 0;
 
     final phaseScoreText = RichText(
+      textScaleFactor: MediaQuery.of(context).textScaleFactor,
       strutStyle: StrutStyle(
         fontSize: 12,
       ),
