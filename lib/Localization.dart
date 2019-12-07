@@ -107,6 +107,8 @@ class AppLocalizations {
   static const NEED_UPDATE = "needUpdate";
   static const TRY_UPDATE_LATER = "tryUpdateLater";
   static const CHECK_INTERNET = "checkNetwork";
+  static const SIGN_OUT_TITLE = "signOutTitle";
+  static const SIGN_OUT_BODY = "signOutBody";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -216,6 +218,8 @@ class AppLocalizations {
       NEED_UPDATE: 'Need Update',
       TRY_UPDATE_LATER: 'Please try it again after 5 minutes.',
       CHECK_INTERNET: 'Please check your internet',
+      SIGN_OUT_TITLE: 'Sign Out',
+      SIGN_OUT_BODY: 'You data will be deleted from ranking list.\nAre you sure?',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -320,6 +324,8 @@ class AppLocalizations {
       NEED_UPDATE: '업데이트 필요',
       TRY_UPDATE_LATER: '5분 후 다시 시도해주세요.',
       CHECK_INTERNET: '인터넷 연결 상태를 확인해주세요.',
+      SIGN_OUT_TITLE: '탈퇴',
+      SIGN_OUT_BODY: '당신의 데이터가 랭킹 목록으로부터 삭제됩니다.\n진행하시겠습니까?',
     },
   };
 
@@ -407,6 +413,8 @@ class AppLocalizations {
   String get needUpdate => _localizedValues[locale.languageCode][NEED_UPDATE];
   String get tryUpdateLater => _localizedValues[locale.languageCode][TRY_UPDATE_LATER];
   String get checkInternet => _localizedValues[locale.languageCode][CHECK_INTERNET];
+  String get signOutTitle => _localizedValues[locale.languageCode][SIGN_OUT_TITLE];
+  String get signOutBody => _localizedValues[locale.languageCode][SIGN_OUT_BODY];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {

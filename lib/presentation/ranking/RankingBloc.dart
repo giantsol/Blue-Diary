@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
+import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/usecase/AddThumbsUpUsecase.dart';
@@ -118,22 +119,26 @@ class RankingBloc {
     ));
   }
 
-  Future<void> onSignOutClicked() async {
+  void onSignOutClicked(BuildContext context) {
     if (_state.value.showMyRankingInfoLoading) {
       return;
     }
 
-    _state.add(_state.value.buildNew(
-      showMyRankingInfoLoading: true,
-    ));
+    final title = AppLocalizations.of(context).signOutTitle;
+    final body = AppLocalizations.of(context).signOutBody;
+    Utils.showAppDialog(context, title, body, null, () async {
+      _state.add(_state.value.buildNew(
+        showMyRankingInfoLoading: true,
+      ));
 
-    final myRankingUserInfo = await _signOutUsecase.invoke();
-    _state.add(_state.value.buildNew(
-      myRankingUserInfo: myRankingUserInfo,
-      showMyRankingInfoLoading: false,
-    ));
+      final myRankingUserInfo = await _signOutUsecase.invoke();
+      _state.add(_state.value.buildNew(
+        myRankingUserInfo: myRankingUserInfo,
+        showMyRankingInfoLoading: false,
+      ));
 
-    _initRankingUserInfosCountUsecase.invoke();
+      _initRankingUserInfosCountUsecase.invoke();
+    });
   }
 
   Future<void> onRefreshMyRankingInfoClicked(BuildContext context) async {

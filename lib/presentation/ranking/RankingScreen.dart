@@ -213,7 +213,7 @@ class _Header extends StatelessWidget {
                   ),
                   const Spacer(),
                   InkWell(
-                    onTap: () => bloc.onSignOutClicked(),
+                    onTap: () => bloc.onSignOutClicked(context),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 24),
                       child: Text(

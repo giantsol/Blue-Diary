@@ -370,7 +370,7 @@ class _Phases extends StatelessWidget {
       : 0;
 
     final phaseScoreText = RichText(
-      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+      textScaleFactor: 1.0,
       strutStyle: StrutStyle(
         fontSize: 12,
       ),
@@ -395,7 +395,6 @@ class _Phases extends StatelessWidget {
           fontSize: 12,
         ),
       ),
-      textScaleFactor: 1.0,
     );
 
     return maxSelectablePhaseIndex == 1 && pet.bornPhases.length == 3 ? Align(
