@@ -9,6 +9,7 @@ import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
+import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/ViewLayoutInfo.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
@@ -121,64 +122,71 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
       onWillPop: () async {
         return !_unfocusTextFieldIfAny();
       },
-      child: Column(
+      child: Stack(
         children: [
-          _Header(
-            key: _headerKey,
-            bloc: _bloc,
-            displayYear: state.year.toString(),
-            displayMonthAndWeek: AppLocalizations.of(context).getMonthAndNthWeek(state.month, state.nthWeek),
-            pageViewScrollEnabled: state.pageViewScrollEnabled,
-          ),
-          Expanded(
-            child: Stack(
-              children: <Widget>[
-                PageView.builder(
-                  physics: state.pageViewScrollEnabled ? PageScrollPhysics() : NeverScrollableScrollPhysics(),
-                  controller: _pageController,
-                  itemCount: WeekScreen.MAX_WEEK_PAGE,
-                  itemBuilder: (context, index) {
-                    final weekRecord = state.getWeekRecordForPageIndex(index);
-                    if (weekRecord == null) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else {
-                      final foundFirstCompletableWeekRecord = (_firstCompletableWeekRecordPageIndex == -1 || _firstCompletableWeekRecordPageIndex == index)
-                        && weekRecord.firstCompletableDayTutorialIndex >= 0;
+          Column(
+            children: [
+              _Header(
+                key: _headerKey,
+                bloc: _bloc,
+                displayYear: state.year.toString(),
+                displayMonthAndWeek: AppLocalizations.of(context).getMonthAndNthWeek(state.month, state.nthWeek),
+                pageViewScrollEnabled: state.pageViewScrollEnabled,
+              ),
+              Expanded(
+                child: Stack(
+                  children: <Widget>[
+                    PageView.builder(
+                      physics: state.pageViewScrollEnabled ? PageScrollPhysics() : NeverScrollableScrollPhysics(),
+                      controller: _pageController,
+                      itemCount: WeekScreen.MAX_WEEK_PAGE,
+                      itemBuilder: (context, index) {
+                        final weekRecord = state.getWeekRecordForPageIndex(index);
+                        if (weekRecord == null) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else {
+                          final foundFirstCompletableWeekRecord = (_firstCompletableWeekRecordPageIndex == -1 || _firstCompletableWeekRecordPageIndex == index)
+                            && weekRecord.firstCompletableDayTutorialIndex >= 0;
 
-                      if (foundFirstCompletableWeekRecord) {
-                        _firstCompletableWeekRecordPageIndex = index;
-                      }
+                          if (foundFirstCompletableWeekRecord) {
+                            _firstCompletableWeekRecordPageIndex = index;
+                          }
 
-                      return _WeekRecord(
-                        key: index == WeekScreen.INITIAL_WEEK_PAGE ? _firstWeekRecordKey
-                          : foundFirstCompletableWeekRecord ? _firstCompletableWeekRecordKey
-                          : null,
-                        bloc: _bloc,
-                        weekRecord: weekRecord,
-                        focusNodeProvider: _getOrCreateFocusNode,
-                        scrollController: _scrollController,
-                        memoKey: index == WeekScreen.INITIAL_WEEK_PAGE ? _firstCheckPointsKey : null,
-                        todayPreviewKey: _todayPreviewKey,
-                        firstCompletableDayThumbnailKey: foundFirstCompletableWeekRecord ? _firstCompletableDayThumbnailKey : null,
-                      );
-                    }
-                  },
-                  onPageChanged: (changedIndex) {
-                    _unfocusTextFieldIfAny();
-                    _headerShadowKey.currentState.updateShadowVisibility(false);
-                    _bloc.onWeekRecordPageIndexChanged(changedIndex);
-                  },
+                          return _WeekRecord(
+                            key: index == WeekScreen.INITIAL_WEEK_PAGE ? _firstWeekRecordKey
+                              : foundFirstCompletableWeekRecord ? _firstCompletableWeekRecordKey
+                              : null,
+                            bloc: _bloc,
+                            weekRecord: weekRecord,
+                            focusNodeProvider: _getOrCreateFocusNode,
+                            scrollController: _scrollController,
+                            memoKey: index == WeekScreen.INITIAL_WEEK_PAGE ? _firstCheckPointsKey : null,
+                            todayPreviewKey: _todayPreviewKey,
+                            firstCompletableDayThumbnailKey: foundFirstCompletableWeekRecord ? _firstCompletableDayThumbnailKey : null,
+                          );
+                        }
+                      },
+                      onPageChanged: (changedIndex) {
+                        _unfocusTextFieldIfAny();
+                        _headerShadowKey.currentState.updateShadowVisibility(false);
+                        _bloc.onWeekRecordPageIndexChanged(changedIndex);
+                      },
+                    ),
+                    _HeaderShadow(
+                      key: _headerShadowKey,
+                      scrollController: _scrollController,
+                    ),
+                  ],
                 ),
-                _HeaderShadow(
-                  key: _headerShadowKey,
-                  scrollController: _scrollController,
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ]
+          _InteractivePet(
+            pet: state.pet,
+          ),
+        ],
       ),
     );
   }
@@ -1167,6 +1175,102 @@ class _HeaderShadowState extends State<_HeaderShadow> {
           end: Alignment.bottomCenter,
           colors: [AppColors.DIVIDER, AppColors.DIVIDER.withAlpha(0)]
         )
+      ),
+    );
+  }
+}
+
+class _InteractivePet extends StatefulWidget {
+  final Pet pet;
+
+  _InteractivePet({
+    @required this.pet,
+  });
+
+  @override
+  State createState() => _InteractivePetState();
+}
+
+class _InteractivePetState extends State<_InteractivePet> {
+  static const double _padding = 16;
+  static const double _petMaxSize = 108;
+
+  double _left = 0;
+  double _top = 0;
+  double _maxLeft = 0;
+  double _maxTop = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback(_initPositions);
+  }
+
+  void _initPositions(Duration _) {
+    if (context.size == null) {
+      SchedulerBinding.instance.addPostFrameCallback(_initPositions);
+      return;
+    }
+
+    setState(() {
+      _maxLeft = context.size.width - _petMaxSize - _padding * 2;
+      _maxTop = context.size.height - _petMaxSize - _padding * 2;
+      _left = _maxLeft;
+      _top = _maxTop;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentPhase = widget.pet.currentPhase;
+    final double petSize = _petMaxSize * currentPhase.sizeRatio;
+    final isValid = currentPhase != PetPhase.INVALID && _maxLeft > 0 && _maxTop > 0;
+
+    return Padding(
+      padding: const EdgeInsets.all(_padding),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          isValid ? Positioned(
+            top: _top,
+            left: _left,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onPanUpdate: (tapInfo) {
+                setState(() {
+                  _left += tapInfo.delta.dx;
+                  _top += tapInfo.delta.dy;
+
+                  if (_left < 0) {
+                    _left = 0;
+                  } else if (_left > _maxLeft) {
+                    _left = _maxLeft;
+                  }
+
+                  if (_top < 0) {
+                    _top = 0;
+                  } else if (_top > _maxTop) {
+                    _top = _maxTop;
+                  }
+                });
+              },
+              child: Container(
+                width: _petMaxSize,
+                height: _petMaxSize,
+                alignment: currentPhase.alignment,
+                child: SizedBox(
+                  width: petSize,
+                  height: petSize,
+                  //todo: change to flare
+                  child: Image.asset(
+                    currentPhase.imgPath,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ),
+            ),
+          ): const SizedBox.shrink(),
+        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 
 import 'package:todo_app/domain/entity/CheckPoint.dart';
+import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/presentation/week/WeekScreen.dart';
 
@@ -20,6 +21,7 @@ class WeekState {
   final DateTime currentDate;
   final int currentWeekRecordPageIndex;
   final bool pageViewScrollEnabled;
+  final Pet pet;
 
   // todo: Looks like one-time events shouldn't be handled this way. Maybe they should just be handled in View level, without going through Blocs.
   final bool moveToTodayEvent;
@@ -41,6 +43,7 @@ class WeekState {
     this.currentDate,
     this.currentWeekRecordPageIndex = WeekScreen.INITIAL_WEEK_PAGE,
     this.pageViewScrollEnabled = false,
+    this.pet = Pet.INVALID,
 
     this.moveToTodayEvent = false,
     this.animateToPageEvent = -1,
@@ -65,6 +68,7 @@ class WeekState {
     int currentWeekRecordPageIndex,
     DateTime currentDate,
     bool pageViewScrollEnabled,
+    Pet pet,
 
     bool moveToTodayEvent,
     int animateToPageEvent,
@@ -89,6 +93,7 @@ class WeekState {
       currentWeekRecordPageIndex: currentWeekRecordPageIndex ?? this.currentWeekRecordPageIndex,
       currentDate: currentDate ?? this.currentDate,
       pageViewScrollEnabled: pageViewScrollEnabled ?? this.pageViewScrollEnabled,
+      pet: pet ?? this.pet,
 
       moveToTodayEvent: moveToTodayEvent ?? false,
       animateToPageEvent: animateToPageEvent ?? -1,

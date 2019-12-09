@@ -12,6 +12,7 @@ import 'package:todo_app/domain/entity/HomeChildScreenItem.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/usecase/AddSeedUsecase.dart';
 import 'package:todo_app/domain/usecase/GetCompletedMarkableDayToKeepStreakUsecase.dart';
+import 'package:todo_app/domain/usecase/GetSelectedPetUsecase.dart';
 import 'package:todo_app/domain/usecase/GetStreakCountUsecase.dart';
 import 'package:todo_app/domain/usecase/GetTodayUsecase.dart';
 import 'package:todo_app/domain/usecase/GetWeekRecordUsecase.dart';
@@ -49,6 +50,7 @@ class WeekBloc {
   final _addSeedUsecase = AddSeedUsecase();
   final _setShownFirstCompletableDayTutorialUsecase = SetShownFirstCompletableDayTutorialUsecase();
   final _setMyRankingUserInfoUsecase = SetMyRankingUserInfoUsecase();
+  final _getSelectedPetUsecase = GetSelectedPetUsecase();
 
   WeekBloc({
     @required this.delegator
@@ -87,6 +89,7 @@ class WeekBloc {
       final nextWeekRecord = await _getWeekRecordUsecase.invoke(initialDate.add(_sevenDays));
       final startTutorial = !(await _hasShownWeekScreenTutorialUsecase.invoke());
       final showFirstCompletableDayTutorial = currentWeekRecord.firstCompletableDayTutorialIndex >= 0;
+      final pet = await _getSelectedPetUsecase.invoke();
 
       _state.add(_state.value.buildNew(
         viewState: WeekViewState.NORMAL,
@@ -100,6 +103,7 @@ class WeekBloc {
         currentWeekRecordPageIndex: _state.value.initialWeekRecordPageIndex,
         currentDate: initialDate,
         pageViewScrollEnabled: !startTutorial && !showFirstCompletableDayTutorial,
+        pet: pet,
 
         startTutorialEvent: startTutorial,
         scrollToTodayPreviewEvent: !startTutorial,
