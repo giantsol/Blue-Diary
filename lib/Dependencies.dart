@@ -4,6 +4,7 @@ import 'package:todo_app/data/AppPreferences.dart';
 import 'package:todo_app/data/CategoryRepositoryImpl.dart';
 import 'package:todo_app/data/DateRepositoryImpl.dart';
 import 'package:todo_app/data/MemoRepositoryImpl.dart';
+import 'package:todo_app/data/NotificationRepositoryImpl.dart';
 import 'package:todo_app/data/PetRepositoryImpl.dart';
 import 'package:todo_app/data/PrefsRepositoryImpl.dart';
 import 'package:todo_app/data/RankingRepositoryImpl.dart';
@@ -12,6 +13,7 @@ import 'package:todo_app/data/UserRepositoryImpl.dart';
 import 'package:todo_app/domain/repository/CategoryRepository.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/repository/MemoRepository.dart';
+import 'package:todo_app/domain/repository/NotificationRepository.dart';
 import 'package:todo_app/domain/repository/PetRepository.dart';
 import 'package:todo_app/domain/repository/PrefRepository.dart';
 import 'package:todo_app/domain/repository/RankingRepository.dart';
@@ -30,4 +32,5 @@ class Dependencies {
   final PetRepository petRepository = PetRepositoryImpl(_database, _prefs);
   final UserRepository userRepository = UserRepositoryImpl();
   final RankingRepository rankingRepository = RankingRepositoryImpl();
+  final NotificationRepository notificationRepository = NotificationRepositoryImpl();
 }

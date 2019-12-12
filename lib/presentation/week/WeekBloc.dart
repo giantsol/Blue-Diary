@@ -17,6 +17,7 @@ import 'package:todo_app/domain/usecase/GetStreakCountUsecase.dart';
 import 'package:todo_app/domain/usecase/GetTodayUsecase.dart';
 import 'package:todo_app/domain/usecase/GetWeekRecordUsecase.dart';
 import 'package:todo_app/domain/usecase/HasShownWeekScreenTutorialUsecase.dart';
+import 'package:todo_app/domain/usecase/RaiseTempNotificationUsecase.dart';
 import 'package:todo_app/domain/usecase/SetCheckPointUsecase.dart';
 import 'package:todo_app/domain/usecase/SetDayMarkedCompletedUsecase.dart';
 import 'package:todo_app/domain/usecase/SetMyRankingUserInfoUsecase.dart';
@@ -51,6 +52,7 @@ class WeekBloc {
   final _setShownFirstCompletableDayTutorialUsecase = SetShownFirstCompletableDayTutorialUsecase();
   final _setMyRankingUserInfoUsecase = SetMyRankingUserInfoUsecase();
   final _getSelectedPetUsecase = GetSelectedPetUsecase();
+  final _raiseTempNotificationUsecase = RaiseTempNotificationUsecase();
 
   WeekBloc({
     @required this.delegator
@@ -174,11 +176,12 @@ class WeekBloc {
   }
 
   Future<void> onPrevArrowClicked() async {
-    final newPageIndex = _state.value.currentWeekRecordPageIndex - 1;
-    _state.add(_state.value.buildNew(
-      currentWeekRecordPageIndex: newPageIndex,
-      animateToPageEvent: newPageIndex,
-    ));
+    _raiseTempNotificationUsecase.invoke();
+//    final newPageIndex = _state.value.currentWeekRecordPageIndex - 1;
+//    _state.add(_state.value.buildNew(
+//      currentWeekRecordPageIndex: newPageIndex,
+//      animateToPageEvent: newPageIndex,
+//    ));
   }
 
   Future<void> startTutorial(BuildContext context, WeekScreenTutorialCallback callback) async {
