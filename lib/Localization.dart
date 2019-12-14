@@ -113,6 +113,8 @@ class AppLocalizations {
   static const REMINDER_NOTIFICATION_CHANNEL_DESCRIPTION = "reminderNotificationChannelDescription";
   static const REMINDER_NOTIFICATION_TITLE = "reminderNotificationTitle";
   static const REMINDER_NOTIFICATION_BODY = "reminderNotificationBody";
+  static const FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_NAME = "firebaseMessagingNotificationChannelName";
+  static const FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_DESCRIPTION = "firebaseMessagingNotificationChannelDescription";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -225,9 +227,11 @@ class AppLocalizations {
       SIGN_OUT_TITLE: 'Sign Out',
       SIGN_OUT_BODY: 'You data will be deleted from ranking list.\nAre you sure?',
       REMINDER_NOTIFICATION_CHANNEL_NAME: 'Reminder',
-      REMINDER_NOTIFICATION_CHANNEL_DESCRIPTION: 'Notifies you of incomplete tasks.',
-      REMINDER_NOTIFICATION_TITLE: 'You have incomplete tasks.',
+      REMINDER_NOTIFICATION_CHANNEL_DESCRIPTION: 'Notifies you of incomplete tasks',
+      REMINDER_NOTIFICATION_TITLE: 'You have incomplete tasks',
       REMINDER_NOTIFICATION_BODY: 'Complete your day and rank up!',
+      FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_NAME: 'Notice',
+      FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_DESCRIPTION: 'Notices from developer',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -335,9 +339,11 @@ class AppLocalizations {
       SIGN_OUT_TITLE: '탈퇴',
       SIGN_OUT_BODY: '당신의 데이터가 랭킹 목록으로부터 삭제됩니다.\n진행하시겠습니까?',
       REMINDER_NOTIFICATION_CHANNEL_NAME: '리마인더',
-      REMINDER_NOTIFICATION_CHANNEL_DESCRIPTION: '아직 끝내지 못한 작업에 대해 알립니다.',
-      REMINDER_NOTIFICATION_TITLE: '남아있는 작업이 있습니다.',
+      REMINDER_NOTIFICATION_CHANNEL_DESCRIPTION: '아직 끝내지 못한 작업에 대해 알립니다',
+      REMINDER_NOTIFICATION_TITLE: '남아있는 작업이 있습니다',
       REMINDER_NOTIFICATION_BODY: '오늘을 완료하고 랭킹을 올려보세요!',
+      FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_NAME: '공지사항',
+      FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_DESCRIPTION: '개발자로부터의 공지사항',
     },
   };
 
@@ -431,6 +437,8 @@ class AppLocalizations {
   String get reminderNotificationChannelDescription => _localizedValues[locale.languageCode][REMINDER_NOTIFICATION_CHANNEL_DESCRIPTION];
   String get reminderNotificationTitle => _localizedValues[locale.languageCode][REMINDER_NOTIFICATION_TITLE];
   String get reminderNotificationBody => _localizedValues[locale.languageCode][REMINDER_NOTIFICATION_BODY];
+  String get firebaseMessagingNotificationChannelName => _localizedValues[locale.languageCode][FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_NAME];
+  String get firebaseMessagingNotificationChannelDescription => _localizedValues[locale.languageCode][FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_DESCRIPTION];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {

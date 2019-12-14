@@ -1,4 +1,5 @@
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:todo_app/AppColors.dart';
@@ -28,6 +29,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   int _currentSeedAddedAnimationNumber;
   AnimationController _seedAddedAnimationController;
 
+  final _firebaseMessaging = FirebaseMessaging();
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +40,36 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
+
+    _firebaseMessaging.requestNotificationPermissions();
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) {
+        debugPrint('onMessage: $message');
+        _bloc.onFirebaseMessageArrivedWhenForeground(context, message);
+        return;
+      },
+      onLaunch: (Map<String, dynamic> message) {
+        debugPrint('onLaunch: $message');
+        return;
+      },
+      onResume: (Map<String, dynamic> message) {
+        debugPrint('onResume: $message');
+        return;
+      },
+      onBackgroundMessage: _backgroundMessageHandler,
+    );
+  }
+
+  static Future<dynamic> _backgroundMessageHandler(Map<String, dynamic> message) async {
+    if (message.containsKey('data')) {
+      final data = message['data'];
+      debugPrint('background message data: $data');
+    } else if (message.containsKey('notification')) {
+      final notification = message['notification'];
+      debugPrint('background message notification: $notification');
+    }
+
+    return;
   }
 
   @override

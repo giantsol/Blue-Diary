@@ -6,7 +6,10 @@ import 'package:todo_app/domain/repository/NotificationRepository.dart';
 
 class NotificationRepositoryImpl implements NotificationRepository {
   static const NOTIFICATION_ID_REMINDER_NOTIFICATION = 1;
+  static const NOTIFICATION_ID_FIREBASE_MESSAGING_DEFAULT = 2;
+
   static const CHANNEL_ID_REMINDER_NOTIFICATION = 'reminder.notification';
+  static const CHANNEL_ID_FIREBASE_MESSAGING_NOTIFICATION = 'firebase.messaging.notification';
 
   final _notificationsPlugin = FlutterLocalNotificationsPlugin();
 
@@ -59,5 +62,25 @@ class NotificationRepositoryImpl implements NotificationRepository {
   @override
   void unscheduleReminderNotification() {
     _notificationsPlugin.cancel(NOTIFICATION_ID_REMINDER_NOTIFICATION);
+  }
+
+  @override
+  void showFirebaseMessage(BuildContext context, Map<String, dynamic> message) {
+    final notification = message['notification'];
+    final title = notification['title'];
+    final body = notification['body'];
+
+    final data = message['data'];
+    final id = data['id'] != null ? int.tryParse(data['id']) ?? NOTIFICATION_ID_FIREBASE_MESSAGING_DEFAULT
+      : NOTIFICATION_ID_FIREBASE_MESSAGING_DEFAULT;
+
+    final localizations = AppLocalizations.of(context);
+    final channelName = localizations.firebaseMessagingNotificationChannelName;
+    final channelDescription = localizations.firebaseMessagingNotificationChannelDescription;
+    final androidPlatformChannelSpecifics = AndroidNotificationDetails(CHANNEL_ID_FIREBASE_MESSAGING_NOTIFICATION,
+      channelName, channelDescription);
+    final iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    final platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    _notificationsPlugin.show(id, title, body, platformChannelSpecifics);
   }
 }

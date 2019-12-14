@@ -26,6 +26,7 @@
 .pub-cache/
 .pub/
 /build/
+.flutter-plugins-dependencies
 
 # Android related
 **/android/**/gradle-wrapper.jar
@@ -35,6 +36,7 @@
 **/android/gradlew.bat
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
+.gradle
 
 # iOS/XCode related
 **/ios/**/*.mode1v3
