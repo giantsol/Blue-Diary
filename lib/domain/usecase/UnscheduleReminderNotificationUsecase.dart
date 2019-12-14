@@ -1,10 +1,10 @@
 
 import 'package:todo_app/presentation/App.dart';
 
-class RaiseTempNotificationUsecase {
+class UnscheduleReminderNotificationUsecase {
   final _notificationRepository = dependencies.notificationRepository;
 
   void invoke() {
-    _notificationRepository.raiseTempNotification();
+    _notificationRepository.unscheduleReminderNotification();
   }
 }

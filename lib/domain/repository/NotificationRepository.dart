@@ -1,4 +1,8 @@
 
+import 'package:flutter/material.dart';
+
 abstract class NotificationRepository {
-  Future<void> raiseTempNotification();
+  Future<bool> isReminderNotificationScheduled();
+  void scheduleReminderNotification(BuildContext context);
+  void unscheduleReminderNotification();
 }

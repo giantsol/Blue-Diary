@@ -17,12 +17,14 @@ import 'package:todo_app/domain/usecase/HasShownDayScreenTutorialUsecase.dart';
 import 'package:todo_app/domain/usecase/IsDayMarkedCompletedUsecase.dart';
 import 'package:todo_app/domain/usecase/RemoveCategoryUsecase.dart';
 import 'package:todo_app/domain/usecase/RemoveToDoUsecase.dart';
+import 'package:todo_app/domain/usecase/ScheduleReminderNotificationUsecase.dart';
 import 'package:todo_app/domain/usecase/SetCategoryUsecase.dart';
 import 'package:todo_app/domain/usecase/SetDayMemoUsecase.dart';
 import 'package:todo_app/domain/usecase/SetShownDayScreenTutorialUsecase.dart';
 import 'package:todo_app/domain/usecase/SetToDoRecordUsecase.dart';
 import 'package:todo_app/domain/usecase/SetToDoUsecase.dart';
 import 'package:todo_app/domain/usecase/SetUserCheckedToDoBeforeUsecase.dart';
+import 'package:todo_app/domain/usecase/UnscheduleReminderNotificationUsecase.dart';
 import 'package:todo_app/presentation/day/DayScreenTutorial.dart';
 import 'package:todo_app/presentation/day/DayScreenTutorialCallback.dart';
 import 'package:todo_app/presentation/day/DayState.dart';
@@ -48,6 +50,8 @@ class DayBloc {
   final _hasShownDayScreenTutorialUsecase = HasShownDayScreenTutorialUsecase();
   final _setShownDayScreenTutorialUsecase = SetShownDayScreenTutorialUsecase();
   final _isDayMarkedCompletedUsecase = IsDayMarkedCompletedUsecase();
+  final _scheduleReminderNotificationUsecase = ScheduleReminderNotificationUsecase();
+  final _unscheduleReminderNotificationUsecase = UnscheduleReminderNotificationUsecase();
 
   DayBloc(DateTime date) {
     _initState(date);
@@ -191,6 +195,11 @@ class DayBloc {
     final updated = toDo.buildNew(isDone: true);
     _state.add(_state.value.buildNewToDoUpdated(updated));
     _setToDoUsecase.invoke(updated);
+
+    final allToDosDone = _state.value.currentDayRecord.toDoRecords.every((it) => it.toDo.isDone);
+    if (allToDosDone) {
+      _unscheduleReminderNotificationUsecase.invoke();
+    }
   }
 
   void onEditingCategoryTextChanged(String changed) {
@@ -239,7 +248,7 @@ class DayBloc {
     }
   }
 
-  Future<void> onToDoEditingDone() async {
+  Future<void> onToDoEditingDone(BuildContext context) async {
     if (_state.value.editingToDoRecord.toDo.text.length == 0) {
       return;
     }
@@ -261,6 +270,11 @@ class DayBloc {
       currentDayRecord: updatedDayRecord,
       scrollToBottomEvent: true,
     ));
+
+    final newToDoAdded = currentDayRecord.toDoRecords.length != toDoRecords.length;
+    if (currentDayRecord.isToday && newToDoAdded) {
+      _scheduleReminderNotificationUsecase.invoke(context);
+    }
   }
 
   void onEditorCategoryButtonClicked() {
@@ -385,6 +399,11 @@ class DayBloc {
       selectedToDoKeys: const [],
       currentDayRecord: currentDayRecord.buildNew(toDoRecords: newRecords),
     ));
+
+    final allToDosDone = newRecords.every((it) => it.toDo.isDone);
+    if (allToDosDone) {
+      _unscheduleReminderNotificationUsecase.invoke();
+    }
   }
 
   void onCategoryEditorCategoryClicked(Category category) {

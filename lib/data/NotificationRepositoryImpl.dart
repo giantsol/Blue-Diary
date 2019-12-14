@@ -1,9 +1,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/repository/NotificationRepository.dart';
 
 class NotificationRepositoryImpl implements NotificationRepository {
+  static const NOTIFICATION_ID_REMINDER_NOTIFICATION = 1;
+  static const CHANNEL_ID_REMINDER_NOTIFICATION = 'reminder.notification';
+
   final _notificationsPlugin = FlutterLocalNotificationsPlugin();
 
   NotificationRepositoryImpl() {
@@ -22,15 +26,38 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<void> raiseTempNotification() async {
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'your channel id', 'your channel name', 'your channel description',
-        importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
-    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-    var platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    return _notificationsPlugin.show(
-        0, 'plain title', 'plain body', platformChannelSpecifics,
-        payload: 'item x');
+  Future<bool> isReminderNotificationScheduled() async {
+    final pendingRequests = await _notificationsPlugin.pendingNotificationRequests();
+    return pendingRequests.any((it) => it.id == NOTIFICATION_ID_REMINDER_NOTIFICATION);
+  }
+
+  @override
+  void scheduleReminderNotification(BuildContext context) {
+    final localNow = DateTime.now();
+    if (localNow.hour >= 21) {
+      return;
+    }
+
+    final localizations = AppLocalizations.of(context);
+
+    final channelName = localizations.reminderNotificationChannelName;
+    final channelDescription = localizations.reminderNotificationChannelDescription;
+    final androidPlatformChannelSpecifics = AndroidNotificationDetails(CHANNEL_ID_REMINDER_NOTIFICATION,
+      channelName, channelDescription);
+    final iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    final platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+
+    final title = localizations.reminderNotificationTitle;
+    final body = localizations.reminderNotificationBody;
+    _notificationsPlugin.schedule(NOTIFICATION_ID_REMINDER_NOTIFICATION,
+      title,
+      body,
+      DateTime(localNow.year, localNow.month, localNow.day, 22),
+      platformChannelSpecifics);
+  }
+
+  @override
+  void unscheduleReminderNotification() {
+    _notificationsPlugin.cancel(NOTIFICATION_ID_REMINDER_NOTIFICATION);
   }
 }
