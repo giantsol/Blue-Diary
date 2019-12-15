@@ -82,6 +82,7 @@ class _RankingScreenState extends State<RankingScreen> {
                   ),
                 ),
               ),
+              // todo: show progressbar when loading ranking items
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 24, top: 8, right: 24,),

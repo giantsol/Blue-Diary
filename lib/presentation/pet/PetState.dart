@@ -9,6 +9,7 @@ class PetState {
 
   Pet get selectedPet => pets.firstWhere((it) => it.key == selectedPetKey, orElse: () => null);
   FabState get fabState {
+    // todo: show inactive fab when no seed
     final selected = selectedPet;
     return selected == null || selected.hasReachedFullLevel ? FabState.HIDDEN
       : selected.currentPhaseIndex == Pet.PHASE_INDEX_INACTIVE ? FabState.EGG

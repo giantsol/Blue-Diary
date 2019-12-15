@@ -41,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       duration: const Duration(milliseconds: 1500),
     );
 
+    // todo: integrate with ios, too
     _firebaseMessaging.requestNotificationPermissions();
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) {

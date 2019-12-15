@@ -587,6 +587,7 @@ class _DayMemo extends StatelessWidget {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(12),
+              // todo: bolden
               child: Text(
                 'MEMO',
                 style: TextStyle(
@@ -653,6 +654,7 @@ class _ToDoListView extends StatelessWidget {
         } else if (index == 1) {
           return Padding(
             padding: EdgeInsets.only(left: 36, top: 20, bottom: 12),
+            // todo: bolden
             child: Text(
               'TODO',
               style: TextStyle(

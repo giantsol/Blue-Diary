@@ -13,6 +13,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
   final _notificationsPlugin = FlutterLocalNotificationsPlugin();
 
+  // todo: use pet image when showing notifications
   NotificationRepositoryImpl() {
     _init();
   }
@@ -23,6 +24,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
     final initializationSettings = InitializationSettings(androidInitializationSettings, iosInitializationSettings);
 
     await _notificationsPlugin.initialize(initializationSettings, onSelectNotification: (payload) {
+      // todo: remove debugPrints
       debugPrint('onSelectNotification with payload: $payload');
       return;
     });

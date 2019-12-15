@@ -558,6 +558,7 @@ class _CheckPointsBox extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 12, top: 12,),
+              // todo: bolden
               child: Text(
                 'CHECK POINTS',
                 style: TextStyle(

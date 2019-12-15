@@ -11,6 +11,7 @@ import 'package:todo_app/domain/repository/RankingRepository.dart';
 
 class RankingRepositoryImpl implements RankingRepository {
   static const FIRESTORE_RANKING_USER_INFO_COLLECTION = 'ranking_user_info';
+  // todo: increase paging size
   static const RANKING_PAGING_SIZE = 2;
   static const RANKING_MAX_COUNT = 50;
 

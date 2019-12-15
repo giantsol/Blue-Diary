@@ -173,6 +173,7 @@ class RankingBloc {
   }
 
   void onLoadMoreRankingInfosClicked() {
+    // todo: show sign in dialog instead if not signed in
     _increaseRankingUserInfosCountUsecase.invoke();
   }
 
@@ -204,6 +205,7 @@ class RankingBloc {
   }
 
   void onThumbsUpClicked(RankingUserInfo userInfo) {
+    // todo: show sign in dialog instead if not signed in
     final updatedThumbedUpUids = Map.of(_state.value.thumbedUpUids);
     updatedThumbedUpUids[userInfo.uid] = true;
     _state.add(_state.value.buildNew(

@@ -50,6 +50,7 @@ class AppLocalizations {
   static const SETTINGS_NAVIGATION_TITLE = "settingsNavigationTitle";
   static const CHECK_POINT_HINT = "checkPointHint";
   static const DAY_MEMO_HINT = "dayMemoHint";
+  // todo: change wordings for first_to_do_check_*
   static const FIRST_TO_DO_CHECK_TITLE = "firstToDoCheckTitle";
   static const FIRST_TO_DO_CHECK_BODY = "firstToDoCheckBody";
   static const WEEK_TUTORIAL_HI = "weekTutorialHi";
