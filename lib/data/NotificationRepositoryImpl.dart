@@ -2,6 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:todo_app/Localization.dart';
+import 'package:todo_app/data/AppPreferences.dart';
+import 'package:todo_app/data/datasource/PetDataSource.dart';
+import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/repository/NotificationRepository.dart';
 
 class NotificationRepositoryImpl implements NotificationRepository {
@@ -11,10 +14,12 @@ class NotificationRepositoryImpl implements NotificationRepository {
   static const CHANNEL_ID_REMINDER_NOTIFICATION = 'reminder.notification';
   static const CHANNEL_ID_FIREBASE_MESSAGING_NOTIFICATION = 'firebase.messaging.notification';
 
+  final PetDataSource _petDataSource;
+  final AppPreferences _prefs;
+
   final _notificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  // todo: use pet image when showing notifications
-  NotificationRepositoryImpl() {
+  NotificationRepositoryImpl(this._petDataSource, this._prefs) {
     _init();
   }
 
@@ -37,18 +42,21 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  void scheduleReminderNotification(BuildContext context) {
+  Future<void> scheduleReminderNotification(BuildContext context) async {
     final localNow = DateTime.now();
     if (localNow.hour >= 21) {
       return;
     }
 
     final localizations = AppLocalizations.of(context);
+    final selectedPetPhase = await _getSelectedPetPhase();
 
     final channelName = localizations.reminderNotificationChannelName;
     final channelDescription = localizations.reminderNotificationChannelDescription;
     final androidPlatformChannelSpecifics = AndroidNotificationDetails(CHANNEL_ID_REMINDER_NOTIFICATION,
-      channelName, channelDescription);
+      channelName, channelDescription,
+      icon: selectedPetPhase.notificationIconName.isNotEmpty ? selectedPetPhase.notificationIconName : null,
+    );
     final iOSPlatformChannelSpecifics = IOSNotificationDetails();
     final platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
 
@@ -61,13 +69,23 @@ class NotificationRepositoryImpl implements NotificationRepository {
       platformChannelSpecifics);
   }
 
+  Future<PetPhase> _getSelectedPetPhase() async {
+    final selectedPetKey = _prefs.getSelectedPetKey();
+    if (selectedPetKey.isEmpty) {
+      return PetPhase.INVALID;
+    } else {
+      final selectedPet = await _petDataSource.getPet(selectedPetKey);
+      return selectedPet.currentPhase;
+    }
+  }
+
   @override
   void unscheduleReminderNotification() {
     _notificationsPlugin.cancel(NOTIFICATION_ID_REMINDER_NOTIFICATION);
   }
 
   @override
-  void showFirebaseMessage(BuildContext context, Map<String, dynamic> message) {
+  Future<void> showFirebaseMessage(BuildContext context, Map<String, dynamic> message) async {
     final notification = message['notification'];
     final title = notification['title'];
     final body = notification['body'];
@@ -77,10 +95,13 @@ class NotificationRepositoryImpl implements NotificationRepository {
       : NOTIFICATION_ID_FIREBASE_MESSAGING_DEFAULT;
 
     final localizations = AppLocalizations.of(context);
+    final selectedPetPhase = await _getSelectedPetPhase();
     final channelName = localizations.firebaseMessagingNotificationChannelName;
     final channelDescription = localizations.firebaseMessagingNotificationChannelDescription;
     final androidPlatformChannelSpecifics = AndroidNotificationDetails(CHANNEL_ID_FIREBASE_MESSAGING_NOTIFICATION,
-      channelName, channelDescription);
+      channelName, channelDescription,
+      icon: selectedPetPhase.notificationIconName.isNotEmpty ? selectedPetPhase.notificationIconName : null,
+    );
     final iOSPlatformChannelSpecifics = IOSNotificationDetails();
     final platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
     _notificationsPlugin.show(id, title, body, platformChannelSpecifics);

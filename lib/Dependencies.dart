@@ -32,5 +32,5 @@ class Dependencies {
   final PetRepository petRepository = PetRepositoryImpl(_database, _prefs);
   final UserRepository userRepository = UserRepositoryImpl();
   final RankingRepository rankingRepository = RankingRepositoryImpl();
-  final NotificationRepository notificationRepository = NotificationRepositoryImpl();
+  final NotificationRepository notificationRepository = NotificationRepositoryImpl(_database, _prefs);
 }

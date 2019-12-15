@@ -31,6 +31,7 @@ class Pets {
       maxExp: 10,
       titleKey: AppLocalizations.UNKNOWN_PET_EGG,
       subtitleKey: AppLocalizations.PET_A_EGG_SUBTITLE,
+      notificationIconName: 'ic_egg',
     ),
     bornPhases: const [
       PetPhase(
@@ -41,6 +42,7 @@ class Pets {
         maxExp: 20,
         titleKey: AppLocalizations.PET_A_0_TITLE,
         subtitleKey: AppLocalizations.PET_A_0_SUBTITLE,
+        notificationIconName: 'ic_pet',
       ),
       PetPhase(
         flrPath: '',
@@ -50,6 +52,7 @@ class Pets {
         maxExp: 40,
         titleKey: AppLocalizations.PET_A_1_TITLE,
         subtitleKey: AppLocalizations.PET_A_1_SUBTITLE,
+        notificationIconName: 'ic_pet',
       ),
       PetPhase(
         flrPath: '',
@@ -58,6 +61,7 @@ class Pets {
         alignment: Alignment.bottomCenter,
         titleKey: AppLocalizations.PET_A_2_TITLE,
         subtitleKey: AppLocalizations.PET_A_2_SUBTITLE,
+        notificationIconName: 'ic_pet',
       ),
     ],
   );

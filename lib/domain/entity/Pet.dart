@@ -107,6 +107,7 @@ class PetPhase {
   final String titleKey; // key in AppLocalizations
   final String subtitleKey; // key in AppLocalizations
   final String idleAnimName;
+  final String notificationIconName;
 
   const PetPhase({
     this.flrPath = '',
@@ -117,5 +118,6 @@ class PetPhase {
     this.titleKey = '',
     this.subtitleKey = '',
     this.idleAnimName = 'idle',
+    this.notificationIconName = '',
   });
 }
