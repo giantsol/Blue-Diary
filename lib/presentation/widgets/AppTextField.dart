@@ -72,6 +72,7 @@ class _AppTextFieldState extends State<AppTextField> {
         decoration: InputDecoration(
           contentPadding: EdgeInsets.all(0),
           border: InputBorder.none,
+          isDense: true,
           hintText: widget.hintText,
           hintStyle: TextStyle(
             fontSize: widget.hintTextSize,
