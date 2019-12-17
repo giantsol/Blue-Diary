@@ -50,8 +50,7 @@ class RankingRepositoryImpl implements RankingRepository {
   @override
   Future<bool> setMyRankingUserInfo(RankingUserInfo info) async {
     try {
-      // todo: change functionName to 'setMyRankingUserInfo'
-      final callable = CloudFunctions.instance.getHttpsCallable(functionName: 'setRankingUserInfo');
+      final callable = CloudFunctions.instance.getHttpsCallable(functionName: 'setMyRankingUserInfo');
       await callable.call(info.toMyRankingUserInfoUpdateMap()).timeout(const Duration(seconds: 10));
       return true;
     } catch (e) {

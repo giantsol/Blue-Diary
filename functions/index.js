@@ -7,7 +7,7 @@ exports.getTodayInMillis = functions.https.onCall((data, context) => {
     return Date.now();
 });
 
-exports.setRankingUserInfo = functions.https.onCall(async (data, context) => {
+exports.setMyRankingUserInfo = functions.https.onCall(async (data, context) => {
     const currentInMillis = Date.now();
     const uid = data.uid;
     const modifiedData = data;
