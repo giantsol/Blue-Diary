@@ -18,6 +18,8 @@ class Pet {
   final int exp;
   final int currentPhaseIndex;
 
+  bool get isValid => key.isNotEmpty;
+
   PetPhase get currentPhase => currentPhaseIndex == PHASE_INDEX_INACTIVE ? inactivePhase
     : currentPhaseIndex == PHASE_INDEX_EGG ? eggPhase
     : bornPhases[currentPhaseIndex];

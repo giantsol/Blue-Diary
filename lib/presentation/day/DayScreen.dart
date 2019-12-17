@@ -537,6 +537,7 @@ class _EmptyToDoListView extends StatelessWidget {
             style: TextStyle(
               fontSize: 18,
               color: AppColors.TEXT_BLACK,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),

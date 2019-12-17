@@ -7,13 +7,12 @@ class PetState {
   final List<Pet> pets;
   final String selectedPetKey;
 
-  Pet get selectedPet => pets.firstWhere((it) => it.key == selectedPetKey, orElse: () => null);
+  Pet get selectedPet => pets.firstWhere((it) => it.key == selectedPetKey, orElse: () => Pet.INVALID);
   FabState get fabState {
-    // todo: show inactive fab when no seed
     final selected = selectedPet;
-    return selected == null || selected.hasReachedFullLevel ? FabState.HIDDEN
-      : selected.currentPhaseIndex == Pet.PHASE_INDEX_INACTIVE ? FabState.EGG
-      : FabState.SEED;
+    return !selected.isValid || selected.hasReachedFullLevel ? FabState.HIDDEN
+      : selected.currentPhaseIndex == Pet.PHASE_INDEX_INACTIVE ? (seedCount > 0 ? FabState.EGG : FabState.EGG_INACTIVE)
+      : (seedCount > 0 ? FabState.SEED : FabState.SEED_INACTIVE);
   }
 
   const PetState({
@@ -59,5 +58,7 @@ enum PetViewState {
 enum FabState {
   HIDDEN,
   EGG,
+  EGG_INACTIVE,
   SEED,
+  SEED_INACTIVE,
 }

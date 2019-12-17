@@ -20,6 +20,7 @@ abstract class PrefsRepository {
   Future<bool> hasShownFirstCompletableDayTutorial();
   void setShownFirstCompletableDayTutorial();
   void addSeed(int count);
+  void minusSeed(int count);
   int getSeedCount();
   int getLastUpdatedMyRankingUserInfoLocalTimeMillis();
   void setLastUpdatedMyRankingUserInfoLocalTimeMillis(int value);

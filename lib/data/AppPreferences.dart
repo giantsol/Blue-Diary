@@ -89,12 +89,12 @@ class AppPreferences {
     PrefService.setBool(KEY_SHOWN_FIRST_COMPLETABLE_DAY_TUTORIAL, true);
   }
 
-  void addSeed(int count) {
-    PrefService.setInt(KEY_SEED, getSeedCount() + count);
-  }
-
   int getSeedCount() {
     return PrefService.getInt(KEY_SEED) ?? 0;
+  }
+
+  void setSeedCount(int count) {
+    PrefService.setInt(KEY_SEED, count);
   }
 
   String getSelectedPetKey() {

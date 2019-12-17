@@ -462,7 +462,7 @@ class AppDatabase implements ToDoDataSource,
   @override
   Future<Pet> getPet(String key) async {
     final pet = Pets.getPetPrototype(key);
-    if (pet == Pet.INVALID) {
+    if (!pet.isValid) {
       return pet;
     }
 

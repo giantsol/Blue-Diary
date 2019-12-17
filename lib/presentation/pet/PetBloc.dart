@@ -4,6 +4,7 @@ import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/usecase/GetAllPetsUsecase.dart';
 import 'package:todo_app/domain/usecase/GetSeedCountUsecase.dart';
 import 'package:todo_app/domain/usecase/GetSelectedPetKeyUsecase.dart';
+import 'package:todo_app/domain/usecase/MinusSeedUsecase.dart';
 import 'package:todo_app/domain/usecase/SetMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/SetPetUsecase.dart';
 import 'package:todo_app/domain/usecase/SetSelectedPetKeyUsecase.dart';
@@ -15,6 +16,7 @@ class PetBloc {
   Stream<PetState> observeState() => _state.distinct();
 
   final _getSeedCountUsecase = GetSeedCountUsecase();
+  final _minusSeedUseCase = MinusSeedUsecase();
   final _getAllPetsUsecase = GetAllPetsUsecase();
   final _getSelectedPetKeyUsecase = GetSelectedPetKeyUsecase();
   final _setPetUsecase = SetPetUsecase();
@@ -40,8 +42,12 @@ class PetBloc {
 
   Future<void> onEggFabClicked() async {
     final selectedPet = _state.value.selectedPet;
-    final updated = selectedPet.buildNew(currentPhaseIndex: selectedPet.currentPhaseIndex + 1);
-    _state.add(_state.value.buildNewSelectedPetUpdated(updated));
+    final updated = selectedPet.buildNew(currentPhaseIndex: Pet.PHASE_INDEX_EGG);
+    _state.add(_state.value.buildNewSelectedPetUpdated(updated)
+      .buildNew(seedCount: _state.value.seedCount - 1)
+    );
+
+    _minusSeedUseCase.invoke(1);
 
     await _setPetUsecase.invoke(updated);
     await _setSelectedPetKeyUsecase.invoke(updated.key);
@@ -49,15 +55,17 @@ class PetBloc {
   }
 
   Future<void> onSeedFabClicked() async {
-    // todo: use seed counts
     final selectedPet = _state.value.selectedPet;
     final prevPhaseIndex = selectedPet.currentPhaseIndex;
     final updated = selectedPet.buildNewExpIncreased();
     final updatedPhaseIndex = updated.currentPhaseIndex;
-    _state.add(_state.value.buildNewSelectedPetUpdated(updated));
+    _state.add(_state.value.buildNewSelectedPetUpdated(updated)
+      .buildNew(seedCount: _state.value.seedCount - 1)
+    );
+
+    _minusSeedUseCase.invoke(1);
 
     await _setPetUsecase.invoke(updated);
-
     if (prevPhaseIndex != updatedPhaseIndex) {
       _setMyRankingUserInfoUsecase.invoke();
     }

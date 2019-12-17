@@ -132,7 +132,7 @@ class _Header extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(left: 24, top: 12, right: 24),
               child: Center(
-                child: selectedPet == null ? Text(
+                child: !selectedPet.isValid ? Text(
                   AppLocalizations.of(context).noPetSelected,
                   style: TextStyle(
                     color: AppColors.TEXT_BLACK_LIGHT,
@@ -432,10 +432,12 @@ class _FAB extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(right: 16, bottom: 16,),
         child: FloatingActionButton(
-          child: Image.asset(state == FabState.SEED ? 'assets/ic_seed.png' : 'assets/ic_egg.png'),
-          backgroundColor: AppColors.PRIMARY,
+          child: Image.asset((state == FabState.SEED || state == FabState.SEED_INACTIVE) ? 'assets/ic_seed.png' : 'assets/ic_egg.png'),
+          backgroundColor: state == FabState.SEED_INACTIVE || state == FabState.EGG_INACTIVE ? AppColors.BACKGROUND_GREY : AppColors.PRIMARY,
           splashColor: AppColors.PRIMARY_DARK,
-          onPressed: () => state == FabState.EGG ? bloc.onEggFabClicked() : bloc.onSeedFabClicked(),
+          onPressed: state == FabState.EGG ? () => bloc.onEggFabClicked()
+            : state == FabState.SEED ? () => bloc.onSeedFabClicked()
+            : null,
         ),
       ),
     ) : const SizedBox.shrink();

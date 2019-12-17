@@ -56,7 +56,7 @@ class RankingUserInfo {
 
   PetPhase get petPhase {
     final pet = Pets.getPetPrototype(petKey);
-    if (pet == Pet.INVALID) {
+    if (!pet.isValid) {
       return PetPhase.INVALID;
     } else {
       return petPhaseIndex == Pet.PHASE_INDEX_INACTIVE ? PetPhase.INVALID

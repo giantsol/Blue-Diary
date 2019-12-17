@@ -112,7 +112,12 @@ class PrefsRepositoryImpl implements PrefsRepository {
 
   @override
   void addSeed(int count) {
-    _prefs.addSeed(count);
+    _prefs.setSeedCount(getSeedCount() + count);
+  }
+
+  @override
+  void minusSeed(int count) {
+    _prefs.setSeedCount(getSeedCount() - count);
   }
 
   @override
