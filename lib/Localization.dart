@@ -116,6 +116,8 @@ class AppLocalizations {
   static const REMINDER_NOTIFICATION_BODY = "reminderNotificationBody";
   static const FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_NAME = "firebaseMessagingNotificationChannelName";
   static const FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_DESCRIPTION = "firebaseMessagingNotificationChannelDescription";
+  static const ERROR_SIGNING_IN = "errorSigningIn";
+  static const ERROR_SIGNING_OUT = "errorSigningOut";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -233,6 +235,8 @@ class AppLocalizations {
       REMINDER_NOTIFICATION_BODY: 'Complete your day and rank up!',
       FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_NAME: 'Notice',
       FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_DESCRIPTION: 'Notices from developer',
+      ERROR_SIGNING_IN: 'Error signing in',
+      ERROR_SIGNING_OUT: 'Error signing out',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -345,6 +349,8 @@ class AppLocalizations {
       REMINDER_NOTIFICATION_BODY: '오늘을 완료하고 랭킹을 올려보세요!',
       FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_NAME: '공지사항',
       FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_DESCRIPTION: '개발자로부터의 공지사항',
+      ERROR_SIGNING_IN: '가입에 실패하였습니다',
+      ERROR_SIGNING_OUT: '탈퇴에 실패하였습니다',
     },
   };
 
@@ -440,6 +446,8 @@ class AppLocalizations {
   String get reminderNotificationBody => _localizedValues[locale.languageCode][REMINDER_NOTIFICATION_BODY];
   String get firebaseMessagingNotificationChannelName => _localizedValues[locale.languageCode][FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_NAME];
   String get firebaseMessagingNotificationChannelDescription => _localizedValues[locale.languageCode][FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_DESCRIPTION];
+  String get errorSigningIn => _localizedValues[locale.languageCode][ERROR_SIGNING_IN];
+  String get errorSigningOut => _localizedValues[locale.languageCode][ERROR_SIGNING_OUT];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {

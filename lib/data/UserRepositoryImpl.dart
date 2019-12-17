@@ -26,8 +26,7 @@ class UserRepositoryImpl implements UserRepository {
 
       await _auth.signInWithCredential(credential);
       return true;
-    } catch(e) {
-      //todo: deal with errors
+    } catch (e) {
       return false;
     }
   }
@@ -39,26 +38,29 @@ class UserRepositoryImpl implements UserRepository {
       final credential = FacebookAuthProvider.getCredential(accessToken: result.accessToken.token);
       await _auth.signInWithCredential(credential);
       return true;
-    } catch(e) {
-      //todo: deal with errors
+    } catch (e) {
       return false;
     }
   }
 
   @override
   Future<bool> signOut() async {
-    if (await _facebookLogin.isLoggedIn) {
-      await _facebookLogin.logOut();
-    }
-    if (await _googleSignIn.isSignedIn()) {
-      await _googleSignIn.signOut();
-    }
-    await _auth.signOut();
+    try {
+      if (await _facebookLogin.isLoggedIn) {
+        await _facebookLogin.logOut();
+      }
+      if (await _googleSignIn.isSignedIn()) {
+        await _googleSignIn.signOut();
+      }
+      await _auth.signOut();
 
-    final userName = await getUserDisplayName();
-    if (userName.isEmpty) {
-      return true;
-    } else {
+      final userName = await getUserDisplayName();
+      if (userName.isEmpty) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
       return false;
     }
   }

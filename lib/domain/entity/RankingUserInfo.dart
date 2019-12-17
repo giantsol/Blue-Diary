@@ -101,6 +101,8 @@ class RankingUserInfo {
     return (completionRatio * 100).toStringAsFixed(1).padLeft(4, '0');
   }
 
+  bool get isValid => uid.isNotEmpty;
+
   const RankingUserInfo({
     this.uid = '',
     this.name = '',

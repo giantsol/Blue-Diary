@@ -173,7 +173,7 @@ class _Header extends StatelessWidget {
       longestStreakDateRangeText = '${longestStreakStartDate.year}.${longestStreakStartDate.month}.${longestStreakStartDate.day} - ${longestStreakEndDate.year}.${longestStreakEndDate.month}.${longestStreakEndDate.day}';
     }
 
-    return myRankingInfo == RankingUserInfo.INVALID ? GestureDetector(
+    return !myRankingInfo.isValid ? GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () => bloc.onSignInAndJoinClicked(),
       child: Container(
@@ -579,11 +579,11 @@ class _SignInDialog extends StatelessWidget {
             children: <Widget>[
               FlatButton(
                 child: Text('Google SignIn'),
-                onPressed: () => bloc.onGoogleSignInClicked(),
+                onPressed: () => bloc.onGoogleSignInClicked(context),
               ),
               FlatButton(
                 child: Text('Facebook SignIn'),
-                onPressed: () => bloc.onFacebookSignInClicked(),
+                onPressed: () => bloc.onFacebookSignInClicked(context),
               ),
             ],
           ),
