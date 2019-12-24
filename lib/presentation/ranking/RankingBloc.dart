@@ -13,6 +13,7 @@ import 'package:todo_app/domain/usecase/GetMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/GetTodayUsecase.dart';
 import 'package:todo_app/domain/usecase/IncreaseRankingUserInfosCountUsecase.dart';
 import 'package:todo_app/domain/usecase/InitRankingUserInfosCountUsecase.dart';
+import 'package:todo_app/domain/usecase/IsSignedInUsecase.dart';
 import 'package:todo_app/domain/usecase/ObserveRankingUserInfosUsecase.dart';
 import 'package:todo_app/domain/usecase/SetMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/SetRankingUserInfoUsecase.dart';
@@ -43,6 +44,7 @@ class RankingBloc {
   final _getTodayUsecase = GetTodayUsecase();
   final _setRankingUserInfoUsecase = SetRankingUserInfoUsecase();
   final _syncTodayWithServerUsecase = SyncTodayWithServerUsecase();
+  final _isSignedInUsecase = IsSignedInUsecase();
 
   RankingBloc() {
     _initState();
@@ -68,27 +70,35 @@ class RankingBloc {
         isRankingUserInfosLoading: false,
       ));
 
-      final todaySyncedSuccessful = await _syncTodayWithServerUsecase.invoke();
-      // todo: add condition for user logged in. Only logged in users can update others' records
-      if (todaySyncedSuccessful) {
-        final today = await _getTodayUsecase.invoke();
-        if (today != DateRepository.INVALID_DATE) {
-          event.rankingUserInfos.forEach((it) {
-            final firstLaunchDate = it.firstLaunchDateMillis != 0 ? DateTime.fromMillisecondsSinceEpoch(it.firstLaunchDateMillis)
-              : DateRepository.INVALID_DATE;
-            if (firstLaunchDate != DateRepository.INVALID_DATE) {
-              final totalDaysCount = today.difference(firstLaunchDate).inDays + 1;
-              final completedDaysCount = it.completedDaysCount;
-              final double completionRatio = totalDaysCount > 0 ? completedDaysCount / totalDaysCount : 0;
+      final isSignedIn = await _isSignedInUsecase.invoke();
+      if (isSignedIn) {
+        final todaySyncedSuccessful = await _syncTodayWithServerUsecase.invoke();
+        if (todaySyncedSuccessful) {
+          final today = await _getTodayUsecase.invoke();
+          if (today != DateRepository.INVALID_DATE) {
+            event.rankingUserInfos.forEach((it) {
+              final firstLaunchDate = it.firstLaunchDateMillis != 0 ? DateTime
+                .fromMillisecondsSinceEpoch(it.firstLaunchDateMillis)
+                : DateRepository.INVALID_DATE;
+              if (firstLaunchDate != DateRepository.INVALID_DATE) {
+                final totalDaysCount = today
+                  .difference(firstLaunchDate)
+                  .inDays + 1;
+                final completedDaysCount = it.completedDaysCount;
+                final double completionRatio = totalDaysCount > 0
+                  ? completedDaysCount / totalDaysCount
+                  : 0;
 
-              if (it.completionRatio != completionRatio) {
-                final updated = it.buildNew(completionRatio: completionRatio);
-                // todo: remove debugPrint
-                debugPrint('updating completion ratio of id: ${updated.uid}');
-                _setRankingUserInfoUsecase.invoke(updated);
+                if (it.completionRatio != completionRatio) {
+                  final updated = it.buildNew(completionRatio: completionRatio);
+                  // todo: remove debugPrint
+                  debugPrint('updating completion ratio of id: ${updated.uid}');
+                  // todo: change usecase name to _updateRankingUserInfosCompletionRatios
+                  _setRankingUserInfoUsecase.invoke(updated);
+                }
               }
-            }
-          });
+            });
+          }
         }
       }
     });
@@ -165,7 +175,7 @@ class RankingBloc {
     if (_state.value.showMyRankingInfoLoading) {
       return;
     }
-    
+
     _state.add(_state.value.buildNew(
       showMyRankingInfoLoading: true,
     ));
