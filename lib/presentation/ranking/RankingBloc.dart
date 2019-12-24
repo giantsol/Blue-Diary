@@ -68,6 +68,7 @@ class RankingBloc {
       ));
 
       final todaySyncedSuccessful = await _syncTodayWithServerUsecase.invoke();
+      // todo: add condition for user logged in. Only logged in users can update others' records
       if (todaySyncedSuccessful) {
         final today = await _getTodayUsecase.invoke();
         if (today != DateRepository.INVALID_DATE) {

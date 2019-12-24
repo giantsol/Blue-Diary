@@ -1,4 +1,5 @@
 
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:todo_app/AppColors.dart';
@@ -208,10 +209,9 @@ class _SelectedPetView extends StatelessWidget {
             child: SizedBox(
               width: petSize,
               height: petSize,
-              //todo: change to flare
-              child: Image.asset(
-                currentPhase.imgPath,
-                fit: BoxFit.fill,
+              child: FlareActor(
+                currentPhase.flrPath,
+                animation: currentPhase.idleAnimName,
               ),
             ),
           ),
@@ -326,9 +326,8 @@ class _Phases extends StatelessWidget {
                       child: SizedBox(
                         width: petSize,
                         height: petSize,
-                        child: Image.asset(
-                          phase.imgPath,
-                          fit: BoxFit.fill,
+                        child: FlareActor(
+                          phase.flrPath,
                         ),
                       ),
                     ),
@@ -467,9 +466,8 @@ class _PetPreview extends StatelessWidget {
         child: SizedBox(
           width: 48,
           height: 48,
-          child: Image.asset(
-            pet.currentPhase.imgPath,
-            fit: BoxFit.fill,
+          child: FlareActor(
+            pet.currentPhase.flrPath,
           ),
         ),
       ),

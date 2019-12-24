@@ -102,7 +102,6 @@ class PetPhase {
   static const INVALID = const PetPhase();
 
   final String flrPath;
-  final String imgPath;
   final double sizeRatio; // between 0 ~ 1.0
   final Alignment alignment; // how to align flr/img
   final int maxExp;
@@ -113,7 +112,6 @@ class PetPhase {
 
   const PetPhase({
     this.flrPath = '',
-    this.imgPath = '',
     this.sizeRatio = 1.0,
     this.alignment = Alignment.center,
     this.maxExp = 0,

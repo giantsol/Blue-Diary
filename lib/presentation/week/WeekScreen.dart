@@ -1262,10 +1262,9 @@ class _InteractivePetState extends State<_InteractivePet> {
                 child: SizedBox(
                   width: petSize,
                   height: petSize,
-                  //todo: change to flare
-                  child: Image.asset(
-                    currentPhase.imgPath,
-                    fit: BoxFit.fill,
+                  child: FlareActor(
+                    currentPhase.flrPath,
+                    animation: currentPhase.idleAnimName,
                   ),
                 ),
               ),

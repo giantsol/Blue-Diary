@@ -37,7 +37,7 @@ dependencies:
 
   vibration: 1.2.2
 
-  flare_flutter: ^1.6.2
+  flare_flutter: ^1.8.3
 
   open_appstore: ^1.0.2
 

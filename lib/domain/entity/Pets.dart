@@ -1,9 +1,9 @@
 
-// Available pets in app
 import 'package:flutter/material.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/Pet.dart';
 
+// Available pets in app
 class Pets {
   static List<Pet> getPetPrototypes() => [
     _PET_A,
@@ -17,15 +17,14 @@ class Pets {
   static const _PET_A = const Pet(
     key: Pet.KEY_A,
     inactivePhase: PetPhase(
-      imgPath: 'assets/ic_check.png',
-      sizeRatio: 0.6,
-      alignment: Alignment.bottomCenter,
+      flrPath: 'assets/ic_question.flr',
+      sizeRatio: 0.55,
+      alignment: Alignment.center,
       titleKey: AppLocalizations.UNKNOWN_PET_NAME,
       subtitleKey: AppLocalizations.PET_A_INACTIVE_SUBTITLE,
     ),
     eggPhase: PetPhase(
-      flrPath: '', // todo: add flrPath
-      imgPath: 'assets/ic_egg.png',
+      flrPath: 'assets/pet_a_01.flr',
       sizeRatio: 0.6,
       alignment: Alignment.bottomCenter,
       maxExp: 10,
@@ -35,8 +34,7 @@ class Pets {
     ),
     bornPhases: const [
       PetPhase(
-        flrPath: '',
-        imgPath: 'assets/ic_pet.png',
+        flrPath: 'assets/pet_a_01.flr',
         sizeRatio: 0.6,
         alignment: Alignment.bottomCenter,
         maxExp: 20,
@@ -45,8 +43,7 @@ class Pets {
         notificationIconName: 'ic_pet',
       ),
       PetPhase(
-        flrPath: '',
-        imgPath: 'assets/ic_pet.png',
+        flrPath: 'assets/pet_a_01.flr',
         sizeRatio: 0.6,
         alignment: Alignment.bottomCenter,
         maxExp: 40,
@@ -55,8 +52,7 @@ class Pets {
         notificationIconName: 'ic_pet',
       ),
       PetPhase(
-        flrPath: '',
-        imgPath: 'assets/ic_pet.png',
+        flrPath: 'assets/pet_a_01.flr',
         sizeRatio: 0.6,
         alignment: Alignment.bottomCenter,
         titleKey: AppLocalizations.PET_A_2_TITLE,
@@ -69,15 +65,14 @@ class Pets {
   static const _PET_B = const Pet(
     key: Pet.KEY_B,
     inactivePhase: PetPhase(
-      imgPath: 'assets/ic_preview_memo.png',
-      sizeRatio: 0.6,
+      flrPath: 'assets/ic_question.flr',
+      sizeRatio: 0.55,
       alignment: Alignment.center,
       titleKey: AppLocalizations.UNKNOWN_PET_NAME,
       subtitleKey: AppLocalizations.PET_B_INACTIVE_SUBTITLE,
     ),
     eggPhase: PetPhase(
-      flrPath: '', // todo: add flrPath
-      imgPath: 'assets/ic_egg.png',
+      flrPath: 'assets/pet_a_01.flr',
       sizeRatio: 0.6,
       alignment: Alignment.bottomCenter,
       maxExp: 20,
@@ -86,8 +81,7 @@ class Pets {
     ),
     bornPhases: const [
       PetPhase(
-        flrPath: '',
-        imgPath: 'assets/ic_preview_memo.png',
+        flrPath: 'assets/pet_a_01.flr',
         sizeRatio: 0.6,
         alignment: Alignment.center,
         maxExp: 30,
@@ -95,8 +89,7 @@ class Pets {
         subtitleKey: AppLocalizations.PET_B_0_SUBTITLE,
       ),
       PetPhase(
-        flrPath: '',
-        imgPath: 'assets/ic_preview_todo.png',
+        flrPath: 'assets/pet_a_01.flr',
         sizeRatio: 0.7,
         alignment: Alignment.bottomCenter,
         maxExp: 50,
@@ -104,8 +97,7 @@ class Pets {
         subtitleKey: AppLocalizations.PET_B_1_SUBTITLE,
       ),
       PetPhase(
-        flrPath: '',
-        imgPath: 'assets/ic_ranking.png',
+        flrPath: 'assets/pet_a_01.flr',
         sizeRatio: 0.8,
         alignment: Alignment.bottomCenter,
         titleKey: AppLocalizations.PET_B_2_TITLE,

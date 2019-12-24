@@ -1,4 +1,5 @@
 
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Delegators.dart';
@@ -241,10 +242,9 @@ class _Header extends StatelessWidget {
                       child: SizedBox(
                         width: petMaxSize * petPhase.sizeRatio,
                         height: petMaxSize * petPhase.sizeRatio,
-                        //todo: change to flare
-                        child: Image.asset(
-                          petPhase.imgPath,
-                          fit: BoxFit.fill,
+                        child: FlareActor(
+                          petPhase.flrPath,
+                          animation: petPhase.idleAnimName,
                         ),
                       ),
                     ): Container(
@@ -454,9 +454,8 @@ class _RankingItem extends StatelessWidget {
           SizedBox(
             width: 36,
             height: 36,
-            child: petPhase != PetPhase.INVALID ? Image.asset(
-              petPhase.imgPath,
-              fit: BoxFit.fill,
+            child: petPhase != PetPhase.INVALID ? FlareActor(
+              petPhase.flrPath,
             ) : userInfo.petKey.isEmpty ? Center(
               child: Text(
                 AppLocalizations.of(context).noPet,
