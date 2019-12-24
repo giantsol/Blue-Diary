@@ -202,9 +202,15 @@ class RankingBloc {
     ));
   }
 
-  void onLoadMoreRankingInfosClicked() {
-    // todo: show sign in dialog instead if not signed in
-    _increaseRankingUserInfosCountUsecase.invoke();
+  Future<void> onLoadMoreRankingInfosClicked() async {
+    final isSignedIn = await _isSignedInUsecase.invoke();
+    if (!isSignedIn) {
+      _state.add(_state.value.buildNew(
+        signInDialogShown: true,
+      ));
+    } else {
+      _increaseRankingUserInfosCountUsecase.invoke();
+    }
   }
 
   void onSignInAndJoinClicked() {
@@ -234,15 +240,21 @@ class RankingBloc {
     ));
   }
 
-  void onThumbsUpClicked(RankingUserInfo userInfo) {
-    // todo: show sign in dialog instead if not signed in
-    final updatedThumbedUpUids = Map.of(_state.value.thumbedUpUids);
-    updatedThumbedUpUids[userInfo.uid] = true;
-    _state.add(_state.value.buildNew(
-      thumbedUpUids: updatedThumbedUpUids,
-    ));
+  Future<void> onThumbsUpClicked(RankingUserInfo userInfo) async {
+    final isSignedIn = await _isSignedInUsecase.invoke();
+    if (!isSignedIn) {
+      _state.add(_state.value.buildNew(
+        signInDialogShown: true,
+      ));
+    } else {
+      final updatedThumbedUpUids = Map.of(_state.value.thumbedUpUids);
+      updatedThumbedUpUids[userInfo.uid] = true;
+      _state.add(_state.value.buildNew(
+        thumbedUpUids: updatedThumbedUpUids,
+      ));
 
-    _addThumbsUpUsecase.invoke(userInfo);
+      _addThumbsUpUsecase.invoke(userInfo);
+    }
   }
 
   void dispose() {
