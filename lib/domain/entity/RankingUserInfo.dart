@@ -164,4 +164,10 @@ class RankingUserInfo {
       KEY_THUMBS_UP: thumbsUp,
     };
   }
+
+  Map<String, dynamic> toCompletionRatioUpdateMap() {
+    return {
+      KEY_COMPLETION_RATIO: completionRatio,
+    };
+  }
 }

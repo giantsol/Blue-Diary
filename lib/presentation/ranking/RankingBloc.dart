@@ -16,11 +16,11 @@ import 'package:todo_app/domain/usecase/InitRankingUserInfosCountUsecase.dart';
 import 'package:todo_app/domain/usecase/IsSignedInUsecase.dart';
 import 'package:todo_app/domain/usecase/ObserveRankingUserInfosUsecase.dart';
 import 'package:todo_app/domain/usecase/SetMyRankingUserInfoUsecase.dart';
-import 'package:todo_app/domain/usecase/SetRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/SignInWithFacebookUsecase.dart';
 import 'package:todo_app/domain/usecase/SignInWithGoogleUsecase.dart';
 import 'package:todo_app/domain/usecase/SignOutUsecase.dart';
 import 'package:todo_app/domain/usecase/SyncTodayWithServerUsecase.dart';
+import 'package:todo_app/domain/usecase/UpdateRankingUserInfosCompletionRatioUsecase.dart';
 import 'package:todo_app/presentation/ranking/RankingState.dart';
 
 class RankingBloc {
@@ -42,9 +42,9 @@ class RankingBloc {
   final _increaseRankingUserInfosCountUsecase = IncreaseRankingUserInfosCountUsecase();
   final _addThumbsUpUsecase = AddThumbsUpUsecase();
   final _getTodayUsecase = GetTodayUsecase();
-  final _setRankingUserInfoUsecase = SetRankingUserInfoUsecase();
   final _syncTodayWithServerUsecase = SyncTodayWithServerUsecase();
   final _isSignedInUsecase = IsSignedInUsecase();
+  final _updateRankingUserInfosCompletionRatioUsecase = UpdateRankingUserInfosCompletionRatioUsecase();
 
   RankingBloc() {
     _initState();
@@ -76,28 +76,28 @@ class RankingBloc {
         if (todaySyncedSuccessful) {
           final today = await _getTodayUsecase.invoke();
           if (today != DateRepository.INVALID_DATE) {
+            final List<RankingUserInfo> updateNeededRankingUserInfos = [];
+
             event.rankingUserInfos.forEach((it) {
-              final firstLaunchDate = it.firstLaunchDateMillis != 0 ? DateTime
-                .fromMillisecondsSinceEpoch(it.firstLaunchDateMillis)
+              final firstLaunchDate = it.firstLaunchDateMillis != 0 ? DateTime.fromMillisecondsSinceEpoch(it.firstLaunchDateMillis)
                 : DateRepository.INVALID_DATE;
               if (firstLaunchDate != DateRepository.INVALID_DATE) {
-                final totalDaysCount = today
-                  .difference(firstLaunchDate)
-                  .inDays + 1;
+                final totalDaysCount = today.difference(firstLaunchDate).inDays + 1;
                 final completedDaysCount = it.completedDaysCount;
-                final double completionRatio = totalDaysCount > 0
-                  ? completedDaysCount / totalDaysCount
-                  : 0;
+                final double completionRatio = totalDaysCount > 0 ? completedDaysCount / totalDaysCount : 0;
 
                 if (it.completionRatio != completionRatio) {
                   final updated = it.buildNew(completionRatio: completionRatio);
                   // todo: remove debugPrint
                   debugPrint('updating completion ratio of id: ${updated.uid}');
-                  // todo: change usecase name to _updateRankingUserInfosCompletionRatios
-                  _setRankingUserInfoUsecase.invoke(updated);
+                  updateNeededRankingUserInfos.add(updated);
                 }
               }
             });
+
+            if (updateNeededRankingUserInfos.isNotEmpty) {
+              _updateRankingUserInfosCompletionRatioUsecase.invoke(updateNeededRankingUserInfos);
+            }
           }
         }
       }

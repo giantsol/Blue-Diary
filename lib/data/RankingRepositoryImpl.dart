@@ -40,14 +40,6 @@ class RankingRepositoryImpl implements RankingRepository {
   }
 
   @override
-  Future<void> setRankingUserInfo(RankingUserInfo info) {
-    return Firestore.instance
-      .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
-      .document(info.uid)
-      .setData(info.toMyRankingUserInfoUpdateMap(), merge: true);
-  }
-
-  @override
   Future<bool> setMyRankingUserInfo(RankingUserInfo info) async {
     try {
       final callable = CloudFunctions.instance.getHttpsCallable(functionName: 'setMyRankingUserInfo');
@@ -130,6 +122,18 @@ class RankingRepositoryImpl implements RankingRepository {
     Firestore.instance
       .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
       .document(increasedInfo.uid)
-      .setData(increasedInfo.toThumbsUpUpdateMap(), merge: true);
+      .updateData(increasedInfo.toThumbsUpUpdateMap());
+  }
+
+  @override
+  void updateCompletionRatios(List<RankingUserInfo> infos) {
+    final collection = Firestore.instance.collection(FIRESTORE_RANKING_USER_INFO_COLLECTION);
+    final batch = Firestore.instance.batch();
+
+    for (RankingUserInfo info in infos) {
+      batch.updateData(collection.document(info.uid), info.toCompletionRatioUpdateMap());
+    }
+
+    batch.commit();
   }
 }
