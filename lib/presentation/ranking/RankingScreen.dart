@@ -83,11 +83,20 @@ class _RankingScreenState extends State<RankingScreen> {
                   ),
                 ),
               ),
-              // todo: show progressbar when loading ranking items
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 24, top: 8, right: 24,),
-                  child: ListView.builder(
+                  child: state.isRankingUserInfosLoading ? Center(
+                    child: CircularProgressIndicator(),
+                  ) : state.rankingUserInfos.length == 0 ? Center(
+                    child: Text(
+                      AppLocalizations.of(context).noRankingUserInfos,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: AppColors.TEXT_BLACK,
+                      ),
+                    ),
+                  ) : ListView.builder(
                     itemCount: state.hasMoreRankingInfos ? state.rankingUserInfos.length + 1 : state.rankingUserInfos.length,
                     itemBuilder: (context, index) {
                       if (index <= state.rankingUserInfos.length - 1) {

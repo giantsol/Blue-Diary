@@ -117,6 +117,7 @@ class AppLocalizations {
   static const FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_DESCRIPTION = "firebaseMessagingNotificationChannelDescription";
   static const ERROR_SIGNING_IN = "errorSigningIn";
   static const ERROR_SIGNING_OUT = "errorSigningOut";
+  static const NO_RANKING_USER_INFOS = "noRankingUserInfos";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -236,6 +237,7 @@ class AppLocalizations {
       FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_DESCRIPTION: 'Notices from developer',
       ERROR_SIGNING_IN: 'Error signing in',
       ERROR_SIGNING_OUT: 'Error signing out',
+      NO_RANKING_USER_INFOS: 'No ranking data',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -350,6 +352,7 @@ class AppLocalizations {
       FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_DESCRIPTION: '개발자로부터의 공지사항',
       ERROR_SIGNING_IN: '가입에 실패하였습니다',
       ERROR_SIGNING_OUT: '탈퇴에 실패하였습니다',
+      NO_RANKING_USER_INFOS: '랭킹 데이터가 없습니다',
     },
   };
 
@@ -447,6 +450,7 @@ class AppLocalizations {
   String get firebaseMessagingNotificationChannelDescription => _localizedValues[locale.languageCode][FIREBASE_MESSAGING_NOTIFICATION_CHANNEL_DESCRIPTION];
   String get errorSigningIn => _localizedValues[locale.languageCode][ERROR_SIGNING_IN];
   String get errorSigningOut => _localizedValues[locale.languageCode][ERROR_SIGNING_OUT];
+  String get noRankingUserInfos => _localizedValues[locale.languageCode][NO_RANKING_USER_INFOS];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {

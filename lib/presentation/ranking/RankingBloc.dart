@@ -65,6 +65,7 @@ class RankingBloc {
       _state.add(_state.value.buildNew(
         rankingUserInfos: event.rankingUserInfos,
         hasMoreRankingInfos: event.hasMore,
+        isRankingUserInfosLoading: false,
       ));
 
       final todaySyncedSuccessful = await _syncTodayWithServerUsecase.invoke();
@@ -82,6 +83,7 @@ class RankingBloc {
 
               if (it.completionRatio != completionRatio) {
                 final updated = it.buildNew(completionRatio: completionRatio);
+                // todo: remove debugPrint
                 debugPrint('updating completion ratio of id: ${updated.uid}');
                 _setRankingUserInfoUsecase.invoke(updated);
               }
