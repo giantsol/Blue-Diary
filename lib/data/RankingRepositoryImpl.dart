@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/entity/RankingUserInfosEvent.dart';
@@ -28,14 +29,19 @@ class RankingRepositoryImpl implements RankingRepository {
 
   @override
   Future<RankingUserInfo> getRankingUserInfo(String uid) async {
-    final snapshot = await Firestore.instance
-      .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
-      .document(uid)
-      .get();
-    if (snapshot == null || snapshot.data == null) {
+    try {
+      final snapshot = await Firestore.instance
+        .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
+        .document(uid)
+        .get()
+        .timeout(const Duration(seconds: 5));
+      if (snapshot == null || snapshot.data == null) {
+        return RankingUserInfo.INVALID;
+      } else {
+        return RankingUserInfo.fromMap(snapshot.data);
+      }
+    } catch (e) {
       return RankingUserInfo.INVALID;
-    } else {
-      return RankingUserInfo.fromMap(snapshot.data);
     }
   }
 
@@ -96,6 +102,8 @@ class RankingRepositoryImpl implements RankingRepository {
         hasMore: hasMore,
       );
       _rankingUserInfosEventSubject.add(event);
+    }, onError: (error) {
+        debugPrint('Error while receiving rankingUserInfos: $error');
     });
 
     _currentRankingMaxCount = maxCount;
@@ -107,22 +115,37 @@ class RankingRepositoryImpl implements RankingRepository {
   }
 
   @override
-  Future<void> deleteRankingUserInfo(String uid) {
-    return Firestore.instance
-      .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
-      .document(uid)
-      .delete();
+  Future<bool> deleteRankingUserInfo(String uid) async {
+    try {
+      await Firestore.instance.runTransaction((transaction) async {
+        final doc = Firestore.instance
+          .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
+          .document(uid);
+        transaction.delete(doc);
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   @override
-  void addThumbsUp(RankingUserInfo info) {
-    final increasedInfo = info.buildNew(
-      thumbsUp: info.thumbsUp + 1,
-    );
-    Firestore.instance
-      .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
-      .document(increasedInfo.uid)
-      .updateData(increasedInfo.toThumbsUpUpdateMap());
+  void addThumbsUp(String uid) {
+    try {
+      Firestore.instance.runTransaction((transaction) async {
+        final doc = Firestore.instance
+          .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
+          .document(uid);
+        final snapshot = await transaction.get(doc);
+
+        if (snapshot.data != null) {
+          final rankingUserInfo = RankingUserInfo.fromMap(snapshot.data);
+          final updated = rankingUserInfo.buildNew(thumbsUp: rankingUserInfo.thumbsUp + 1);
+
+          transaction.update(doc, updated.toThumbsUpUpdateMap());
+        }
+      });
+    } catch (e) { }
   }
 
   @override

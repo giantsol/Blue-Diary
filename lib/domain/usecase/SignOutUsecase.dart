@@ -1,6 +1,4 @@
 
-import 'package:todo_app/domain/entity/RankingUserInfo.dart';
-import 'package:todo_app/domain/usecase/GetMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/presentation/App.dart';
 
 class SignOutUsecase {
@@ -8,18 +6,18 @@ class SignOutUsecase {
   final _rankingRepository = dependencies.rankingRepository;
   final _prefsRepository = dependencies.prefsRepository;
 
-  final _getMyRankingUserInfoUsecase = GetMyRankingUserInfoUsecase();
-
-  Future<RankingUserInfo> invoke() async {
+  Future<bool> invoke() async {
     final uid = await _userRepository.getUserId();
     if (uid.isEmpty) {
-      return RankingUserInfo.INVALID;
+      return false;
     }
 
-    _rankingRepository.deleteRankingUserInfo(uid);
-    _prefsRepository.setLastUpdatedMyRankingUserInfoLocalTimeMillis(0);
-    await _userRepository.signOut();
-
-    return _getMyRankingUserInfoUsecase.invoke();
+    final deleted = await _rankingRepository.deleteRankingUserInfo(uid);
+    if (deleted) {
+      _prefsRepository.setLastUpdatedMyRankingUserInfoLocalTimeMillis(0);
+      return await _userRepository.signOut();
+    } else {
+      return false;
+    }
   }
 }

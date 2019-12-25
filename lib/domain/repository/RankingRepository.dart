@@ -8,7 +8,7 @@ abstract class RankingRepository {
   Stream<RankingUserInfosEvent> observeRankingUserInfos();
   void initRankingUserInfosCount();
   void increaseRankingUserInfosCount();
-  Future<void> deleteRankingUserInfo(String uid);
-  void addThumbsUp(RankingUserInfo info);
+  Future<bool> deleteRankingUserInfo(String uid);
+  void addThumbsUp(String uid);
   void updateCompletionRatios(List<RankingUserInfo> infos);
 }

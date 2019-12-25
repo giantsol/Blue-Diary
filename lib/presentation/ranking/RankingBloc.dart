@@ -55,6 +55,7 @@ class RankingBloc {
   }
 
   Future<void> _initState() async {
+    // todo: check signed in state too to determine if it's signed in but failed to load, or really signed out
     final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
 
     _state.add(_state.value.buildNew(
@@ -156,18 +157,23 @@ class RankingBloc {
         showMyRankingInfoLoading: true,
       ));
 
-      final myRankingUserInfo = await _signOutUsecase.invoke();
-      if (myRankingUserInfo.isValid) {
+      final signOutSuccess = await _signOutUsecase.invoke();
+      if (signOutSuccess) {
+        final myRankingUserInfo = await _getMyRankingUserInfoUsecase.invoke();
+        _state.add(_state.value.buildNew(
+          myRankingUserInfo: myRankingUserInfo,
+          showMyRankingInfoLoading: false,
+        ));
+
+        _initRankingUserInfosCountUsecase.invoke();
+      } else {
         final errorSigningOutText = AppLocalizations.of(context).errorSigningOut;
         delegator.showSnackBar(errorSigningOutText, const Duration(seconds: 2));
+
+        _state.add(_state.value.buildNew(
+          showMyRankingInfoLoading: false,
+        ));
       }
-
-      _state.add(_state.value.buildNew(
-        myRankingUserInfo: myRankingUserInfo,
-        showMyRankingInfoLoading: false,
-      ));
-
-      _initRankingUserInfosCountUsecase.invoke();
     });
   }
 
@@ -253,7 +259,7 @@ class RankingBloc {
         thumbedUpUids: updatedThumbedUpUids,
       ));
 
-      _addThumbsUpUsecase.invoke(userInfo);
+      _addThumbsUpUsecase.invoke(userInfo.uid);
     }
   }
 
