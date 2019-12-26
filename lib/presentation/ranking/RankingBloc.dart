@@ -32,7 +32,7 @@ class RankingBloc {
 
   StreamSubscription _rankingUserInfosEventSubscription;
 
-  final _getMyRankingUserInfoUsecase = GetMyRankingUserInfoUsecase();
+  final _getMyRankingUserInfoUsecase = GetMyRankingUserInfoStateUsecase();
   final _observeRankingUserInfosUsecase = ObserveRankingUserInfosUsecase();
   final _initRankingUserInfosCountUsecase = InitRankingUserInfosCountUsecase();
   final _setMyRankingUserInfoUsecase = SetMyRankingUserInfoUsecase();
@@ -55,12 +55,11 @@ class RankingBloc {
   }
 
   Future<void> _initState() async {
-    // todo: check signed in state too to determine if it's signed in but failed to load, or really signed out
-    final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
+    final myRankingInfoState = await _getMyRankingUserInfoUsecase.invoke();
 
     _state.add(_state.value.buildNew(
       viewState: RankingViewState.NORMAL,
-      myRankingUserInfo: myRankingInfo,
+      myRankingUserInfoState: myRankingInfoState,
     ));
 
     _rankingUserInfosEventSubscription = _observeRankingUserInfosUsecase.invoke()
@@ -116,12 +115,12 @@ class RankingBloc {
     ));
 
     final myRankingUserInfo = await _signInWithGoogleUsecase.invoke();
-    if (!myRankingUserInfo.isValid) {
+    if (!myRankingUserInfo.isSignedIn) {
       delegator.showSnackBar(errorSigningInText, const Duration(seconds: 2));
     }
 
     _state.add(_state.value.buildNew(
-      myRankingUserInfo: myRankingUserInfo,
+      myRankingUserInfoState: myRankingUserInfo,
       showMyRankingInfoLoading: false,
     ));
   }
@@ -135,12 +134,12 @@ class RankingBloc {
     ));
 
     final myRankingUserInfo = await _signInWithFacebookUsecase.invoke();
-    if (!myRankingUserInfo.isValid) {
+    if (!myRankingUserInfo.isSignedIn) {
       delegator.showSnackBar(errorSigningInText, const Duration(seconds: 2));
     }
 
     _state.add(_state.value.buildNew(
-      myRankingUserInfo: myRankingUserInfo,
+      myRankingUserInfoState: myRankingUserInfo,
       showMyRankingInfoLoading: false,
     ));
   }
@@ -159,9 +158,9 @@ class RankingBloc {
 
       final signOutSuccess = await _signOutUsecase.invoke();
       if (signOutSuccess) {
-        final myRankingUserInfo = await _getMyRankingUserInfoUsecase.invoke();
+        final myRankingUserInfoState = await _getMyRankingUserInfoUsecase.invoke();
         _state.add(_state.value.buildNew(
-          myRankingUserInfo: myRankingUserInfo,
+          myRankingUserInfoState: myRankingUserInfoState,
           showMyRankingInfoLoading: false,
         ));
 
@@ -189,9 +188,9 @@ class RankingBloc {
     final updateResult = await _setMyRankingUserInfoUsecase.invoke();
     switch (updateResult) {
       case SetMyRankingUserInfoResult.SUCCESS:
-        final myRankingInfo = await _getMyRankingUserInfoUsecase.invoke();
+        final myRankingInfoState = await _getMyRankingUserInfoUsecase.invoke();
         _state.add(_state.value.buildNew(
-          myRankingUserInfo: myRankingInfo,
+          myRankingUserInfoState: myRankingInfoState,
         ));
         break;
       case SetMyRankingUserInfoResult.FAIL_TRY_LATER:
@@ -261,6 +260,22 @@ class RankingBloc {
 
       _addThumbsUpUsecase.invoke(userInfo.uid);
     }
+  }
+
+  Future<void> onReloadMyRankingUserInfoClicked() async {
+    if (_state.value.showMyRankingInfoLoading) {
+      return;
+    }
+
+    _state.add(_state.value.buildNew(
+      showMyRankingInfoLoading: true,
+    ));
+
+    final myRankingUserInfoState = await _getMyRankingUserInfoUsecase.invoke();
+    _state.add(_state.value.buildNew(
+      showMyRankingInfoLoading: false,
+      myRankingUserInfoState: myRankingUserInfoState,
+    ));
   }
 
   void dispose() {

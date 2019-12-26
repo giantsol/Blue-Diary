@@ -1,11 +1,12 @@
 
+import 'package:todo_app/domain/entity/MyRankingUserInfoState.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 
 class RankingState {
   final RankingViewState viewState;
   final List<RankingUserInfo> rankingUserInfos;
   final bool hasMoreRankingInfos;
-  final RankingUserInfo myRankingUserInfo;
+  final MyRankingUserInfoState myRankingUserInfoState;
   final bool signInDialogShown;
   final Map<String, bool> thumbedUpUids;
   final bool showMyRankingInfoLoading;
@@ -15,7 +16,7 @@ class RankingState {
     this.viewState = RankingViewState.LOADING,
     this.rankingUserInfos = const [],
     this.hasMoreRankingInfos = false,
-    this.myRankingUserInfo = RankingUserInfo.INVALID,
+    this.myRankingUserInfoState = MyRankingUserInfoState.INVALID,
     this.signInDialogShown = false,
     this.thumbedUpUids = const {},
     this.showMyRankingInfoLoading = false,
@@ -26,7 +27,7 @@ class RankingState {
     RankingViewState viewState,
     List<RankingUserInfo> rankingUserInfos,
     bool hasMoreRankingInfos,
-    RankingUserInfo myRankingUserInfo,
+    MyRankingUserInfoState myRankingUserInfoState,
     bool signInDialogShown,
     Map<String, bool> thumbedUpUids,
     bool showMyRankingInfoLoading,
@@ -36,7 +37,7 @@ class RankingState {
       viewState: viewState ?? this.viewState,
       rankingUserInfos: rankingUserInfos ?? this.rankingUserInfos,
       hasMoreRankingInfos: hasMoreRankingInfos ?? this.hasMoreRankingInfos,
-      myRankingUserInfo: myRankingUserInfo ?? this.myRankingUserInfo,
+      myRankingUserInfoState: myRankingUserInfoState ?? this.myRankingUserInfoState,
       signInDialogShown: signInDialogShown ?? this.signInDialogShown,
       thumbedUpUids: thumbedUpUids ?? this.thumbedUpUids,
       showMyRankingInfoLoading: showMyRankingInfoLoading ?? this.showMyRankingInfoLoading,

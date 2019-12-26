@@ -29,6 +29,10 @@ class RankingRepositoryImpl implements RankingRepository {
 
   @override
   Future<RankingUserInfo> getRankingUserInfo(String uid) async {
+    if (uid.isEmpty) {
+      return RankingUserInfo.INVALID;
+    }
+
     try {
       final snapshot = await Firestore.instance
         .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)

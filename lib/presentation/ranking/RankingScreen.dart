@@ -5,6 +5,7 @@ import 'package:todo_app/AppColors.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/Utils.dart';
+import 'package:todo_app/domain/entity/MyRankingUserInfoState.dart';
 import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
@@ -68,7 +69,7 @@ class _RankingScreenState extends State<RankingScreen> {
             children: <Widget>[
               _Header(
                 bloc: _bloc,
-                myRankingInfo: state.myRankingUserInfo,
+                myRankingInfoState: state.myRankingUserInfoState,
                 showOverlayProgress: state.showMyRankingInfoLoading,
               ),
               const SizedBox(height: 12,),
@@ -155,35 +156,36 @@ class _WholeLoadingView extends StatelessWidget {
 
 class _Header extends StatelessWidget {
   final RankingBloc bloc;
-  final RankingUserInfo myRankingInfo;
+  final MyRankingUserInfoState myRankingInfoState;
   final bool showOverlayProgress;
 
   _Header({
     @required this.bloc,
-    @required this.myRankingInfo,
+    @required this.myRankingInfoState,
     @required this.showOverlayProgress,
   });
 
   @override
   Widget build(BuildContext context) {
-    final petPhase = myRankingInfo.petPhase;
+    final info = myRankingInfoState.data;
+    final petPhase = info.petPhase;
     final double petMaxSize = 72;
 
-    final latestStreakStartDate = myRankingInfo.latestStreakStartDate;
-    final latestStreakEndDate = myRankingInfo.latestStreakEndDate;
+    final latestStreakStartDate = info.latestStreakStartDate;
+    final latestStreakEndDate = info.latestStreakEndDate;
     String latestStreakDateRangeText = '';
     if (latestStreakStartDate != DateRepository.INVALID_DATE && latestStreakEndDate != DateRepository.INVALID_DATE) {
       latestStreakDateRangeText = '${latestStreakStartDate.year}.${latestStreakStartDate.month}.${latestStreakStartDate.day} - ${latestStreakEndDate.year}.${latestStreakEndDate.month}.${latestStreakEndDate.day}';
     }
 
-    final longestStreakStartDate = myRankingInfo.longestStreakStartDate;
-    final longestStreakEndDate = myRankingInfo.longestStreakEndDate;
+    final longestStreakStartDate = info.longestStreakStartDate;
+    final longestStreakEndDate = info.longestStreakEndDate;
     String longestStreakDateRangeText = '';
     if (longestStreakStartDate != DateRepository.INVALID_DATE && longestStreakEndDate != DateRepository.INVALID_DATE) {
       longestStreakDateRangeText = '${longestStreakStartDate.year}.${longestStreakStartDate.month}.${longestStreakStartDate.day} - ${longestStreakEndDate.year}.${longestStreakEndDate.month}.${longestStreakEndDate.day}';
     }
 
-    return !myRankingInfo.isValid ? GestureDetector(
+    return !myRankingInfoState.isSignedIn ? GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () => bloc.onSignInAndJoinClicked(),
       child: Container(
@@ -204,7 +206,7 @@ class _Header extends StatelessWidget {
           ],
         ),
       ),
-    ) : Stack(
+    ) : (info.isValid ? Stack(
       children: [
         Column(
           mainAxisSize: MainAxisSize.min,
@@ -216,7 +218,7 @@ class _Header extends StatelessWidget {
                 children: <Widget>[
                   const SizedBox(width: 24,),
                   Text(
-                    myRankingInfo.name,
+                    info.name,
                     style: TextStyle(
                       fontSize: 24,
                       color: AppColors.TEXT_BLACK,
@@ -290,7 +292,7 @@ class _Header extends StatelessWidget {
                             ),
                             children: [
                               TextSpan(
-                                text: myRankingInfo.completionRatioPercentageString,
+                                text: info.completionRatioPercentageString,
                                 style: TextStyle(
                                   fontSize: 24,
                                   color: AppColors.PRIMARY,
@@ -326,7 +328,7 @@ class _Header extends StatelessWidget {
                           ),
                           children: [
                             TextSpan(
-                              text: '${myRankingInfo.latestStreak}',
+                              text: '${info.latestStreak}',
                               style: TextStyle(
                                 fontSize: 18,
                                 color: AppColors.PRIMARY,
@@ -356,7 +358,7 @@ class _Header extends StatelessWidget {
                           ),
                           children: [
                             TextSpan(
-                              text: '${myRankingInfo.longestStreak}',
+                              text: '${info.longestStreak}',
                               style: TextStyle(
                                 fontSize: 18,
                                 color: AppColors.PRIMARY,
@@ -378,7 +380,7 @@ class _Header extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '${myRankingInfo.thumbsUp}',
+                        '${info.thumbsUp}',
                         style: TextStyle(
                           fontSize: 18,
                           color: AppColors.PRIMARY,
@@ -393,7 +395,7 @@ class _Header extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24,),
               child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
+                behavior: HitTestBehavior.opaque,
                 onTap: () => bloc.onRefreshMyRankingInfoClicked(context),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8,),
@@ -401,7 +403,7 @@ class _Header extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
                       Text(
-                        'Last updated: ${Utils.toLastUpdatedFormat(DateTime.fromMillisecondsSinceEpoch(myRankingInfo.lastUpdatedMillis))}',
+                        'Last updated: ${Utils.toLastUpdatedFormat(DateTime.fromMillisecondsSinceEpoch(info.lastUpdatedMillis))}',
                         style: TextStyle(
                           fontSize: 10,
                           color: AppColors.TEXT_BLACK,
@@ -420,7 +422,28 @@ class _Header extends StatelessWidget {
           child: CircularProgressIndicator(),
         ) : const SizedBox.shrink(),
       ],
-    );
+    ) : GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => bloc.onReloadMyRankingUserInfoClicked(),
+      child: Container(
+        height: 132,
+        alignment: Alignment.center,
+        child: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            Text(
+              AppLocalizations.of(context).reload,
+              style: TextStyle(
+                fontSize: 24,
+                color: AppColors.TEXT_BLACK,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            showOverlayProgress ? CircularProgressIndicator() : const SizedBox.shrink(),
+          ],
+        ),
+      ),
+    ));
   }
 }
 

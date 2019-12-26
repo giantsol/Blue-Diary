@@ -1,17 +1,18 @@
 
-import 'package:todo_app/domain/entity/RankingUserInfo.dart';
+import 'package:todo_app/domain/entity/MyRankingUserInfoState.dart';
+import 'package:todo_app/domain/usecase/IsSignedInUsecase.dart';
 import 'package:todo_app/presentation/App.dart';
 
-class GetMyRankingUserInfoUsecase {
+class GetMyRankingUserInfoStateUsecase {
   final _userRepository = dependencies.userRepository;
   final _rankingRepository = dependencies.rankingRepository;
 
-  Future<RankingUserInfo> invoke() async {
+  final _isSignedInUsecase = IsSignedInUsecase();
+
+  Future<MyRankingUserInfoState> invoke() async {
     final uid = await _userRepository.getUserId();
-    if (uid.isEmpty) {
-      return RankingUserInfo.INVALID;
-    } else {
-      return _rankingRepository.getRankingUserInfo(uid);
-    }
+    final data = await _rankingRepository.getRankingUserInfo(uid);
+    final isSignedIn = await _isSignedInUsecase.invoke();
+    return MyRankingUserInfoState(data, isSignedIn);
   }
 }
