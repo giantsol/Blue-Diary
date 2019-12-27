@@ -24,7 +24,7 @@ class Pets {
       subtitleKey: AppLocalizations.PET_A_INACTIVE_SUBTITLE,
     ),
     eggPhase: PetPhase(
-      flrPath: 'assets/pet_a_01.flr',
+      flrPath: 'assets/egg.flr',
       sizeRatio: 0.6,
       alignment: Alignment.bottomCenter,
       maxExp: 10,
@@ -72,7 +72,7 @@ class Pets {
       subtitleKey: AppLocalizations.PET_B_INACTIVE_SUBTITLE,
     ),
     eggPhase: PetPhase(
-      flrPath: 'assets/pet_a_01.flr',
+      flrPath: 'assets/egg.flr',
       sizeRatio: 0.6,
       alignment: Alignment.bottomCenter,
       maxExp: 20,
