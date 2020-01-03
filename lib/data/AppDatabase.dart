@@ -5,6 +5,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:todo_app/data/datasource/CategoryDataSource.dart';
 import 'package:todo_app/data/datasource/MemoDataSource.dart';
 import 'package:todo_app/data/datasource/PetDataSource.dart';
+import 'package:todo_app/data/datasource/ThumbDataSource.dart';
 import 'package:todo_app/data/datasource/ToDoDataSource.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
@@ -17,13 +18,15 @@ import 'package:todo_app/domain/entity/ToDo.dart';
 class AppDatabase implements ToDoDataSource,
   MemoDataSource,
   CategoryDataSource,
-  PetDataSource {
+  PetDataSource,
+  ThumbDataSource {
   static const String TABLE_CHECK_POINTS = 'checkpoints';
   static const String TABLE_TODOS = 'todos';
   static const String TABLE_DAY_MEMOS = 'daymemos';
   static const String TABLE_CATEGORIES = 'categories';
   static const String TABLE_MARKED_COMPLETED_DAYS = 'marked_completed_days';
   static const String TABLE_PET_USER_DATUM = 'pet_user_datum';
+  static const String TABLE_THUMBED_UP_UIDS = 'thumbed_up_uids';
 
   static const String COLUMN_ID = '_id';
   static const String COLUMN_YEAR = 'year';
@@ -46,6 +49,7 @@ class AppDatabase implements ToDoDataSource,
   static const String COLUMN_KEY = '_key';
   static const String COLUMN_EXP = 'exp';
   static const String COLUMN_SELECTED_PHASE = 'selected_phase';
+  static const String COLUMN_UID = '_uid';
 
   // ignore: close_sinks
   final _database = BehaviorSubject<Database>();
@@ -118,6 +122,13 @@ class AppDatabase implements ToDoDataSource,
            );
            """
         );
+        await db.execute(
+          """
+          CREATE TABLE $TABLE_THUMBED_UP_UIDS(
+            $COLUMN_UID TEXT NOT NULL PRIMARY KEY
+           );
+           """
+        );
         return db.execute(
           """
           CREATE TABLE $TABLE_DAY_MEMOS(
@@ -158,11 +169,19 @@ class AppDatabase implements ToDoDataSource,
           );
           """
           );
+        } else if (oldVersion == 4 && newVersion == 5) {
+          return db.execute(
+          """
+          CREATE TABLE $TABLE_THUMBED_UP_UIDS(
+            $COLUMN_UID TEXT NOT NULL PRIMARY KEY
+           );
+           """
+          );
         } else {
           return null;
         }
       },
-      version: 4,
+      version: 5,
     );
   }
 
@@ -481,5 +500,36 @@ class AppDatabase implements ToDoDataSource,
         currentPhaseIndex: map[COLUMN_SELECTED_PHASE],
       );
     }
+  }
+
+  @override
+  Future<void> removeThumbedUpUid(String uid) async {
+    final db = await _database.first;
+    return db.delete(
+      TABLE_THUMBED_UP_UIDS,
+      where: '$COLUMN_UID = ?',
+      whereArgs: [uid],
+    );
+  }
+
+  @override
+  Future<void> addThumbedUpUid(String uid) async {
+    final db = await _database.first;
+    return db.insert(
+      TABLE_THUMBED_UP_UIDS,
+      { COLUMN_UID: uid },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  @override
+  Future<bool> isThumbedUpUid(String uid) async {
+    final db = await _database.first;
+    final map = await db.query(
+      TABLE_THUMBED_UP_UIDS,
+      where: '$COLUMN_UID = ?',
+      whereArgs: [uid],
+    );
+    return map.isNotEmpty;
   }
 }

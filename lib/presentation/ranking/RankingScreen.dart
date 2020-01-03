@@ -560,7 +560,13 @@ class _RankingItem extends StatelessWidget {
           const SizedBox(width: 8,),
           GestureDetector(
             behavior: HitTestBehavior.translucent,
-            onTap: () => bloc.onThumbsUpClicked(userInfo),
+            onTap: () {
+              if (hasThumbedUp) {
+                bloc.onCancelThumbsUpClicked(userInfo);
+              } else {
+                bloc.onThumbsUpClicked(userInfo);
+              }
+            },
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8,),
               child: Row(

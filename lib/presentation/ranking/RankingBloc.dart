@@ -9,6 +9,8 @@ import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/usecase/AddThumbsUpUsecase.dart';
+import 'package:todo_app/domain/usecase/CancelThumbsUpUsecase.dart';
+import 'package:todo_app/domain/usecase/GetHasThumbedUpUidUsecase.dart';
 import 'package:todo_app/domain/usecase/GetMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/GetTodayUsecase.dart';
 import 'package:todo_app/domain/usecase/IncreaseRankingUserInfosCountUsecase.dart';
@@ -32,6 +34,9 @@ class RankingBloc {
 
   StreamSubscription _rankingUserInfosEventSubscription;
 
+  // todo: should move this to state and invoke setState immediately to prevent further clicks
+  bool isThumbLogicRunning = false;
+
   final _getMyRankingUserInfoUsecase = GetMyRankingUserInfoStateUsecase();
   final _observeRankingUserInfosUsecase = ObserveRankingUserInfosUsecase();
   final _initRankingUserInfosCountUsecase = InitRankingUserInfosCountUsecase();
@@ -40,7 +45,9 @@ class RankingBloc {
   final _signInWithFacebookUsecase = SignInWithFacebookUsecase();
   final _signOutUsecase = SignOutUsecase();
   final _increaseRankingUserInfosCountUsecase = IncreaseRankingUserInfosCountUsecase();
+  final _cancelThumbsUpUsecase = CancelThumbsUpUsecase();
   final _addThumbsUpUsecase = AddThumbsUpUsecase();
+  final _getHasThumbedUpUidUsecase = GetHasThumbedUpUidUsecase();
   final _getTodayUsecase = GetTodayUsecase();
   final _syncTodayWithServerUsecase = SyncTodayWithServerUsecase();
   final _isSignedInUsecase = IsSignedInUsecase();
@@ -64,10 +71,20 @@ class RankingBloc {
 
     _rankingUserInfosEventSubscription = _observeRankingUserInfosUsecase.invoke()
       .listen((event) async {
+        final updatedThumbedUpUids = Map.of(_state.value.thumbedUpUids);
+        for (final rankingUserInfo in event.rankingUserInfos) {
+          final hasThumbedUp = await _getHasThumbedUpUidUsecase.invoke(rankingUserInfo.uid);
+          if (hasThumbedUp) {
+            updatedThumbedUpUids[rankingUserInfo.uid] = true;
+          } else {
+            updatedThumbedUpUids.remove(rankingUserInfo.uid);
+          }
+        }
       _state.add(_state.value.buildNew(
         rankingUserInfos: event.rankingUserInfos,
         hasMoreRankingInfos: event.hasMore,
         isRankingUserInfosLoading: false,
+        thumbedUpUids: updatedThumbedUpUids,
       ));
 
       final isSignedIn = await _isSignedInUsecase.invoke();
@@ -245,20 +262,39 @@ class RankingBloc {
     ));
   }
 
-  Future<void> onThumbsUpClicked(RankingUserInfo userInfo) async {
+  Future<void> onCancelThumbsUpClicked(RankingUserInfo userInfo) async {
+    if (isThumbLogicRunning) {
+      return;
+    }
+
+    isThumbLogicRunning = true;
     final isSignedIn = await _isSignedInUsecase.invoke();
     if (!isSignedIn) {
       _state.add(_state.value.buildNew(
         signInDialogShown: true,
       ));
+      isThumbLogicRunning = false;
     } else {
-      final updatedThumbedUpUids = Map.of(_state.value.thumbedUpUids);
-      updatedThumbedUpUids[userInfo.uid] = true;
-      _state.add(_state.value.buildNew(
-        thumbedUpUids: updatedThumbedUpUids,
-      ));
+      await _cancelThumbsUpUsecase.invoke(userInfo.uid);
+      isThumbLogicRunning = false;
+    }
+  }
 
-      _addThumbsUpUsecase.invoke(userInfo.uid);
+  Future<void> onThumbsUpClicked(RankingUserInfo userInfo) async {
+    if (isThumbLogicRunning) {
+      return;
+    }
+
+    isThumbLogicRunning = true;
+    final isSignedIn = await _isSignedInUsecase.invoke();
+    if (!isSignedIn) {
+      _state.add(_state.value.buildNew(
+        signInDialogShown: true,
+      ));
+      isThumbLogicRunning = false;
+    } else {
+      await _addThumbsUpUsecase.invoke(userInfo.uid);
+      isThumbLogicRunning = false;
     }
   }
 

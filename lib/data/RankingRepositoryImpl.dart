@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:todo_app/data/datasource/ThumbDataSource.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/entity/RankingUserInfosEvent.dart';
 import 'package:todo_app/domain/repository/RankingRepository.dart';
@@ -16,12 +17,14 @@ class RankingRepositoryImpl implements RankingRepository {
   static const RANKING_PAGING_SIZE = 2;
   static const RANKING_MAX_COUNT = 50;
 
+  final ThumbDataSource _thumbDataSource;
+
   StreamSubscription _rankingUserInfosSubscription;
   int _currentRankingMaxCount = RANKING_PAGING_SIZE;
 
   final _rankingUserInfosEventSubject = BehaviorSubject<RankingUserInfosEvent>();
 
-  RankingRepositoryImpl() {
+  RankingRepositoryImpl(this._thumbDataSource) {
     _rankingUserInfosEventSubject.onCancel = () {
       _rankingUserInfosSubscription?.cancel();
     };
@@ -134,9 +137,42 @@ class RankingRepositoryImpl implements RankingRepository {
   }
 
   @override
-  void addThumbsUp(String uid) {
+  Future<void> cancelThumbsUp(String uid) async {
+    final isThumbedUpUid = await _thumbDataSource.isThumbedUpUid(uid);
+    if (!isThumbedUpUid) {
+      return;
+    }
+
     try {
-      Firestore.instance.runTransaction((transaction) async {
+      await Firestore.instance.runTransaction((transaction) async {
+        final doc = Firestore.instance
+          .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
+          .document(uid);
+        final snapshot = await transaction.get(doc);
+
+        if (snapshot.data != null) {
+          final rankingUserInfo = RankingUserInfo.fromMap(snapshot.data);
+          final updated = rankingUserInfo.buildNew(thumbsUp: rankingUserInfo.thumbsUp - 1);
+
+          await transaction.update(doc, updated.toThumbsUpUpdateMap());
+          await _thumbDataSource.removeThumbedUpUid(uid);
+        }
+      });
+      return;
+    } catch (e) {
+      return _thumbDataSource.addThumbedUpUid(uid);
+    }
+  }
+
+  @override
+  Future<void> addThumbsUp(String uid) async {
+    final isThumbedUpUid = await _thumbDataSource.isThumbedUpUid(uid);
+    if (isThumbedUpUid) {
+      return;
+    }
+
+    try {
+      await Firestore.instance.runTransaction((transaction) async {
         final doc = Firestore.instance
           .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
           .document(uid);
@@ -146,10 +182,19 @@ class RankingRepositoryImpl implements RankingRepository {
           final rankingUserInfo = RankingUserInfo.fromMap(snapshot.data);
           final updated = rankingUserInfo.buildNew(thumbsUp: rankingUserInfo.thumbsUp + 1);
 
-          transaction.update(doc, updated.toThumbsUpUpdateMap());
+          await transaction.update(doc, updated.toThumbsUpUpdateMap());
+          await _thumbDataSource.addThumbedUpUid(uid);
         }
       });
-    } catch (e) { }
+      return;
+    } catch (e) {
+      return _thumbDataSource.removeThumbedUpUid(uid);
+    }
+  }
+
+  @override
+  Future<bool> isThumbedUpUid(String uid) {
+    return _thumbDataSource.isThumbedUpUid(uid);
   }
 
   @override

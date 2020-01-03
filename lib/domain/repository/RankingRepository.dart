@@ -9,6 +9,8 @@ abstract class RankingRepository {
   void initRankingUserInfosCount();
   void increaseRankingUserInfosCount();
   Future<bool> deleteRankingUserInfo(String uid);
-  void addThumbsUp(String uid);
+  Future<void> cancelThumbsUp(String uid);
+  Future<void> addThumbsUp(String uid);
+  Future<bool> isThumbedUpUid(String uid);
   void updateCompletionRatios(List<RankingUserInfo> infos);
 }

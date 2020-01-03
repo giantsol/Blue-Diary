@@ -1,11 +1,10 @@
 
-import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/presentation/App.dart';
 
-class AddThumbsUpUsecase {
+class CancelThumbsUpUsecase {
   final _rankingRepository = dependencies.rankingRepository;
 
   Future<void> invoke(String uid) {
-    return _rankingRepository.addThumbsUp(uid);
+    return _rankingRepository.cancelThumbsUp(uid);
   }
 }
