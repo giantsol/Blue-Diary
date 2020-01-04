@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:todo_app/Localization.dart';
-import 'package:todo_app/data/AppPreferences.dart';
-import 'package:todo_app/data/datasource/PetDataSource.dart';
+import 'package:todo_app/data/datasource/AppDatabase.dart';
+import 'package:todo_app/data/datasource/AppPreferences.dart';
 import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/repository/NotificationRepository.dart';
 
@@ -14,40 +14,29 @@ class NotificationRepositoryImpl implements NotificationRepository {
   static const CHANNEL_ID_REMINDER_NOTIFICATION = 'reminder.notification';
   static const CHANNEL_ID_FIREBASE_MESSAGING_NOTIFICATION = 'firebase.messaging.notification';
 
-  final PetDataSource _petDataSource;
+  final AppDatabase _database;
   final AppPreferences _prefs;
 
   final _notificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  NotificationRepositoryImpl(this._petDataSource, this._prefs) {
+  NotificationRepositoryImpl(this._database, this._prefs) {
     _init();
   }
 
-  Future<void> _init() async {
+  Future<void> _init() {
     final androidInitializationSettings = AndroidInitializationSettings('ic_splash');
     final iosInitializationSettings = IOSInitializationSettings();
     final initializationSettings = InitializationSettings(androidInitializationSettings, iosInitializationSettings);
 
-    await _notificationsPlugin.initialize(initializationSettings, onSelectNotification: (payload) {
+    return _notificationsPlugin.initialize(initializationSettings, onSelectNotification: (payload) async {
       // todo: remove debugPrints
       debugPrint('onSelectNotification with payload: $payload');
-      return;
+      return true;
     });
   }
 
   @override
-  Future<bool> isReminderNotificationScheduled() async {
-    final pendingRequests = await _notificationsPlugin.pendingNotificationRequests();
-    return pendingRequests.any((it) => it.id == NOTIFICATION_ID_REMINDER_NOTIFICATION);
-  }
-
-  @override
-  Future<void> scheduleReminderNotification(BuildContext context) async {
-    final localNow = DateTime.now();
-    if (localNow.hour >= 21) {
-      return;
-    }
-
+  Future<void> scheduleReminderNotification(BuildContext context, int year, int month, int day) async {
     final localizations = AppLocalizations.of(context);
     final selectedPetPhase = await _getSelectedPetPhase();
 
@@ -62,26 +51,26 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
     final title = localizations.reminderNotificationTitle;
     final body = localizations.reminderNotificationBody;
-    _notificationsPlugin.schedule(NOTIFICATION_ID_REMINDER_NOTIFICATION,
+    return _notificationsPlugin.schedule(NOTIFICATION_ID_REMINDER_NOTIFICATION,
       title,
       body,
-      DateTime(localNow.year, localNow.month, localNow.day, 22),
+      DateTime(year, month, day, 22),
       platformChannelSpecifics);
   }
 
   Future<PetPhase> _getSelectedPetPhase() async {
-    final selectedPetKey = _prefs.getSelectedPetKey();
+    final selectedPetKey = await _prefs.getSelectedPetKey();
     if (selectedPetKey.isEmpty) {
       return PetPhase.INVALID;
     } else {
-      final selectedPet = await _petDataSource.getPet(selectedPetKey);
+      final selectedPet = await _database.getPet(selectedPetKey);
       return selectedPet.currentPhase;
     }
   }
 
   @override
-  void unscheduleReminderNotification() {
-    _notificationsPlugin.cancel(NOTIFICATION_ID_REMINDER_NOTIFICATION);
+  Future<void> unscheduleReminderNotification() {
+    return _notificationsPlugin.cancel(NOTIFICATION_ID_REMINDER_NOTIFICATION);
   }
 
   @override
@@ -104,6 +93,6 @@ class NotificationRepositoryImpl implements NotificationRepository {
     );
     final iOSPlatformChannelSpecifics = IOSNotificationDetails();
     final platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    _notificationsPlugin.show(id, title, body, platformChannelSpecifics);
+    return _notificationsPlugin.show(id, title, body, platformChannelSpecifics);
   }
 }

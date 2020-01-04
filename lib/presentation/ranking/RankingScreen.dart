@@ -380,7 +380,7 @@ class _Header extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '${info.thumbsUp}',
+                        '${info.thumbUpCount}',
                         style: TextStyle(
                           fontSize: 18,
                           color: AppColors.PRIMARY,
@@ -576,7 +576,7 @@ class _RankingItem extends StatelessWidget {
                   ConstrainedBox(
                     constraints: BoxConstraints(minWidth: 22),
                     child: Text(
-                      userInfo.thumbsUp.toString(),
+                      userInfo.thumbUpCount.toString(),
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.TEXT_BLACK,

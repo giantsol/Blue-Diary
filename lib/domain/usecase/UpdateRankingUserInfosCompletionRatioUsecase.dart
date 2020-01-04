@@ -5,7 +5,7 @@ import 'package:todo_app/presentation/App.dart';
 class UpdateRankingUserInfosCompletionRatioUsecase {
   final _rankingRepository = dependencies.rankingRepository;
 
-  void invoke(List<RankingUserInfo> infos) {
-    _rankingRepository.updateCompletionRatios(infos);
+  Future<void> invoke(List<RankingUserInfo> infos) {
+    return _rankingRepository.updateCompletionRatios(infos);
   }
 }

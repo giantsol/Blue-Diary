@@ -1,211 +1,85 @@
 
 import 'dart:async';
-import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/data/datasource/ThumbDataSource.dart';
+import 'package:todo_app/data/datasource/AppDatabase.dart';
+import 'package:todo_app/data/datasource/AppFirebase.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/entity/RankingUserInfosEvent.dart';
 import 'package:todo_app/domain/repository/RankingRepository.dart';
 
 class RankingRepositoryImpl implements RankingRepository {
-  static const FIRESTORE_RANKING_USER_INFO_COLLECTION = 'ranking_user_info';
-  // todo: increase paging size
-  static const RANKING_PAGING_SIZE = 2;
-  static const RANKING_MAX_COUNT = 50;
+  final AppDatabase _database;
+  final AppFirebase _firebase;
 
-  final ThumbDataSource _thumbDataSource;
-
-  StreamSubscription _rankingUserInfosSubscription;
-  int _currentRankingMaxCount = RANKING_PAGING_SIZE;
-
-  final _rankingUserInfosEventSubject = BehaviorSubject<RankingUserInfosEvent>();
-
-  RankingRepositoryImpl(this._thumbDataSource) {
-    _rankingUserInfosEventSubject.onCancel = () {
-      _rankingUserInfosSubscription?.cancel();
-    };
-  }
+  RankingRepositoryImpl(this._database, this._firebase);
 
   @override
   Future<RankingUserInfo> getRankingUserInfo(String uid) async {
     if (uid.isEmpty) {
       return RankingUserInfo.INVALID;
-    }
-
-    try {
-      final snapshot = await Firestore.instance
-        .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
-        .document(uid)
-        .get()
-        .timeout(const Duration(seconds: 5));
-      if (snapshot == null || snapshot.data == null) {
-        return RankingUserInfo.INVALID;
-      } else {
-        return RankingUserInfo.fromMap(snapshot.data);
-      }
-    } catch (e) {
-      return RankingUserInfo.INVALID;
+    } else {
+      return _firebase.getRankingUserInfo(uid);
     }
   }
 
   @override
-  Future<bool> setMyRankingUserInfo(RankingUserInfo info) async {
-    try {
-      final callable = CloudFunctions.instance.getHttpsCallable(functionName: 'setMyRankingUserInfo');
-      await callable.call(info.toMyRankingUserInfoUpdateMap()).timeout(const Duration(seconds: 10));
-      return true;
-    } catch (e) {
-      return false;
-    }
+  Future<bool> setMyRankingUserInfo(RankingUserInfo info) {
+    return _firebase.setMyRankingUserInfo(info);
   }
 
   @override
   Stream<RankingUserInfosEvent> observeRankingUserInfos() {
-    return _rankingUserInfosEventSubject.distinct();
+    return _firebase.observeRankingUserInfos();
   }
 
   @override
   void initRankingUserInfosCount() {
-    _setRankingUserInfosMaxCount(RANKING_PAGING_SIZE);
-  }
-
-  void _setRankingUserInfosMaxCount(int maxCount) {
-    _rankingUserInfosSubscription?.cancel();
-    _rankingUserInfosSubscription = Firestore.instance
-      .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
-      .orderBy(RankingUserInfo.KEY_COMPLETION_RATIO, descending: true)
-      .orderBy(RankingUserInfo.KEY_NAME)
-      .limit(maxCount)
-      .snapshots()
-      .listen((querySnapshot) {
-      // todo: use documentChanges instead of documents
-      final snapshots = querySnapshot.documents;
-
-      int rank = 0;
-      double prevCompletionRatio;
-
-      final infos = snapshots.map((snapshot) {
-        final userInfo = RankingUserInfo.fromMap(snapshot.data);
-
-        if (prevCompletionRatio == null) {
-          rank += 1;
-          prevCompletionRatio = userInfo.completionRatio;
-        } else {
-          if (userInfo.completionRatio != prevCompletionRatio) {
-            rank += 1;
-            prevCompletionRatio = userInfo.completionRatio;
-          }
-        }
-
-        return userInfo.buildNew(rank: rank);
-      }).toList();
-      final hasMore = maxCount < RANKING_MAX_COUNT && snapshots.length == maxCount;
-      final event =  RankingUserInfosEvent(
-        rankingUserInfos: infos,
-        hasMore: hasMore,
-      );
-      _rankingUserInfosEventSubject.add(event);
-    }, onError: (error) {
-        debugPrint('Error while receiving rankingUserInfos: $error');
-    });
-
-    _currentRankingMaxCount = maxCount;
+    _firebase.initRankingUserInfosCount();
   }
 
   @override
   void increaseRankingUserInfosCount() {
-    _setRankingUserInfosMaxCount(min<int>(_currentRankingMaxCount + RANKING_PAGING_SIZE, RANKING_MAX_COUNT));
+    _firebase.increaseRankingUserInfosCount();
   }
 
   @override
-  Future<bool> deleteRankingUserInfo(String uid) async {
-    try {
-      await Firestore.instance.runTransaction((transaction) async {
-        final doc = Firestore.instance
-          .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
-          .document(uid);
-        transaction.delete(doc);
-      });
-      return true;
-    } catch (e) {
-      return false;
-    }
+  Future<bool> deleteRankingUserInfo(String uid) {
+    return _firebase.deleteRankingUserInfo(uid);
   }
 
   @override
-  Future<void> cancelThumbsUp(String uid) async {
-    final isThumbedUpUid = await _thumbDataSource.isThumbedUpUid(uid);
+  Future<void> cancelThumbedUp(String uid) async {
+    final isThumbedUpUid = await _database.isThumbedUpUid(uid);
     if (!isThumbedUpUid) {
       return;
     }
 
-    try {
-      await Firestore.instance.runTransaction((transaction) async {
-        final doc = Firestore.instance
-          .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
-          .document(uid);
-        final snapshot = await transaction.get(doc);
-
-        if (snapshot.data != null) {
-          final rankingUserInfo = RankingUserInfo.fromMap(snapshot.data);
-          final updated = rankingUserInfo.buildNew(thumbsUp: rankingUserInfo.thumbsUp - 1);
-
-          await transaction.update(doc, updated.toThumbsUpUpdateMap());
-          await _thumbDataSource.removeThumbedUpUid(uid);
-        }
-      });
-      return;
-    } catch (e) {
-      return _thumbDataSource.addThumbedUpUid(uid);
+    final success = await _firebase.cancelThumbedUp(uid);
+    if (success) {
+      return _database.removeThumbedUpUid(uid);
     }
   }
 
   @override
-  Future<void> addThumbsUp(String uid) async {
-    final isThumbedUpUid = await _thumbDataSource.isThumbedUpUid(uid);
+  Future<void> addThumbUp(String uid) async {
+    final isThumbedUpUid = await _database.isThumbedUpUid(uid);
     if (isThumbedUpUid) {
       return;
     }
 
-    try {
-      await Firestore.instance.runTransaction((transaction) async {
-        final doc = Firestore.instance
-          .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
-          .document(uid);
-        final snapshot = await transaction.get(doc);
-
-        if (snapshot.data != null) {
-          final rankingUserInfo = RankingUserInfo.fromMap(snapshot.data);
-          final updated = rankingUserInfo.buildNew(thumbsUp: rankingUserInfo.thumbsUp + 1);
-
-          await transaction.update(doc, updated.toThumbsUpUpdateMap());
-          await _thumbDataSource.addThumbedUpUid(uid);
-        }
-      });
-      return;
-    } catch (e) {
-      return _thumbDataSource.removeThumbedUpUid(uid);
+    final success = await _firebase.addThumbUp(uid);
+    if (success) {
+      return _database.addThumbedUpUid(uid);
     }
   }
 
   @override
   Future<bool> isThumbedUpUid(String uid) {
-    return _thumbDataSource.isThumbedUpUid(uid);
+    return _database.isThumbedUpUid(uid);
   }
 
   @override
-  void updateCompletionRatios(List<RankingUserInfo> infos) {
-    final collection = Firestore.instance.collection(FIRESTORE_RANKING_USER_INFO_COLLECTION);
-    final batch = Firestore.instance.batch();
-
-    for (RankingUserInfo info in infos) {
-      batch.updateData(collection.document(info.uid), info.toCompletionRatioUpdateMap());
-    }
-
-    batch.commit();
+  Future<void> updateCompletionRatios(List<RankingUserInfo> infos) {
+    return _firebase.updateCompletionRatios(infos);
   }
 }

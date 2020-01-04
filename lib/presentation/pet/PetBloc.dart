@@ -28,9 +28,9 @@ class PetBloc {
   }
 
   Future<void> _initState() async {
-    final seedCount = _getSeedCountUsecase.invoke();
+    final seedCount = await _getSeedCountUsecase.invoke();
     final allPets = await _getAllPetsUsecase.invoke();
-    final selectedPetKey = _getSelectedPetKeyUsecase.invoke();
+    final selectedPetKey = await _getSelectedPetKeyUsecase.invoke();
 
     _state.add(_state.value.buildNew(
       viewState: PetViewState.NORMAL,

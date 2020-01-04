@@ -36,6 +36,7 @@ class UserRepositoryImpl implements UserRepository {
     try {
       final result = await _facebookLogin.logIn(['public_profile', 'email']);
       final credential = FacebookAuthProvider.getCredential(accessToken: result.accessToken.token);
+
       await _auth.signInWithCredential(credential);
       return true;
     } catch (e) {
@@ -54,8 +55,8 @@ class UserRepositoryImpl implements UserRepository {
       }
       await _auth.signOut();
 
-      final userName = await getUserDisplayName();
-      if (userName.isEmpty) {
+      final userId = await getUserId();
+      if (userId.isEmpty) {
         return true;
       } else {
         return false;

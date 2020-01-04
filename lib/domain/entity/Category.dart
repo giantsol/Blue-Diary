@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:todo_app/AppColors.dart';
-import 'package:todo_app/data/AppDatabase.dart';
+import 'package:todo_app/data/datasource/AppDatabase.dart';
 
 class Category {
   static const ID_DEFAULT = -1;

@@ -6,7 +6,7 @@ import 'package:preferences/preference_title.dart';
 import 'package:preferences/preferences.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
-import 'package:todo_app/data/AppPreferences.dart';
+import 'package:todo_app/data/datasource/AppPreferences.dart';
 import 'package:todo_app/presentation/settings/SettingsBloc.dart';
 
 class SettingsScreen extends StatefulWidget {

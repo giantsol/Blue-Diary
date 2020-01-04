@@ -5,7 +5,7 @@ import 'package:todo_app/presentation/App.dart';
 class SetCheckPointUsecase {
   final _memoRepository = dependencies.memoRepository;
 
-  void invoke(CheckPoint checkPoint) {
-    _memoRepository.setCheckPoint(checkPoint);
+  Future<void> invoke(CheckPoint checkPoint) {
+    return _memoRepository.setCheckPoint(checkPoint);
   }
 }

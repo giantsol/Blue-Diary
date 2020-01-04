@@ -4,7 +4,7 @@ import 'package:todo_app/presentation/App.dart';
 class SetUseLockScreenUsecase {
   final _prefsRepository = dependencies.prefsRepository;
 
-  void invoke(bool value) {
-    _prefsRepository.setUseLockScreen(value);
+  Future<void> invoke(bool value) {
+    return _prefsRepository.setUseLockScreen(value);
   }
 }

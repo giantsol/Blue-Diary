@@ -2,11 +2,6 @@
 import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:todo_app/data/datasource/CategoryDataSource.dart';
-import 'package:todo_app/data/datasource/MemoDataSource.dart';
-import 'package:todo_app/data/datasource/PetDataSource.dart';
-import 'package:todo_app/data/datasource/ThumbDataSource.dart';
-import 'package:todo_app/data/datasource/ToDoDataSource.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
@@ -15,11 +10,7 @@ import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/entity/Pets.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 
-class AppDatabase implements ToDoDataSource,
-  MemoDataSource,
-  CategoryDataSource,
-  PetDataSource,
-  ThumbDataSource {
+class AppDatabase {
   static const String TABLE_CHECK_POINTS = 'checkpoints';
   static const String TABLE_TODOS = 'todos';
   static const String TABLE_DAY_MEMOS = 'daymemos';
@@ -126,8 +117,8 @@ class AppDatabase implements ToDoDataSource,
           """
           CREATE TABLE $TABLE_THUMBED_UP_UIDS(
             $COLUMN_UID TEXT NOT NULL PRIMARY KEY
-           );
-           """
+          );
+          """
         );
         return db.execute(
           """
@@ -174,8 +165,8 @@ class AppDatabase implements ToDoDataSource,
           """
           CREATE TABLE $TABLE_THUMBED_UP_UIDS(
             $COLUMN_UID TEXT NOT NULL PRIMARY KEY
-           );
-           """
+          );
+          """
           );
         } else {
           return null;
@@ -185,7 +176,6 @@ class AppDatabase implements ToDoDataSource,
     );
   }
 
-  @override
   Future<List<ToDo>> getToDos(DateTime date) async {
     final db = await _database.first;
     final List<Map<String, dynamic>> maps = await db.query(
@@ -193,16 +183,11 @@ class AppDatabase implements ToDoDataSource,
       where: ToDo.createWhereQueryForToDos(),
       whereArgs: ToDo.createWhereArgsForToDos(date),
     );
-    final List<ToDo> result = [];
-    for (int i = 0; i < maps.length; i++) {
-      final toDo = ToDo.fromDatabase(maps[i]);
-      result.add(toDo);
-    }
-    result.sort((a, b) => a.order - b.order);
-    return result;
+
+    return maps.map((map) => ToDo.fromDatabase(map)).toList()
+      ..sort((a, b) => a.order - b.order);
   }
 
-  @override
   Future<void> setToDo(ToDo toDo) async {
     final db = await _database.first;
     return db.insert(
@@ -212,7 +197,6 @@ class AppDatabase implements ToDoDataSource,
     );
   }
 
-  @override
   Future<void> removeToDo(ToDo toDo) async {
     final db = await _database.first;
     return db.delete(
@@ -222,7 +206,6 @@ class AppDatabase implements ToDoDataSource,
     );
   }
 
-  @override
   Future<void> setDayMarkedCompleted(DateTime date) async {
     final year = date.year;
     final month = date.month;
@@ -244,7 +227,6 @@ class AppDatabase implements ToDoDataSource,
     );
   }
 
-  @override
   Future<int> getMarkedCompletedDaysCount() async {
     final db = await _database.first;
     return Sqflite.firstIntValue(await db.rawQuery(
@@ -252,7 +234,6 @@ class AppDatabase implements ToDoDataSource,
     ));
   }
 
-  @override
   Future<int> getLatestStreakCount() async {
     final db = await _database.first;
     final maps = await db.query(
@@ -263,7 +244,6 @@ class AppDatabase implements ToDoDataSource,
     return maps.isEmpty ? 0 : maps[0][COLUMN_STREAK_COUNT] ?? 0;
   }
 
-  @override
   Future<int> getLatestStreakEndMillis() async {
     final db = await _database.first;
     final maps = await db.query(
@@ -274,7 +254,6 @@ class AppDatabase implements ToDoDataSource,
     return maps.isEmpty ? 0 : maps[0][COLUMN_MILLIS_SINCE_EPOCH] ?? 0;
   }
 
-  @override
   Future<int> getLongestStreakCount() async {
     final db = await _database.first;
     final maps = await db.query(
@@ -285,7 +264,6 @@ class AppDatabase implements ToDoDataSource,
     return maps.isEmpty ? 0 : maps[0][COLUMN_STREAK_COUNT] ?? 0;
   }
 
-  @override
   Future<int> getLongestStreakEndMillis() async {
     final db = await _database.first;
     final maps = await db.query(
@@ -296,7 +274,6 @@ class AppDatabase implements ToDoDataSource,
     return maps.isEmpty ? 0 : maps[0][COLUMN_MILLIS_SINCE_EPOCH] ?? 0;
   }
 
-  @override
   Future<int> getStreakCount(DateTime date) async {
     final year = date.year;
     final month = date.month;
@@ -312,7 +289,6 @@ class AppDatabase implements ToDoDataSource,
     return maps.isEmpty ? 0 : maps[0][COLUMN_STREAK_COUNT] ?? 0;
   }
 
-  @override
   Future<bool> isDayMarkedCompleted(DateTime date) async {
     final year = date.year;
     final month = date.month;
@@ -327,7 +303,6 @@ class AppDatabase implements ToDoDataSource,
     return maps.isNotEmpty;
   }
 
-  @override
   Future<int> getLastMarkedCompletedDayMillis(int maxMillis) async {
     final db = await _database.first;
 
@@ -341,7 +316,6 @@ class AppDatabase implements ToDoDataSource,
     return maps.isEmpty ? 0 : maps[0][COLUMN_MILLIS_SINCE_EPOCH] ?? 0;
   }
 
-  @override
   Future<List<CheckPoint>> getCheckPoints(DateTime date) async {
     final db = await _database.first;
     final dateInWeek = DateInWeek.fromDate(date);
@@ -363,7 +337,6 @@ class AppDatabase implements ToDoDataSource,
     return checkPoints;
   }
 
-  @override
   Future<void> setCheckPoint(CheckPoint checkPoint) async {
     final db = await _database.first;
     return db.insert(
@@ -373,7 +346,6 @@ class AppDatabase implements ToDoDataSource,
     );
   }
 
-  @override
   Future<DayMemo> getDayMemo(DateTime date) async {
     final db = await _database.first;
     final Map<String, dynamic> map = await db.query(
@@ -385,7 +357,6 @@ class AppDatabase implements ToDoDataSource,
       : DayMemo(year: date.year, month: date.month, day: date.day);
   }
 
-  @override
   Future<void> setDayMemo(DayMemo dayMemo) async {
     final db = await _database.first;
     return db.insert(
@@ -395,7 +366,6 @@ class AppDatabase implements ToDoDataSource,
     );
   }
 
-  @override
   Future<Category> getCategory(int id) async {
     final db = await _database.first;
     Map<String, dynamic> map = await db.query(
@@ -406,7 +376,6 @@ class AppDatabase implements ToDoDataSource,
     return map != null ? Category.fromDatabase(map) : Category();
   }
 
-  @override
   Future<List<Category>> getAllCategories() async {
     final db = await _database.first;
     List<Map<String, dynamic>> maps = await db.query(
@@ -423,7 +392,6 @@ class AppDatabase implements ToDoDataSource,
     return result;
   }
 
-  @override
   Future<int> setCategory(Category category) async {
     if (category.id == Category.ID_DEFAULT) {
       return Category.ID_DEFAULT;
@@ -437,7 +405,6 @@ class AppDatabase implements ToDoDataSource,
     }
   }
 
-  @override
   Future<void> removeCategory(Category category) async {
     final db = await _database.first;
     return db.delete(
@@ -447,7 +414,6 @@ class AppDatabase implements ToDoDataSource,
     );
   }
 
-  @override
   Future<List<Pet>> getAllPets() async {
     final pets = Pets.getPetPrototypes();
     final db = await _database.first;
@@ -468,7 +434,6 @@ class AppDatabase implements ToDoDataSource,
     return pets;
   }
 
-  @override
   Future<void> setPet(Pet pet) async {
     final db = await _database.first;
     return db.insert(
@@ -478,7 +443,6 @@ class AppDatabase implements ToDoDataSource,
     );
   }
 
-  @override
   Future<Pet> getPet(String key) async {
     final pet = Pets.getPetPrototype(key);
     if (!pet.isValid) {
@@ -502,7 +466,6 @@ class AppDatabase implements ToDoDataSource,
     }
   }
 
-  @override
   Future<void> removeThumbedUpUid(String uid) async {
     final db = await _database.first;
     return db.delete(
@@ -512,7 +475,6 @@ class AppDatabase implements ToDoDataSource,
     );
   }
 
-  @override
   Future<void> addThumbedUpUid(String uid) async {
     final db = await _database.first;
     return db.insert(
@@ -522,7 +484,6 @@ class AppDatabase implements ToDoDataSource,
     );
   }
 
-  @override
   Future<bool> isThumbedUpUid(String uid) async {
     final db = await _database.first;
     final map = await db.query(

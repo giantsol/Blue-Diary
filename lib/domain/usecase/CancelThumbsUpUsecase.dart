@@ -5,6 +5,6 @@ class CancelThumbsUpUsecase {
   final _rankingRepository = dependencies.rankingRepository;
 
   Future<void> invoke(String uid) {
-    return _rankingRepository.cancelThumbsUp(uid);
+    return _rankingRepository.cancelThumbedUp(uid);
   }
 }

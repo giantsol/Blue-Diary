@@ -1,6 +1,6 @@
 
 import 'package:flutter/foundation.dart';
-import 'package:todo_app/data/AppPreferences.dart';
+import 'package:todo_app/data/datasource/AppPreferences.dart';
 import 'package:todo_app/domain/repository/PrefRepository.dart';
 
 class PrefsRepositoryImpl implements PrefsRepository {
@@ -39,8 +39,8 @@ class PrefsRepositoryImpl implements PrefsRepository {
   }
 
   @override
-  void setUserCheckedToDoBefore() {
-    _prefs.setUserCheckedToDoBefore();
+  Future<void> setUserCheckedToDoBefore() {
+    return _prefs.setUserCheckedToDoBefore();
   }
 
   @override
@@ -49,8 +49,8 @@ class PrefsRepositoryImpl implements PrefsRepository {
   }
 
   @override
-  void setShownWeekScreenTutorial() {
-    _prefs.setShownWeekScreenTutorial();
+  Future<void> setShownWeekScreenTutorial() {
+    return _prefs.setShownWeekScreenTutorial();
   }
 
   @override
@@ -59,8 +59,8 @@ class PrefsRepositoryImpl implements PrefsRepository {
   }
 
   @override
-  void setShownDayScreenTutorial() {
-    _prefs.setShownDayScreenTutorial();
+  Future<void> setShownDayScreenTutorial() {
+    return _prefs.setShownDayScreenTutorial();
   }
 
   @override
@@ -69,9 +69,9 @@ class PrefsRepositoryImpl implements PrefsRepository {
   }
 
   @override
-  void setRealFirstLaunchDate(DateTime date) {
+  Future<void> setRealFirstLaunchDate(DateTime date) {
     final trimmed = DateTime(date.year, date.month, date.day);
-    _prefs.setRealFirstLaunchDateString(trimmed.toIso8601String());
+    return _prefs.setRealFirstLaunchDateString(trimmed.toIso8601String());
   }
 
   @override
@@ -85,9 +85,9 @@ class PrefsRepositoryImpl implements PrefsRepository {
   }
 
   @override
-  void setCustomFirstLaunchDate(DateTime date) {
+  Future<void> setCustomFirstLaunchDate(DateTime date) {
     final trimmed = DateTime(date.year, date.month, date.day);
-    _prefs.setCustomFirstLaunchDateString(trimmed.toIso8601String());
+    return _prefs.setCustomFirstLaunchDateString(trimmed.toIso8601String());
   }
 
   @override
@@ -106,32 +106,32 @@ class PrefsRepositoryImpl implements PrefsRepository {
   }
 
   @override
-  void setShownFirstCompletableDayTutorial() {
-    _prefs.setShownFirstCompletableDayTutorial();
+  Future<void> setShownFirstCompletableDayTutorial() {
+    return _prefs.setShownFirstCompletableDayTutorial();
   }
 
   @override
-  void addSeed(int count) {
-    _prefs.setSeedCount(getSeedCount() + count);
+  Future<void> addSeed(int count) async {
+    return _prefs.setSeedCount(await getSeedCount() + count);
   }
 
   @override
-  void minusSeed(int count) {
-    _prefs.setSeedCount(getSeedCount() - count);
+  Future<void> minusSeed(int count) async {
+    return _prefs.setSeedCount(await getSeedCount() - count);
   }
 
   @override
-  int getSeedCount() {
+  Future<int> getSeedCount() {
     return _prefs.getSeedCount();
   }
 
   @override
-  int getLastUpdatedMyRankingUserInfoLocalTimeMillis() {
+  Future<int> getLastUpdatedMyRankingUserInfoLocalTimeMillis() {
     return _prefs.getLastUpdatedMyRankingUserInfoLocalTimeMillis();
   }
 
   @override
-  void setLastUpdatedMyRankingUserInfoLocalTimeMillis(int value) {
+  Future<void> setLastUpdatedMyRankingUserInfoLocalTimeMillis(int value) {
     _prefs.setLastUpdatedMyRankingUserInfoLocalTimeMillis(value);
   }
 }

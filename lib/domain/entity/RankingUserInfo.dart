@@ -11,7 +11,7 @@ class RankingUserInfo {
   static const KEY_LATEST_STREAK_END_MILLIS = 'latest_streak_end_millis';
   static const KEY_LONGEST_STREAK = 'longest_streak';
   static const KEY_LONGEST_STREAK_END_MILLIS = 'longest_streak_end_millis';
-  static const KEY_THUMBS_UP = 'thumbs_up';
+  static const KEY_THUMB_UP_COUNT = 'thumbs_up';
   static const KEY_LAST_UPDATED_MILLIS = 'last_updated_millis';
   static const KEY_PET_KEY = 'pet_key';
   static const KEY_PET_PHASE_INDEX = 'pet_phase_index';
@@ -29,7 +29,7 @@ class RankingUserInfo {
       latestStreakEndMillis: map[KEY_LATEST_STREAK_END_MILLIS] ?? 0,
       longestStreak: map[KEY_LONGEST_STREAK] ?? 0,
       longestStreakEndMillis: map[KEY_LONGEST_STREAK_END_MILLIS] ?? 0,
-      thumbsUp: map[KEY_THUMBS_UP] ?? 0,
+      thumbUpCount: map[KEY_THUMB_UP_COUNT] ?? 0,
       lastUpdatedMillis: map[KEY_LAST_UPDATED_MILLIS] ?? 0,
       petKey: map[KEY_PET_KEY] ?? '',
       petPhaseIndex: map[KEY_PET_PHASE_INDEX] ?? Pet.PHASE_INDEX_INACTIVE,
@@ -45,7 +45,7 @@ class RankingUserInfo {
   final int latestStreakEndMillis;
   final int longestStreak;
   final int longestStreakEndMillis;
-  final int thumbsUp;
+  final int thumbUpCount;
   final int lastUpdatedMillis;
   final String petKey;
   final int petPhaseIndex;
@@ -111,7 +111,7 @@ class RankingUserInfo {
     this.latestStreakEndMillis = 0,
     this.longestStreak = 0,
     this.longestStreakEndMillis = 0,
-    this.thumbsUp = 0,
+    this.thumbUpCount = 0,
     this.lastUpdatedMillis = 0,
     this.petKey = '',
     this.petPhaseIndex = Pet.PHASE_INDEX_INACTIVE,
@@ -122,7 +122,7 @@ class RankingUserInfo {
 
   RankingUserInfo buildNew({
     double completionRatio,
-    int thumbsUp,
+    int thumbUpCount,
     int rank,
   }) {
     return RankingUserInfo(
@@ -133,7 +133,7 @@ class RankingUserInfo {
       latestStreakEndMillis: this.latestStreakEndMillis,
       longestStreak: this.longestStreak,
       longestStreakEndMillis: this.longestStreakEndMillis,
-      thumbsUp: thumbsUp ?? this.thumbsUp,
+      thumbUpCount: thumbUpCount ?? this.thumbUpCount,
       lastUpdatedMillis: this.lastUpdatedMillis,
       petKey: this.petKey,
       petPhaseIndex: this.petPhaseIndex,
@@ -159,9 +159,9 @@ class RankingUserInfo {
     };
   }
 
-  Map<String, dynamic> toThumbsUpUpdateMap() {
+  Map<String, dynamic> toThumbUpCountUpdateMap() {
     return {
-      KEY_THUMBS_UP: thumbsUp,
+      KEY_THUMB_UP_COUNT: thumbUpCount,
     };
   }
 

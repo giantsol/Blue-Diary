@@ -1,27 +1,27 @@
 
-import 'package:todo_app/data/AppPreferences.dart';
-import 'package:todo_app/data/datasource/PetDataSource.dart';
+import 'package:todo_app/data/datasource/AppDatabase.dart';
+import 'package:todo_app/data/datasource/AppPreferences.dart';
 import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/repository/PetRepository.dart';
 
 class PetRepositoryImpl implements PetRepository {
-  final PetDataSource _dataSource;
+  final AppDatabase _database;
   final AppPreferences _prefs;
 
-  const PetRepositoryImpl(this._dataSource, this._prefs);
+  const PetRepositoryImpl(this._database, this._prefs);
 
   @override
   Future<List<Pet>> getAllPets() {
-    return _dataSource.getAllPets();
+    return _database.getAllPets();
   }
 
   @override
   Future<void> setPet(Pet pet) {
-    return _dataSource.setPet(pet);
+    return _database.setPet(pet);
   }
 
   @override
-  String getSelectedPetKey() {
+  Future<String> getSelectedPetKey() {
     return _prefs.getSelectedPetKey();
   }
 
@@ -32,11 +32,11 @@ class PetRepositoryImpl implements PetRepository {
 
   @override
   Future<Pet> getSelectedPet() async {
-    final selectedPetKey = getSelectedPetKey();
+    final selectedPetKey = await getSelectedPetKey();
     if (selectedPetKey.isEmpty) {
       return Pet.INVALID;
     } else {
-      return _dataSource.getPet(selectedPetKey);
+      return _database.getPet(selectedPetKey);
     }
   }
 }

@@ -46,7 +46,7 @@ class RankingBloc {
   final _signOutUsecase = SignOutUsecase();
   final _increaseRankingUserInfosCountUsecase = IncreaseRankingUserInfosCountUsecase();
   final _cancelThumbsUpUsecase = CancelThumbsUpUsecase();
-  final _addThumbsUpUsecase = AddThumbsUpUsecase();
+  final _addThumbUpUsecase = AddThumbUpUsecase();
   final _getHasThumbedUpUidUsecase = GetHasThumbedUpUidUsecase();
   final _getTodayUsecase = GetTodayUsecase();
   final _syncTodayWithServerUsecase = SyncTodayWithServerUsecase();
@@ -293,7 +293,7 @@ class RankingBloc {
       ));
       isThumbLogicRunning = false;
     } else {
-      await _addThumbsUpUsecase.invoke(userInfo.uid);
+      await _addThumbUpUsecase.invoke(userInfo.uid);
       isThumbLogicRunning = false;
     }
   }

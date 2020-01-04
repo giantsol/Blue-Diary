@@ -273,7 +273,7 @@ class DayBloc {
 
     final newToDoAdded = currentDayRecord.toDoRecords.length != toDoRecords.length;
     if (currentDayRecord.isToday && newToDoAdded) {
-      _scheduleReminderNotificationUsecase.invoke(context);
+      _scheduleReminderNotificationUsecase.invoke(context, _state.value.year, _state.value.month, _state.value.day);
     }
   }
 

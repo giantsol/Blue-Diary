@@ -1,4 +1,4 @@
-import 'package:todo_app/data/AppDatabase.dart';
+import 'package:todo_app/data/datasource/AppDatabase.dart';
 
 class DayMemo {
   static String createWhereQuery() => '${AppDatabase.COLUMN_YEAR} = ?'

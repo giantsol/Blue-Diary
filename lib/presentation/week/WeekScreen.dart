@@ -1236,7 +1236,7 @@ class _InteractivePetState extends State<_InteractivePet> {
             top: _top,
             left: _left,
             child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
+              behavior: HitTestBehavior.translucent,
               onPanUpdate: (tapInfo) {
                 setState(() {
                   _left += tapInfo.delta.dx;
