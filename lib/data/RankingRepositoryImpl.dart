@@ -48,28 +48,11 @@ class RankingRepositoryImpl implements RankingRepository {
   }
 
   @override
-  Future<void> cancelThumbedUp(String uid) async {
-    final isThumbedUpUid = await _database.isThumbedUpUid(uid);
-    if (!isThumbedUpUid) {
-      return;
-    }
-
-    final success = await _firebase.cancelThumbedUp(uid);
-    if (success) {
-      return _database.removeThumbedUpUid(uid);
-    }
-  }
-
-  @override
   Future<void> addThumbUp(String uid) async {
-    final isThumbedUpUid = await _database.isThumbedUpUid(uid);
-    if (isThumbedUpUid) {
-      return;
-    }
-
+    await _database.addThumbedUpUid(uid);
     final success = await _firebase.addThumbUp(uid);
-    if (success) {
-      return _database.addThumbedUpUid(uid);
+    if (!success) {
+      return _database.removeThumbedUpUid(uid);
     }
   }
 

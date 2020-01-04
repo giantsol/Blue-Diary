@@ -466,21 +466,21 @@ class AppDatabase {
     }
   }
 
-  Future<void> removeThumbedUpUid(String uid) async {
-    final db = await _database.first;
-    return db.delete(
-      TABLE_THUMBED_UP_UIDS,
-      where: '$COLUMN_UID = ?',
-      whereArgs: [uid],
-    );
-  }
-
   Future<void> addThumbedUpUid(String uid) async {
     final db = await _database.first;
     return db.insert(
       TABLE_THUMBED_UP_UIDS,
       { COLUMN_UID: uid },
       conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<void> removeThumbedUpUid(String uid) async {
+    final db = await _database.first;
+    return db.delete(
+      TABLE_THUMBED_UP_UIDS,
+      where: '$COLUMN_UID = ?',
+      whereArgs: [uid]
     );
   }
 

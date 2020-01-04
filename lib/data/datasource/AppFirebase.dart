@@ -115,30 +115,7 @@ class AppFirebase {
         final doc = Firestore.instance
           .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
           .document(uid);
-        await transaction.delete(doc);
-        return true;
-      });
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future<bool> cancelThumbedUp(String uid) async {
-    try {
-      await Firestore.instance.runTransaction((transaction) async {
-        final doc = Firestore.instance
-          .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
-          .document(uid);
-        final snapshot = await transaction.get(doc);
-
-        if (snapshot.data != null) {
-          final rankingUserInfo = RankingUserInfo.fromMap(snapshot.data);
-          final updated = rankingUserInfo.buildNew(thumbUpCount: rankingUserInfo.thumbUpCount - 1);
-
-          await transaction.update(doc, updated.toThumbUpCountUpdateMap());
-        }
-        return true;
+        transaction.delete(doc);
       });
       return true;
     } catch (e) {
@@ -158,9 +135,8 @@ class AppFirebase {
           final rankingUserInfo = RankingUserInfo.fromMap(snapshot.data);
           final updated = rankingUserInfo.buildNew(thumbUpCount: rankingUserInfo.thumbUpCount + 1);
 
-          await transaction.update(doc, updated.toThumbUpCountUpdateMap());
+          transaction.update(doc, updated.toThumbUpCountUpdateMap());
         }
-        return true;
       });
       return true;
     } catch (e) {
