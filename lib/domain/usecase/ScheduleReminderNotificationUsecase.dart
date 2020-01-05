@@ -9,7 +9,10 @@ class ScheduleReminderNotificationUsecase {
   final _unscheduleReminderNotificationUsecase = UnscheduleReminderNotificationUsecase();
 
   Future<void> invoke(BuildContext context, int year, int month, int day) async {
-    await _unscheduleReminderNotificationUsecase.invoke();
-    return _notificationRepository.scheduleReminderNotification(context, year, month, day);
+    final localDate = DateTime.now();
+    if (localDate.hour < 21) {
+      await _unscheduleReminderNotificationUsecase.invoke();
+      return _notificationRepository.scheduleReminderNotification(context, year, month, day);
+    }
   }
 }
