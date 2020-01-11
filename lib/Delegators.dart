@@ -17,7 +17,7 @@ abstract class BottomNavigationItemClickedListenerDelegator {
 }
 
 abstract class ShowSeedAddedAnimationDelegator {
-  void showSeedAddedAnimation(int seedCount);
+  void showSeedAddedAnimation(String text);
 }
 
 abstract class WeekBlocDelegator implements

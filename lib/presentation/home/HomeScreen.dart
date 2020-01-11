@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   final GlobalKey _petViewTabKey = GlobalKey();
-  int _currentSeedAddedAnimationNumber;
+  String _currentSeedAddedAnimationText;
   AnimationController _seedAddedAnimationController;
 
   final _firebaseMessaging = FirebaseMessaging();
@@ -165,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         ),
                         padding: EdgeInsets.symmetric(vertical: 1, horizontal: 3,),
                         child: Text(
-                          '+ $_currentSeedAddedAnimationNumber',
+                          '+ $_currentSeedAddedAnimationText',
                           style: TextStyle(
                             color: AppColors.TEXT_WHITE,
                             fontSize: 12,
@@ -207,9 +207,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   @override
-  void showSeedAddedAnimation(int number) {
+  void showSeedAddedAnimation(String text) {
     setState(() {
-      _currentSeedAddedAnimationNumber = number;
+      _currentSeedAddedAnimationText = text;
     });
 
     _seedAddedAnimationController.reset();

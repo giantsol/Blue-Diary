@@ -1,5 +1,7 @@
 
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/Delegators.dart';
@@ -31,6 +33,7 @@ import 'package:todo_app/presentation/week/WeekState.dart';
 
 class WeekBloc {
   static const _sevenDays = const Duration(days: 7);
+  static const _maxAddSeedCount = 10;
 
   final _state = BehaviorSubject<WeekState>.seeded(WeekState());
   WeekState getInitialState() => _state.value;
@@ -230,8 +233,10 @@ class WeekBloc {
     ));
 
     final streakCount = await _getStreakCountUsecase.invoke(date);
-    _addSeedUsecase.invoke(streakCount);
-    delegator.showSeedAddedAnimation(streakCount);
+    final addSeedCount = min<int>(_maxAddSeedCount, streakCount);
+    _addSeedUsecase.invoke(addSeedCount);
+    final seedAddedAnimationText = addSeedCount == _maxAddSeedCount ? 'MAX $addSeedCount' : '$addSeedCount';
+    delegator.showSeedAddedAnimation(seedAddedAnimationText);
 
     _setMyRankingUserInfoUsecase.invoke();
   }
