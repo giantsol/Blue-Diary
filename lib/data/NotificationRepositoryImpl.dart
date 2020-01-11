@@ -44,7 +44,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
     final channelDescription = localizations.reminderNotificationChannelDescription;
     final androidPlatformChannelSpecifics = AndroidNotificationDetails(CHANNEL_ID_REMINDER_NOTIFICATION,
       channelName, channelDescription,
-      icon: selectedPetPhase.notificationIconName.isNotEmpty ? selectedPetPhase.notificationIconName : null,
+      largeIcon: selectedPetPhase.notificationIconName.isNotEmpty ? selectedPetPhase.notificationIconName : null,
+      largeIconBitmapSource: BitmapSource.FilePath,
     );
     final iOSPlatformChannelSpecifics = IOSNotificationDetails();
     final platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);

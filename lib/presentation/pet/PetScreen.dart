@@ -318,6 +318,7 @@ class _Phases extends StatelessWidget {
                 final double petSize = 36 * phase.sizeRatio;
                 return GestureDetector(
                   onTap: () => bloc.onBornPhaseIndexClicked(index),
+                  behavior: HitTestBehavior.opaque,
                   child: Container(
                     width: maxSize,
                     height: maxSize,
