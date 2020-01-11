@@ -406,7 +406,7 @@ class _Phases extends StatelessWidget {
           child: phaseScoreText,
         ),
       ),
-    ) : maxSelectablePhaseIndex == 0 ? FractionallySizedBox(
+    ) : maxSelectablePhaseIndex == 0 && pet.bornPhases.length == 3 ? FractionallySizedBox(
       widthFactor: 0.5,
       child: Center(
         child: phaseScoreText,
