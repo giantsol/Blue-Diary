@@ -90,7 +90,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
     final channelDescription = localizations.firebaseMessagingNotificationChannelDescription;
     final androidPlatformChannelSpecifics = AndroidNotificationDetails(CHANNEL_ID_FIREBASE_MESSAGING_NOTIFICATION,
       channelName, channelDescription,
-      icon: selectedPetPhase.notificationIconName.isNotEmpty ? selectedPetPhase.notificationIconName : null,
+      largeIcon: selectedPetPhase.notificationIconName.isNotEmpty ? selectedPetPhase.notificationIconName : null,
+      largeIconBitmapSource: BitmapSource.Drawable,
     );
     final iOSPlatformChannelSpecifics = IOSNotificationDetails();
     final platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
