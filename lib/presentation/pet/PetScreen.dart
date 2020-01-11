@@ -313,7 +313,8 @@ class _Phases extends StatelessWidget {
             maxSelectablePhaseIndex >= 0 ? Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: List.generate(pet.bornPhases.length, (index) {
-                final phase = pet.bornPhases[index];
+                final phase = maxSelectablePhaseIndex >= index ? pet.bornPhases[index]
+                : pet.inactivePhase;
                 final double maxSize = 36;
                 final double petSize = 36 * phase.sizeRatio;
                 return GestureDetector(
