@@ -92,16 +92,12 @@ class AppLocalizations {
   static const PET_A_0_SUBTITLE = "petA0Subtitle";
   static const PET_A_1_TITLE = "petA1Title";
   static const PET_A_1_SUBTITLE = "petA1Subtitle";
-  static const PET_A_2_TITLE = "petA2Title";
-  static const PET_A_2_SUBTITLE = "petA2Subtitle";
   static const PET_B_INACTIVE_SUBTITLE = "petBInactiveSubtitle";
   static const PET_B_EGG_SUBTITLE = "petBEggSubtitle";
   static const PET_B_0_TITLE = "petB0Title";
   static const PET_B_0_SUBTITLE = "petB0Subtitle";
   static const PET_B_1_TITLE = "petB1Title";
   static const PET_B_1_SUBTITLE = "petB1Subtitle";
-  static const PET_B_2_TITLE = "petB2Title";
-  static const PET_B_2_SUBTITLE = "petB2Subtitle";
   static const SIGN_OUT = "signOut";
   static const NO_PET = "noPet";
   static const NEED_UPDATE = "needUpdate";
@@ -211,18 +207,14 @@ class AppLocalizations {
       PET_A_EGG_SUBTITLE: 'Ay, something\'s cooking...',
       PET_A_0_TITLE: 'A',
       PET_A_0_SUBTITLE: 'Hai!',
-      PET_A_1_TITLE: 'Able',
-      PET_A_1_SUBTITLE: 'Hai!',
-      PET_A_2_TITLE: 'Ace!',
-      PET_A_2_SUBTITLE: 'Hai!',
-      PET_B_INACTIVE_SUBTITLE: 'B inactive',
-      PET_B_EGG_SUBTITLE: 'B egg',
-      PET_B_0_TITLE: 'B0',
-      PET_B_0_SUBTITLE: 'B0_',
-      PET_B_1_TITLE: 'B1',
-      PET_B_1_SUBTITLE: 'B1_',
-      PET_B_2_TITLE: 'B2',
-      PET_B_2_SUBTITLE: 'B2_',
+      PET_A_1_TITLE: 'Ace',
+      PET_A_1_SUBTITLE: 'Ace deserves a crown!',
+      PET_B_INACTIVE_SUBTITLE: 'We all seem to be so busy...',
+      PET_B_EGG_SUBTITLE: 'Enjoy a round of an egg',
+      PET_B_0_TITLE: 'Bee',
+      PET_B_0_SUBTITLE: 'A big headed bee',
+      PET_B_1_TITLE: 'Beesy',
+      PET_B_1_SUBTITLE: 'Busy busy..',
       SIGN_OUT: 'Sign Out',
       NO_PET: 'No Pet',
       NEED_UPDATE: 'Need Update',
@@ -327,18 +319,14 @@ class AppLocalizations {
       PET_A_EGG_SUBTITLE: '뭔가 타는 냄새 안나요?',
       PET_A_0_TITLE: '에이',
       PET_A_0_SUBTITLE: '안녕!',
-      PET_A_1_TITLE: '에이블',
-      PET_A_1_SUBTITLE: '안녕!',
-      PET_A_2_TITLE: '에이스!',
-      PET_A_2_SUBTITLE: '안녕!',
-      PET_B_INACTIVE_SUBTITLE: 'B inactive',
-      PET_B_EGG_SUBTITLE: 'B egg',
-      PET_B_0_TITLE: 'B0',
-      PET_B_0_SUBTITLE: 'B0_',
-      PET_B_1_TITLE: 'B1',
-      PET_B_1_SUBTITLE: 'B1_',
-      PET_B_2_TITLE: 'B2',
-      PET_B_2_SUBTITLE: 'B2_',
+      PET_A_1_TITLE: '에이스',
+      PET_A_1_SUBTITLE: '왕관을 받을 자격이 있다구요!',
+      PET_B_INACTIVE_SUBTITLE: '우린 너무 바쁘게 사는거 같아요...',
+      PET_B_EGG_SUBTITLE: '계란 하나의 여유',
+      PET_B_0_TITLE: '꿀벌',
+      PET_B_0_SUBTITLE: '머리가 좀 큰 꿀벌',
+      PET_B_1_TITLE: '바쁜꿀벌',
+      PET_B_1_SUBTITLE: '바쁘다 바빠..',
       SIGN_OUT: '탈퇴',
       NO_PET: '펫 없음',
       NEED_UPDATE: '업데이트 필요',

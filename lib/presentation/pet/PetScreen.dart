@@ -223,18 +223,28 @@ class _SelectedPetView extends StatelessWidget {
             children: <Widget>[
               Text(
                 AppLocalizations.of(context).getPetTitle(pet),
+                strutStyle: StrutStyle(
+                  fontSize: 24,
+                ),
                 style: TextStyle(
                   fontSize: 24,
                   color: AppColors.TEXT_BLACK,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 2,),
               Text(
                 AppLocalizations.of(context).getPetSubtitle(pet),
+                strutStyle: StrutStyle(
+                  fontSize: 12,
+                ),
                 style: TextStyle(
                   fontSize: 12,
                   color: AppColors.TEXT_BLACK_LIGHT,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               const Spacer(),
               _Phases(
