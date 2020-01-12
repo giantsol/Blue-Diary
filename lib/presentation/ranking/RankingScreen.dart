@@ -612,10 +612,10 @@ class _SignInDialog extends StatelessWidget {
                 child: Text('Google SignIn'),
                 onPressed: () => bloc.onGoogleSignInClicked(context),
               ),
-              FlatButton(
-                child: Text('Facebook SignIn'),
-                onPressed: () => bloc.onFacebookSignInClicked(context),
-              ),
+//              FlatButton(
+//                child: Text('Facebook SignIn'),
+//                onPressed: () => bloc.onFacebookSignInClicked(context),
+//              ),
             ],
           ),
         ),
