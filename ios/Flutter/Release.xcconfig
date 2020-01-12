@@ -1,3 +1,6 @@
 #include "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Secrets.xcconfig"
 #include "Generated.xcconfig"
+
+PRODUCT_BUNDLE_NAME = Blue Diary
+PRODUCT_BUNDLE_IDENTIFIER = com.giantsol.blue-diary
