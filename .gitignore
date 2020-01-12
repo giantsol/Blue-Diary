@@ -78,3 +78,6 @@
 **/GoogleService-Info.plist
 **/strings-secret.xml
 **/Secrets.xcconfig
+**/.firebaserc
+**/firebase.json
+**/functions/
