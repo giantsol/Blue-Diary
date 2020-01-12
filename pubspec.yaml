@@ -52,7 +52,7 @@ dependencies:
 
   flutter_datetime_picker: ^1.2.8
 
-  flutter_local_notifications: ^0.8.4+3
+  flutter_local_notifications: ^0.9.1+3
 
 dev_dependencies:
   flutter_test:
