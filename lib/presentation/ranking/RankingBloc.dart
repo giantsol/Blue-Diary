@@ -89,6 +89,10 @@ class RankingBloc {
             final List<RankingUserInfo> updateNeededRankingUserInfos = [];
 
             event.rankingUserInfos.forEach((it) {
+              if (it.uid == myRankingInfoState.data.uid) {
+                return;
+              }
+
               final firstLaunchDate = it.firstLaunchDateMillis != 0 ? DateTime.fromMillisecondsSinceEpoch(it.firstLaunchDateMillis)
                 : DateRepository.INVALID_DATE;
               if (firstLaunchDate != DateRepository.INVALID_DATE) {
