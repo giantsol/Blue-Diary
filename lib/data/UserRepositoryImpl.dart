@@ -8,7 +8,7 @@ import 'package:todo_app/domain/repository/UserRepository.dart';
 
 class UserRepositoryImpl implements UserRepository {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-  final FacebookLogin _facebookLogin = FacebookLogin();
+//  final FacebookLogin _facebookLogin = FacebookLogin();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
@@ -27,29 +27,31 @@ class UserRepositoryImpl implements UserRepository {
       await _auth.signInWithCredential(credential);
       return true;
     } catch (e) {
+      await signOut();
       return false;
     }
   }
 
   @override
   Future<bool> signInWithFacebook() async {
-    try {
-      final result = await _facebookLogin.logIn(['public_profile', 'email']);
-      final credential = FacebookAuthProvider.getCredential(accessToken: result.accessToken.token);
-
-      await _auth.signInWithCredential(credential);
-      return true;
-    } catch (e) {
-      return false;
-    }
+//    try {
+//      final result = await _facebookLogin.logIn(['public_profile', 'email']);
+//      final credential = FacebookAuthProvider.getCredential(accessToken: result.accessToken.token);
+//
+//      await _auth.signInWithCredential(credential);
+//      return true;
+//    } catch (e) {
+//      return false;
+//    }
+    return false;
   }
 
   @override
   Future<bool> signOut() async {
     try {
-      if (await _facebookLogin.isLoggedIn) {
-        await _facebookLogin.logOut();
-      }
+//      if (await _facebookLogin.isLoggedIn) {
+//        await _facebookLogin.logOut();
+//      }
       if (await _googleSignIn.isSignedIn()) {
         await _googleSignIn.signOut();
       }

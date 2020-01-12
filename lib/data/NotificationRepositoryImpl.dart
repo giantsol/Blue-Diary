@@ -24,7 +24,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   Future<void> _init() {
-    final androidInitializationSettings = AndroidInitializationSettings('ic_splash');
+    final androidInitializationSettings = AndroidInitializationSettings('ic_notification');
     final iosInitializationSettings = IOSInitializationSettings();
     final initializationSettings = InitializationSettings(androidInitializationSettings, iosInitializationSettings);
 

@@ -135,24 +135,24 @@ class RankingBloc {
     ));
   }
 
-  Future<void> onFacebookSignInClicked(BuildContext context) async {
-    final errorSigningInText = AppLocalizations.of(context).errorSigningIn;
-
-    _state.add(_state.value.buildNew(
-      signInDialogShown: false,
-      showMyRankingInfoLoading: true,
-    ));
-
-    final myRankingUserInfo = await _signInWithFacebookUsecase.invoke();
-    if (!myRankingUserInfo.isSignedIn) {
-      delegator.showSnackBar(errorSigningInText, const Duration(seconds: 2));
-    }
-
-    _state.add(_state.value.buildNew(
-      myRankingUserInfoState: myRankingUserInfo,
-      showMyRankingInfoLoading: false,
-    ));
-  }
+//  Future<void> onFacebookSignInClicked(BuildContext context) async {
+//    final errorSigningInText = AppLocalizations.of(context).errorSigningIn;
+//
+//    _state.add(_state.value.buildNew(
+//      signInDialogShown: false,
+//      showMyRankingInfoLoading: true,
+//    ));
+//
+//    final myRankingUserInfo = await _signInWithFacebookUsecase.invoke();
+//    if (!myRankingUserInfo.isSignedIn) {
+//      delegator.showSnackBar(errorSigningInText, const Duration(seconds: 2));
+//    }
+//
+//    _state.add(_state.value.buildNew(
+//      myRankingUserInfoState: myRankingUserInfo,
+//      showMyRankingInfoLoading: false,
+//    ));
+//  }
 
   void onSignOutClicked(BuildContext context) {
     if (_state.value.showMyRankingInfoLoading) {
