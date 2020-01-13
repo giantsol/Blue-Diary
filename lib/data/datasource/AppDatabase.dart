@@ -134,11 +134,11 @@ class AppDatabase {
           """
         );
       },
-      onUpgrade: (db, oldVersion, newVersion) {
+      onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion == 1 && newVersion == 2) {
           return db.execute('DROP TABLE IF EXISTS locks');
         } else if (oldVersion == 2 && newVersion == 3) {
-          return db.execute(
+          await db.execute(
           """
           CREATE TABLE $TABLE_MARKED_COMPLETED_DAYS(
             $COLUMN_YEAR INTEGER NOT NULL,
@@ -150,9 +150,8 @@ class AppDatabase {
           );
           """
           );
-        } else if (oldVersion == 3 && newVersion == 4) {
-          return db.execute(
-          """
+          await db.execute(
+            """
           CREATE TABLE $TABLE_PET_USER_DATUM(
             $COLUMN_KEY TEXT NOT NULL PRIMARY KEY,
             $COLUMN_EXP INTEGER NOT NULL,
@@ -160,9 +159,8 @@ class AppDatabase {
           );
           """
           );
-        } else if (oldVersion == 4 && newVersion == 5) {
           return db.execute(
-          """
+            """
           CREATE TABLE $TABLE_THUMBED_UP_UIDS(
             $COLUMN_UID TEXT NOT NULL PRIMARY KEY
           );
@@ -172,7 +170,39 @@ class AppDatabase {
           return null;
         }
       },
-      version: 5,
+      onDowngrade: (db, oldVersion, newVersion) async {
+        if (oldVersion == 5 && newVersion == 3) {
+          await db.execute(
+            """
+          CREATE TABLE $TABLE_MARKED_COMPLETED_DAYS(
+            $COLUMN_YEAR INTEGER NOT NULL,
+            $COLUMN_MONTH INTEGER NOT NULL,
+            $COLUMN_DAY INTEGER NOT NULL,
+            $COLUMN_MILLIS_SINCE_EPOCH INTEGER NOT NULL,
+            $COLUMN_STREAK_COUNT INTEGER NOT NULL,
+            PRIMARY KEY ($COLUMN_YEAR, $COLUMN_MONTH, $COLUMN_DAY)
+          );
+          """
+          );
+          await db.execute(
+            """
+          CREATE TABLE $TABLE_PET_USER_DATUM(
+            $COLUMN_KEY TEXT NOT NULL PRIMARY KEY,
+            $COLUMN_EXP INTEGER NOT NULL,
+            $COLUMN_SELECTED_PHASE INTEGER NOT NULL
+          );
+          """
+          );
+          return db.execute(
+            """
+          CREATE TABLE $TABLE_THUMBED_UP_UIDS(
+            $COLUMN_UID TEXT NOT NULL PRIMARY KEY
+          );
+          """
+          );
+        }
+      },
+      version: 3,
     );
   }
 
