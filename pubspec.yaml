@@ -45,7 +45,6 @@ dependencies:
   firebase_analytics: ^5.0.9
   cloud_functions: ^0.4.1+6
   google_sign_in: ^4.1.1
-  flutter_facebook_login: ^3.0.0
   firebase_auth: ^0.15.3+1
   cloud_firestore: ^0.13.0+1
   firebase_messaging: ^6.0.9

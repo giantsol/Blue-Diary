@@ -28,12 +28,6 @@
 				<string>$(GOOGLE_SERVICE_INFO_REVERSED_CLIENT_ID)</string>
 			</array>
 		</dict>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>$(FB_URL_SCHEME)</string>
-			</array>
-		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
