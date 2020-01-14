@@ -54,7 +54,7 @@ class GetWeekRecordUsecase {
       final prevDayStreak = await _getStreakCountUsecase.invoke(date.subtract(const Duration(days: 1)));
       final nextDayStreak = await _getStreakCountUsecase.invoke(date.add(const Duration(days: 1)));
       final allToDosDone = toDos.length > 0 && toDos.every((it) => it.isDone);
-      final isLightColor = !allToDosDone && today.compareTo(date) > 0;
+      final isLightColor = !allToDosDone && Utils.isLessDay(today, date);
       final isTopLineVisible = (currentDayStreak >= 2) || (prevDayStreak >= 1 && currentDayStreak == 0 && isToday);
       final isTopLineLightColorIfVisible = currentDayStreak < 1;
       final isBottomLineVisible = (currentDayStreak >= 1 && nextDayStreak > currentDayStreak) || (currentDayStreak >= 1 && nextDayStreak == 0 && today.difference(date).inDays == 1);
@@ -64,7 +64,7 @@ class GetWeekRecordUsecase {
       final firstLaunchDate = DateTime.parse(await _prefsRepository.getFirstLaunchDateString());
       final hasBeenMarkedCompleted = await _isDayMarkedCompletedUsecase.invoke(date);
       final canBeMarkedCompleted = allToDosDone && !hasBeenMarkedCompleted &&
-        date.compareTo(firstLaunchDate) >= 0 && date.compareTo(today) <= 0;
+        !Utils.isMoreDay(date, firstLaunchDate) && !Utils.isLessDay(date, today);
 
       // whether to show first completable day tutorial
       if (!hasShownFirstCompletableDayTutorial && firstCompletableDayTutorialIndex == -1 && canBeMarkedCompleted) {

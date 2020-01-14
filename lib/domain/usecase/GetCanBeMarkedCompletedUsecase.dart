@@ -1,4 +1,5 @@
 
+import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/usecase/GetTodayUsecase.dart';
 import 'package:todo_app/domain/usecase/IsDayMarkedCompletedUsecase.dart';
 import 'package:todo_app/presentation/App.dart';
@@ -16,6 +17,7 @@ class CanDayBeMarkedCompletedUsecase {
     final hasBeenMarkedCompleted = await _isDayMarkedCompletedUsecase.invoke(date);
     final firstLaunchDate = DateTime.parse(await _prefsRepository.getFirstLaunchDateString());
     final today = await _getTodayUsecase.invoke();
-    return allToDosDone && !hasBeenMarkedCompleted && date.compareTo(firstLaunchDate) >= 0 && date.compareTo(today) <= 0;
+    return allToDosDone && !hasBeenMarkedCompleted &&
+      !Utils.isMoreDay(date, firstLaunchDate) && !Utils.isLessDay(date, today);
   }
 }

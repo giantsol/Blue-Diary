@@ -6,8 +6,32 @@ import 'package:todo_app/Localization.dart';
 
 class Utils {
 
+  static bool isLessDay(DateTime standard, DateTime target) {
+    if (standard.year > target.year) {
+      return true;
+    } else if (standard.year == target.year && standard.month > target.month) {
+      return true;
+    } else if (standard.year == target.year && standard.month == target.month && standard.day > target.day) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   static bool isSameDay(DateTime d1, DateTime d2) {
     return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
+  }
+
+  static bool isMoreDay(DateTime standard, DateTime target) {
+    if (standard.year < target.year) {
+      return true;
+    } else if (standard.year == target.year && standard.month < target.month) {
+      return true;
+    } else if (standard.year == target.year && standard.month == target.month && standard.day < target.day) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   static List<DateTime> getDatesInWeek(DateTime date) {
