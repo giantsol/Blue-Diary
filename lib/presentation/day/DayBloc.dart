@@ -200,6 +200,8 @@ class DayBloc {
     if (allToDosDone) {
       _unscheduleReminderNotificationUsecase.invoke();
     }
+
+    handleBackPress();
   }
 
   void onEditingCategoryTextChanged(String changed) {
