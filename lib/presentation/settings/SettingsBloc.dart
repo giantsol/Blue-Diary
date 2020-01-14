@@ -67,7 +67,7 @@ class SettingsBloc {
           }
         }
       );
-    } else if (!useLockScreen) {
+    } else if (!useLockScreen && userPassword.isNotEmpty) {
       // set it to true forcefully instantly.
       // will set to false when user inputs password correctly
       _setUseLockScreenUsecase.invoke(true);

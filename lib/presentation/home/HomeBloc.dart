@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/usecase/GetUseLockScreenUsecase.dart';
+import 'package:todo_app/domain/usecase/GetUserPasswordUsecase.dart';
 import 'package:todo_app/domain/usecase/HomeChildScreenUsecases.dart';
 import 'package:todo_app/domain/usecase/SetMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/ShowFirebaseMessageUsecase.dart';
@@ -18,6 +19,7 @@ class HomeBloc {
   Stream<HomeState> observeState() => _state.distinct();
 
   final _getUseLockScreenUsecase = GetUseLockScreenUsecase();
+  final _getUserPasswordUsecase = GetUserPasswordUsecase();
   final _homeChildScreenUsecases = HomeChildScreenUsecases();
   final _setMyRankingUserInfoUsecase = SetMyRankingUserInfoUsecase();
   final _showFirebaseMessageUsecase = ShowFirebaseMessageUsecase();
@@ -30,10 +32,11 @@ class HomeBloc {
 
   Future<void> _initState(BuildContext context) async {
     final useLockScreen = await _getUseLockScreenUsecase.invoke();
+    final userPassword = await _getUserPasswordUsecase.invoke();
     final navigationItems = _homeChildScreenUsecases.getNavigationItems();
     final currentChildScreenKey = _homeChildScreenUsecases.getCurrentChildScreenKey();
 
-    if (useLockScreen) {
+    if (useLockScreen && userPassword.isNotEmpty) {
       await Navigator.push(
         context,
         SlideUpPageRoute(
