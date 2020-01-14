@@ -115,7 +115,7 @@ class AppFirebase {
         final doc = Firestore.instance
           .collection(FIRESTORE_RANKING_USER_INFO_COLLECTION)
           .document(uid);
-        transaction.delete(doc);
+        await transaction.delete(doc);
       });
       return true;
     } catch (e) {
@@ -135,7 +135,7 @@ class AppFirebase {
           final rankingUserInfo = RankingUserInfo.fromMap(snapshot.data);
           final updated = rankingUserInfo.buildNew(thumbUpCount: rankingUserInfo.thumbUpCount + 1);
 
-          transaction.update(doc, updated.toThumbUpCountUpdateMap());
+          await transaction.update(doc, updated.toThumbUpCountUpdateMap());
         }
       });
       return true;

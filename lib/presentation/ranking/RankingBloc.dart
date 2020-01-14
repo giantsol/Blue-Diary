@@ -48,6 +48,10 @@ class RankingBloc {
   final _isSignedInUsecase = IsSignedInUsecase();
   final _updateRankingUserInfosCompletionRatioUsecase = UpdateRankingUserInfosCompletionRatioUsecase();
 
+  // Temporarily need this.. because of transaction
+  // https://github.com/giantsol/Blue-Diary/issues/148
+  bool _isThumbingUp = false;
+
   RankingBloc() {
     _initState();
   }
@@ -267,7 +271,13 @@ class RankingBloc {
       ));
       return;
     } else {
-      return _addThumbUpUsecase.invoke(userInfo.uid);
+      if (_isThumbingUp) {
+        return;
+      } else {
+        _isThumbingUp = true;
+        await _addThumbUpUsecase.invoke(userInfo.uid);
+        _isThumbingUp = false;
+      }
     }
   }
 
