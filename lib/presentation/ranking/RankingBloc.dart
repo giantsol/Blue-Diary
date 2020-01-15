@@ -16,6 +16,7 @@ import 'package:todo_app/domain/usecase/IncreaseRankingUserInfosCountUsecase.dar
 import 'package:todo_app/domain/usecase/InitRankingUserInfosCountUsecase.dart';
 import 'package:todo_app/domain/usecase/IsSignedInUsecase.dart';
 import 'package:todo_app/domain/usecase/ObserveRankingUserInfosUsecase.dart';
+import 'package:todo_app/domain/usecase/RemoveThumbedUpUidUsecase.dart';
 import 'package:todo_app/domain/usecase/SetMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/SignInWithFacebookUsecase.dart';
 import 'package:todo_app/domain/usecase/SignInWithGoogleUsecase.dart';
@@ -47,6 +48,7 @@ class RankingBloc {
   final _syncTodayWithServerUsecase = SyncTodayWithServerUsecase();
   final _isSignedInUsecase = IsSignedInUsecase();
   final _updateRankingUserInfosCompletionRatioUsecase = UpdateRankingUserInfosCompletionRatioUsecase();
+  final _removeThumbedUpUsecase = RemoveThumbedUpUsecase();
 
   // Temporarily need this.. because of transaction
   // https://github.com/giantsol/Blue-Diary/issues/148
@@ -70,18 +72,25 @@ class RankingBloc {
 
     _rankingUserInfosEventSubscription = _observeRankingUserInfosUsecase.invoke()
       .listen((event) async {
-      final updatedThumbedUpUids = Map.of(_state.value.thumbedUpUids);
-      for (final rankingUserInfo in event.rankingUserInfos) {
-        final hasThumbedUp = await _getHasThumbedUpUidUsecase.invoke(rankingUserInfo.uid);
-        if (hasThumbedUp) {
-          updatedThumbedUpUids[rankingUserInfo.uid] = true;
-        }
-      }
+//      final updatedThumbedUpUids = Map.of(_state.value.thumbedUpUids);
+//      for (final rankingUserInfo in event.rankingUserInfos) {
+//        final hasThumbedUp = await _getHasThumbedUpUidUsecase.invoke(rankingUserInfo.uid);
+//        final uid = rankingUserInfo.uid;
+//        if (hasThumbedUp) {
+//          if (rankingUserInfo.thumbUpCount == 0) {
+//            updatedThumbedUpUids.remove(uid);
+//            _removeThumbedUpUsecase.invoke(uid);
+//          } else {
+//            updatedThumbedUpUids[uid] = true;
+//          }
+//        }
+//      }
+
       _state.add(_state.value.buildNew(
         rankingUserInfos: event.rankingUserInfos,
         hasMoreRankingInfos: event.hasMore,
         isRankingUserInfosLoading: false,
-        thumbedUpUids: updatedThumbedUpUids,
+//        thumbedUpUids: updatedThumbedUpUids,
       ));
 
       final isSignedIn = await _isSignedInUsecase.invoke();

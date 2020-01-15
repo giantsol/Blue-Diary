@@ -371,22 +371,22 @@ class _Header extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 4,),
-                      Text(
-                        AppLocalizations.of(context).thumbsUp,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: AppColors.TEXT_BLACK,
-                        ),
-                      ),
-                      Text(
-                        '${info.thumbUpCount}',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: AppColors.PRIMARY,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+//                      const SizedBox(height: 4,),
+//                      Text(
+//                        AppLocalizations.of(context).thumbsUp,
+//                        style: TextStyle(
+//                          fontSize: 10,
+//                          color: AppColors.TEXT_BLACK,
+//                        ),
+//                      ),
+//                      Text(
+//                        '${info.thumbUpCount}',
+//                        style: TextStyle(
+//                          fontSize: 18,
+//                          color: AppColors.PRIMARY,
+//                          fontWeight: FontWeight.bold,
+//                        ),
+//                      ),
                     ],
                   ),
                 ],
@@ -557,31 +557,31 @@ class _RankingItem extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 8,),
-          GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () => bloc.onThumbUpClicked(userInfo),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8,),
-              child: Row(
-                children: <Widget>[
-                  Image.asset(hasThumbedUp ? 'assets/ic_thumbs_up_activated.png' : 'assets/ic_thumbs_up.png'),
-                  const SizedBox(width: 4,),
-                  ConstrainedBox(
-                    constraints: BoxConstraints(minWidth: 22),
-                    child: Text(
-                      userInfo.thumbUpCount.toString(),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.TEXT_BLACK,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+//          const SizedBox(width: 8,),
+//          GestureDetector(
+//            behavior: HitTestBehavior.translucent,
+//            onTap: hasThumbedUp ? null : () => bloc.onThumbUpClicked(userInfo),
+//            child: Padding(
+//              padding: const EdgeInsets.symmetric(vertical: 8,),
+//              child: Row(
+//                children: <Widget>[
+//                  Image.asset(hasThumbedUp ? 'assets/ic_thumbs_up_activated.png' : 'assets/ic_thumbs_up.png'),
+//                  const SizedBox(width: 4,),
+//                  ConstrainedBox(
+//                    constraints: BoxConstraints(minWidth: 22),
+//                    child: Text(
+//                      userInfo.thumbUpCount.toString(),
+//                      style: TextStyle(
+//                        fontSize: 12,
+//                        color: AppColors.TEXT_BLACK,
+//                      ),
+//                      textAlign: TextAlign.left,
+//                    ),
+//                  ),
+//                ],
+//              ),
+//            ),
+//          ),
         ],
       ),
     );
