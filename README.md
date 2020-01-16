@@ -97,7 +97,7 @@ Run `flutter packages get` in your cloned directory to install dependencies.
 Next we'll add **iOS** app. Click **iOS** button:
 <p><img src="https://user-images.githubusercontent.com/4879766/72489003-0de9f200-3856-11ea-87fe-f74bf05c98f8.png" width=400" /></p>  
 
-In bundle ID, put `comm.giantsol.blue-diary.debug`. You can put anything for App nickname(e.g. Blue Diary Debug).
+In bundle ID, put `com.giantsol.blue-diary.debug`(note that iOS bundle id and Android applicationId is subtly different!). You can put anything for App nickname(e.g. Blue Diary Debug).
 
 Click next, and click **Download GoogleService-Info.plist** and save it anywhere for now. You should skip step 3, 4 and 5:
 <p><img src="https://user-images.githubusercontent.com/4879766/72489011-13473c80-3856-11ea-98fd-d8e160ae642d.png" width=400" /></p>
