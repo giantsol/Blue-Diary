@@ -31,8 +31,8 @@
 You can build and run this app by yourself. You'll need [Git](https://git-scm.com), [Flutter](https://flutter.dev/docs/get-started/install), [NPM](https://www.npmjs.com/get-npm) and [Android Studio](https://developer.android.com/studio) installed.
 
 Building this app for yourself needs 2 steps:
-1. Basic Setup
-2. Firebase Integration
+1. <a href="#1-basic-setup">Basic Setup</a>
+2. <a href="#2-firebase-integration">Firebase Integration</a>
 
 I'll describe these steps in detail.
 
