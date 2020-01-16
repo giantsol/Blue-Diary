@@ -16,11 +16,19 @@ abstract class BottomNavigationItemClickedListenerDelegator {
   void removeBottomNavigationItemClickedListener(void Function(String key) listener);
 }
 
+abstract class ShowSeedAddedAnimationDelegator {
+  void showSeedAddedAnimation(String text);
+}
+
 abstract class WeekBlocDelegator implements
   ShowBottomSheetDelegator,
   ShowSnackBarDelegator,
-  BottomNavigationItemClickedListenerDelegator { }
+  BottomNavigationItemClickedListenerDelegator,
+  ShowSeedAddedAnimationDelegator { }
 
 abstract class SettingsBlocDelegator implements
   ShowBottomSheetDelegator,
+  ShowSnackBarDelegator { }
+
+abstract class RankingBlocDelegator implements
   ShowSnackBarDelegator { }

@@ -4,7 +4,10 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/presentation/App.dart';
+import 'package:todo_app/domain/usecase/GetUseLockScreenUsecase.dart';
+import 'package:todo_app/domain/usecase/GetUserPasswordUsecase.dart';
+import 'package:todo_app/domain/usecase/HomeChildScreenUsecases.dart';
+import 'package:todo_app/domain/usecase/ShowFirebaseMessageUsecase.dart';
 import 'package:todo_app/presentation/home/HomeState.dart';
 import 'package:todo_app/presentation/lock/LockScreen.dart';
 import 'package:todo_app/presentation/widgets/SlideUpPageRoute.dart';
@@ -14,7 +17,10 @@ class HomeBloc {
   HomeState getInitialState() => _state.value;
   Stream<HomeState> observeState() => _state.distinct();
 
-  final _usecases = dependencies.homeUsecases;
+  final _getUseLockScreenUsecase = GetUseLockScreenUsecase();
+  final _getUserPasswordUsecase = GetUserPasswordUsecase();
+  final _homeChildScreenUsecases = HomeChildScreenUsecases();
+  final _showFirebaseMessageUsecase = ShowFirebaseMessageUsecase();
 
   final List<void Function(String key)> _bottomNavigationItemClickedListeners = [];
 
@@ -23,11 +29,12 @@ class HomeBloc {
   }
 
   Future<void> _initState(BuildContext context) async {
-    final useLockScreen = await _usecases.getUseLockScreen();
-    final navigationItems = _usecases.getNavigationItems();
-    final currentChildScreenKey = _usecases.getCurrentChildScreenKey();
+    final useLockScreen = await _getUseLockScreenUsecase.invoke();
+    final userPassword = await _getUserPasswordUsecase.invoke();
+    final navigationItems = _homeChildScreenUsecases.getNavigationItems();
+    final currentChildScreenKey = _homeChildScreenUsecases.getCurrentChildScreenKey();
 
-    if (useLockScreen) {
+    if (useLockScreen && userPassword.isNotEmpty) {
       await Navigator.push(
         context,
         SlideUpPageRoute(
@@ -35,23 +42,19 @@ class HomeBloc {
           duration: const Duration(milliseconds: 500),
         ),
       );
-      _state.add(_state.value.buildNew(
-        childScreenItems: navigationItems,
-        currentChildScreenKey: currentChildScreenKey,
-      ));
-    } else {
-      _state.add(_state.value.buildNew(
-        childScreenItems: navigationItems,
-        currentChildScreenKey: currentChildScreenKey,
-      ));
     }
+
+    _state.add(_state.value.buildNew(
+      childScreenItems: navigationItems,
+      currentChildScreenKey: currentChildScreenKey,
+    ));
   }
 
   void onBottomNavigationItemClicked(String key) {
-    _usecases.setCurrentChildScreenKey(key);
+    _homeChildScreenUsecases.setCurrentChildScreenKey(key);
 
-    final navigationItems = _usecases.getNavigationItems();
-    final currentChildScreenKey = _usecases.getCurrentChildScreenKey();
+    final navigationItems = _homeChildScreenUsecases.getNavigationItems();
+    final currentChildScreenKey = _homeChildScreenUsecases.getCurrentChildScreenKey();
     _state.add(_state.value.buildNew(
       childScreenItems: navigationItems,
       currentChildScreenKey: currentChildScreenKey,
@@ -60,6 +63,10 @@ class HomeBloc {
     for (var listener in _bottomNavigationItemClickedListeners) {
       listener(key);
     }
+  }
+
+  void onFirebaseMessageArrivedWhenForeground(BuildContext context, Map<String, dynamic> message) {
+    _showFirebaseMessageUsecase.invoke(context, message);
   }
 
   void addBottomNavigationItemClickedListener(void Function(String key) listener) {

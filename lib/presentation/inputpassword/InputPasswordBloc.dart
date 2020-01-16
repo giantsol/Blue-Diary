@@ -1,8 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:todo_app/domain/usecase/InputPasswordUsecases.dart';
-import 'package:todo_app/presentation/App.dart';
+import 'package:todo_app/domain/usecase/GetUserPasswordUsecase.dart';
 import 'package:todo_app/presentation/inputpassword/InputPasswordState.dart';
 import 'package:todo_app/presentation/widgets/VirtualKeyboard.dart';
 
@@ -11,7 +10,7 @@ class InputPasswordBloc {
   InputPasswordState getInitialState() => _state.value;
   Stream<InputPasswordState> observeState() => _state.distinct();
 
-  final InputPasswordUsecases _usecases = dependencies.inputPasswordUsecases;
+  final _getUserPasswordUsecase = GetUserPasswordUsecase();
 
   void onCloseClicked(BuildContext context) {
     Navigator.pop(context);
@@ -41,7 +40,7 @@ class InputPasswordBloc {
         password: updatedPassword,
         isLoading: true,
       ));
-      final savedPassword = await _usecases.getUserPassword();
+      final savedPassword = await _getUserPasswordUsecase.invoke();
       if (updatedPassword == savedPassword) {
         Navigator.pop(context);
         if (onSuccess != null) {

@@ -26,6 +26,7 @@
 .pub-cache/
 .pub/
 /build/
+.flutter-plugins-dependencies
 
 # Android related
 **/android/**/gradle-wrapper.jar
@@ -35,6 +36,7 @@
 **/android/gradlew.bat
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
+.gradle
 
 # iOS/XCode related
 **/ios/**/*.mode1v3
@@ -69,5 +71,13 @@
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
+# My secret files
 **/Secrets.dart
 **/key.properties
+**/google-services.json
+**/GoogleService-Info.plist
+**/strings-secret.xml
+**/Secrets.xcconfig
+**/.firebaserc
+**/firebase.json
+**/functions/

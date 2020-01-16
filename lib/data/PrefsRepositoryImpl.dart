@@ -1,5 +1,6 @@
 
-import 'package:todo_app/data/AppPreferences.dart';
+import 'package:flutter/foundation.dart';
+import 'package:todo_app/data/datasource/AppPreferences.dart';
 import 'package:todo_app/domain/repository/PrefRepository.dart';
 
 class PrefsRepositoryImpl implements PrefsRepository {
@@ -38,8 +39,8 @@ class PrefsRepositoryImpl implements PrefsRepository {
   }
 
   @override
-  void setUserCheckedToDoBefore() {
-    _prefs.setUserCheckedToDoBefore();
+  Future<void> setUserCheckedToDoBefore() {
+    return _prefs.setUserCheckedToDoBefore();
   }
 
   @override
@@ -48,8 +49,8 @@ class PrefsRepositoryImpl implements PrefsRepository {
   }
 
   @override
-  void setShownWeekScreenTutorial() {
-    _prefs.setShownWeekScreenTutorial();
+  Future<void> setShownWeekScreenTutorial() {
+    return _prefs.setShownWeekScreenTutorial();
   }
 
   @override
@@ -58,7 +59,79 @@ class PrefsRepositoryImpl implements PrefsRepository {
   }
 
   @override
-  void setShownDayScreenTutorial() {
-    _prefs.setShownDayScreenTutorial();
+  Future<void> setShownDayScreenTutorial() {
+    return _prefs.setShownDayScreenTutorial();
+  }
+
+  @override
+  Future<String> getRealFirstLaunchDateString() {
+    return _prefs.getRealFirstLaunchDateString();
+  }
+
+  @override
+  Future<void> setRealFirstLaunchDate(DateTime date) {
+    final trimmed = DateTime(date.year, date.month, date.day);
+    return _prefs.setRealFirstLaunchDateString(trimmed.toIso8601String());
+  }
+
+  @override
+  Future<bool> getUseRealFirstLaunchDate() async {
+    return kReleaseMode || await _prefs.getUseRealFirstLaunchDate();
+  }
+
+  @override
+  Future<String> getCustomFirstLaunchDateString() {
+    return _prefs.getCustomFirstLaunchDateString();
+  }
+
+  @override
+  Future<void> setCustomFirstLaunchDate(DateTime date) {
+    final trimmed = DateTime(date.year, date.month, date.day);
+    return _prefs.setCustomFirstLaunchDateString(trimmed.toIso8601String());
+  }
+
+  @override
+  Future<String> getFirstLaunchDateString() async {
+    final useReal = await getUseRealFirstLaunchDate();
+    if (useReal) {
+      return getRealFirstLaunchDateString();
+    } else {
+      return getCustomFirstLaunchDateString();
+    }
+  }
+
+  @override
+  Future<bool> hasShownFirstCompletableDayTutorial() {
+    return _prefs.hasShownFirstCompletableDayTutorial();
+  }
+
+  @override
+  Future<void> setShownFirstCompletableDayTutorial() {
+    return _prefs.setShownFirstCompletableDayTutorial();
+  }
+
+  @override
+  Future<void> addSeed(int count) async {
+    return _prefs.setSeedCount(await getSeedCount() + count);
+  }
+
+  @override
+  Future<void> minusSeed(int count) async {
+    return _prefs.setSeedCount(await getSeedCount() - count);
+  }
+
+  @override
+  Future<int> getSeedCount() {
+    return _prefs.getSeedCount();
+  }
+
+  @override
+  Future<int> getLastUpdatedMyRankingUserInfoLocalTimeMillis() {
+    return _prefs.getLastUpdatedMyRankingUserInfoLocalTimeMillis();
+  }
+
+  @override
+  Future<void> setLastUpdatedMyRankingUserInfoLocalTimeMillis(int value) {
+    _prefs.setLastUpdatedMyRankingUserInfoLocalTimeMillis(value);
   }
 }

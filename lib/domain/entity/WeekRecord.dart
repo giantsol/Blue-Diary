@@ -1,4 +1,5 @@
 
+import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DateInWeek.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
@@ -8,6 +9,7 @@ class WeekRecord {
   final List<CheckPoint> checkPoints;
   final List<DayPreview> dayPreviews;
   final bool containsToday;
+  final int firstCompletableDayTutorialIndex;
 
   String get key => '${dateInWeek.year}-${dateInWeek.month}-${dateInWeek.nthWeek}';
 
@@ -16,18 +18,21 @@ class WeekRecord {
     this.checkPoints = const [],
     this.dayPreviews = const [],
     this.containsToday = false,
+    this.firstCompletableDayTutorialIndex = -1,
   });
 
   WeekRecord buildNew({
     List<CheckPoint> checkPoints,
     List<DayPreview> dayPreviews,
     bool containsToday,
+    bool firstCompletableDayTutorialIndex,
   }) {
     return WeekRecord(
       dateInWeek: this.dateInWeek,
       checkPoints: checkPoints ?? this.checkPoints,
       dayPreviews: dayPreviews ?? this.dayPreviews,
       containsToday: containsToday ?? this.containsToday,
+      firstCompletableDayTutorialIndex: firstCompletableDayTutorialIndex ?? this.firstCompletableDayTutorialIndex,
     );
   }
 

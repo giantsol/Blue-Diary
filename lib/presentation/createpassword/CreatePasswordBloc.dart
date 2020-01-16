@@ -2,8 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/Localization.dart';
-import 'package:todo_app/domain/usecase/CreatePasswordUsecases.dart';
-import 'package:todo_app/presentation/App.dart';
+import 'package:todo_app/domain/usecase/SetUserPasswordUsecase.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordState.dart';
 import 'package:todo_app/presentation/widgets/VirtualKeyboard.dart';
 
@@ -12,7 +11,7 @@ class CreatePasswordBloc {
   CreatePasswordState getInitialState() => _state.value;
   Stream<CreatePasswordState> observeState() => _state.distinct();
 
-  final CreatePasswordUsecases _usecases = dependencies.createPasswordUsecases;
+  final _setUserPasswordUsecase = SetUserPasswordUsecase();
 
   void onCloseClicked(BuildContext context) {
     Navigator.pop(context);
@@ -60,7 +59,7 @@ class CreatePasswordBloc {
       if (updatedPassword.length == 4) {
         final isConfirmed = updatedPassword == _state.value.password;
         if (isConfirmed) {
-          _usecases.setUserPassword(updatedPassword);
+          _setUserPasswordUsecase.invoke(updatedPassword);
           Navigator.pop(context);
         } else {
           _state.add(_state.value.buildNew(

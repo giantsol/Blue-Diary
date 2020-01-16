@@ -6,9 +6,22 @@ abstract class PrefsRepository {
   Future<void> setUseLockScreen(bool value);
   Future<String> getRecoveryEmail();
   Future<bool> getUserCheckedToDoBefore();
-  void setUserCheckedToDoBefore();
+  Future<void> setUserCheckedToDoBefore();
   Future<bool> hasShownWeekScreenTutorial();
-  void setShownWeekScreenTutorial();
+  Future<void> setShownWeekScreenTutorial();
   Future<bool> hasShownDayScreenTutorial();
-  void setShownDayScreenTutorial();
+  Future<void> setShownDayScreenTutorial();
+  Future<String> getRealFirstLaunchDateString();
+  Future<void> setRealFirstLaunchDate(DateTime date);
+  Future<bool> getUseRealFirstLaunchDate();
+  Future<String> getCustomFirstLaunchDateString();
+  Future<void> setCustomFirstLaunchDate(DateTime date);
+  Future<String> getFirstLaunchDateString();
+  Future<bool> hasShownFirstCompletableDayTutorial();
+  Future<void> setShownFirstCompletableDayTutorial();
+  Future<void> addSeed(int count);
+  Future<void> minusSeed(int count);
+  Future<int> getSeedCount();
+  Future<int> getLastUpdatedMyRankingUserInfoLocalTimeMillis();
+  Future<void> setLastUpdatedMyRankingUserInfoLocalTimeMillis(int value);
 }

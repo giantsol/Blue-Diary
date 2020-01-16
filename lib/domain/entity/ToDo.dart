@@ -1,5 +1,5 @@
 
-import 'package:todo_app/data/AppDatabase.dart';
+import 'package:todo_app/data/datasource/AppDatabase.dart';
 import 'package:todo_app/domain/entity/Category.dart';
 
 class ToDo {

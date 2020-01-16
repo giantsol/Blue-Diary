@@ -1,11 +1,13 @@
 
 import 'package:todo_app/domain/entity/CheckPoint.dart';
+import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
 import 'package:todo_app/presentation/week/WeekScreen.dart';
 
 enum WeekViewState {
   WHOLE_LOADING,
   NORMAL,
+  NETWORK_ERROR,
 }
 
 class WeekState {
@@ -19,11 +21,14 @@ class WeekState {
   final DateTime currentDate;
   final int currentWeekRecordPageIndex;
   final bool pageViewScrollEnabled;
+  final Pet pet;
 
+  // todo: Looks like one-time events shouldn't be handled this way. Maybe they should just be handled in View level, without going through Blocs.
   final bool moveToTodayEvent;
   final int animateToPageEvent;
   final bool startTutorialEvent;
   final bool scrollToTodayPreviewEvent;
+  final bool showFirstCompletableDayTutorialEvent;
 
   WeekRecord get currentWeekRecord => pageIndexWeekRecordMap[currentWeekRecordPageIndex];
 
@@ -38,11 +43,13 @@ class WeekState {
     this.currentDate,
     this.currentWeekRecordPageIndex = WeekScreen.INITIAL_WEEK_PAGE,
     this.pageViewScrollEnabled = false,
+    this.pet = Pet.INVALID,
 
     this.moveToTodayEvent = false,
     this.animateToPageEvent = -1,
     this.startTutorialEvent = false,
     this.scrollToTodayPreviewEvent = false,
+    this.showFirstCompletableDayTutorialEvent = false,
   });
 
   WeekRecord getWeekRecordForPageIndex(int index) {
@@ -61,11 +68,13 @@ class WeekState {
     int currentWeekRecordPageIndex,
     DateTime currentDate,
     bool pageViewScrollEnabled,
+    Pet pet,
 
     bool moveToTodayEvent,
     int animateToPageEvent,
     bool startTutorialEvent,
     bool scrollToTodayPreviewEvent,
+    bool showFirstCompletableDayTutorialEvent,
   }) {
     final prevMap = this.pageIndexWeekRecordMap;
     final currentPageIndex = currentWeekRecordPageIndex ?? this.currentWeekRecordPageIndex;
@@ -84,11 +93,13 @@ class WeekState {
       currentWeekRecordPageIndex: currentWeekRecordPageIndex ?? this.currentWeekRecordPageIndex,
       currentDate: currentDate ?? this.currentDate,
       pageViewScrollEnabled: pageViewScrollEnabled ?? this.pageViewScrollEnabled,
+      pet: pet ?? this.pet,
 
       moveToTodayEvent: moveToTodayEvent ?? false,
       animateToPageEvent: animateToPageEvent ?? -1,
       startTutorialEvent: startTutorialEvent ?? false,
       scrollToTodayPreviewEvent: scrollToTodayPreviewEvent ?? false,
+      showFirstCompletableDayTutorialEvent: showFirstCompletableDayTutorialEvent ?? false,
     );
   }
 

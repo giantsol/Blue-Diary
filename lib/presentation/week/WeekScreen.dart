@@ -1,6 +1,7 @@
 
 import 'dart:math';
 
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:todo_app/AppColors.dart';
@@ -8,6 +9,7 @@ import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/domain/entity/CheckPoint.dart';
 import 'package:todo_app/domain/entity/DayPreview.dart';
+import 'package:todo_app/domain/entity/Pet.dart';
 import 'package:todo_app/domain/entity/ToDo.dart';
 import 'package:todo_app/domain/entity/ViewLayoutInfo.dart';
 import 'package:todo_app/domain/entity/WeekRecord.dart';
@@ -42,6 +44,9 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
   final GlobalKey _headerKey = GlobalKey();
   final GlobalKey _firstCheckPointsKey = GlobalKey();
   final GlobalKey _todayPreviewKey = GlobalKey();
+  int _firstCompletableWeekRecordPageIndex = -1;
+  final GlobalKey _firstCompletableWeekRecordKey = GlobalKey();
+  final GlobalKey _firstCompletableDayThumbnailKey = GlobalKey();
 
   @override
   void initState() {
@@ -107,59 +112,81 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
       SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToTodayPreview());
     }
 
+    if (state.showFirstCompletableDayTutorialEvent) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => _checkViewsBuiltToShowFirstCompletableDayTutorial());
+    }
+
     return state.viewState == WeekViewState.WHOLE_LOADING ? _WholeLoadingView()
+      : state.viewState == WeekViewState.NETWORK_ERROR ? _NetworkErrorView(bloc: _bloc)
       : WillPopScope(
       onWillPop: () async {
         return !_unfocusTextFieldIfAny();
       },
-      child: Column(
+      child: Stack(
         children: [
-          _Header(
-            key: _headerKey,
-            bloc: _bloc,
-            displayYear: state.year.toString(),
-            displayMonthAndWeek: AppLocalizations.of(context).getMonthAndNthWeek(state.month, state.nthWeek),
-            pageViewScrollEnabled: state.pageViewScrollEnabled,
-          ),
-          Expanded(
-            child: Stack(
-              children: <Widget>[
-                PageView.builder(
-                  physics: state.pageViewScrollEnabled ? PageScrollPhysics() : NeverScrollableScrollPhysics(),
-                  controller: _pageController,
-                  itemCount: WeekScreen.MAX_WEEK_PAGE,
-                  itemBuilder: (context, index) {
-                    final weekRecord = state.getWeekRecordForPageIndex(index);
-                    if (weekRecord == null) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else {
-                      return _WeekRecord(
-                        key: index == WeekScreen.INITIAL_WEEK_PAGE ? _firstWeekRecordKey : null,
-                        bloc: _bloc,
-                        weekRecord: weekRecord,
-                        focusNodeProvider: _getOrCreateFocusNode,
-                        scrollController: _scrollController,
-                        memoKey: index == WeekScreen.INITIAL_WEEK_PAGE ? _firstCheckPointsKey : null,
-                        todayPreviewKey: _todayPreviewKey,
-                      );
-                    }
-                  },
-                  onPageChanged: (changedIndex) {
-                    _unfocusTextFieldIfAny();
-                    _headerShadowKey.currentState.updateShadowVisibility(false);
-                    _bloc.onWeekRecordPageIndexChanged(changedIndex);
-                  },
+          Column(
+            children: [
+              _Header(
+                key: _headerKey,
+                bloc: _bloc,
+                displayYear: state.year.toString(),
+                displayMonthAndWeek: AppLocalizations.of(context).getMonthAndNthWeek(state.month, state.nthWeek),
+                pageViewScrollEnabled: state.pageViewScrollEnabled,
+              ),
+              Expanded(
+                child: Stack(
+                  children: <Widget>[
+                    PageView.builder(
+                      physics: state.pageViewScrollEnabled ? PageScrollPhysics() : NeverScrollableScrollPhysics(),
+                      controller: _pageController,
+                      itemCount: WeekScreen.MAX_WEEK_PAGE,
+                      itemBuilder: (context, index) {
+                        final weekRecord = state.getWeekRecordForPageIndex(index);
+                        if (weekRecord == null) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else {
+                          final foundFirstCompletableWeekRecord = (_firstCompletableWeekRecordPageIndex == -1 || _firstCompletableWeekRecordPageIndex == index)
+                            && weekRecord.firstCompletableDayTutorialIndex >= 0;
+
+                          if (foundFirstCompletableWeekRecord) {
+                            _firstCompletableWeekRecordPageIndex = index;
+                          }
+
+                          return _WeekRecord(
+                            key: index == WeekScreen.INITIAL_WEEK_PAGE ? _firstWeekRecordKey
+                              : foundFirstCompletableWeekRecord ? _firstCompletableWeekRecordKey
+                              : null,
+                            bloc: _bloc,
+                            weekRecord: weekRecord,
+                            focusNodeProvider: _getOrCreateFocusNode,
+                            scrollController: _scrollController,
+                            memoKey: index == WeekScreen.INITIAL_WEEK_PAGE ? _firstCheckPointsKey : null,
+                            todayPreviewKey: _todayPreviewKey,
+                            firstCompletableDayThumbnailKey: foundFirstCompletableWeekRecord ? _firstCompletableDayThumbnailKey : null,
+                          );
+                        }
+                      },
+                      onPageChanged: (changedIndex) {
+                        _unfocusTextFieldIfAny();
+                        _headerShadowKey.currentState.updateShadowVisibility(false);
+                        _bloc.onWeekRecordPageIndexChanged(changedIndex);
+                      },
+                    ),
+                    _HeaderShadow(
+                      key: _headerShadowKey,
+                      scrollController: _scrollController,
+                    ),
+                  ],
                 ),
-                _HeaderShadow(
-                  key: _headerShadowKey,
-                  scrollController: _scrollController,
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ]
+          _InteractivePet(
+            pet: state.pet,
+          ),
+        ],
       ),
     );
   }
@@ -201,6 +228,20 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
     }
   }
 
+  void _checkViewsBuiltToShowFirstCompletableDayTutorial() {
+    if (_firstCompletableDayThumbnailKey.currentContext?.findRenderObject() == null) {
+      if (_firstCompletableWeekRecordPageIndex >= 0 && _pageController.page != _firstCompletableWeekRecordPageIndex) {
+        _pageController.animateToPage(_firstCompletableWeekRecordPageIndex,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.ease,
+        );
+      }
+      return;
+    }
+
+    _bloc.showFirstCompletableDayTutorial(context, this);
+  }
+
   Future<void> _scrollToFirstCheckPoints() async {
     final RenderBox weekRecordRenderBox = _firstWeekRecordKey.currentContext?.findRenderObject();
     final RenderBox checkPointsRenderBox = _firstCheckPointsKey.currentContext?.findRenderObject();
@@ -217,6 +258,32 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
     if (checkPointsTop < weekRecordTop || checkPointsTop + checkPointsHeight > weekRecordTop + weekRecordHeight) {
       final currentScrollOffset = _scrollController.offset;
       final targetScrollOffset = max<double>(checkPointsTop + checkPointsHeight - weekRecordTop - weekRecordHeight, 0);
+      final duration = Duration(milliseconds: max<int>(300, min<int>(700, ((targetScrollOffset - currentScrollOffset).abs() * 10).toInt())));
+
+      return await _scrollController.animateTo(
+        targetScrollOffset,
+        duration: duration,
+        curve: Curves.ease,
+      );
+    }
+  }
+
+  Future<void> _scrollToFirstCompletableDayThumbnail() async {
+    final RenderBox weekRecordRenderBox = _firstCompletableWeekRecordKey.currentContext?.findRenderObject() ?? _firstWeekRecordKey.currentContext?.findRenderObject();
+    final RenderBox dayThumbnailRenderBox = _firstCompletableDayThumbnailKey.currentContext?.findRenderObject();
+    if (weekRecordRenderBox == null || dayThumbnailRenderBox == null || !_scrollController.hasClients) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToFirstCompletableDayThumbnail());
+      return;
+    }
+
+    final weekRecordTop = weekRecordRenderBox.localToGlobal(Offset.zero).dy;
+    final weekRecordHeight = weekRecordRenderBox.size.height;
+    final dayThumbnailTop = dayThumbnailRenderBox.localToGlobal(Offset.zero).dy;
+    final dayThumbnailHeight = dayThumbnailRenderBox.size.height;
+
+    if (dayThumbnailTop < weekRecordTop || dayThumbnailTop + dayThumbnailHeight > weekRecordTop + weekRecordHeight) {
+      final currentScrollOffset = _scrollController.offset;
+      final targetScrollOffset = max<double>(dayThumbnailTop + dayThumbnailHeight - weekRecordTop - weekRecordHeight, 0);
       final duration = Duration(milliseconds: max<int>(300, min<int>(700, ((targetScrollOffset - currentScrollOffset).abs() * 10).toInt())));
 
       return await _scrollController.animateTo(
@@ -280,6 +347,19 @@ class _WeekScreenState extends State<WeekScreen> implements WeekScreenTutorialCa
       return ViewLayoutInfo.create(box);
     };
   }
+
+  @override
+  Future<void> scrollToFirstCompletableDayThumbnail() async {
+    return _scrollToFirstCompletableDayThumbnail();
+  }
+
+  @override
+  ViewLayoutInfo Function() getFirstCompletableDayThumbnailFinder() {
+    return () {
+      final RenderBox box = _firstCompletableDayThumbnailKey.currentContext?.findRenderObject();
+      return ViewLayoutInfo.create(box);
+    };
+  }
 }
 
 class _WholeLoadingView extends StatelessWidget {
@@ -289,6 +369,37 @@ class _WholeLoadingView extends StatelessWidget {
       color: AppColors.BACKGROUND_WHITE,
       alignment: Alignment.center,
       child: CircularProgressIndicator(),
+    );
+  }
+}
+
+class _NetworkErrorView extends StatelessWidget {
+  final WeekBloc bloc;
+
+  _NetworkErrorView({
+    @required this.bloc,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: AppColors.BACKGROUND_WHITE,
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          FlatButton(
+            onPressed: () => bloc.onNetworkErrorRetryClicked(),
+            child: Text(
+              AppLocalizations.of(context).retry,
+            ),
+          ),
+          Text(
+            AppLocalizations.of(context).weekScreenNetworkErrorReason,
+            textAlign: TextAlign.center,
+          )
+        ],
+      )
     );
   }
 }
@@ -367,6 +478,7 @@ class _WeekRecord extends StatelessWidget {
   final ScrollController scrollController;
   final Key memoKey;
   final Key todayPreviewKey;
+  final Key firstCompletableDayThumbnailKey;
 
   _WeekRecord({
     Key key,
@@ -376,10 +488,12 @@ class _WeekRecord extends StatelessWidget {
     @required this.scrollController,
     @required this.memoKey,
     @required this.todayPreviewKey,
+    @required this.firstCompletableDayThumbnailKey,
   }): super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final firstCompletableDayThumbnailIndex = weekRecord.firstCompletableDayTutorialIndex;
     final dayPreviews = weekRecord.dayPreviews;
 
     return SingleChildScrollView(
@@ -402,6 +516,8 @@ class _WeekRecord extends StatelessWidget {
                   bloc: bloc,
                   weekRecord: weekRecord,
                   dayPreview: item,
+                  isFirstItem: index == 0,
+                  thumbnailKey: index == firstCompletableDayThumbnailIndex ? firstCompletableDayThumbnailKey : null,
                 );
               })
             ),
@@ -447,6 +563,7 @@ class _CheckPointsBox extends StatelessWidget {
                 style: TextStyle(
                   color: AppColors.TEXT_WHITE,
                   fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -535,12 +652,16 @@ class _DayPreviewItem extends StatelessWidget {
   final WeekBloc bloc;
   final WeekRecord weekRecord;
   final DayPreview dayPreview;
+  final bool isFirstItem;
+  final Key thumbnailKey;
 
   _DayPreviewItem({
     Key key,
     @required this.bloc,
     @required this.weekRecord,
     @required this.dayPreview,
+    @required this.isFirstItem,
+    @required this.thumbnailKey,
   }): super(key: key);
 
   @override
@@ -554,11 +675,12 @@ class _DayPreviewItem extends StatelessWidget {
     return InkWell(
       onTap: () => bloc.onDayPreviewClicked(context, dayPreview),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.only(right: 24),
         child: IntrinsicHeight(
           child: Row(
             children: [
               _DayPreviewItemThumbnail(
+                bloc: bloc,
                 text: dayPreview.thumbnailString,
                 ratio: dayPreview.ratio,
                 bgColor: !hasAnyToDo ? AppColors.BACKGROUND_GREY : AppColors.PRIMARY_LIGHT_LIGHT,
@@ -567,6 +689,10 @@ class _DayPreviewItem extends StatelessWidget {
                 isTopLineLightColor: dayPreview.isTopLineLightColor,
                 isBottomLineVisible: dayPreview.isBottomLineVisible,
                 isBottomLineLightColor: dayPreview.isBottomLineLightColor,
+                canBeMarkedCompleted: dayPreview.canBeMarkedCompleted,
+                date: dayPreview.date,
+                isFirstItem: isFirstItem,
+                thumbnailKey: thumbnailKey,
               ),
               Expanded(
                 child: Padding(
@@ -614,6 +740,7 @@ class _DayPreviewItem extends StatelessWidget {
 }
 
 class _DayPreviewItemThumbnail extends StatelessWidget {
+  final WeekBloc bloc;
   final String text;
   final double ratio;
   final Color bgColor;
@@ -622,8 +749,13 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
   final bool isTopLineLightColor;
   final bool isBottomLineVisible;
   final bool isBottomLineLightColor;
+  final bool canBeMarkedCompleted;
+  final DateTime date;
+  final bool isFirstItem;
+  final Key thumbnailKey;
 
   _DayPreviewItemThumbnail({
+    @required this.bloc,
     @required this.text,
     @required this.ratio,
     @required this.bgColor,
@@ -632,58 +764,99 @@ class _DayPreviewItemThumbnail extends StatelessWidget {
     @required this.isTopLineLightColor,
     @required this.isBottomLineVisible,
     @required this.isBottomLineLightColor,
+    @required this.canBeMarkedCompleted,
+    @required this.date,
+    @required this.isFirstItem,
+    @required this.thumbnailKey,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: AlignmentDirectional.center,
-      children: <Widget>[
-        isTopLineVisible ? Align(
-          alignment: Alignment.topCenter,
-          child: ClipRect(
-            child: Align(
-              alignment: Alignment.topCenter,
-              heightFactor: 0.5,
-              child: Container(
-                color: isTopLineLightColor ? AppColors.PRIMARY_LIGHT_LIGHT : AppColors.PRIMARY,
-                width: 2,
+    return SizedBox(
+      width: 72,
+      child: Stack(
+        alignment: AlignmentDirectional.centerEnd,
+        children: <Widget>[
+          isBottomLineVisible ? Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 24),
+              child: ClipRect(
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  heightFactor: 0.5,
+                  child: Container(
+                    color: isBottomLineLightColor ? AppColors.PRIMARY_LIGHT_LIGHT : AppColors.PRIMARY,
+                    width: 2,
+                  ),
+                ),
+              ),
+            ),
+          ) : const SizedBox.shrink(),
+          !isTopLineVisible ? const SizedBox.shrink()
+            : isFirstItem ? Align(
+            alignment: Alignment.centerLeft,
+            child: ClipRect(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  color: isTopLineLightColor ? AppColors.PRIMARY_LIGHT_LIGHT : AppColors.PRIMARY,
+                  height: 2,
+                ),
+              ),
+            ),
+          ) : Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 24),
+              child: ClipRect(
+                child: Align(
+                  alignment: Alignment.topRight,
+                  heightFactor: 0.5,
+                  child: Container(
+                    color: isTopLineLightColor ? AppColors.PRIMARY_LIGHT_LIGHT : AppColors.PRIMARY,
+                    width: 2,
+                  ),
+                ),
               ),
             ),
           ),
-        ) : const SizedBox.shrink(),
-        isBottomLineVisible ? Align(
-          alignment: Alignment.bottomCenter,
-          child: ClipRect(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              heightFactor: 0.5,
-              child: Container(
-                color: isBottomLineLightColor ? AppColors.PRIMARY_LIGHT_LIGHT : AppColors.PRIMARY,
-                width: 2,
+          _ThumbnailCircle(
+            key: thumbnailKey,
+            color: bgColor,
+            ratio: 1.0,
+          ),
+          ratio > 0 ? _ThumbnailCircle(
+            color: fgColor,
+            ratio: ratio,
+          ) : const SizedBox.shrink(),
+          canBeMarkedCompleted ? SizedBox(
+            width: 48,
+            height: 48,
+            child: GestureDetector(
+              child: FlareActor(
+                'assets/seed_awaiting.flr',
+                animation: 'idle',
+              ),
+              onTap: () => bloc.onMarkDayCompletedClicked(context, date),
+            ),
+          ): Container(
+            width: 48,
+            height: 48,
+            alignment: Alignment.center,
+            child: Center(
+              child: Text(
+                text,
+                style: TextStyle(
+                  color: AppColors.TEXT_WHITE,
+                  fontSize: 14,
+                ),
+                textScaleFactor: 1.0,
               ),
             ),
           ),
-        ) : const SizedBox.shrink(),
-        _ThumbnailCircle(
-          color: bgColor,
-          ratio: 1.0,
-        ),
-        ratio > 0 ? _ThumbnailCircle(
-          color: fgColor,
-          ratio: ratio,
-        ) : const SizedBox.shrink(),
-        Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: AppColors.TEXT_WHITE,
-              fontSize: 14,
-            ),
-            textScaleFactor: 1.0,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -853,9 +1026,10 @@ class _ThumbnailCircle extends StatelessWidget {
   final double ratio;
 
   _ThumbnailCircle({
+    Key key,
     @required this.color,
     @required this.ratio,
-  });
+  }): super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -1002,6 +1176,101 @@ class _HeaderShadowState extends State<_HeaderShadow> {
           end: Alignment.bottomCenter,
           colors: [AppColors.DIVIDER, AppColors.DIVIDER.withAlpha(0)]
         )
+      ),
+    );
+  }
+}
+
+class _InteractivePet extends StatefulWidget {
+  final Pet pet;
+
+  _InteractivePet({
+    @required this.pet,
+  });
+
+  @override
+  State createState() => _InteractivePetState();
+}
+
+class _InteractivePetState extends State<_InteractivePet> {
+  static const double _padding = 16;
+  static const double _petMaxSize = 108;
+
+  double _left = 0;
+  double _top = 0;
+  double _maxLeft = 0;
+  double _maxTop = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback(_initPositions);
+  }
+
+  void _initPositions(Duration _) {
+    if (context.size == null) {
+      SchedulerBinding.instance.addPostFrameCallback(_initPositions);
+      return;
+    }
+
+    setState(() {
+      _maxLeft = context.size.width - _petMaxSize - _padding * 2;
+      _maxTop = context.size.height - _petMaxSize - _padding * 2;
+      _left = _maxLeft;
+      _top = _maxTop;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentPhase = widget.pet.currentPhase;
+    final double petSize = _petMaxSize * currentPhase.sizeRatio;
+    final isValid = currentPhase != PetPhase.INVALID && _maxLeft > 0 && _maxTop > 0;
+
+    return Padding(
+      padding: const EdgeInsets.all(_padding),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          isValid ? Positioned(
+            top: _top,
+            left: _left,
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onPanUpdate: (tapInfo) {
+                setState(() {
+                  _left += tapInfo.delta.dx;
+                  _top += tapInfo.delta.dy;
+
+                  if (_left < 0) {
+                    _left = 0;
+                  } else if (_left > _maxLeft) {
+                    _left = _maxLeft;
+                  }
+
+                  if (_top < 0) {
+                    _top = 0;
+                  } else if (_top > _maxTop) {
+                    _top = _maxTop;
+                  }
+                });
+              },
+              child: Container(
+                width: _petMaxSize,
+                height: _petMaxSize,
+                alignment: currentPhase.alignment,
+                child: SizedBox(
+                  width: petSize,
+                  height: petSize,
+                  child: FlareActor(
+                    currentPhase.flrPath,
+                    animation: currentPhase.idleAnimName,
+                  ),
+                ),
+              ),
+            ),
+          ): const SizedBox.shrink(),
+        ],
       ),
     );
   }

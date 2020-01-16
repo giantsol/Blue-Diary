@@ -3,14 +3,21 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:open_appstore/open_appstore.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
 import 'package:todo_app/Secrets.dart';
 import 'package:todo_app/Utils.dart';
-import 'package:todo_app/domain/usecase/SettingsUsecases.dart';
-import 'package:todo_app/presentation/App.dart';
+import 'package:todo_app/domain/usecase/GetCustomFirstLaunchDateStringUsecase.dart';
+import 'package:todo_app/domain/usecase/GetRealFirstLaunchDateStringUsecase.dart';
+import 'package:todo_app/domain/usecase/GetRecoveryEmailUseCase.dart';
+import 'package:todo_app/domain/usecase/GetUseLockScreenUsecase.dart';
+import 'package:todo_app/domain/usecase/GetUserPasswordUsecase.dart';
+import 'package:todo_app/domain/usecase/SetCustomFirstLaunchDateUsecase.dart';
+import 'package:todo_app/domain/usecase/SetUseLockScreenUsecase.dart';
+import 'package:todo_app/domain/usecase/SetUserPasswordUsecase.dart';
 import 'package:todo_app/presentation/createpassword/CreatePasswordScreen.dart';
 import 'package:todo_app/presentation/inputpassword/InputPasswordScreen.dart';
 
@@ -19,13 +26,20 @@ class SettingsBloc {
   // ignore: non_constant_identifier_names
   static final _EMAIL_VALIDATION_REGEX = RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
 
-  final SettingsUsecases _usecases = dependencies.settingsUsecases;
-
   void Function() _needUpdateListener;
 
   final _twoSeconds = const Duration(seconds: 2);
 
   SettingsBlocDelegator delegator;
+
+  final _setUserPasswordUsecase = SetUserPasswordUsecase();
+  final _getUserPasswordUsecase = GetUserPasswordUsecase();
+  final _getUseLockScreenUsecase = GetUseLockScreenUsecase();
+  final _setUseLockScreenUsecase = SetUseLockScreenUsecase();
+  final _getRecoveryEmailUseCase = GetRecoveryEmailUseCase();
+  final _getRealFirstLaunchDateStringUsecase = GetRealFirstLaunchDateStringUsecase();
+  final _setCustomFirstLaunchDateUsecase = SetCustomFirstLaunchDateUsecase();
+  final _getCustomFirstLaunchDateStringUsecase = GetCustomFirstLaunchDateStringUsecase();
 
   SettingsBloc({
     @required this.delegator,
@@ -40,26 +54,27 @@ class SettingsBloc {
   }
 
   Future<void> onUseLockScreenChanged(BuildContext context) async {
-    final useLockScreen = await _usecases.getUseLockScreen();
-    final userPassword = await _usecases.getUserPassword();
+    final useLockScreen = await _getUseLockScreenUsecase.invoke();
+    final userPassword = await _getUserPasswordUsecase.invoke();
 
     if (useLockScreen && userPassword.isEmpty) {
-      _usecases.setUseLockScreen(false);
+      _setUseLockScreenUsecase.invoke(false);
       _showCreatePasswordDialog(context,
-        onCreated: () {
-          _usecases.setUseLockScreen(true);
+        onPasswordCreated: () {
+          _setUseLockScreenUsecase.invoke(true);
           if (_needUpdateListener != null) {
             _needUpdateListener();
           }
         }
       );
-    } else if (!useLockScreen) {
+    } else if (!useLockScreen && userPassword.isNotEmpty) {
       // set it to true forcefully instantly.
       // will set to false when user inputs password correctly
-      _usecases.setUseLockScreen(true);
+      _setUseLockScreenUsecase.invoke(true);
+
       delegator.showBottomSheet((context) =>
         InputPasswordScreen(onSuccess: () {
-          _usecases.setUseLockScreen(false);
+          _setUseLockScreenUsecase.invoke(false);
           if (_needUpdateListener != null) {
             _needUpdateListener();
           }
@@ -71,29 +86,29 @@ class SettingsBloc {
   }
 
   Future<void> _showCreatePasswordDialog(BuildContext context, {
-    void Function() onCreated,
+    void Function() onPasswordCreated,
   }) async {
     return Utils.showAppDialog(context,
       AppLocalizations.of(context).createPassword,
       AppLocalizations.of(context).createPasswordBody,
       null,
-        () => _onCreatePasswordOkClicked(context, onCreated: onCreated),
+        () => _onCreatePasswordOkClicked(context, onPasswordCreated: onPasswordCreated),
     );
   }
 
   Future<void> _onCreatePasswordOkClicked(BuildContext context, {
-    void Function() onCreated,
+    void Function() onPasswordCreated,
   }) async {
     final successMsg = AppLocalizations.of(context).createPasswordSuccess;
     final failMsg = AppLocalizations.of(context).createPasswordFail;
 
     delegator.showBottomSheet((context) => CreatePasswordScreen(),
       onClosed: () async {
-        final isPasswordSaved = await _usecases.getUserPassword().then((s) => s.length > 0);
+        final isPasswordSaved = await _getUserPasswordUsecase.invoke().then((s) => s.length > 0);
         if (isPasswordSaved) {
           delegator.showSnackBar(successMsg, _twoSeconds);
-          if (onCreated != null) {
-            onCreated();
+          if (onPasswordCreated != null) {
+            onPasswordCreated();
           }
         } else {
           delegator.showSnackBar(failMsg, _twoSeconds);
@@ -103,22 +118,18 @@ class SettingsBloc {
   }
 
   Future<void> onSendTempPasswordClicked(BuildContext context) async {
-    final recoveryEmail = await _usecases.getRecoveryEmail();
+    final recoveryEmail = await _getRecoveryEmailUseCase.invoke();
     if (!_EMAIL_VALIDATION_REGEX.hasMatch(recoveryEmail)) {
       final message = AppLocalizations.of(context).invalidRecoveryEmail;
       delegator.showSnackBar(message, _twoSeconds);
     } else {
-      _showConfirmSendTempPasswordDialog(context);
+      Utils.showAppDialog(context,
+        AppLocalizations.of(context).confirmSendTempPassword,
+        AppLocalizations.of(context).confirmSendTempPasswordBody,
+        null,
+          () => _onConfirmSendTempPasswordOkClicked(context),
+      );
     }
-  }
-
-  Future<void> _showConfirmSendTempPasswordDialog(BuildContext context) async {
-    return Utils.showAppDialog(context,
-      AppLocalizations.of(context).confirmSendTempPassword,
-      AppLocalizations.of(context).confirmSendTempPasswordBody,
-      null,
-        () => _onConfirmSendTempPasswordOkClicked(context),
-    );
   }
 
   Future<void> _onConfirmSendTempPasswordOkClicked(BuildContext context) async {
@@ -126,18 +137,20 @@ class SettingsBloc {
     final mailSendFailedMsg = AppLocalizations.of(context).tempPasswordMailSendFailed;
     final failedToSaveTempPasswordMsg = AppLocalizations.of(context).failedToSaveTempPasswordByUnknownError;
 
-    final prevPassword = await _usecases.getUserPassword();
-    await _usecases.setUserPassword(_createRandomPassword());
-    final changedPassword = await _usecases.getUserPassword();
+    final prevPassword = await _getUserPasswordUsecase.invoke();
+    await _setUserPasswordUsecase.invoke(_createRandomPassword());
+    final changedPassword = await _getUserPasswordUsecase.invoke();
 
     if (changedPassword.isNotEmpty && prevPassword != changedPassword) {
+      final recoveryEmail = await _getRecoveryEmailUseCase.invoke();
+
       final mailTitle = AppLocalizations.of(context).tempPasswordMailSubject;
       final mailBody = AppLocalizations.of(context).tempPasswordMailBody;
-      final recoveryEmail = await _usecases.getRecoveryEmail();
       final body = _createEmailBodyJson(
         targetEmail: recoveryEmail,
         title: mailTitle,
         body: '$mailBody$changedPassword');
+
       final response = await http.post(
         _SENDGRID_SEND_API_ENDPOINT,
         headers: {
@@ -146,6 +159,7 @@ class SettingsBloc {
         },
         body: body,
       );
+
       if (response.statusCode.toString().startsWith('2')) {
         delegator.showSnackBar(mailSentMsg, _twoSeconds);
       } else {
@@ -170,7 +184,7 @@ class SettingsBloc {
   }
 
   Future<void> onResetPasswordClicked(BuildContext context) async {
-    final prevPassword = await _usecases.getUserPassword();
+    final prevPassword = await _getUserPasswordUsecase.invoke();
 
     if (prevPassword.isEmpty) {
       _showCreatePasswordDialog(context);
@@ -183,7 +197,7 @@ class SettingsBloc {
           onSuccess: () async {
             delegator.showBottomSheet((context) => CreatePasswordScreen(),
               onClosed: () async {
-                final changedPassword = await _usecases.getUserPassword();
+                final changedPassword = await _getUserPasswordUsecase.invoke();
                 if (prevPassword != changedPassword) {
                   delegator.showSnackBar(changedMsg, _twoSeconds);
                 } else {
@@ -203,6 +217,26 @@ class SettingsBloc {
       AppLocalizations.of(context).leaveFeedbackBody,
       null,
         () => OpenAppstore.launch(androidAppId: 'com.giantsol.blue_diary'),
+    );
+  }
+
+  Future<void> onUseRealFirstLaunchDateChanged() async {
+    final firstLaunchDateString = await _getRealFirstLaunchDateStringUsecase.invoke();
+    final firstLaunchDate = firstLaunchDateString.isEmpty ? DateTime.now() : DateTime.parse(firstLaunchDateString);
+    _setCustomFirstLaunchDateUsecase.invoke(firstLaunchDate);
+
+    if (_needUpdateListener != null) {
+      _needUpdateListener();
+    }
+  }
+
+  Future<void> onCustomFirstLaunchDateClicked(BuildContext context) async {
+    final customFirstLaunchDateString = await _getCustomFirstLaunchDateStringUsecase.invoke();
+    DatePicker.showDatePicker(
+      context,
+      onConfirm: (date) => _setCustomFirstLaunchDateUsecase.invoke(date),
+      currentTime: DateTime.parse(customFirstLaunchDateString),
+      locale: Localizations.localeOf(context).languageCode == 'ko' ? LocaleType.ko : LocaleType.en,
     );
   }
 }

@@ -35,6 +35,7 @@ class _DayScreenState extends State<DayScreen> with SingleTickerProviderStateMix
   ScrollController _toDoScrollController;
   final Map<String, FocusNode> _focusNodes = {};
   PageController _pageController;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   final GlobalKey<_HeaderShadowState> _headerShadowKey = GlobalKey();
 
   // variables related with tutorial
@@ -129,6 +130,7 @@ class _DayScreenState extends State<DayScreen> with SingleTickerProviderStateMix
 
     final isSelectionMode = state.viewState == DayViewState.SELECTION;
     return Scaffold(
+      key: _scaffoldKey,
       body: SafeArea(
         child: state.viewState == DayViewState.WHOLE_LOADING ? _WholeLoadingView()
           : WillPopScope(
@@ -167,6 +169,7 @@ class _DayScreenState extends State<DayScreen> with SingleTickerProviderStateMix
                                 isSelectionMode: isSelectionMode,
                                 selectedToDoKeys: state.selectedToDoKeys,
                                 memoKey: index == DayScreen.INITIAL_DAY_PAGE ? _firstMemoKey : null,
+                                scaffoldState: _scaffoldKey.currentState,
                               );
                             }
                           },
@@ -203,6 +206,7 @@ class _DayScreenState extends State<DayScreen> with SingleTickerProviderStateMix
                 bloc: _bloc,
                 fabKey: _addToDoKey,
                 slideUpController: _fabsSlideUpController,
+                scaffoldState: _scaffoldKey.currentState,
               ) : const SizedBox.shrink(),
               state.isFabVisible ? _BackFAB(
                 bloc: _bloc,
@@ -289,6 +293,7 @@ class _DayRecord extends StatelessWidget {
   final bool isSelectionMode;
   final List<String> selectedToDoKeys;
   final Key memoKey;
+  final ScaffoldState scaffoldState;
 
   _DayRecord({
     @required this.bloc,
@@ -298,6 +303,7 @@ class _DayRecord extends StatelessWidget {
     @required this.isSelectionMode,
     @required this.selectedToDoKeys,
     @required this.memoKey,
+    @required this.scaffoldState,
   });
 
   @override
@@ -325,6 +331,7 @@ class _DayRecord extends StatelessWidget {
       focusNodeProvider: focusNodeProvider,
       isSelectionMode: isSelectionMode,
       selectedToDoKeys: selectedToDoKeys,
+      scaffoldState: scaffoldState,
     );
   }
 }
@@ -333,11 +340,13 @@ class _AddToDoFAB extends StatelessWidget {
   final DayBloc bloc;
   final Key fabKey;
   final Animation slideUpController;
+  final ScaffoldState scaffoldState;
 
   _AddToDoFAB({
     @required this.bloc,
     @required this.fabKey,
     @required this.slideUpController,
+    @required this.scaffoldState,
   });
 
   @override
@@ -356,7 +365,7 @@ class _AddToDoFAB extends StatelessWidget {
             child: Image.asset('assets/ic_plus.png'),
             backgroundColor: AppColors.PRIMARY,
             splashColor: AppColors.PRIMARY_DARK,
-            onPressed: () => bloc.onAddToDoClicked(context),
+            onPressed: () => bloc.onAddToDoClicked(context, scaffoldState),
           ),
         ),
       ),
@@ -528,6 +537,7 @@ class _EmptyToDoListView extends StatelessWidget {
             style: TextStyle(
               fontSize: 18,
               color: AppColors.TEXT_BLACK,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -583,6 +593,7 @@ class _DayMemo extends StatelessWidget {
                 style: TextStyle(
                   color: AppColors.TEXT_WHITE,
                   fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -620,6 +631,7 @@ class _ToDoListView extends StatelessWidget {
   final FocusNode Function(String key) focusNodeProvider;
   final bool isSelectionMode;
   final List<String> selectedToDoKeys;
+  final ScaffoldState scaffoldState;
 
   _ToDoListView({
     @required this.bloc,
@@ -629,6 +641,7 @@ class _ToDoListView extends StatelessWidget {
     @required this.focusNodeProvider,
     @required this.isSelectionMode,
     @required this.selectedToDoKeys,
+    @required this.scaffoldState,
   });
 
   @override
@@ -647,6 +660,7 @@ class _ToDoListView extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 color: AppColors.TEXT_BLACK,
+                fontWeight: FontWeight.bold,
               ),
             ),
           );
@@ -658,6 +672,7 @@ class _ToDoListView extends StatelessWidget {
             isLast: realIndex == toDoRecords.length - 1,
             isSelectionMode: isSelectionMode,
             isSelectedInSelectionMode: selectedToDoKeys.contains(toDoRecords[realIndex].toDo.key),
+            scaffoldState: scaffoldState,
           );
         }
       },
@@ -671,6 +686,7 @@ class _ToDoItem extends StatelessWidget {
   final bool isLast;
   final bool isSelectionMode;
   final bool isSelectedInSelectionMode;
+  final ScaffoldState scaffoldState;
 
   _ToDoItem({
     @required this.bloc,
@@ -678,6 +694,7 @@ class _ToDoItem extends StatelessWidget {
     @required this.isLast,
     @required this.isSelectionMode,
     @required this.isSelectedInSelectionMode,
+    @required this.scaffoldState,
   });
 
   @override
@@ -803,8 +820,8 @@ class _ToDoItem extends StatelessWidget {
                   ),
                 ],
               ),
-              onTap: () => bloc.onToDoRecordItemClicked(toDoRecord),
-              onLongPress: () => bloc.onToDoRecordItemLongClicked(context, toDoRecord),
+              onTap: () => bloc.onToDoRecordItemClicked(context, toDoRecord, scaffoldState),
+              onLongPress: () => bloc.onToDoRecordItemLongClicked(context, toDoRecord, scaffoldState),
             ),
           ),
         ),
@@ -1068,7 +1085,7 @@ class _ToDoEditor extends StatelessWidget {
                 hintTextSize: 14,
                 hintColor: AppColors.TEXT_BLACK_LIGHT,
                 onChanged: (s) => bloc.onEditingToDoTextChanged(s),
-                onEditingComplete: () => bloc.onToDoEditingDone(),
+                onEditingComplete: () => bloc.onToDoEditingDone(context),
               ),
             ),
           ),
@@ -1087,7 +1104,7 @@ class _ToDoEditor extends StatelessWidget {
                     ),
                   ),
                 ),
-                onTap: () => bloc.onToDoEditingDone(),
+                onTap: () => bloc.onToDoEditingDone(context),
               ),
             ),
           ),

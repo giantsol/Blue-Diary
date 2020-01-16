@@ -19,6 +19,9 @@ class DayPreview {
   final bool isBottomLineLightColor;
   final String memoPreview;
   final List<ToDo> toDoPreviews;
+  final bool canBeMarkedCompleted;
+  final bool isMarkedCompleted;
+  final int streakCount;
 
   bool get hasTrailingDots => weekday != DateTime.sunday;
   String get key => '$year-$month-$day';
@@ -29,7 +32,9 @@ class DayPreview {
   DateTime get date => DateTime(year, month, day);
 
   String get thumbnailString {
-    if (totalToDosCount == 0) {
+    if (isMarkedCompleted) {
+      return '$streakCount';
+    } else if (totalToDosCount == 0) {
       return '-';
     } else {
       final percent = (ratio * 100).toInt();
@@ -52,27 +57,8 @@ class DayPreview {
     this.isBottomLineLightColor = false,
     this.memoPreview = '',
     this.toDoPreviews = const [],
+    this.canBeMarkedCompleted = false,
+    this.isMarkedCompleted = false,
+    this.streakCount = 0,
   });
-
-  DayPreview buildNew({
-    bool isBottomLineVisible,
-    bool isBottomLineLightColor,
-  }) {
-    return DayPreview(
-      year: this.year,
-      month: this.month,
-      day: this.day,
-      weekday: this.weekday,
-      totalToDosCount: this.totalToDosCount,
-      doneToDosCount: this.doneToDosCount,
-      isToday: this.isToday,
-      isLightColor: this.isLightColor,
-      isTopLineVisible: this.isTopLineVisible,
-      isTopLineLightColor: this.isTopLineLightColor,
-      isBottomLineVisible: isBottomLineVisible ?? this.isBottomLineVisible,
-      isBottomLineLightColor: isBottomLineLightColor ?? this.isBottomLineLightColor,
-      memoPreview: this.memoPreview,
-      toDoPreviews: this.toDoPreviews,
-    );
-  }
 }

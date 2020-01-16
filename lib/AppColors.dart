@@ -42,4 +42,8 @@ class AppColors {
   static const RED = Color(0xFFFA0000);
 
   static const TUTORIAL_PROGRESS_INACTIVE = Color(0xFF5A5A5A);
+
+  static const GOLD = Color(0xFFEDC12A);
+  static const SILVER = Color(0xFF8C908F);
+  static const BRONZE = Color(0xFF8F6145);
 }

@@ -6,8 +6,32 @@ import 'package:todo_app/Localization.dart';
 
 class Utils {
 
+  static bool isLessDay(DateTime standard, DateTime target) {
+    if (standard.year > target.year) {
+      return true;
+    } else if (standard.year == target.year && standard.month > target.month) {
+      return true;
+    } else if (standard.year == target.year && standard.month == target.month && standard.day > target.day) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   static bool isSameDay(DateTime d1, DateTime d2) {
     return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
+  }
+
+  static bool isMoreDay(DateTime standard, DateTime target) {
+    if (standard.year < target.year) {
+      return true;
+    } else if (standard.year == target.year && standard.month < target.month) {
+      return true;
+    } else if (standard.year == target.year && standard.month == target.month && standard.day < target.day) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   static List<DateTime> getDatesInWeek(DateTime date) {
@@ -30,6 +54,7 @@ class Utils {
   }
 
   static void showSnackBar(ScaffoldState scaffoldState, String text, Duration duration) {
+    scaffoldState.removeCurrentSnackBar();
     scaffoldState.showSnackBar(SnackBar(
       content: Text(text),
       duration: duration,
@@ -93,6 +118,10 @@ class Utils {
         );
       },
     );
+  }
+
+  static String toLastUpdatedFormat(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
   }
 
 }
