@@ -10,9 +10,9 @@
 
 <p align="center">
   <a href="#screenshots">Screenshots</a> •
+  <a href="#download">Download</a> •
   <a href="#usage">Usage</a> •
   <a href="#architecture">Architecture</a> •
-  <a href="#download">Download</a> •
   <a href="#feedback">Feedback</a> •
   <a href="#license">License</a> •
 </p>
@@ -26,6 +26,16 @@
   <img src="https://user-images.githubusercontent.com/4879766/72454508-54aefc00-3804-11ea-9a5c-9b5a7c220e3f.png" width="250" />
   <img src="https://user-images.githubusercontent.com/4879766/72454509-5678bf80-3804-11ea-8f53-8f5b0cbdd775.png" width="250" />
 </p>
+
+## Download
+
+<a href='https://play.google.com/store/apps/details?id=com.giantsol.blue_diary'>
+  <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width='200'/>
+</a>
+
+<a href='https://apps.apple.com/us/app/id1495060000'>
+  <img alt='Download on the App Store' src='https://itsallwidgets.com/images/apple.png' width='200'/>
+</a>
 
 ## Usage
 
@@ -214,14 +224,6 @@ Besides these directories are flat Dart files inside [lib](https://github.com/gi
 6. [Utils.dart](https://github.com/giantsol/Blue-Diary/blob/master/lib/Utils.dart): Utils (duh).
 
 If you have any questions, or have any suggestions to make this app better, do contact me as shown in <a href="#feedback">Feedback</a>. Thanks!
-
-## Download
-
-<a href='https://play.google.com/store/apps/details?id=com.giantsol.blue_diary'>
-  <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width='200'/>
-</a>
-
-iOS version, not yet.
 
 ## Feedback
 
