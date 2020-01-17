@@ -601,6 +601,8 @@ class _RankingItem extends StatelessWidget {
                     fontSize: 14,
                     color: AppColors.TEXT_BLACK,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   '${userInfo.latestStreak} streak',
