@@ -78,7 +78,8 @@ class AppLocalizations {
   static const FIRST_COMPLETABLE_DAY_TUTORIAL_SUB = "firstCompletableDayTutorialSub";
   static const CANNOT_MODIFY_COMPLETED_DAYS_TASKS = "cannotModifyCompletedDaysTasks";
   static const RANKING = "ranking";
-  static const CLICK_TO_SIGN_IN_AND_JOIN = "clickToSignInAndJoin";
+  static const SIGN_IN = "signIn";
+  static const SIGN_IN_SUBTITLE = "signInSubtitle";
   static const COMPLETED_DAYS = "completedDays";
   static const CURRENT_STREAK = "currentStreak";
   static const LONGEST_STREAK = "longestStreak";
@@ -196,7 +197,8 @@ class AppLocalizations {
       FIRST_COMPLETABLE_DAY_TUTORIAL_SUB: 'Warning: You won\'t be able to modify tasks anymore',
       CANNOT_MODIFY_COMPLETED_DAYS_TASKS: 'Cannot modify completed day\'s tasks',
       RANKING: 'Ranking',
-      CLICK_TO_SIGN_IN_AND_JOIN: 'Click to sign in and join',
+      SIGN_IN: 'Sign In',
+      SIGN_IN_SUBTITLE: '(You automatically join the ranking list)',
       COMPLETED_DAYS: 'Completed days',
       CURRENT_STREAK: 'Current streak',
       LONGEST_STREAK: 'Longest streak',
@@ -309,7 +311,8 @@ class AppLocalizations {
       FIRST_COMPLETABLE_DAY_TUTORIAL_SUB: '주의: 완료한 날짜의 작업은 수정이 불가합니다',
       CANNOT_MODIFY_COMPLETED_DAYS_TASKS: '완료한 날짜의 작업은 수정이 불가합니다.',
       RANKING: '랭킹',
-      CLICK_TO_SIGN_IN_AND_JOIN: '클릭해서 참여해보세요',
+      SIGN_IN: '가입하기',
+      SIGN_IN_SUBTITLE: '(자동으로 랭킹 리스트에 추가됩니다)',
       COMPLETED_DAYS: '완료한 날들',
       CURRENT_STREAK: '현재 연속 횟수',
       LONGEST_STREAK: '최대 연속 횟수',
@@ -423,7 +426,8 @@ class AppLocalizations {
   String get firstCompletableDayTutorialSub => _localizedValues[locale.languageCode][FIRST_COMPLETABLE_DAY_TUTORIAL_SUB];
   String get cannotModifyCompletedDaysTasks => _localizedValues[locale.languageCode][CANNOT_MODIFY_COMPLETED_DAYS_TASKS];
   String get ranking => _localizedValues[locale.languageCode][RANKING];
-  String get clickToSignInAndJoin => _localizedValues[locale.languageCode][CLICK_TO_SIGN_IN_AND_JOIN];
+  String get signIn => _localizedValues[locale.languageCode][SIGN_IN];
+  String get signInSubtitle => _localizedValues[locale.languageCode][SIGN_IN_SUBTITLE];
   String get completedDays => _localizedValues[locale.languageCode][COMPLETED_DAYS];
   String get currentStreak => _localizedValues[locale.languageCode][CURRENT_STREAK];
   String get longestStreak => _localizedValues[locale.languageCode][LONGEST_STREAK];

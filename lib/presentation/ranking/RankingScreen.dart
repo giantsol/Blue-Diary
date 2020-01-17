@@ -192,8 +192,7 @@ class _Header extends StatelessWidget {
       longestStreakDateRangeText = '${longestStreakStartDate.year}.${longestStreakStartDate.month}.${longestStreakStartDate.day} - ${longestStreakEndDate.year}.${longestStreakEndDate.month}.${longestStreakEndDate.day}';
     }
 
-    return !myRankingInfoState.isSignedIn ? GestureDetector(
-      behavior: HitTestBehavior.translucent,
+    return !myRankingInfoState.isSignedIn ? InkWell(
       onTap: () => bloc.onSignInAndJoinClicked(),
       child: Container(
         height: 132,
@@ -201,13 +200,33 @@ class _Header extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: <Widget>[
-            Text(
-              AppLocalizations.of(context).clickToSignInAndJoin,
-              style: TextStyle(
-                fontSize: 24,
-                color: AppColors.TEXT_BLACK,
-                fontWeight: FontWeight.bold,
-              ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  AppLocalizations.of(context).signIn,
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: AppColors.TEXT_BLACK,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  strutStyle: StrutStyle(
+                    fontSize: 24,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  AppLocalizations.of(context).signInSubtitle,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.TEXT_BLACK,
+                  ),
+                  strutStyle: StrutStyle(
+                    fontSize: 14,
+                  ),
+                  textAlign: TextAlign.center,
+                )
+              ],
             ),
             showOverlayProgress ? CircularProgressIndicator() : const SizedBox.shrink(),
           ],
