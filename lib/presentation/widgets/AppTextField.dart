@@ -19,6 +19,7 @@ class AppTextField extends StatefulWidget {
   final TextInputType keyboardType;
   final Color cursorColor;
   final bool enabled;
+  final bool autoFocus;
 
   AppTextField({
     Key key,
@@ -36,6 +37,7 @@ class AppTextField extends StatefulWidget {
     this.keyboardType,
     this.cursorColor = AppColors.PRIMARY,
     this.enabled = true,
+    this.autoFocus = false,
   }): super(key: key);
 
   @override
@@ -85,6 +87,7 @@ class _AppTextFieldState extends State<AppTextField> {
         textCapitalization: TextCapitalization.sentences,
         cursorColor: widget.cursorColor,
         enabled: widget.enabled,
+        autofocus: widget.autoFocus,
       ),
     );
   }

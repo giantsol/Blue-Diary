@@ -5,4 +5,5 @@ abstract class UserRepository {
   Future<bool> signInWithFacebook();
   Future<bool> signOut();
   Future<String> getUserId();
+  Future<bool> setUserDisplayName(String uid, String name);
 }

@@ -59,4 +59,16 @@ class UserRepositoryImpl implements UserRepository {
     final user = await _auth.currentUser();
     return user == null ? '' : user.uid;
   }
+
+  @override
+  Future<bool> setUserDisplayName(String uid, String name) async {
+    try {
+      final user = await _auth.currentUser();
+      final updateInfo = UserUpdateInfo()..displayName = name;
+      await user.updateProfile(updateInfo);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }

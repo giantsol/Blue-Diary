@@ -9,15 +9,14 @@ import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/domain/usecase/AddThumbsUpUsecase.dart';
-import 'package:todo_app/domain/usecase/GetHasThumbedUpUidUsecase.dart';
 import 'package:todo_app/domain/usecase/GetMyRankingUserInfoUsecase.dart';
 import 'package:todo_app/domain/usecase/GetTodayUsecase.dart';
 import 'package:todo_app/domain/usecase/IncreaseRankingUserInfosCountUsecase.dart';
 import 'package:todo_app/domain/usecase/InitRankingUserInfosCountUsecase.dart';
 import 'package:todo_app/domain/usecase/IsSignedInUsecase.dart';
 import 'package:todo_app/domain/usecase/ObserveRankingUserInfosUsecase.dart';
-import 'package:todo_app/domain/usecase/RemoveThumbedUpUidUsecase.dart';
 import 'package:todo_app/domain/usecase/SetMyRankingUserInfoUsecase.dart';
+import 'package:todo_app/domain/usecase/SetUserDisplayNameUsecase.dart';
 import 'package:todo_app/domain/usecase/SignInWithFacebookUsecase.dart';
 import 'package:todo_app/domain/usecase/SignInWithGoogleUsecase.dart';
 import 'package:todo_app/domain/usecase/SignOutUsecase.dart';
@@ -43,12 +42,11 @@ class RankingBloc {
   final _signOutUsecase = SignOutUsecase();
   final _increaseRankingUserInfosCountUsecase = IncreaseRankingUserInfosCountUsecase();
   final _addThumbUpUsecase = AddThumbUpUsecase();
-  final _getHasThumbedUpUidUsecase = GetHasThumbedUpUidUsecase();
   final _getTodayUsecase = GetTodayUsecase();
   final _syncTodayWithServerUsecase = SyncTodayWithServerUsecase();
   final _isSignedInUsecase = IsSignedInUsecase();
   final _updateRankingUserInfosCompletionRatioUsecase = UpdateRankingUserInfosCompletionRatioUsecase();
-  final _removeThumbedUpUsecase = RemoveThumbedUpUsecase();
+  final _setUserDisplayNameUsecase = SetUserDisplayNameUsecase();
 
   // Temporarily need this.. because of transaction
   // https://github.com/giantsol/Blue-Diary/issues/148
@@ -179,6 +177,8 @@ class RankingBloc {
     Utils.showAppDialog(context, title, body, null, () async {
       _state.add(_state.value.buildNew(
         showMyRankingInfoLoading: true,
+        isEditingDisplayName: false,
+        displayNameEditorText: '',
       ));
 
       final signOutSuccess = await _signOutUsecase.invoke();
@@ -208,6 +208,8 @@ class RankingBloc {
 
     _state.add(_state.value.buildNew(
       showMyRankingInfoLoading: true,
+      isEditingDisplayName: false,
+      displayNameEditorText: '',
     ));
 
     final updateResult = await _setMyRankingUserInfoUsecase.invoke();
@@ -261,6 +263,14 @@ class RankingBloc {
       return true;
     }
 
+    if (_state.value.isEditingDisplayName) {
+      _state.add(_state.value.buildNew(
+        isEditingDisplayName: false,
+        displayNameEditorText: '',
+      ));
+      return true;
+    }
+
     return false;
   }
 
@@ -301,6 +311,86 @@ class RankingBloc {
     _state.add(_state.value.buildNew(
       showMyRankingInfoLoading: false,
       myRankingUserInfoState: myRankingUserInfoState,
+    ));
+  }
+
+  void onEditDisplayNameClicked() {
+    if (_state.value.showMyRankingInfoLoading) {
+      return;
+    }
+
+    _state.add(_state.value.buildNew(
+      isEditingDisplayName: true,
+      displayNameEditorText: _state.value.myRankingUserInfoState.data.name,
+    ));
+  }
+
+  void onDisplayNameEditorTextChanged(String text) {
+    _state.add(_state.value.buildNew(
+      displayNameEditorText: text,
+    ));
+  }
+
+  void onCancelEditDisplayNameClicked() {
+    _state.add(_state.value.buildNew(
+      isEditingDisplayName: false,
+      displayNameEditorText: '',
+    ));
+  }
+
+  Future<void> onConfirmEditDisplayNameClicked(BuildContext context) async {
+    final myRankingUserInfoState = _state.value.myRankingUserInfoState;
+    final uid = myRankingUserInfoState.data.uid;
+    final prevName = myRankingUserInfoState.data.name;
+    final newName = _state.value.displayNameEditorText;
+    final isMyRankingInfoLoading = _state.value.showMyRankingInfoLoading;
+    if (uid.isEmpty || newName.isEmpty || isMyRankingInfoLoading || prevName == newName) {
+      _state.add(_state.value.buildNew(
+        isEditingDisplayName: false,
+        displayNameEditorText: '',
+      ));
+      return;
+    }
+
+    final checkInternet = AppLocalizations.of(context).checkInternet;
+    final tryUpdateLater = AppLocalizations.of(context).tryUpdateLater;
+
+    _state.add(_state.value.buildNew(
+      showMyRankingInfoLoading: true,
+      isEditingDisplayName: false,
+      displayNameEditorText: '',
+    ));
+
+    final nameUpdateSuccessful = await _setUserDisplayNameUsecase.invoke(uid, newName);
+    if (!nameUpdateSuccessful) {
+      _state.add(_state.value.buildNew(
+        showMyRankingInfoLoading: false,
+      ));
+      delegator.showSnackBar(checkInternet, const Duration(seconds: 2));
+      return;
+    }
+
+    final updateResult = await _setMyRankingUserInfoUsecase.invoke();
+    switch (updateResult) {
+      case SetMyRankingUserInfoResult.SUCCESS:
+        final myRankingInfoState = await _getMyRankingUserInfoUsecase.invoke();
+        _state.add(_state.value.buildNew(
+          myRankingUserInfoState: myRankingInfoState,
+        ));
+        break;
+      case SetMyRankingUserInfoResult.FAIL_TRY_LATER:
+        await _setUserDisplayNameUsecase.invoke(uid, prevName);
+        delegator.showSnackBar(tryUpdateLater, const Duration(seconds: 2));
+        break;
+      case SetMyRankingUserInfoResult.FAIL_NO_INTERNET:
+        await _setUserDisplayNameUsecase.invoke(uid, prevName);
+        delegator.showSnackBar(checkInternet, const Duration(seconds: 2));
+        break;
+      default: break;
+    }
+
+    _state.add(_state.value.buildNew(
+      showMyRankingInfoLoading: false,
     ));
   }
 

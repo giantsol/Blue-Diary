@@ -13,6 +13,6 @@ class GetMyRankingUserInfoStateUsecase {
     final uid = await _userRepository.getUserId();
     final data = await _rankingRepository.getRankingUserInfo(uid);
     final isSignedIn = await _isSignedInUsecase.invoke();
-    return MyRankingUserInfoState(data, isSignedIn);
+    return MyRankingUserInfoState(data: data, isSignedIn: isSignedIn);
   }
 }

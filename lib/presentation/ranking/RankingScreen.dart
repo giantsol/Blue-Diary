@@ -11,6 +11,7 @@ import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
 import 'package:todo_app/presentation/ranking/RankingBloc.dart';
 import 'package:todo_app/presentation/ranking/RankingState.dart';
+import 'package:todo_app/presentation/widgets/AppTextField.dart';
 
 class RankingScreen extends StatefulWidget {
   final RankingBlocDelegator rankingBlocDelegator;
@@ -71,6 +72,8 @@ class _RankingScreenState extends State<RankingScreen> {
                 bloc: _bloc,
                 myRankingInfoState: state.myRankingUserInfoState,
                 showOverlayProgress: state.showMyRankingInfoLoading,
+                isEditingDisplayName: state.isEditingDisplayName,
+                displayNameEditorText: state.displayNameEditorText,
               ),
               const SizedBox(height: 12,),
               Padding(
@@ -158,11 +161,15 @@ class _Header extends StatelessWidget {
   final RankingBloc bloc;
   final MyRankingUserInfoState myRankingInfoState;
   final bool showOverlayProgress;
+  final bool isEditingDisplayName;
+  final String displayNameEditorText;
 
   _Header({
     @required this.bloc,
     @required this.myRankingInfoState,
     @required this.showOverlayProgress,
+    @required this.isEditingDisplayName,
+    @required this.displayNameEditorText,
   });
 
   @override
@@ -217,23 +224,97 @@ class _Header extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   const SizedBox(width: 24,),
-                  Text(
-                    info.name,
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: AppColors.TEXT_BLACK,
+                  !isEditingDisplayName ? Expanded(
+                    child: GestureDetector(
+                      onTap: () => bloc.onEditDisplayNameClicked(),
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.asset('assets/ic_edit.png'),
+                          ),
+                          Expanded(
+                            child: Text(
+                              info.name,
+                              style: TextStyle(
+                                fontSize: 24,
+                                color: AppColors.TEXT_BLACK,
+                              ),
+                              strutStyle: StrutStyle(
+                                fontSize: 24,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ) : Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: AppTextField(
+                            text: displayNameEditorText,
+                            textSize: 24,
+                            textColor: AppColors.TEXT_BLACK,
+                            hintText: AppLocalizations.of(context).editDisplayNameHint,
+                            hintTextSize: 24,
+                            hintColor: AppColors.TEXT_BLACK_LIGHT,
+                            onChanged: (s) => bloc.onDisplayNameEditorTextChanged(s),
+                            maxLines: 1,
+                            autoFocus: true,
+                            onEditingComplete: () => bloc.onConfirmEditDisplayNameClicked(context),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () => bloc.onCancelEditDisplayNameClicked(),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Text(
+                              AppLocalizations.of(context).cancel,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.SECONDARY,
+                              ),
+                              strutStyle: StrutStyle(
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () => bloc.onConfirmEditDisplayNameClicked(context),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Text(
+                              AppLocalizations.of(context).ok,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.PRIMARY,
+                              ),
+                              strutStyle: StrutStyle(
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const Spacer(),
+                  const SizedBox(width: 8,),
                   InkWell(
                     onTap: () => bloc.onSignOutClicked(context),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 24),
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
                       child: Text(
                         AppLocalizations.of(context).signOut,
                         style: TextStyle(
                           fontSize: 14,
                           color: AppColors.TEXT_BLACK,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        strutStyle: StrutStyle(
+                          fontSize: 14,
                         ),
                       ),
                     )

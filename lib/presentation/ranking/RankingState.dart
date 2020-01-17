@@ -11,6 +11,8 @@ class RankingState {
   final Map<String, bool> thumbedUpUids;
   final bool showMyRankingInfoLoading;
   final bool isRankingUserInfosLoading;
+  final bool isEditingDisplayName;
+  final String displayNameEditorText;
 
   const RankingState({
     this.viewState = RankingViewState.LOADING,
@@ -21,6 +23,8 @@ class RankingState {
     this.thumbedUpUids = const {},
     this.showMyRankingInfoLoading = false,
     this.isRankingUserInfosLoading = true,
+    this.isEditingDisplayName = false,
+    this.displayNameEditorText = '',
   });
 
   RankingState buildNew({
@@ -32,6 +36,8 @@ class RankingState {
     Map<String, bool> thumbedUpUids,
     bool showMyRankingInfoLoading,
     bool isRankingUserInfosLoading,
+    bool isEditingDisplayName,
+    String displayNameEditorText,
   }) {
     return RankingState(
       viewState: viewState ?? this.viewState,
@@ -42,6 +48,8 @@ class RankingState {
       thumbedUpUids: thumbedUpUids ?? this.thumbedUpUids,
       showMyRankingInfoLoading: showMyRankingInfoLoading ?? this.showMyRankingInfoLoading,
       isRankingUserInfosLoading: isRankingUserInfosLoading ?? this.isRankingUserInfosLoading,
+      isEditingDisplayName: isEditingDisplayName ?? this.isEditingDisplayName,
+      displayNameEditorText: displayNameEditorText ?? this.displayNameEditorText,
     );
   }
 }

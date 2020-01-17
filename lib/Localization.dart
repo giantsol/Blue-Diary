@@ -115,6 +115,7 @@ class AppLocalizations {
   static const ERROR_SIGNING_OUT = "errorSigningOut";
   static const NO_RANKING_USER_INFOS = "noRankingUserInfos";
   static const RELOAD = "reload";
+  static const EDIT_DISPLAY_NAME_HINT = "editDisplayNameHint";
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -232,6 +233,7 @@ class AppLocalizations {
       ERROR_SIGNING_OUT: 'Error signing out',
       NO_RANKING_USER_INFOS: 'No ranking data',
       RELOAD: 'Reload',
+      EDIT_DISPLAY_NAME_HINT: 'New nickname',
     },
     'ko': {
       NEW_PASSWORD: '새 비밀번호 생성',
@@ -344,6 +346,7 @@ class AppLocalizations {
       ERROR_SIGNING_OUT: '탈퇴에 실패하였습니다',
       NO_RANKING_USER_INFOS: '랭킹 데이터가 없습니다',
       RELOAD: '재시도',
+      EDIT_DISPLAY_NAME_HINT: '새 닉네임',
     },
   };
 
@@ -443,6 +446,7 @@ class AppLocalizations {
   String get errorSigningOut => _localizedValues[locale.languageCode][ERROR_SIGNING_OUT];
   String get noRankingUserInfos => _localizedValues[locale.languageCode][NO_RANKING_USER_INFOS];
   String get reload => _localizedValues[locale.languageCode][RELOAD];
+  String get editDisplayNameHint => _localizedValues[locale.languageCode][EDIT_DISPLAY_NAME_HINT];
 
   String getMonthAndNthWeek(int month, int nthWeek) {
     if (locale.languageCode == 'ko') {
