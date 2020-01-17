@@ -4,7 +4,6 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/domain/entity/RankingUserInfo.dart';
 import 'package:todo_app/domain/entity/RankingUserInfosEvent.dart';
@@ -99,7 +98,7 @@ class AppFirebase {
       );
       _rankingUserInfosEventSubject.add(event);
     }, onError: (error) {
-      debugPrint('Error while receiving rankingUserInfos: $error');
+
     });
 
     _currentRankingMaxCount = maxCount;

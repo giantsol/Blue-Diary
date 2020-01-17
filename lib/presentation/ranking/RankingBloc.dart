@@ -115,8 +115,6 @@ class RankingBloc {
 
                 if (it.completionRatio != completionRatio) {
                   final updated = it.buildNew(completionRatio: completionRatio);
-                  // todo: remove debugPrint
-                  debugPrint('updating completion ratio of id: ${updated.uid}');
                   updateNeededRankingUserInfos.add(updated);
                 }
               }

@@ -41,20 +41,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       duration: const Duration(milliseconds: 1500),
     );
 
-    // todo: integrate with ios, too
     _firebaseMessaging.requestNotificationPermissions();
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) {
-        debugPrint('onMessage: $message');
         _bloc.onFirebaseMessageArrivedWhenForeground(context, message);
         return;
       },
       onLaunch: (Map<String, dynamic> message) {
-        debugPrint('onLaunch: $message');
         return;
       },
       onResume: (Map<String, dynamic> message) {
-        debugPrint('onResume: $message');
         return;
       },
       onBackgroundMessage: _backgroundMessageHandler,
@@ -64,10 +60,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   static Future<dynamic> _backgroundMessageHandler(Map<String, dynamic> message) async {
     if (message.containsKey('data')) {
       final data = message['data'];
-      debugPrint('background message data: $data');
     } else if (message.containsKey('notification')) {
       final notification = message['notification'];
-      debugPrint('background message notification: $notification');
     }
 
     return;

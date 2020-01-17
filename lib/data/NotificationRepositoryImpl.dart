@@ -29,8 +29,6 @@ class NotificationRepositoryImpl implements NotificationRepository {
     final initializationSettings = InitializationSettings(androidInitializationSettings, iosInitializationSettings);
 
     return _notificationsPlugin.initialize(initializationSettings, onSelectNotification: (payload) async {
-      // todo: remove debugPrints
-      debugPrint('onSelectNotification with payload: $payload');
       return true;
     });
   }
