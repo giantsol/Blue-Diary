@@ -197,7 +197,7 @@ class DayBloc {
     _setToDoUsecase.invoke(updated);
 
     final allToDosDone = _state.value.currentDayRecord.toDoRecords.every((it) => it.toDo.isDone);
-    if (allToDosDone) {
+    if (_state.value.currentDayRecord.isToday && allToDosDone) {
       _unscheduleReminderNotificationUsecase.invoke();
     }
 
