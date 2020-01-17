@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
@@ -129,25 +130,6 @@ class RankingBloc {
     _initRankingUserInfosCountUsecase.invoke();
   }
 
-  Future<void> onGoogleSignInClicked(BuildContext context) async {
-    final errorSigningInText = AppLocalizations.of(context).errorSigningIn;
-
-    _state.add(_state.value.buildNew(
-      signInDialogShown: false,
-      showMyRankingInfoLoading: true,
-    ));
-
-    final myRankingUserInfo = await _signInWithGoogleUsecase.invoke();
-    if (!myRankingUserInfo.isSignedIn) {
-      delegator.showSnackBar(errorSigningInText, const Duration(seconds: 2));
-    }
-
-    _state.add(_state.value.buildNew(
-      myRankingUserInfoState: myRankingUserInfo,
-      showMyRankingInfoLoading: false,
-    ));
-  }
-
 //  Future<void> onFacebookSignInClicked(BuildContext context) async {
 //    final errorSigningInText = AppLocalizations.of(context).errorSigningIn;
 //
@@ -234,35 +216,38 @@ class RankingBloc {
     ));
   }
 
-  Future<void> onLoadMoreRankingInfosClicked() async {
+  Future<void> onLoadMoreRankingInfosClicked(BuildContext context) async {
     final isSignedIn = await _isSignedInUsecase.invoke();
     if (!isSignedIn) {
-      _state.add(_state.value.buildNew(
-        signInDialogShown: true,
-      ));
+      onSignInClicked(context);
     } else {
       _increaseRankingUserInfosCountUsecase.invoke();
     }
   }
 
-  void onSignInAndJoinClicked() {
+  Future<void> onSignInClicked(BuildContext context) async {
     if (_state.value.showMyRankingInfoLoading) {
       return;
     }
 
+    final errorSigningInText = AppLocalizations.of(context).errorSigningIn;
+
     _state.add(_state.value.buildNew(
-      signInDialogShown: true,
+      showMyRankingInfoLoading: true,
+    ));
+
+    final myRankingUserInfo = await _signInWithGoogleUsecase.invoke();
+    if (!myRankingUserInfo.isSignedIn) {
+      delegator.showSnackBar(errorSigningInText, const Duration(seconds: 2));
+    }
+
+    _state.add(_state.value.buildNew(
+      myRankingUserInfoState: myRankingUserInfo,
+      showMyRankingInfoLoading: false,
     ));
   }
 
   bool handleBackPress() {
-    if (_state.value.signInDialogShown) {
-      _state.add(_state.value.buildNew(
-        signInDialogShown: false,
-      ));
-      return true;
-    }
-
     if (_state.value.isEditingDisplayName) {
       _state.add(_state.value.buildNew(
         isEditingDisplayName: false,
@@ -274,19 +259,10 @@ class RankingBloc {
     return false;
   }
 
-  void onDismissSignInDialogClicked() {
-    _state.add(_state.value.buildNew(
-      signInDialogShown: false,
-    ));
-  }
-
-  Future<void> onThumbUpClicked(RankingUserInfo userInfo) async {
+  Future<void> onThumbUpClicked(BuildContext context, RankingUserInfo userInfo) async {
     final isSignedIn = await _isSignedInUsecase.invoke();
     if (!isSignedIn) {
-      _state.add(_state.value.buildNew(
-        signInDialogShown: true,
-      ));
-      return;
+      onSignInClicked(context);
     } else {
       if (_isThumbingUp) {
         return;

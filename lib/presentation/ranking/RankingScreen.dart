@@ -115,7 +115,7 @@ class _RankingScreenState extends State<RankingScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 4,),
                           child: GestureDetector(
                             behavior: HitTestBehavior.translucent,
-                            onTap: () => _bloc.onLoadMoreRankingInfosClicked(),
+                            onTap: () => _bloc.onLoadMoreRankingInfosClicked(context),
                             child: SizedBox(
                               height: 36,
                               child: Center(
@@ -137,9 +137,6 @@ class _RankingScreenState extends State<RankingScreen> {
               )
             ],
           ),
-          state.signInDialogShown ? _SignInDialog(
-            bloc: _bloc,
-          ) : const SizedBox.shrink(),
         ],
       ),
     );
@@ -193,7 +190,7 @@ class _Header extends StatelessWidget {
     }
 
     return !myRankingInfoState.isSignedIn ? InkWell(
-      onTap: () => bloc.onSignInAndJoinClicked(),
+      onTap: () => bloc.onSignInClicked(context),
       child: Container(
         height: 132,
         alignment: Alignment.center,
@@ -662,7 +659,7 @@ class _RankingItem extends StatelessWidget {
 //          const SizedBox(width: 8,),
 //          GestureDetector(
 //            behavior: HitTestBehavior.translucent,
-//            onTap: hasThumbedUp ? null : () => bloc.onThumbUpClicked(userInfo),
+//            onTap: hasThumbedUp ? null : () => bloc.onThumbUpClicked(context, userInfo),
 //            child: Padding(
 //              padding: const EdgeInsets.symmetric(vertical: 8,),
 //              child: Row(
@@ -685,42 +682,6 @@ class _RankingItem extends StatelessWidget {
 //            ),
 //          ),
         ],
-      ),
-    );
-  }
-}
-
-class _SignInDialog extends StatelessWidget {
-  final RankingBloc bloc;
-
-  _SignInDialog({
-    @required this.bloc,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () => bloc.onDismissSignInDialogClicked(),
-      child: Container(
-        color: AppColors.SCRIM,
-        alignment: Alignment.center,
-        child: Container(
-          color: AppColors.BACKGROUND_WHITE,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              FlatButton(
-                child: Text('Google SignIn'),
-                onPressed: () => bloc.onGoogleSignInClicked(context),
-              ),
-//              FlatButton(
-//                child: Text('Facebook SignIn'),
-//                onPressed: () => bloc.onFacebookSignInClicked(context),
-//              ),
-            ],
-          ),
-        ),
       ),
     );
   }

@@ -7,7 +7,6 @@ class RankingState {
   final List<RankingUserInfo> rankingUserInfos;
   final bool hasMoreRankingInfos;
   final MyRankingUserInfoState myRankingUserInfoState;
-  final bool signInDialogShown;
   final Map<String, bool> thumbedUpUids;
   final bool showMyRankingInfoLoading;
   final bool isRankingUserInfosLoading;
@@ -19,7 +18,6 @@ class RankingState {
     this.rankingUserInfos = const [],
     this.hasMoreRankingInfos = false,
     this.myRankingUserInfoState = MyRankingUserInfoState.INVALID,
-    this.signInDialogShown = false,
     this.thumbedUpUids = const {},
     this.showMyRankingInfoLoading = false,
     this.isRankingUserInfosLoading = true,
@@ -32,7 +30,6 @@ class RankingState {
     List<RankingUserInfo> rankingUserInfos,
     bool hasMoreRankingInfos,
     MyRankingUserInfoState myRankingUserInfoState,
-    bool signInDialogShown,
     Map<String, bool> thumbedUpUids,
     bool showMyRankingInfoLoading,
     bool isRankingUserInfosLoading,
@@ -44,7 +41,6 @@ class RankingState {
       rankingUserInfos: rankingUserInfos ?? this.rankingUserInfos,
       hasMoreRankingInfos: hasMoreRankingInfos ?? this.hasMoreRankingInfos,
       myRankingUserInfoState: myRankingUserInfoState ?? this.myRankingUserInfoState,
-      signInDialogShown: signInDialogShown ?? this.signInDialogShown,
       thumbedUpUids: thumbedUpUids ?? this.thumbedUpUids,
       showMyRankingInfoLoading: showMyRankingInfoLoading ?? this.showMyRankingInfoLoading,
       isRankingUserInfosLoading: isRankingUserInfosLoading ?? this.isRankingUserInfosLoading,
