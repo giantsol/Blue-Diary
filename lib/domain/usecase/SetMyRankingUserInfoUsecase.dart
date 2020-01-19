@@ -19,8 +19,8 @@ class SetMyRankingUserInfoUsecase {
   Future<SetMyRankingUserInfoResult> invoke() async {
     final lastUpdatedLocalTimeMillis = await _prefsRepository.getLastUpdatedMyRankingUserInfoLocalTimeMillis();
     final currentLocalTimeMillis = DateTime.now().millisecondsSinceEpoch;
-    // 5 minutes
-    final canUpdate = (currentLocalTimeMillis - lastUpdatedLocalTimeMillis).abs() > 5 * 60 * 1000;
+    // 1 minute
+    final canUpdate = (currentLocalTimeMillis - lastUpdatedLocalTimeMillis).abs() > 1 * 60 * 1000;
     if (!canUpdate) {
       return SetMyRankingUserInfoResult.FAIL_TRY_LATER;
     }
