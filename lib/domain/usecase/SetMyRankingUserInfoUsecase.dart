@@ -42,7 +42,7 @@ class SetMyRankingUserInfoUsecase {
     final firstLaunchDate = DateTime.parse(firstLaunchDateString);
     final beforeTodayDaysCount = today.difference(firstLaunchDate).inDays;
     final completedDaysCount = await _toDoRepository.getMarkedCompletedDaysCount();
-    final completionRatio = completedDaysCount > beforeTodayDaysCount ? 1
+    final double completionRatio = completedDaysCount > beforeTodayDaysCount ? 1
       : beforeTodayDaysCount > 0 ? completedDaysCount / beforeTodayDaysCount : 0;
 
     final latestStreakCount = await _toDoRepository.getLatestStreakCount();

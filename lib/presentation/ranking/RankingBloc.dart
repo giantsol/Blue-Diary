@@ -110,10 +110,10 @@ class RankingBloc {
               if (firstLaunchDate != DateRepository.INVALID_DATE) {
                 final beforeTodayDaysCount = today.difference(firstLaunchDate).inDays;
                 final completedDaysCount = it.completedDaysCount;
-                final completionRatio = completedDaysCount > beforeTodayDaysCount ? 1
+                final double completionRatio = completedDaysCount > beforeTodayDaysCount ? 1
                   : beforeTodayDaysCount > 0 ? completedDaysCount / beforeTodayDaysCount : 0;
 
-                if (it.completionRatio != completionRatio) {
+                if (it.completionRatio.toStringAsFixed(4) != completionRatio.toStringAsFixed(4)) {
                   final updated = it.buildNew(completionRatio: completionRatio);
                   updateNeededRankingUserInfos.add(updated);
                 }
