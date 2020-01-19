@@ -2,7 +2,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
@@ -34,12 +33,17 @@ class RankingBloc {
 
   StreamSubscription _rankingUserInfosEventSubscription;
 
+  // Temporarily need this.. because of transaction
+  // https://github.com/giantsol/Blue-Diary/issues/148
+  bool _isThumbingUp = false;
+
+  final Map<String, bool> completionRatioUpdatedUids = {};
+
   final _getMyRankingUserInfoUsecase = GetMyRankingUserInfoStateUsecase();
   final _observeRankingUserInfosUsecase = ObserveRankingUserInfosUsecase();
   final _initRankingUserInfosCountUsecase = InitRankingUserInfosCountUsecase();
   final _setMyRankingUserInfoUsecase = SetMyRankingUserInfoUsecase();
   final _signInWithGoogleUsecase = SignInWithGoogleUsecase();
-  final _signInWithFacebookUsecase = SignInWithFacebookUsecase();
   final _signOutUsecase = SignOutUsecase();
   final _increaseRankingUserInfosCountUsecase = IncreaseRankingUserInfosCountUsecase();
   final _addThumbUpUsecase = AddThumbUpUsecase();
@@ -48,10 +52,6 @@ class RankingBloc {
   final _isSignedInUsecase = IsSignedInUsecase();
   final _updateRankingUserInfosCompletionRatioUsecase = UpdateRankingUserInfosCompletionRatioUsecase();
   final _setUserDisplayNameUsecase = SetUserDisplayNameUsecase();
-
-  // Temporarily need this.. because of transaction
-  // https://github.com/giantsol/Blue-Diary/issues/148
-  bool _isThumbingUp = false;
 
   RankingBloc() {
     _initState();
@@ -101,16 +101,17 @@ class RankingBloc {
             final List<RankingUserInfo> updateNeededRankingUserInfos = [];
 
             event.rankingUserInfos.forEach((it) {
-              if (it.uid == myRankingInfoState.data.uid) {
+              if (it.uid == myRankingInfoState.data.uid || completionRatioUpdatedUids.containsKey(it.uid)) {
                 return;
               }
 
               final firstLaunchDate = it.firstLaunchDateMillis != 0 ? DateTime.fromMillisecondsSinceEpoch(it.firstLaunchDateMillis)
                 : DateRepository.INVALID_DATE;
               if (firstLaunchDate != DateRepository.INVALID_DATE) {
-                final totalDaysCount = today.difference(firstLaunchDate).inDays + 1;
+                final beforeTodayDaysCount = today.difference(firstLaunchDate).inDays;
                 final completedDaysCount = it.completedDaysCount;
-                final double completionRatio = totalDaysCount > 0 ? completedDaysCount / totalDaysCount : 0;
+                final completionRatio = completedDaysCount > beforeTodayDaysCount ? 1
+                  : beforeTodayDaysCount > 0 ? completedDaysCount / beforeTodayDaysCount : 0;
 
                 if (it.completionRatio != completionRatio) {
                   final updated = it.buildNew(completionRatio: completionRatio);
@@ -120,6 +121,7 @@ class RankingBloc {
             });
 
             if (updateNeededRankingUserInfos.isNotEmpty) {
+              completionRatioUpdatedUids.addEntries(updateNeededRankingUserInfos.map((it) => MapEntry(it.uid, true)));
               _updateRankingUserInfosCompletionRatioUsecase.invoke(updateNeededRankingUserInfos);
             }
           }

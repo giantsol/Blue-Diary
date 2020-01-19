@@ -40,9 +40,10 @@ class SetMyRankingUserInfoUsecase {
 
     final userName = await _userRepository.getUserDisplayName();
     final firstLaunchDate = DateTime.parse(firstLaunchDateString);
-    final totalDaysCount = today.difference(firstLaunchDate).inDays + 1;
+    final beforeTodayDaysCount = today.difference(firstLaunchDate).inDays;
     final completedDaysCount = await _toDoRepository.getMarkedCompletedDaysCount();
-    final completionRatio = totalDaysCount > 0 ? completedDaysCount / totalDaysCount : 0;
+    final completionRatio = completedDaysCount > beforeTodayDaysCount ? 1
+      : beforeTodayDaysCount > 0 ? completedDaysCount / beforeTodayDaysCount : 0;
 
     final latestStreakCount = await _toDoRepository.getLatestStreakCount();
     final latestStreakEndMillis = await _toDoRepository.getLatestStreakEndMillis();
