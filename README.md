@@ -57,31 +57,6 @@ $ git clone https://github.com/giantsol/Blue-Diary.git
 
 Open cloned directory with Android Studio and it'll notify you to run `Packages get` to install dependencies. Do that.
 
-When you try to run the project by pressing `Run` button, build will fail because this app uses [Sendgrid](https://sendgrid.com/?opt=variant-header) to send emails in [SettingsBloc](https://github.com/giantsol/Blue-Diary/blob/master/lib/presentation/settings/SettingsBloc.dart), and `SENDGRID_AUTHORIZATION` constant isn't git-controlled (this is my secret key).
-
-You can solve this in 2 ways:
-
-1. You can follow [Sendgrid guide](https://sendgrid.com/docs/for-developers/sending-email/api-getting-started/) and assign your own token to `SENDGRID_AUTHORIZATION` constant:
-```dart
-// Create lib/Secrets.dart file and add below line
-const SENDGRID_AUTHORIZATION = 'Bearer <<YOUR API KEY>>';
-```
-
-2. Just replace `SENDGRID_AUTHORIZATON` to `''`. In this case, email sending won't function, but other app functions will work just fine. In [SettingsBloc](https://github.com/giantsol/Blue-Diary/blob/master/lib/presentation/settings/SettingsBloc.dart) file:
-```dart
-headers: {
-  HttpHeaders.authorizationHeader: SENDGRID_AUTHORIZATION,
-  HttpHeaders.contentTypeHeader: 'application/json',
-},
-```
-Replace above code with below:
-```dart
-headers: {
-  HttpHeaders.authorizationHeader: '',
-  HttpHeaders.contentTypeHeader: 'application/json',
-},
-```
-
 Next is to integrate [Firebase](https://firebase.google.com/).
 
 ### 2. Firebase Integration
