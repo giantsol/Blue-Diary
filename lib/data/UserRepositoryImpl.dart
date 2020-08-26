@@ -11,7 +11,7 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<String> getUserDisplayName() async {
-    final user = await _auth.currentUser();
+    final user = _auth.currentUser;
     return user == null ? '' : user.displayName;
   }
 
@@ -20,7 +20,7 @@ class UserRepositoryImpl implements UserRepository {
     try {
       final googleUser = await _googleSignIn.signIn();
       final googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.getCredential(idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
+      final credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
 
       await _auth.signInWithCredential(credential);
       return true;
@@ -56,16 +56,15 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<String> getUserId() async {
-    final user = await _auth.currentUser();
+    final user = _auth.currentUser;
     return user == null ? '' : user.uid;
   }
 
   @override
   Future<bool> setUserDisplayName(String uid, String name) async {
     try {
-      final user = await _auth.currentUser();
-      final updateInfo = UserUpdateInfo()..displayName = name;
-      await user.updateProfile(updateInfo);
+      final user = _auth.currentUser;
+      await user.updateProfile(displayName: name);
       return true;
     } catch (e) {
       return false;

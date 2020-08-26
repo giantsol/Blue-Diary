@@ -36,7 +36,7 @@ class AppFirebase {
       if (snapshot == null || snapshot.data == null) {
         return RankingUserInfo.INVALID;
       } else {
-        return RankingUserInfo.fromMap(snapshot.data);
+        return RankingUserInfo.fromMap(snapshot.data());
       }
     } catch (e) {
       return RankingUserInfo.INVALID;
@@ -77,7 +77,7 @@ class AppFirebase {
       double prevCompletionRatio;
 
       final infos = snapshots.map((snapshot) {
-        final userInfo = RankingUserInfo.fromMap(snapshot.data);
+        final userInfo = RankingUserInfo.fromMap(snapshot.data());
 
         if (prevCompletionRatio == null) {
           rank += 1;
@@ -131,7 +131,7 @@ class AppFirebase {
         final snapshot = await transaction.get(doc);
 
         if (snapshot.data != null) {
-          final rankingUserInfo = RankingUserInfo.fromMap(snapshot.data);
+          final rankingUserInfo = RankingUserInfo.fromMap(snapshot.data());
           final updated = rankingUserInfo.buildNew(thumbUpCount: rankingUserInfo.thumbUpCount + 1);
 
           await transaction.update(doc, updated.toThumbUpCountUpdateMap());

@@ -1,4 +1,5 @@
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,9 +18,11 @@ Future<void> main() async {
     statusBarIconBrightness: Brightness.dark,
   ));
 
-  final dependencies = Dependencies();
-
+  // need to create Dependencies after initializations are completed.
   await PrefService.init();
+  await Firebase.initializeApp();
+
+  final dependencies = Dependencies();
 
   runApp(App(
     dependencies: dependencies,
