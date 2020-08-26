@@ -4,7 +4,6 @@ abstract class PrefsRepository {
   Future<void> setUserPassword(String password);
   Future<bool> getUseLockScreen();
   Future<void> setUseLockScreen(bool value);
-  Future<String> getRecoveryEmail();
   Future<bool> getUserCheckedToDoBefore();
   Future<void> setUserCheckedToDoBefore();
   Future<bool> hasShownWeekScreenTutorial();

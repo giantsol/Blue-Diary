@@ -50,20 +50,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         defaultVal: false,
         onChange: () => _bloc.onUseLockScreenChanged(context),
       ),
-      PreferenceTitle(AppLocalizations.of(context).settingsResetPassword),
-      TextFieldPreference(
-        AppLocalizations.of(context).settingsRecoveryEmail,
-        AppPreferences.KEY_RECOVERY_EMAIL,
-        keyboardType: TextInputType.emailAddress,
-      ),
-      FlatButton(
-        padding: const EdgeInsets.all(16),
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: Text(AppLocalizations.of(context).sendTempPassword)
-        ),
-        onPressed: () => _bloc.onSendTempPasswordClicked(context),
-      ),
       FlatButton(
         padding: const EdgeInsets.all(16),
         child: Align(

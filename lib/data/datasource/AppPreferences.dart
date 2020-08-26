@@ -5,7 +5,6 @@ class AppPreferences {
   static const String KEY_USER_PASSWORD = 'user.password';
   // should keep using 'default.lock' key to be compatible with users' previous settings
   static const String KEY_USE_LOCK_SCREEN = 'default.lock';
-  static const String KEY_RECOVERY_EMAIL = 'recovery.email';
   static const String KEY_USER_CHECKED_TO_DO_BEFORE = 'user.checked.to.do.before';
   static const String KEY_SHOWN_WEEK_SCREEN_TUTORIAL = 'shown.week.screen.tutorial';
   static const String KEY_SHOWN_DAY_SCREEN_TUTORIAL = 'shown.day.screen.tutorial';
@@ -31,10 +30,6 @@ class AppPreferences {
 
   Future<void> setUseLockScreen(bool value) {
     return PrefService.setBool(KEY_USE_LOCK_SCREEN, value);
-  }
-
-  Future<String> getRecoveryEmail() async {
-    return PrefService.getString(KEY_RECOVERY_EMAIL) ?? '';
   }
 
   Future<bool> getUserCheckedToDoBefore() async {

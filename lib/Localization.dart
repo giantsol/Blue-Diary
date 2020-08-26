@@ -33,16 +33,6 @@ class AppLocalizations {
   static const SETTINGS_LOCK = "settingsLock";
   static const SETTINGS_USE_LOCK_SCREEN = "settingsLockScreen";
   static const SETTINGS_RESET_PASSWORD = "settingsResetPassword";
-  static const SETTINGS_RECOVERY_EMAIL = "settingsRecoveryEmail";
-  static const INVALID_RECOVERY_EMAIL = "invalidRecoveryEmail";
-  static const SEND_TEMP_PASSWORD = "sendTempPassword";
-  static const CONFIRM_SEND_TEMP_PASSWORD = "confirmSendTempPassword";
-  static const CONFIRM_SEND_TEMP_PASSWORD_BODY = "confirmSendTempPasswordBody";
-  static const FAILED_TO_SAVE_TEMP_PASSWORD_BY_UNKNOWN_ERROR = "failedToSaveTempPasswordByUnknownError";
-  static const TEMP_PASSWORD_MAIL_SUBJECT = "tempPasswordMailSubject";
-  static const TEMP_PASSWORD_MAIL_BODY = "tempPasswordMailBody";
-  static const TEMP_PASSWORD_MAIL_SENT = "tempPasswordMailSent";
-  static const TEMP_PASSWORD_MAIL_SEND_FAILED = "tempPasswordMailSendFailed";
   static const REMOVE_SELECTED_TO_DOS_TITLE = "removeSelectedToDosTitle";
   static const RECORD_NAVIGATION_TITLE = "recordNavigationTitle";
   static const PET_NAVIGATION_TITLE = "petNavigationTitle";
@@ -152,16 +142,6 @@ class AppLocalizations {
       SETTINGS_LOCK: 'Lock',
       SETTINGS_USE_LOCK_SCREEN: 'LockScreen',
       SETTINGS_RESET_PASSWORD: 'Reset Password',
-      SETTINGS_RECOVERY_EMAIL: 'Recovery Email',
-      INVALID_RECOVERY_EMAIL: 'Recovery email is either empty or invalid',
-      SEND_TEMP_PASSWORD: 'Send Temporary Password',
-      CONFIRM_SEND_TEMP_PASSWORD: 'Send Temporary Password',
-      CONFIRM_SEND_TEMP_PASSWORD_BODY: 'Your previous password will be overriden by temporary password, and will be sent to your recovery email.',
-      FAILED_TO_SAVE_TEMP_PASSWORD_BY_UNKNOWN_ERROR: 'Failed to save temporary password by unknown error',
-      TEMP_PASSWORD_MAIL_SUBJECT: '[Blue Diary] Your temporary password has been set',
-      TEMP_PASSWORD_MAIL_BODY: 'Your password has been set: ',
-      TEMP_PASSWORD_MAIL_SENT: 'Mail has been sent! Check your recovery email.',
-      TEMP_PASSWORD_MAIL_SEND_FAILED: 'Mail has not been sent. Please check your recovery email again.',
       REMOVE_SELECTED_TO_DOS_TITLE: 'Remove TODO',
       RECORD_NAVIGATION_TITLE: 'Record',
       PET_NAVIGATION_TITLE: 'Pet',
@@ -266,16 +246,6 @@ class AppLocalizations {
       SETTINGS_LOCK: '잠금',
       SETTINGS_USE_LOCK_SCREEN: '잠금화면',
       SETTINGS_RESET_PASSWORD: '비밀번호 재설정',
-      SETTINGS_RECOVERY_EMAIL: '복원 이메일',
-      INVALID_RECOVERY_EMAIL: '복원 이메일이 비어있거나 이메일 형식이 아닙니다',
-      SEND_TEMP_PASSWORD: '임시 비밀번호 발송',
-      CONFIRM_SEND_TEMP_PASSWORD: '임시 비밀번호 발송',
-      CONFIRM_SEND_TEMP_PASSWORD_BODY: '기존의 비밀번호가 임시 비밀번호로 바뀌며, 복원 이메일로 임시 비밀번호가 전송됩니다',
-      FAILED_TO_SAVE_TEMP_PASSWORD_BY_UNKNOWN_ERROR: '알 수 없는 오류로 임시 비밀번호 설정에 실패하였습니다',
-      TEMP_PASSWORD_MAIL_SUBJECT: '[Blue Diary] 임시 비밀번호',
-      TEMP_PASSWORD_MAIL_BODY: '비밀번호가 다음과 같이 설정되었습니다: ',
-      TEMP_PASSWORD_MAIL_SENT: '메일이 발송되었습니다! 이메일을 확인해주세요.',
-      TEMP_PASSWORD_MAIL_SEND_FAILED: '메일 발송에 실패하였습니다. 복원 이메일을 확인해주세요.',
       REMOVE_SELECTED_TO_DOS_TITLE: '작업 삭제',
       RECORD_NAVIGATION_TITLE: '기록',
       PET_NAVIGATION_TITLE: '펫',
@@ -385,16 +355,6 @@ class AppLocalizations {
   String get settingsLock => _localizedValues[locale.languageCode][SETTINGS_LOCK];
   String get settingsUseLockScreen => _localizedValues[locale.languageCode][SETTINGS_USE_LOCK_SCREEN];
   String get settingsResetPassword => _localizedValues[locale.languageCode][SETTINGS_RESET_PASSWORD];
-  String get settingsRecoveryEmail => _localizedValues[locale.languageCode][SETTINGS_RECOVERY_EMAIL];
-  String get invalidRecoveryEmail => _localizedValues[locale.languageCode][INVALID_RECOVERY_EMAIL];
-  String get sendTempPassword => _localizedValues[locale.languageCode][SEND_TEMP_PASSWORD];
-  String get confirmSendTempPassword => _localizedValues[locale.languageCode][CONFIRM_SEND_TEMP_PASSWORD];
-  String get confirmSendTempPasswordBody => _localizedValues[locale.languageCode][CONFIRM_SEND_TEMP_PASSWORD_BODY];
-  String get failedToSaveTempPasswordByUnknownError => _localizedValues[locale.languageCode][FAILED_TO_SAVE_TEMP_PASSWORD_BY_UNKNOWN_ERROR];
-  String get tempPasswordMailSubject => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_SUBJECT];
-  String get tempPasswordMailBody => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_BODY];
-  String get tempPasswordMailSent => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_SENT];
-  String get tempPasswordMailSendFailed => _localizedValues[locale.languageCode][TEMP_PASSWORD_MAIL_SEND_FAILED];
   String get removeSelectedToDosTitle => _localizedValues[locale.languageCode][REMOVE_SELECTED_TO_DOS_TITLE];
   String get checkPointHint => _localizedValues[locale.languageCode][CHECK_POINT_HINT];
   String get dayMemoHint => _localizedValues[locale.languageCode][DAY_MEMO_HINT];

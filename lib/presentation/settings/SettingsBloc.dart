@@ -1,18 +1,12 @@
 
-import 'dart:io';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:http/http.dart' as http;
 import 'package:open_appstore/open_appstore.dart';
 import 'package:todo_app/Delegators.dart';
 import 'package:todo_app/Localization.dart';
-import 'package:todo_app/Secrets.dart';
 import 'package:todo_app/Utils.dart';
 import 'package:todo_app/domain/usecase/GetCustomFirstLaunchDateStringUsecase.dart';
 import 'package:todo_app/domain/usecase/GetRealFirstLaunchDateStringUsecase.dart';
-import 'package:todo_app/domain/usecase/GetRecoveryEmailUseCase.dart';
 import 'package:todo_app/domain/usecase/GetUseLockScreenUsecase.dart';
 import 'package:todo_app/domain/usecase/GetUserPasswordUsecase.dart';
 import 'package:todo_app/domain/usecase/SetCustomFirstLaunchDateUsecase.dart';
@@ -22,10 +16,6 @@ import 'package:todo_app/presentation/createpassword/CreatePasswordScreen.dart';
 import 'package:todo_app/presentation/inputpassword/InputPasswordScreen.dart';
 
 class SettingsBloc {
-  static const _SENDGRID_SEND_API_ENDPOINT = 'https://api.sendgrid.com/v3/mail/send';
-  // ignore: non_constant_identifier_names
-  static final _EMAIL_VALIDATION_REGEX = RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
-
   void Function() _needUpdateListener;
 
   final _twoSeconds = const Duration(seconds: 2);
@@ -36,7 +26,6 @@ class SettingsBloc {
   final _getUserPasswordUsecase = GetUserPasswordUsecase();
   final _getUseLockScreenUsecase = GetUseLockScreenUsecase();
   final _setUseLockScreenUsecase = SetUseLockScreenUsecase();
-  final _getRecoveryEmailUseCase = GetRecoveryEmailUseCase();
   final _getRealFirstLaunchDateStringUsecase = GetRealFirstLaunchDateStringUsecase();
   final _setCustomFirstLaunchDateUsecase = SetCustomFirstLaunchDateUsecase();
   final _getCustomFirstLaunchDateStringUsecase = GetCustomFirstLaunchDateStringUsecase();
@@ -115,72 +104,6 @@ class SettingsBloc {
         }
       }
     );
-  }
-
-  Future<void> onSendTempPasswordClicked(BuildContext context) async {
-    final recoveryEmail = await _getRecoveryEmailUseCase.invoke();
-    if (!_EMAIL_VALIDATION_REGEX.hasMatch(recoveryEmail)) {
-      final message = AppLocalizations.of(context).invalidRecoveryEmail;
-      delegator.showSnackBar(message, _twoSeconds);
-    } else {
-      Utils.showAppDialog(context,
-        AppLocalizations.of(context).confirmSendTempPassword,
-        AppLocalizations.of(context).confirmSendTempPasswordBody,
-        null,
-          () => _onConfirmSendTempPasswordOkClicked(context),
-      );
-    }
-  }
-
-  Future<void> _onConfirmSendTempPasswordOkClicked(BuildContext context) async {
-    final mailSentMsg = AppLocalizations.of(context).tempPasswordMailSent;
-    final mailSendFailedMsg = AppLocalizations.of(context).tempPasswordMailSendFailed;
-    final failedToSaveTempPasswordMsg = AppLocalizations.of(context).failedToSaveTempPasswordByUnknownError;
-
-    final prevPassword = await _getUserPasswordUsecase.invoke();
-    await _setUserPasswordUsecase.invoke(_createRandomPassword());
-    final changedPassword = await _getUserPasswordUsecase.invoke();
-
-    if (changedPassword.isNotEmpty && prevPassword != changedPassword) {
-      final recoveryEmail = await _getRecoveryEmailUseCase.invoke();
-
-      final mailTitle = AppLocalizations.of(context).tempPasswordMailSubject;
-      final mailBody = AppLocalizations.of(context).tempPasswordMailBody;
-      final body = _createEmailBodyJson(
-        targetEmail: recoveryEmail,
-        title: mailTitle,
-        body: '$mailBody$changedPassword');
-
-      final response = await http.post(
-        _SENDGRID_SEND_API_ENDPOINT,
-        headers: {
-          HttpHeaders.authorizationHeader: SENDGRID_AUTHORIZATION,
-          HttpHeaders.contentTypeHeader: 'application/json',
-        },
-        body: body,
-      );
-
-      if (response.statusCode.toString().startsWith('2')) {
-        delegator.showSnackBar(mailSentMsg, _twoSeconds);
-      } else {
-        delegator.showSnackBar(mailSendFailedMsg, _twoSeconds);
-      }
-    } else {
-      delegator.showSnackBar(failedToSaveTempPasswordMsg, _twoSeconds);
-    }
-  }
-
-  String _createRandomPassword() {
-    final rand = Random();
-    return '${rand.nextInt(10)}${rand.nextInt(10)}${rand.nextInt(10)}${rand.nextInt(10)}';
-  }
-
-  String _createEmailBodyJson({
-    @required String targetEmail,
-    @required String title,
-    @required String body,
-  }) {
-    return '{"personalizations":[{"to":[{"email":"$targetEmail"}],"subject":"$title"}],"content": [{"type": "text/plain", "value": "$body"}],"from":{"email":"giantsol64@gmail.com","name":"Blue Diary Developer"}}';
   }
 
   Future<void> onResetPasswordClicked(BuildContext context) async {

@@ -29,11 +29,6 @@ class PrefsRepositoryImpl implements PrefsRepository {
   }
 
   @override
-  Future<String> getRecoveryEmail() {
-    return _prefs.getRecoveryEmail();
-  }
-
-  @override
   Future<bool> getUserCheckedToDoBefore() {
     return _prefs.getUserCheckedToDoBefore();
   }
