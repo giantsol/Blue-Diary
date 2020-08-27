@@ -20,8 +20,8 @@ class HomeScreen extends StatefulWidget {
   State createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin implements WeekBlocDelegator,
-  SettingsBlocDelegator, RankingBlocDelegator {
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin, WidgetsBindingObserver
+  implements WeekBlocDelegator, SettingsBlocDelegator, RankingBlocDelegator {
   HomeBloc _bloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
@@ -55,6 +55,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       },
       onBackgroundMessage: _backgroundMessageHandler,
     );
+
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _bloc.showLockScreenIfNeeded(context);
+    }
   }
 
   static Future<dynamic> _backgroundMessageHandler(Map<String, dynamic> message) async {
@@ -81,6 +90,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   void dispose() {
     _seedAddedAnimationController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
 
     super.dispose();
     _bloc.dispose();

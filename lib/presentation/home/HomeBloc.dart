@@ -24,26 +24,17 @@ class HomeBloc {
 
   final List<void Function(String key)> _bottomNavigationItemClickedListeners = [];
 
+  bool _isLockScreenShowing = false;
+
   HomeBloc(BuildContext context) {
     _initState(context);
   }
 
   Future<void> _initState(BuildContext context) async {
-    final useLockScreen = await _getUseLockScreenUsecase.invoke();
-    final userPassword = await _getUserPasswordUsecase.invoke();
+    await showLockScreenIfNeeded(context);
+
     final navigationItems = _homeChildScreenUsecases.getNavigationItems();
     final currentChildScreenKey = _homeChildScreenUsecases.getCurrentChildScreenKey();
-
-    if (useLockScreen && userPassword.isNotEmpty) {
-      await Navigator.push(
-        context,
-        SlideUpPageRoute(
-          page: LockScreen(),
-          duration: const Duration(milliseconds: 500),
-        ),
-      );
-    }
-
     _state.add(_state.value.buildNew(
       childScreenItems: navigationItems,
       currentChildScreenKey: currentChildScreenKey,
@@ -77,6 +68,22 @@ class HomeBloc {
 
   void removeBottomNavigationItemClickedListener(void Function(String key) listener) {
     _bottomNavigationItemClickedListeners.remove(listener);
+  }
+
+  Future<void> showLockScreenIfNeeded(BuildContext context) async {
+    final useLockScreen = await _getUseLockScreenUsecase.invoke();
+    final userPassword = await _getUserPasswordUsecase.invoke();
+    if (useLockScreen && userPassword.isNotEmpty && !_isLockScreenShowing) {
+      _isLockScreenShowing = true;
+      await Navigator.push(
+        context,
+        SlideUpPageRoute(
+          page: LockScreen(),
+          duration: const Duration(milliseconds: 500),
+        ),
+      );
+      _isLockScreenShowing = false;
+    }
   }
 
   void dispose() {
