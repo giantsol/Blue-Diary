@@ -385,20 +385,23 @@ class _NetworkErrorView extends StatelessWidget {
     return Container(
       color: AppColors.BACKGROUND_WHITE,
       alignment: Alignment.center,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          FlatButton(
-            onPressed: () => bloc.onNetworkErrorRetryClicked(),
-            child: Text(
-              AppLocalizations.of(context).retry,
-            ),
+      child: FlatButton(
+        onPressed: () => bloc.onNetworkErrorRetryClicked(),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                AppLocalizations.of(context).retry,
+              ),
+              Text(
+                AppLocalizations.of(context).weekScreenNetworkErrorReason,
+                textAlign: TextAlign.center,
+              )
+            ],
           ),
-          Text(
-            AppLocalizations.of(context).weekScreenNetworkErrorReason,
-            textAlign: TextAlign.center,
-          )
-        ],
+        ),
       )
     );
   }
