@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.multidex.MultiDex
 import io.flutter.app.FlutterApplication
 import io.flutter.plugin.common.PluginRegistry
-import io.flutter.plugins.GeneratedPluginRegistrant
+import io.flutter.plugins.firebasemessaging.FirebaseMessagingPlugin
 import io.flutter.plugins.firebasemessaging.FlutterFirebaseMessagingService
 
 class App : FlutterApplication(), PluginRegistry.PluginRegistrantCallback {
@@ -20,6 +20,6 @@ class App : FlutterApplication(), PluginRegistry.PluginRegistrantCallback {
     }
 
     override fun registerWith(registry: PluginRegistry?) {
-        GeneratedPluginRegistrant.registerWith(registry)
+        FirebaseMessagingPlugin.registerWith(registry?.registrarFor("io.flutter.plugins.firebasemessaging.FirebaseMessagingPlugin"))
     }
 }

@@ -2,17 +2,15 @@ package lee.hansol.todo_app
 
 import android.content.ContentResolver
 import android.content.Context
-import android.os.Bundle
-import io.flutter.app.FlutterActivity
+import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 
 class MainActivity: FlutterActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        GeneratedPluginRegistrant.registerWith(this)
-
-        MethodChannel(flutterView, "crossingthestreams.io/resourceResolver").setMethodCallHandler { call, result ->
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        GeneratedPluginRegistrant.registerWith(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "crossingthestreams.io/resourceResolver").setMethodCallHandler { call, result ->
             if ("drawableToUri" == call.method) {
                 val resourceId = resources.getIdentifier(call.arguments as String, "drawable", packageName)
                 val uriString = resourceToUriString(applicationContext, resourceId)
