@@ -81,3 +81,6 @@
 **/.firebaserc
 **/firebase.json
 **/functions/
+
+# Debug symbol files output by --split-debug-info
+**.symbols
