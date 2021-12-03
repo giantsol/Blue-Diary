@@ -1,4 +1,3 @@
-
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:todo_app/domain/repository/DateRepository.dart';
 
@@ -9,11 +8,16 @@ class DateRepositoryImpl implements DateRepository {
   Future<DateTime> getToday() async {
     if (_today == DateRepository.INVALID_DATE) {
       try {
-        final callable = CloudFunctions.instance.getHttpsCallable(functionName: 'getTodayInMillis');
-        final result = await callable.call().timeout(const Duration(seconds: 5));
+        final callable = CloudFunctions.instance
+            .getHttpsCallable(functionName: 'getTodayInMillis');
+        final result =
+            await callable.call().timeout(const Duration(seconds: 5));
         final millis = result.data;
         _today = DateTime.fromMillisecondsSinceEpoch(millis);
-      } catch (e) { }
+      } catch (e) {
+        _today = DateTime.fromMillisecondsSinceEpoch(
+            (DateTime.now().millisecondsSinceEpoch));
+      }
     }
     return _today;
   }
@@ -21,7 +25,8 @@ class DateRepositoryImpl implements DateRepository {
   @override
   Future<bool> syncTodayWithServer() async {
     try {
-      final callable = CloudFunctions.instance.getHttpsCallable(functionName: 'getTodayInMillis');
+      final callable = CloudFunctions.instance
+          .getHttpsCallable(functionName: 'getTodayInMillis');
       final result = await callable.call().timeout(const Duration(seconds: 5));
       final millis = result.data;
       _today = DateTime.fromMillisecondsSinceEpoch(millis);
